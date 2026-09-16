@@ -474,9 +474,9 @@ window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return;
   }
 
-  let unitNum = 1;
   let unitName = "";
   let finalCode = "";
+  let unitNumber = 1;
 
   if (unitVal === "NEW") {
     const uNum = document.getElementById('newUnitNum').value.trim();
@@ -485,116 +485,54 @@ window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       showStatus('addStatus', "දෝෂයකි: නව ඒකකයේ අංකය සහ නම ඇතුළත් කරන්න!", false);
       return;
     }
-    unitNum = parseInt(uNum, 10);
-    unitName = `ඒකකය ${String(unitNum).padStart(2, '0')}: ${uTitle}`;
-    finalCode = `${unitNum}.${subNum}`;
+    unitNumber = parseInt(uNum, 10);
+    unitName = `ඒකකය ${String(uNum).padStart(2, '0')}: ${uTitle}`;
+    finalCode = `${uNum}.${subNum}`;
   } else {
-    unitNum = parseInt(unitVal, 10);
+    unitNumber = parseInt(unitVal, 10);
     const unitDropdown = document.getElementById('unitDropdown');
     if (unitDropdown.selectedIndex >= 0) {
       unitName = unitDropdown.options[unitDropdown.selectedIndex].text;
     } else {
       unitName = "ඒකකය " + unitVal;
     }
-    finalCode = `${unitNum}.${subNum}`;
+    finalCode = `${unitVal}.${subNum}`;
   }
+
+  const fullSubLesson = `${finalCode} ${subTitle}`;
 
   btn.disabled = true;
   btn.innerText = "සුරැකෙමින් පවතී...";
 
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('canonical_syllabus')
       .insert([
         {
           subject: subject,
-          unit_number: unitNum,
+          unit_number: unitNumber,
           unit_name: unitName,
           sub_lesson_code: finalCode,
-          sub_lesson_title: subTitle
+          sub_lesson_title: fullSubLesson
         }
-      ])
-      .select();
+      ]);
 
     if (error) {
       if (error.code === '23505') {
-        throw new Error(`[${subject}] ${finalCode} උප-පාඩම දැනටමත් පවතී!`);
+        throw new Error(`[${subject}] ${finalCode} උප-පාඩම දැනටමත් පද්ධතියේ පවතී.`);
       }
       throw error;
     }
 
     btn.disabled = false;
     btn.innerText = "+ නව පාඩම සුරකින්න";
-    showStatus('addStatus', `නව පාඩම සාර්ථකව එක් විය! [${subject} ${finalCode}]`, true);
+    showStatus('addStatus', `[${subject}] ${finalCode} සාර්ථකව ඇතුළත් කරන ලදී!`, true);
     document.getElementById('subUnitTitle').value = '';
     await loadSyllabus();
   } catch (err) {
     btn.disabled = false;
     btn.innerText = "+ නව පාඩම සුරකින්න";
-    showStatus('addStatus', "දෝෂයකි: " + (err.message || "සුරැකීම අසාර්ථක විය"), false);
-  }
-}
-
-      // 3. Edit Engine
-      function startEditing(subject, code) {
-        const item = allLessons.find(l => l.subject === subject && l.code === code);
-        if (!item) return;
-
-        currentEditingItem = item;
-        document.getElementById('editEmptyMsg').style.display = 'none';
-        document.getElementById('editForm').style.display = 'block';
-
-        document.getElementById('editHeaderTag').innerText = `[${item.subject}] ${item.code}`;
-        document.getElementById('editUnitTitle').value = item.unit;
-        document.getElementById('editPrefix').innerText = item.code;
-
-        // Strip prefix code from sublesson title if present
-        let cleanSubTitle = item.subLesson;
-        if (cleanSubTitle.startsWith(item.code)) {
-          cleanSubTitle = cleanSubTitle.substring(item.code.length).trim();
-        }
-        document.getElementById('editSubTitle').value = cleanSubTitle;
-
-        switchTab('tabEdit');
-      }
-
-      async function submitEditLesson(e) {
-  e.preventDefault();
-  if (!currentEditingItem) return;
-
-  const btn = document.getElementById('editBtn');
-  const unitName = document.getElementById('editUnitTitle').value.trim();
-  const subTitle = document.getElementById('editSubTitle').value.trim();
-
-  const unitMatch = unitName.match(/\d+/);
-  const unitNum = unitMatch ? parseInt(unitMatch[0], 10) : currentEditingItem.unitNum;
-
-  btn.disabled = true;
-  btn.innerText = "යාවත්කාලීන වෙමින් පවතී...";
-
-  try {
-    const { data, error } = await supabase
-      .from('canonical_syllabus')
-      .update({
-        unit_name: unitName,
-        unit_number: unitNum,
-        sub_lesson_title: subTitle,
-        updated_at: new Date().toISOString()
-      })
-      .eq('subject', currentEditingItem.subject)
-      .eq('sub_lesson_code', currentEditingItem.code)
-      .select();
-
-    if (error) throw error;
-
-    btn.disabled = false;
-    btn.innerText = "💾 නම යාවත්කාලීන කරන්න";
-    showStatus('editStatus', `[${currentEditingItem.subject} ${currentEditingItem.code}] නම සාර්ථකව යාවත්කාලීන විය!`, true);
-    await loadSyllabus();
-  } catch (err) {
-    btn.disabled = false;
-    btn.innerText = "💾 නම යාවත්කාලීන කරන්න";
-    showStatus('editStatus', "දෝෂයකි: " + (err.message || "යාවත්කාලීන කිරීම අසාර්ථක විය"), false);
+    showStatus('addStatus', "දෝෂයකි: " + (err.message || "ඇතුළත් කිරීම අසාර්ථක විය"), false);
   }
 }
 
