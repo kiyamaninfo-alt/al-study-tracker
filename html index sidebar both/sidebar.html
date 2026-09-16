@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
- <meta charset="UTF-8">
- <base target="_top">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
       :root {
@@ -18,7 +17,7 @@
         --border-color: #dfe6e9;
       }
       body {
- font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+        font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
         background-color: var(--bg-color);
         color: var(--text-dark);
         margin: 0;
@@ -293,12 +292,11 @@
     </div>
 
     <script>
-// --- Supabase Client Configuration ---
-// --- Supabase Client Configuration ---
-const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
-window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
- 
+      // --- Supabase Client Configuration ---
+      const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
       let allLessons = [];
       let currentEditingItem = null;
 
@@ -308,31 +306,32 @@ window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       };
 
       async function loadSyllabus() {
-  try {
-    const { data, error } = await supabase
-      .from('canonical_syllabus')
-      .select('id, subject, unit_number, unit_name, sub_lesson_code, sub_lesson_title')
-      .order('sort_order', { ascending: true });
+        try {
+          const { data, error } = await supabase
+            .from('canonical_syllabus')
+            .select('id, subject, unit_number, unit_name, sub_lesson_code, sub_lesson_title')
+            .order('sort_order', { ascending: true });
 
-    if (error) throw error;
+          if (error) throw error;
 
-    allLessons = (data || []).map(row => ({
-      id: row.id,
-      subject: row.subject,
-      unitNum: row.unit_number,
-      unit: row.unit_name,
-      code: row.sub_lesson_code,
-      subLesson: row.sub_lesson_title
-    }));
+          allLessons = (data || []).map(row => ({
+            id: row.id,
+            subject: row.subject,
+            unitNum: row.unit_number,
+            unit: row.unit_name,
+            code: row.sub_lesson_code,
+            subLesson: row.sub_lesson_title
+          }));
 
-    handleSearch();
-    onAddSubjectChange();
-  } catch (err) {
-    console.error("Supabase load error:", err);
-    document.getElementById('searchResults').innerHTML = 
-      '<div style="text-align: center; color: #c5221f; padding: 10px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || "නැවත උත්සාහ කරන්න") + '</div>';
-  }
-}
+          handleSearch();
+          onAddSubjectChange();
+        } catch (err) {
+          console.error("Supabase load error:", err);
+          document.getElementById('searchResults').innerHTML = 
+            '<div style="text-align: center; color: #c5221f; padding: 10px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || "නැවත උත්සාහ කරන්න") + '</div>';
+        }
+      }
+
       function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -388,9 +387,7 @@ window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         container.innerHTML = html;
       }
 
-     
-     function jumpToRow(subject, code) {
-        // Cloudflare Pages / Web Architecture: Cross-window communication
+      function jumpToRow(subject, code) {
         if (window.parent && window.parent !== window) {
           window.parent.postMessage({ action: 'JUMP_DRILLDOWN', subject: subject, code: code }, '*');
         } else {
@@ -460,81 +457,141 @@ window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
 
       async function submitNewLesson(e) {
-  e.preventDefault();
-  const btn = document.getElementById('addBtn');
-  const status = document.getElementById('addStatus');
+        e.preventDefault();
+        const btn = document.getElementById('addBtn');
+        const status = document.getElementById('addStatus');
 
-  const subject = document.getElementById('addSubject').value;
-  const unitVal = document.getElementById('unitDropdown').value;
-  const subNum = document.getElementById('subUnitNum').value.trim();
-  const subTitle = document.getElementById('subUnitTitle').value.trim();
+        const subject = document.getElementById('addSubject').value;
+        const unitVal = document.getElementById('unitDropdown').value;
+        const subNum = document.getElementById('subUnitNum').value.trim();
+        const subTitle = document.getElementById('subUnitTitle').value.trim();
 
-  if (!subNum) {
-    showStatus('addStatus', "දෝෂයකි: දශමයෙන් පසු අංකය ඇතුළත් කිරීම අනිවාර්යයි!", false);
-    return;
-  }
-
-  let unitName = "";
-  let finalCode = "";
-  let unitNumber = 1;
-
-  if (unitVal === "NEW") {
-    const uNum = document.getElementById('newUnitNum').value.trim();
-    const uTitle = document.getElementById('newUnitTitle').value.trim();
-    if (!uNum || !uTitle) {
-      showStatus('addStatus', "දෝෂයකි: නව ඒකකයේ අංකය සහ නම ඇතුළත් කරන්න!", false);
-      return;
-    }
-    unitNumber = parseInt(uNum, 10);
-    unitName = `ඒකකය ${String(uNum).padStart(2, '0')}: ${uTitle}`;
-    finalCode = `${uNum}.${subNum}`;
-  } else {
-    unitNumber = parseInt(unitVal, 10);
-    const unitDropdown = document.getElementById('unitDropdown');
-    if (unitDropdown.selectedIndex >= 0) {
-      unitName = unitDropdown.options[unitDropdown.selectedIndex].text;
-    } else {
-      unitName = "ඒකකය " + unitVal;
-    }
-    finalCode = `${unitVal}.${subNum}`;
-  }
-
-  const fullSubLesson = `${finalCode} ${subTitle}`;
-
-  btn.disabled = true;
-  btn.innerText = "සුරැකෙමින් පවතී...";
-
-  try {
-    const { error } = await supabase
-      .from('canonical_syllabus')
-      .insert([
-        {
-          subject: subject,
-          unit_number: unitNumber,
-          unit_name: unitName,
-          sub_lesson_code: finalCode,
-          sub_lesson_title: fullSubLesson
+        if (!subNum) {
+          showStatus('addStatus', "දෝෂයකි: දශමයෙන් පසු අංකය ඇතුළත් කිරීම අනිවාර්යයි!", false);
+          return;
         }
-      ]);
 
-    if (error) {
-      if (error.code === '23505') {
-        throw new Error(`[${subject}] ${finalCode} උප-පාඩම දැනටමත් පද්ධතියේ පවතී.`);
+        let unitName = "";
+        let finalCode = "";
+        let unitNumber = 1;
+
+        if (unitVal === "NEW") {
+          const uNum = document.getElementById('newUnitNum').value.trim();
+          const uTitle = document.getElementById('newUnitTitle').value.trim();
+          if (!uNum || !uTitle) {
+            showStatus('addStatus', "දෝෂයකි: නව ඒකකයේ අංකය සහ නම ඇතුළත් කරන්න!", false);
+            return;
+          }
+          unitNumber = parseInt(uNum, 10);
+          unitName = `ඒකකය ${String(uNum).padStart(2, '0')}: ${uTitle}`;
+          finalCode = `${uNum}.${subNum}`;
+        } else {
+          unitNumber = parseInt(unitVal, 10);
+          const unitDropdown = document.getElementById('unitDropdown');
+          if (unitDropdown.selectedIndex >= 0) {
+            unitName = unitDropdown.options[unitDropdown.selectedIndex].text;
+          } else {
+            unitName = "ඒකකය " + unitVal;
+          }
+          finalCode = `${unitVal}.${subNum}`;
+        }
+
+        const fullSubLesson = `${finalCode} ${subTitle}`;
+
+        btn.disabled = true;
+        btn.innerText = "සුරැකෙමින් පවතී...";
+
+        try {
+          const { error } = await supabase
+            .from('canonical_syllabus')
+            .insert([
+              {
+                subject: subject,
+                unit_number: unitNumber,
+                unit_name: unitName,
+                sub_lesson_code: finalCode,
+                sub_lesson_title: fullSubLesson
+              }
+            ]);
+
+          if (error) {
+            if (error.code === '23505') {
+              throw new Error(`[${subject}] ${finalCode} උප-පාඩම දැනටමත් පද්ධතියේ පවතී.`);
+            }
+            throw error;
+          }
+
+          btn.disabled = false;
+          btn.innerText = "+ නව පාඩම සුරකින්න";
+          showStatus('addStatus', `[${subject}] ${finalCode} සාර්ථකව ඇතුළත් කරන ලදී!`, true);
+          document.getElementById('subUnitTitle').value = '';
+          await loadSyllabus();
+        } catch (err) {
+          btn.disabled = false;
+          btn.innerText = "+ නව පාඩම සුරකින්න";
+          showStatus('addStatus', "දෝෂයකි: " + (err.message || "ඇතුළත් කිරීම අසාර්ථක විය"), false);
+        }
       }
-      throw error;
-    }
 
-    btn.disabled = false;
-    btn.innerText = "+ නව පාඩම සුරකින්න";
-    showStatus('addStatus', `[${subject}] ${finalCode} සාර්ථකව ඇතුළත් කරන ලදී!`, true);
-    document.getElementById('subUnitTitle').value = '';
-    await loadSyllabus();
-  } catch (err) {
-    btn.disabled = false;
-    btn.innerText = "+ නව පාඩම සුරකින්න";
-    showStatus('addStatus', "දෝෂයකි: " + (err.message || "ඇතුළත් කිරීම අසාර්ථක විය"), false);
-  }
-}
+      // 3. Edit Engine
+      function startEditing(subject, code) {
+        const item = allLessons.find(l => l.subject === subject && l.code === code);
+        if (!item) return;
+
+        currentEditingItem = item;
+        document.getElementById('editEmptyMsg').style.display = 'none';
+        document.getElementById('editForm').style.display = 'block';
+
+        document.getElementById('editHeaderTag').innerText = `[${item.subject}] ${item.code}`;
+        document.getElementById('editUnitTitle').value = item.unit;
+        document.getElementById('editPrefix').innerText = item.code;
+
+        let cleanSubTitle = item.subLesson;
+        if (cleanSubTitle.startsWith(item.code)) {
+          cleanSubTitle = cleanSubTitle.substring(item.code.length).trim();
+        }
+        document.getElementById('editSubTitle').value = cleanSubTitle;
+
+        switchTab('tabEdit');
+      }
+
+      async function submitEditLesson(e) {
+        e.preventDefault();
+        if (!currentEditingItem) return;
+
+        const btn = document.getElementById('editBtn');
+        const unitName = document.getElementById('editUnitTitle').value.trim();
+        const subTitle = document.getElementById('editSubTitle').value.trim();
+        const fullSubLesson = `${currentEditingItem.code} ${subTitle}`;
+
+        btn.disabled = true;
+        btn.innerText = "යාවත්කාලීන වෙමින් පවතී...";
+
+        try {
+          const { error } = await supabase
+            .from('canonical_syllabus')
+            .update({
+              unit_name: unitName,
+              sub_lesson_title: fullSubLesson,
+              updated_at: new Date().toISOString()
+            })
+            .match({
+              subject: currentEditingItem.subject,
+              sub_lesson_code: currentEditingItem.code
+            });
+
+          if (error) throw error;
+
+          btn.disabled = false;
+          btn.innerText = "💾 නම යාවත්කාලීන කරන්න";
+          showStatus('editStatus', "පාඩම සාර්ථකව යාවත්කාලීන කරන ලදී!", true);
+          await loadSyllabus();
+        } catch (err) {
+          btn.disabled = false;
+          btn.innerText = "💾 නම යාවත්කාලීන කරන්න";
+          showStatus('editStatus', "දෝෂයකි: " + (err.message || "යාවත්කාලීන කිරීම අසාර්ථක විය"), false);
+        }
+      }
 
       function showStatus(id, msg, isSuccess) {
         const box = document.getElementById(id);
