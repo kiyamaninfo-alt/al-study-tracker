@@ -1629,7 +1629,9 @@
 // --- Supabase Client Configuration ---
 const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+var supabase = (window.supabase && typeof window.supabase.createClient === 'function')
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : window.supabase;
       // 1. Live Countdown
       const targetExamDate = new Date('2028-08-04T08:30:00+05:30').getTime();
 
