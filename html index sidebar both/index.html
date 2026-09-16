@@ -1,0 +1,3365 @@
+<!DOCTYPE html>
+<html>
+  <head>
+ <meta charset="UTF-8">
+ <base target="_top">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --primary: #8c7ae6;
+        --primary-light: #f3e7e9;
+        --accent-pink: #f8a5c2;
+        --accent-mint: #55efc4;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --text-dark: #2d3436;
+      }
+      body {
+ font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+        background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+        margin: 0;
+        padding: 14px;
+        color: var(--text-dark);
+        overflow-x: hidden;
+      }
+      .header-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 10px 16px;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(140, 122, 230, 0.12);
+        margin-bottom: 12px;
+      }
+      .title {
+        font-size: 18px;
+        font-weight: 700;
+        background: linear-gradient(45deg, #8c7ae6, #e84393);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+      }
+      .quote-box {
+        font-size: 11px;
+        font-style: italic;
+        color: #636e72;
+        margin-top: 2px;
+      }
+
+      /* Live Countdown */
+      .countdown-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .time-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 6px 4px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        border-top: 3px solid var(--primary);
+      }
+      .time-num {
+        font-size: 18px;
+        font-weight: 700;
+        color: #8c7ae6;
+      }
+      .time-lbl {
+        font-size: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #7f8fa6;
+      }
+
+      /* Streak & Timer Dual Grid */
+      .streak-timer-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .streak-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 10px 14px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        border-left: 4px solid #ff7675;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .streak-header {
+        font-size: 10px;
+        font-weight: 600;
+        color: #b2bec3;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .streak-val {
+        font-size: 18px;
+        font-weight: 700;
+        color: #d63031;
+        margin: 2px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .streak-tag {
+        font-size: 9px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 10px;
+        width: fit-content;
+      }
+      .streak-tag.done { background: #e6f4ea; color: #2e7d32; }
+      .streak-tag.pending { background: #feefe3; color: #d35400; }
+
+      /* Focus Timer */
+      .timer-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 10px 14px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        border-left: 4px solid #00cec9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .timer-left { display: flex; flex-direction: column; }
+      .timer-label { font-size: 10px; font-weight: 600; color: #00cec9; text-transform: uppercase; }
+      .timer-clock { font-size: 22px; font-weight: 700; color: #2d3436; letter-spacing: 1px; }
+      .timer-presets { display: flex; gap: 4px; margin-top: 2px; }
+      .preset-btn {
+        background: #f1f2f6;
+        border: 1px solid #dfe6e9;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .preset-btn.active { background: #00cec9; color: white; border-color: #00cec9; }
+      .timer-controls { display: flex; gap: 6px; }
+      .ctrl-btn {
+        background: #f1f2f6;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.1s ease;
+      }
+      .ctrl-btn:hover { transform: scale(1.05); }
+      .ctrl-btn.primary { background: linear-gradient(135deg, #00cec9, #81ecec); color: #2d3436; }
+
+      /* Unified Progress Card */
+      .level-card {
+        background: linear-gradient(135deg, #8c7ae6, #e84393);
+        color: white;
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        box-shadow: 0 6px 18px rgba(232, 67, 147, 0.2);
+      }
+      .progress-tab-nav {
+        display: flex;
+        background: rgba(0, 0, 0, 0.18);
+        border-radius: 8px;
+        padding: 2px;
+        gap: 4px;
+        margin-bottom: 10px;
+      }
+      .prog-tab-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.75);
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 5px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+      .prog-tab-btn.active {
+        background: #ffffff;
+        color: #2d3436;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      }
+
+      .level-top { display: flex; justify-content: space-between; align-items: center; }
+      .level-badge-tag {
+        background: rgba(255, 255, 255, 0.25);
+        padding: 3px 10px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .level-name { font-size: 15px; font-weight: 700; margin: 4px 0 2px 0; }
+      .level-subtxt { font-size: 11px; opacity: 0.9; }
+      .progress-bar-bg {
+        background: rgba(255, 255, 255, 0.3);
+        height: 9px;
+        border-radius: 6px;
+        margin: 8px 0 4px 0;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: #55efc4;
+        border-radius: 6px;
+        width: 0%;
+        transition: width 1s ease-in-out;
+      }
+      .progress-footer { font-size: 9px; display: flex; justify-content: space-between; }
+
+      .weekly-meter-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .weekly-meter-card {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+        padding: 8px 6px;
+        text-align: center;
+        backdrop-filter: blur(4px);
+      }
+      .wm-title { font-size: 9.5px; font-weight: 600; opacity: 0.95; }
+      .wm-ratio { font-size: 13px; font-weight: 700; margin: 2px 0 3px 0; color: #fff; }
+
+      /* Dual Clickable Action Bar */
+      .action-bar-dual {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        border-left: 4px solid #6c5ce7;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .action-bar-stats-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .action-bar-stat-clickable {
+        font-size: 11px;
+        font-weight: 600;
+        color: #2d3436;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+      }
+      .action-bar-stat-clickable:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .badge-unit-stat { background: #f0fbfb; border: 1px solid #b2f5ea; }
+      .badge-full-stat { background: #f5f3ff; border: 1px solid #ddd6fe; }
+      .action-bar-btns { display: flex; gap: 6px; }
+      .btn-action-pill {
+        border: none;
+        padding: 6px 11px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+        white-space: nowrap;
+      }
+      .btn-action-pill:hover { transform: scale(1.03); }
+      .btn-fullpaper { background: linear-gradient(135deg, #6c5ce7, #8c7ae6); color: white; }
+      .btn-unitpaper { background: linear-gradient(135deg, #00cec9, #0984e3); color: white; }
+
+      /* Milestone Showcase */
+      .badge-showcase {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      }
+      .badge-header {
+        font-size: 11px;
+        font-weight: 700;
+        color: #8c7ae6;
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .badge-row { display: flex; justify-content: space-between; overflow-x: auto; gap: 5px; }
+      .badge-pill {
+        flex: 1;
+        min-width: 50px;
+        text-align: center;
+        background: #f8f9fa;
+        padding: 4px 2px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+      .badge-pill.unlocked {
+        background: #ffeaa7;
+        border-color: #fdcb6e;
+        box-shadow: 0 2px 6px rgba(253, 203, 110, 0.4);
+      }
+      .badge-icon { font-size: 14px; }
+      .badge-lbl { font-size: 8px; font-weight: 600; color: #636e72; }
+
+      /* Circular Rings */
+      .subject-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .ring-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 8px 6px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .ring-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(140, 122, 230, 0.2);
+      }
+      .click-hint { font-size: 8px; color: #8c7ae6; margin-top: 2px; font-weight: 600; }
+      .ring-wrapper { position: relative; width: 70px; height: 70px; }
+      .ring-wrapper svg { transform: rotate(-90deg); width: 70px; height: 70px; }
+      .ring-bg { fill: none; stroke: #f1f2f6; stroke-width: 7; }
+      .ring-progress {
+        fill: none;
+        stroke-width: 7;
+        stroke-linecap: round;
+        stroke-dasharray: 188.5;
+        stroke-dashoffset: 188.5;
+        transition: stroke-dashoffset 1.5s ease-in-out;
+      }
+      .ring-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .sub-name { font-size: 12px; font-weight: 700; margin-top: 4px; }
+      .sub-detail { font-size: 9px; color: #7f8fa6; }
+
+      /* Syllabus Velocity Radar */
+      .velocity-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        border-left: 4px solid #00cec9;
+      }
+      .velocity-header {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #0984e3;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .velocity-banner {
+        background: #f0fbfb;
+        border: 1px solid #b2f5ea;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 9.5px;
+        color: #2d3436;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .velocity-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .velocity-box {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 10px;
+        padding: 8px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+      }
+      .velocity-subj-title { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+      .velocity-subj-title.ict { color: #2980b9; }
+      .velocity-subj-title.et { color: #d35400; }
+      .velocity-subj-title.sft { color: #27ae60; }
+      .velocity-subtext { font-size: 8.5px; color: #7f8fa6; margin-bottom: 2px; }
+      .velocity-date-badge {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 3px 6px;
+        border-radius: 6px;
+        margin-top: 4px;
+        display: inline-block;
+      }
+      .velocity-date-badge.safe { background: #e6f4ea; color: #2e7d32; border: 1px solid #a8dadc; }
+      .velocity-date-badge.alert { background: #feefe3; color: #d35400; border: 1px solid #ffd8a8; }
+
+      /* 5-Tab Score Progression & Z-Score Card */
+      .chart-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      }
+      .chart-header {
+        font-size: 11px;
+        font-weight: 700;
+        color: #6c5ce7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .chart-tab-bar {
+        display: flex;
+        background: #f1f2f6;
+        border-radius: 8px;
+        padding: 2px;
+        gap: 3px;
+        margin-bottom: 8px;
+      }
+      .chart-tab-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 9.5px;
+        font-weight: 600;
+        color: #7f8fa6;
+        padding: 4px 0;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+      .chart-tab-btn.active {
+        background: #ffffff;
+        color: #6c5ce7;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      }
+      .chart-container { position: relative; width: 100%; height: 155px; }
+      .chart-empty-msg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        font-size: 11px;
+        color: #a4b0be;
+        font-style: italic;
+      }
+
+      /* Z-Score Analytics Panel */
+      .zscore-panel {
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px dashed #dfe6e9;
+      }
+      .zscore-panel-title {
+        font-size: 10px;
+        font-weight: 700;
+        color: #2d3436;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .zscore-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .zscore-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 6px 8px;
+        border: 1px solid #edf2f7;
+      }
+      .zscore-box-lbl {
+        font-size: 8.5px;
+        font-weight: 700;
+        color: #8c7ae6;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      .zscore-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .zscore-pill {
+        background: #ffffff;
+        border: 1px solid #dfe6e9;
+        border-radius: 5px;
+        padding: 2px 5px;
+        font-size: 8.5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex: 1 1 45%;
+      }
+      .zscore-pill-tag { color: #636e72; font-weight: 500; }
+      .zscore-pill-val { font-weight: 700; color: #27ae60; }
+      .zscore-pill-val.empty { color: #b2bec3; font-weight: 500; }
+      .zscore-footnote {
+        font-size: 7.5px;
+        color: #a4b0be;
+        margin-top: 5px;
+        line-height: 1.3;
+      }
+
+      /* Urgent Radar */
+      .radar-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      }
+      .radar-header { font-size: 11px; font-weight: 700; color: #d63031; margin-bottom: 5px; }
+      .radar-item {
+        background: #fff;
+        border-left: 4px solid var(--accent-pink);
+        padding: 5px 8px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        font-size: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .radar-tag {
+        background: #ffeaa7;
+        color: #d35400;
+        padding: 2px 5px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 8px;
+      }
+
+      /* Subject Balance Alert Banner */
+      .balance-alert-card {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+        border-left: 4px solid #ffa000;
+        border-radius: 10px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        font-size: 10px;
+        color: #6d4c41;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        line-height: 1.4;
+      }
+
+      /* Hermann Ebbinghaus Forgetting Curve Card */
+      .ebbinghaus-card {
+        background: var(--card-bg);
+        border-radius: 14px;
+        padding: 10px 14px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        margin-bottom: 16px;
+        border-top: 3px solid #8c7ae6;
+      }
+      .ebbinghaus-header {
+        font-size: 11px;
+        font-weight: 700;
+        color: #6c5ce7;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ebbinghaus-desc {
+        font-size: 9px;
+        color: #7f8fa6;
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+      .ebbinghaus-item {
+        background: #fff;
+        padding: 6px 10px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        font-size: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #edf2f7;
+        border-left-width: 4px;
+      }
+      .ebbinghaus-tag {
+        font-size: 8px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 6px;
+        color: #fff;
+      }
+      /* v17: Scrollable Ebbinghaus List (Top 5) */
+      #ebbinghausList {
+        max-height: 220px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      #ebbinghausList::-webkit-scrollbar {
+        width: 5px;
+      }
+      #ebbinghausList::-webkit-scrollbar-track {
+        background: #f1f2f6;
+        border-radius: 4px;
+      }
+      #ebbinghausList::-webkit-scrollbar-thumb {
+        background: #c7ecee;
+        border-radius: 4px;
+      }
+      #ebbinghausList::-webkit-scrollbar-thumb:hover {
+        background: #8c7ae6;
+      }
+
+      /* Modals */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(45, 52, 54, 0.65);
+        backdrop-filter: blur(4px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+      .modal-window {
+        background: #ffffff;
+        width: 90%;
+        max-width: 720px;
+        max-height: 85vh;
+        border-radius: 18px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: popIn 0.25s ease-out;
+      }
+      @keyframes popIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .modal-header {
+        padding: 12px 18px;
+        background: linear-gradient(135deg, #8c7ae6, #a29bfe);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+      .modal-close-btn {
+        background: rgba(255, 255, 255, 0.25);
+        border: none;
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-body { padding: 14px 18px; overflow-y: auto; }
+
+      /* Drilldown Accordion */
+      .unit-item { background: #fdfdfd; border: 1px solid #edf2f7; border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+      .unit-head { padding: 9px 12px; background: #f8f9fc; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+      .unit-head.active { border-bottom: 1px solid #edf2f7; background: #f1f3f9; }
+      .unit-name-box { font-size: 11px; font-weight: 600; color: #2d3436; flex: 1; }
+      .unit-stat-box { display: flex; align-items: center; gap: 6px; min-width: 140px; justify-content: flex-end; }
+      .unit-bar-bg { width: 50px; height: 5px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+      .unit-bar-fill { height: 100%; background: #8c7ae6; }
+      .unit-pct-txt { font-size: 10px; font-weight: 700; color: #8c7ae6; min-width: 28px; }
+      .btn-unit-analytics {
+        background: #edf2f7;
+        border: 1px solid #cbd5e0;
+        border-radius: 5px;
+        padding: 2px 6px;
+        font-size: 8.5px;
+        font-weight: 600;
+        color: #4a5568;
+        cursor: pointer;
+      }
+      .btn-unit-analytics:hover { background: #6c5ce7; color: white; border-color: #6c5ce7; }
+      .sub-list { display: none; padding: 6px 12px; background: #ffffff; }
+      .sub-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 6px; border-bottom: 1px dashed #f1f2f6; font-size: 10px; }
+      .badge-group { display: flex; gap: 4px; }
+      .state-badge { font-size: 8px; font-weight: 600; padding: 2px 5px; border-radius: 5px; background: #f1f2f6; color: #a4b0be; }
+      .state-badge.done-lesson { background: #e8f0fe; color: #1976d2; }
+      .state-badge.done-hw { background: #feefe3; color: #d35400; }
+      .state-badge.done-paper { background: #e6f4ea; color: #2e7d32; }
+
+      /* Forms & Input */
+      .form-group { margin-bottom: 10px; }
+      .form-label { font-size: 11px; font-weight: 600; color: #2d3436; margin-bottom: 4px; display: block; }
+      .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #dfe6e9; font-size: 12px; font-family: inherit; box-sizing: border-box; }
+      .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #8c7ae6; outline: none; }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .submit-btn { width: 100%; padding: 10px; background: linear-gradient(135deg, #8c7ae6, #6c5ce7); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 12px; cursor: pointer; margin-top: 6px; }
+
+      /* Unit Paper Modal Styles */
+      .up-search-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .up-status-box {
+        background: #f8f9fc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px;
+        margin-top: 8px;
+        display: none;
+      }
+      .up-info-badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .up-badge {
+        font-size: 9px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: #edf2f7;
+        color: #4a5568;
+      }
+      .up-badge.subj { background: #e8f0fe; color: #1976d2; }
+      .up-badge.unit { background: #f3e8ff; color: #7c3aed; }
+      .up-status-header {
+        font-size: 12px;
+        font-weight: 700;
+        color: #2d3436;
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+      .up-toggle-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .toggle-btn {
+        flex: 1;
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: 1px solid #dfe6e9;
+        background: #ffffff;
+        font-size: 9.5px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: all 0.15s ease;
+      }
+      .toggle-btn.done { background: #e6f4ea; border-color: #a8dadc; color: #2e7d32; }
+      .toggle-btn.pending { background: #feefe3; border-color: #ffd8a8; color: #d35400; }
+      .up-prompt-msg {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #4a5568;
+        background: #ffffff;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px dashed #cbd5e0;
+        margin-bottom: 10px;
+        line-height: 1.4;
+      }
+      .up-btn-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 8px;
+      }
+      .btn-up-save {
+        padding: 10px;
+        background: linear-gradient(135deg, #00cec9, #0984e3);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-up-save:disabled { opacity: 0.6; cursor: not-allowed; }
+      .btn-up-cancel {
+        padding: 10px;
+        background: #f1f2f6;
+        color: #636e72;
+        border: 1px solid #dfe6e9;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* In-line Confirmation Card */
+      .up-confirm-card {
+        background: #fff8e1;
+        border: 1.5px solid #ffe082;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-top: 10px;
+        display: none;
+        animation: popIn 0.2s ease-out;
+      }
+      .confirm-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #b7791f;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .confirm-details {
+        font-size: 10px;
+        color: #4a5568;
+        line-height: 1.5;
+        margin-bottom: 8px;
+      }
+      .confirm-btns {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 8px;
+      }
+      .btn-confirm-yes {
+        padding: 8px;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 10.5px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-confirm-yes:disabled { opacity: 0.6; cursor: not-allowed; }
+      .btn-confirm-no {
+        padding: 8px;
+        background: #ffffff;
+        color: #718096;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        font-size: 10.5px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Success Toast */
+      .up-success-box {
+        background: #e6f4ea;
+        border: 1.5px solid #a8dadc;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-top: 10px;
+        display: none;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #2e7d32;
+        animation: popIn 0.2s ease-out;
+      }
+
+      /* Breakdown Modal Styles */
+      .breakdown-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .breakdown-card {
+        border-radius: 12px;
+        padding: 10px 6px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #edf2f7;
+      }
+      .breakdown-card.ict { background: #f0f7ff; border-color: #d0e2ff; }
+      .breakdown-card.et { background: #fffaf0; border-color: #feebc8; }
+      .breakdown-card.sft { background: #f0fff4; border-color: #c6f6d5; }
+      .breakdown-subj-lbl { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+      .breakdown-subj-lbl.ict { color: #2980b9; }
+      .breakdown-subj-lbl.et { color: #d35400; }
+      .breakdown-subj-lbl.sft { color: #27ae60; }
+      .breakdown-val { font-size: 18px; font-weight: 700; color: #2d3436; }
+      .breakdown-total-card {
+        color: white;
+        border-radius: 12px;
+        padding: 10px 14px;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .breakdown-total-unit { background: linear-gradient(135deg, #00cec9, #0984e3); }
+      .breakdown-total-full { background: linear-gradient(135deg, #6c5ce7, #8c7ae6); }
+
+      /* Unit Analytics Modal Styles */
+      .unit-rolling-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .rolling-card {
+        background: #f8f9fa;
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
+        padding: 6px 4px;
+        text-align: center;
+      }
+      .rolling-lbl { font-size: 8.5px; font-weight: 600; color: #7f8fa6; text-transform: uppercase; }
+      .rolling-val { font-size: 14px; font-weight: 700; color: #27ae60; margin-top: 2px; }
+      .rolling-val.empty { color: #b2bec3; font-weight: 500; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header-card">
+      <h2 class="title">✨ My A/L 2028 Mission Control ✨</h2>
+      <div class="quote-box">
+        "විශ්වාසයෙන් සහ නොසැලෙන උත්සාහයෙන් පියවරෙන් පියවර ඉදිරියට යන්න. ඔබගේ ජයග්‍රහණය ස්ථිරයි!"
+      </div>
+    </div>
+
+    <!-- Live Countdown -->
+    <div class="countdown-container">
+      <div class="time-card">
+        <div class="time-num" id="d">00</div>
+        <div class="time-lbl">දින (Days)</div>
+      </div>
+      <div class="time-card">
+        <div class="time-num" id="h">00</div>
+        <div class="time-lbl">පැය (Hours)</div>
+      </div>
+      <div class="time-card">
+        <div class="time-num" id="m">00</div>
+        <div class="time-lbl">මිනිත්තු (Min)</div>
+      </div>
+      <div class="time-card">
+        <div class="time-num" id="s">00</div>
+        <div class="time-lbl">තත්පර (Sec)</div>
+      </div>
+    </div>
+
+    <!-- Dual Row: Study Streak + Focus Timer -->
+    <div class="streak-timer-grid">
+      <div class="streak-card">
+        <div class="streak-header">අඛණ්ඩ අධ්‍යයන දින (Streak)</div>
+        <div class="streak-val">
+          <span>🔥</span> <span id="streakDaysTxt">0 Days Streak</span>
+        </div>
+        <div class="streak-tag pending" id="streakStatusTag">අද දින තවම පාඩම් කර නැත ⏳</div>
+      </div>
+
+      <div class="timer-card">
+        <div class="timer-left">
+          <div class="timer-label">⏱️ Focus Study Session</div>
+          <div class="timer-clock" id="timerDisplay">45:00</div>
+          <div class="timer-presets">
+            <button class="preset-btn" onclick="setTimerMinutes(25, event)">25m</button>
+            <button class="preset-btn active" id="preset45" onclick="setTimerMinutes(45, event)">45m</button>
+            <button class="preset-btn" onclick="setTimerMinutes(60, event)">60m</button>
+          </div>
+        </div>
+        <div class="timer-controls">
+          <button class="ctrl-btn primary" id="timerStartBtn" onclick="toggleTimer()">▶️</button>
+          <button class="ctrl-btn" onclick="resetTimer()">🔄</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unified Progress Card -->
+    <div class="level-card">
+      <div class="progress-tab-nav">
+        <button class="prog-tab-btn active" id="tabBtnOverall" onclick="switchProgressTab('overall')">🏆 Level Progress</button>
+        <button class="prog-tab-btn" id="tabBtnWeekly" onclick="switchProgressTab('weekly')">⚡ Weekly Sprint</button>
+      </div>
+
+      <!-- Tab 1: Overall Level Progress View -->
+      <div id="progViewOverall">
+        <div class="level-top">
+          <span class="level-badge-tag" id="tierTag">Tier 1 • Novice</span>
+          <span style="font-size: 11px; font-weight: 600;" id="totalPapersDoneHeader">0 Papers Completed</span>
+        </div>
+        <div class="level-name" id="currentLevelTitle">Level 1: Code Novice I</div>
+        <div class="level-subtxt" id="levelGoalTxt">ඊළඟ මට්ටමට තව Papers 15ක් ඉතිරියි</div>
+
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="levelBar"></div>
+        </div>
+        <div class="progress-footer">
+          <span id="levelStepRatio">0 / 15 Papers</span>
+          <span id="levelPct">0% Completed</span>
+        </div>
+      </div>
+
+      <!-- Tab 2: Weekly Sprint Quota View -->
+      <div id="progViewWeekly" style="display: none;">
+        <div class="level-top">
+          <span class="level-badge-tag" id="quotaMomentumTag">In Progress ⏳</span>
+          <span style="font-size: 10px; opacity: 0.9;" id="quotaWeekStart">Sprint Target</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 4px 0 6px 0;">
+          <div style="font-size: 14px; font-weight: 700;">සතිපතා ප්‍රගතිය: <span id="quotaOverallScore" style="color: #55efc4;">0%</span></div>
+          <span style="font-size: 9px; opacity: 0.85;">සඳුදා - ඉරිදා කෝටා</span>
+        </div>
+
+        <div class="weekly-meter-grid">
+          <div class="weekly-meter-card">
+            <div class="wm-title">📄 Unit Papers</div>
+            <div class="wm-ratio" id="q_unit_txt">0 / 10</div>
+            <div class="progress-bar-bg" style="height: 6px; margin: 2px 0 0 0;">
+              <div class="progress-bar-fill" id="q_unit_bar" style="background: #55efc4;"></div>
+            </div>
+          </div>
+
+          <div class="weekly-meter-card">
+            <div class="wm-title">🎓 Full Papers</div>
+            <div class="wm-ratio" id="q_full_txt">0 / 1</div>
+            <div class="progress-bar-bg" style="height: 6px; margin: 2px 0 0 0;">
+              <div class="progress-bar-fill" id="q_full_bar" style="background: #ffeaa7;"></div>
+            </div>
+          </div>
+
+          <div class="weekly-meter-card">
+            <div class="wm-title">📘 Lessons</div>
+            <div class="wm-ratio" id="q_lesson_txt">0 / 3</div>
+            <div class="progress-bar-bg" style="height: 6px; margin: 2px 0 0 0;">
+              <div class="progress-bar-fill" id="q_lesson_bar" style="background: #81ecec;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dual Clickable Action Bar -->
+    <div class="action-bar-dual">
+      <div class="action-bar-stats-group">
+        <div class="action-bar-stat-clickable badge-unit-stat" onclick="openUnitBreakdownModal()" title="විෂය අනුව Unit Papers විස්තරය බලන්න">
+          <span>📄 Unit Papers:</span>
+          <strong id="unitPapersCount" style="color: #0984e3; font-size: 12px;">0</strong>
+          <span style="font-size: 9px; color: #7f8fa6;">🔍</span>
+        </div>
+
+        <div class="action-bar-stat-clickable badge-full-stat" onclick="openFullBreakdownModal()" title="විෂය අනුව Full Papers විස්තරය බලන්න">
+          <span>🎓 Full Papers:</span>
+          <strong id="fullPapersCount" style="color: #6c5ce7; font-size: 12px;">0</strong>
+          <span style="font-size: 9px; color: #7f8fa6;">🔍</span>
+        </div>
+      </div>
+
+      <div class="action-bar-btns">
+ <button class="btn-action-pill" style="background: linear-gradient(135deg, #fdcb6e, #e17055); color: white;" onclick="openSidebarModal()">📚 Syllabus Manager</button>
+ <button class="btn-action-pill btn-unitpaper" onclick="openUnitPaperModal()">+ 📄 Log Unit Paper</button>
+ <button class="btn-action-pill btn-fullpaper" onclick="openFullPaperModal()">+ 📝 Log Full Paper</button>
+ </div>
+    </div>
+
+    <!-- Milestone Showcase -->
+    <div class="badge-showcase">
+      <div class="badge-header">
+        <span>🏆 Prestige Milestones (කීර්තිනාම පුවරුව)</span>
+        <span style="font-size: 9px; color: #7f8fa6;" id="prestigeRatio">0 / 10 Badges</span>
+      </div>
+      <div class="badge-row" id="badgeRow"></div>
+    </div>
+
+    <!-- Circular Progress Rings Grid -->
+    <div class="subject-grid">
+      <div class="ring-card" onclick="openDrilldownModal('ICT')">
+        <div class="ring-wrapper">
+          <svg>
+            <circle class="ring-bg" cx="35" cy="35" r="30"></circle>
+            <circle class="ring-progress" id="ictCircle" cx="35" cy="35" r="30" stroke="#4a90e2"></circle>
+          </svg>
+          <div class="ring-text" id="ictPct" style="color: #4a90e2;">0%</div>
+        </div>
+        <div class="sub-name" style="color: #2980b9;">ICT</div>
+        <div class="sub-detail" id="ictDetail">0 / 58 පාඩම්</div>
+        <div class="click-hint">🔍 ඒකක බලන්න</div>
+      </div>
+
+      <div class="ring-card" onclick="openDrilldownModal('ET')">
+        <div class="ring-wrapper">
+          <svg>
+            <circle class="ring-bg" cx="35" cy="35" r="30"></circle>
+            <circle class="ring-progress" id="etCircle" cx="35" cy="35" r="30" stroke="#e67e22"></circle>
+          </svg>
+          <div class="ring-text" id="etPct" style="color: #e67e22;">0%</div>
+        </div>
+        <div class="sub-name" style="color: #d35400;">ET</div>
+        <div class="sub-detail" id="etDetail">0 / 52 පාඩම්</div>
+        <div class="click-hint">🔍 ඒකක බලන්න</div>
+      </div>
+
+      <div class="ring-card" onclick="openDrilldownModal('SFT')">
+        <div class="ring-wrapper">
+          <svg>
+            <circle class="ring-bg" cx="35" cy="35" r="30"></circle>
+            <circle class="ring-progress" id="sftCircle" cx="35" cy="35" r="30" stroke="#27ae60"></circle>
+          </svg>
+          <div class="ring-text" id="sftPct" style="color: #27ae60;">0%</div>
+        </div>
+        <div class="sub-name" style="color: #27ae60;">SFT</div>
+        <div class="sub-detail" id="sftDetail">0 / 54 පාඩම්</div>
+        <div class="click-hint">🔍 ඒකක බලන්න</div>
+      </div>
+    </div>
+
+    <!-- Syllabus Velocity & Finish Forecaster -->
+    <div class="velocity-card">
+      <div class="velocity-header">
+        <span>🚀 Syllabus Velocity & Projected Finish Radar</span>
+        <span style="font-size: 8.5px; color: #7f8fa6;" id="veloWeeksLeft">0 Weeks to A/L 2028</span>
+      </div>
+
+      <div class="velocity-banner">
+        <div>ඉතිරි මුළු පාඩම්: <strong id="veloTotalRem" style="color: #e84393;">0</strong></div>
+        <div>අවශ්‍ය වේගය: <strong id="veloReqRate" style="color: #0984e3;">0 /wk</strong></div>
+        <div>වත්මන් වේගය: <strong id="veloCurRate" style="color: #27ae60;">0 /wk</strong></div>
+      </div>
+
+      <div class="velocity-grid">
+        <div class="velocity-box">
+          <div class="velocity-subj-title ict">📘 ICT</div>
+          <div class="velocity-subtext">ඉතිරි: <strong id="v_ict_rem">0</strong></div>
+          <div class="velocity-subtext">වේගය: <strong id="v_ict_rate">0</strong>/wk (අවශ්‍ය: <span id="v_ict_req">0</span>)</div>
+          <div class="velocity-date-badge alert" id="v_ict_badge">-</div>
+        </div>
+
+        <div class="velocity-box">
+          <div class="velocity-subj-title et">📙 ET</div>
+          <div class="velocity-subtext">ඉතිරි: <strong id="v_et_rem">0</strong></div>
+          <div class="velocity-subtext">වේගය: <strong id="v_et_rate">0</strong>/wk (අවශ්‍ය: <span id="v_et_req">0</span>)</div>
+          <div class="velocity-date-badge alert" id="v_et_badge">-</div>
+        </div>
+
+        <div class="velocity-box">
+          <div class="velocity-subj-title sft">📗 SFT</div>
+          <div class="velocity-subtext">ඉතිරි: <strong id="v_sft_rem">0</strong></div>
+          <div class="velocity-subtext">වේගය: <strong id="v_sft_rate">0</strong>/wk (අවශ්‍ය: <span id="v_sft_req">0</span>)</div>
+          <div class="velocity-date-badge alert" id="v_sft_badge">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Urgent Review Radar -->
+    <div class="radar-card">
+      <div class="radar-header">
+        ⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)
+      </div>
+      <div id="radarList">
+        <div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 4px;">දත්ත පූරණය වෙමින් පවතී...</div>
+      </div>
+    </div>
+
+    <!-- Subject Balance Alert Banner -->
+    <div class="balance-alert-card" id="balanceAlertBox">
+      <span style="font-size: 14px;">⚖️</span>
+      <span id="balanceAlertTxt">විෂයයන් අතර ප්‍රශ්න පත්‍ර ප්‍රගතිය සමතුලිතව පවත්වා ගන්න.</span>
+    </div>
+
+    <!-- Hermann Ebbinghaus Forgetting Curve Card — v16 Multi-Cycle -->
+    <div class="ebbinghaus-card">
+      <div class="ebbinghaus-header">
+        <span>🧠 හර්මන් එබින්ගවුස්ගේ "අමතකවීමේ වක්‍රය" — Spaced Repetition Cycles</span>
+      </div>
+
+      <!-- Cycle Tab Bar (dynamically populated by JS) -->
+      <div id="ebbCycleTabBar" style="display:flex; gap:6px; flex-wrap:wrap; padding:8px 12px 0; border-bottom:1px solid #f0f0f7;">
+        <!-- Tabs injected by renderEbbCycleTabs() -->
+        <div style="font-size:10px; color:#a4b0be; padding:4px;">දත්ත පූරණය වෙමින්...</div>
+      </div>
+
+      <!-- Day Stage Filter Buttons -->
+      <div style="padding:8px 12px 4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+        <span style="font-size:8px; color:#8c7ae6; font-weight:600; margin-right:2px;">👇 Filter:</span>
+        <button class="ebb-filter-btn" id="ebbF0"  onclick="filterEbbinghaus(0)"  style="background:#636e72; color:white; font-size:8px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer;">📋 සියල්ල</button>
+        <button class="ebb-filter-btn" id="ebbF1"  onclick="filterEbbinghaus(1)"  style="background:#e74c3c; color:white; font-size:8px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer;">⚡ දිනය 1</button>
+        <button class="ebb-filter-btn" id="ebbF3"  onclick="filterEbbinghaus(3)"  style="background:#f39c12; color:white; font-size:8px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer;">📝 දිනය 3</button>
+        <button class="ebb-filter-btn" id="ebbF7"  onclick="filterEbbinghaus(7)"  style="background:#e67e22; color:white; font-size:8px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer;">🔁 දිනය 7</button>
+        <button class="ebb-filter-btn" id="ebbF21" onclick="filterEbbinghaus(21)" style="background:#8c7ae6; color:white; font-size:8px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer;">🧠 දිනය 21</button>
+        <button class="ebb-filter-btn" id="ebbF45" onclick="filterEbbinghaus(45)" style="background:#27ae60; color:white; font-size:8px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer;">♾️ දිනය 45+</button>
+      </div>
+
+      <!-- Cycle description line -->
+      <div id="ebbCycleDesc" style="font-size:9px; color:#636e72; padding:2px 12px 6px; font-style:italic;">
+        Cycle 1 — ප්‍රථම Spaced Repetition චක්‍රය (Day 1 → 3 → 7 → 21 → 45+)
+      </div>
+
+      <!-- Lesson list (with tick boxes) -->
+      <div id="ebbinghausList">
+        <div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 6px;">දත්ත පූරණය වෙමින් පවතී...</div>
+      </div>
+    </div>
+
+
+    <!-- 5-Tab Score Progression & Z-Score Card (moved to bottom per v15) -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <span id="chartCardHeading">📈 Full Paper Score Progression (ICT %)</span>
+        <span style="font-size: 8.5px; color: #a4b0be;" id="chartZoomIndicator">Adaptive Zoom</span>
+      </div>
+
+      <div class="chart-tab-bar">
+        <button class="chart-tab-btn active" onclick="switchChartTab('ICT')">ICT</button>
+        <button class="chart-tab-btn" onclick="switchChartTab('ET')">ET</button>
+        <button class="chart-tab-btn" onclick="switchChartTab('SFT')">SFT</button>
+        <button class="chart-tab-btn" onclick="switchChartTab('All')">All</button>
+        <button class="chart-tab-btn" onclick="switchChartTab('Z-score')">Z-score</button>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="scoreChart" style="display: none;"></canvas>
+        <div id="noChartMsg" class="chart-empty-msg">තවම ලකුණු සහිත Full Paper එකක් සටහන් කර නොමැත 📝</div>
+      </div>
+
+      <!-- Z-Score Analytics Panel -->
+      <div class="zscore-panel">
+        <div class="zscore-panel-title">
+          <span>🎯 ශ්‍රී ලංකා A/L Composite Z-Score විග්‍රහය</span>
+          <span style="font-size: 8px; color: #6c5ce7; font-weight: 600;">Benchmark: μ=50, σ=15</span>
+        </div>
+
+        <div class="zscore-grid">
+          <div class="zscore-box">
+            <div class="zscore-box-lbl">📅 කාල පරාස අනුව</div>
+            <div class="zscore-row">
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 7:</span>
+                <span class="zscore-pill-val empty" id="z_time_7d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 14:</span>
+                <span class="zscore-pill-val empty" id="z_time_14d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">මාස 1:</span>
+                <span class="zscore-pill-val empty" id="z_time_1m">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">මාස 3:</span>
+                <span class="zscore-pill-val empty" id="z_time_3m">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="zscore-box">
+            <div class="zscore-box-lbl">📝 ප්‍රශ්න පත්‍ර ගණන අනුව</div>
+            <div class="zscore-row">
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 3:</span>
+                <span class="zscore-pill-val empty" id="z_cnt_3">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 7:</span>
+                <span class="zscore-pill-val empty" id="z_cnt_7">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 10:</span>
+                <span class="zscore-pill-val empty" id="z_cnt_10">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 20:</span>
+                <span class="zscore-pill-val empty" id="z_cnt_20">-</span>
+              </div>
+              <div class="zscore-pill" style="flex: 1 1 100%;">
+                <span class="zscore-pill-tag">Papers 50:</span>
+                <span class="zscore-pill-val empty" id="z_cnt_50">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="zscore-footnote">
+          * විෂයයන් 3න්ම (ICT, ET, SFT) සමාන Full Papers සංඛ්‍යාවක් සලකා ත්‍රිත්ව සාමාන්‍යය මඟින් ගණනය කෙරේ.
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Drill-down Modal Window -->
+    <div class="modal-overlay" id="drillModal" onclick="closeDrilldownModal(event)">
+      <div class="modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header" id="modalHeader">
+          <div class="modal-title" id="modalTitle">📘 ICT - ඒකක ප්‍රගති විමසුම</div>
+          <button class="modal-close-btn" onclick="hideDrillModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+    <!-- Log Full Paper Modal Form -->
+    <div class="modal-overlay" id="fullPaperModal" onclick="closeFullPaperModal(event)">
+      <div class="modal-window" style="max-width: 420px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #6c5ce7, #8c7ae6);">
+          <div class="modal-title">📝 Log Full Exam Paper</div>
+          <button class="modal-close-btn" onclick="hideFullPaperModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="fpForm" onsubmit="submitFullPaper(event)">
+            <div class="form-group">
+              <label class="form-label">විෂය (Subject) *</label>
+              <select class="form-select" id="fpSubject" required>
+                <option value="ICT">ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)</option>
+                <option value="ET">ET (ඉංජිනේරු තාක්ෂණවේදය)</option>
+                <option value="SFT">SFT (තාක්ෂණවේදය සඳහා විද්‍යාව)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">කළ දිනය (Date) *</label>
+              <input type="date" class="form-input" id="fpDate" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">ලකුණු % (Marks - Optional)</label>
+                <input type="number" class="form-input" id="fpMarks" placeholder="උදා: 75" min="0" max="100">
+              </div>
+              <div class="form-group">
+                <label class="form-label">ගතවූ කාලය (Time - Optional)</label>
+                <input type="text" class="form-input" id="fpTime" placeholder="උදා: පැය 2.5">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">විශේෂ සටහන් (Remarks - Optional)</label>
+              <textarea class="form-textarea" id="fpRemarks" rows="2" placeholder="අමාරු වූ කොටස් හෝ සටහන්..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="fpSubmitBtn">💾 Save Full Paper</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Unit Exam Paper Modal -->
+    <div class="modal-overlay" id="unitPaperModal" onclick="closeUnitPaperModal(event)">
+      <div class="modal-window" style="max-width: 440px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #00cec9, #0984e3);">
+          <div class="modal-title">📄 Log Unit Exam Paper</div>
+          <button class="modal-close-btn" onclick="hideUnitPaperModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="up-search-grid">
+            <div>
+              <label class="form-label">විෂය (Subject)</label>
+              <select class="form-select" id="upSubjectFilter" onchange="handleUnitPaperSearch()">
+                <option value="ALL">සියල්ල</option>
+                <option value="ICT">ICT</option>
+                <option value="ET">ET</option>
+                <option value="SFT">SFT</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">උප-පාඩම (අංකය 1.2 හෝ නම) *</label>
+              <input type="text" class="form-input" id="upSearchInput" placeholder="උදා: 1.2 හෝ දත්ත..." oninput="handleUnitPaperSearch()">
+            </div>
+          </div>
+
+          <div id="upSuggestionsBox" style="max-height: 140px; overflow-y: auto; display: none; background: #ffffff; border: 1px solid #dfe6e9; border-radius: 8px; margin-bottom: 10px;"></div>
+
+          <div class="up-status-box" id="upSelectedCard">
+            <div class="up-info-badge-row">
+              <span class="up-badge subj" id="upBadgeSubject">ICT</span>
+              <span class="up-badge unit" id="upBadgeUnit">ඒකකය 01</span>
+            </div>
+
+            <div class="up-status-header" id="upSelectedTitle">1.2 උප-පාඩමේ නම</div>
+
+            <div class="up-toggle-row">
+              <button type="button" class="toggle-btn" id="btnToggleLesson" onclick="askLessonConfirm()">
+                <span>📘 ඉගෙන ගත්තද?</span> <strong id="lblLessonState">Pending</strong>
+              </button>
+              <button type="button" class="toggle-btn" id="btnToggleHW" onclick="askHwConfirm()">
+                <span>📝 පාඩම් කලා :</span> <strong id="lblHwState">Pending</strong>
+              </button>
+            </div>
+
+            <!-- Lesson Confirmation Box -->
+            <div id="lessonConfirmBox" style="display:none; background:#e8f4fd; border:1.5px solid #74b9ff; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
+              <div style="font-size:12px; font-weight:700; color:#0984e3; margin-bottom:6px;">📘 Lesson Update Confirmation</div>
+              <div style="font-size:11px; color:#2d3436; margin-bottom:10px; line-height:1.5;">
+                Are you Learning this lesson? Please confirm.
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" onclick="confirmToggle('LESSON')" style="flex:1; padding:7px 10px; background:linear-gradient(135deg,#00b894,#00cec9); color:white; border:none; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;">✅ Yes, Confirm</button>
+                <button type="button" onclick="cancelToggleConfirm('lesson')" style="flex:1; padding:7px 10px; background:#f1f2f6; color:#636e72; border:1px solid #dfe6e9; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer;">❌ Cancel</button>
+              </div>
+            </div>
+
+            <!-- HW Confirmation Box -->
+            <div id="hwConfirmBox" style="display:none; background:#fff3e0; border:1.5px solid #fdcb6e; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
+              <div style="font-size:12px; font-weight:700; color:#e17055; margin-bottom:6px;">📝 HW / Study Confirmation</div>
+              <div style="font-size:11px; color:#2d3436; margin-bottom:10px; line-height:1.5;">
+                Did you do Homework or studied the subject? Please confirm.
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" onclick="confirmToggle('HW')" style="flex:1; padding:7px 10px; background:linear-gradient(135deg,#e17055,#d63031); color:white; border:none; border-radius:8px; font-size:11px; font-weight:700; cursor:pointer;">✅ Yes, Confirm</button>
+                <button type="button" onclick="cancelToggleConfirm('hw')" style="flex:1; padding:7px 10px; background:#f1f2f6; color:#636e72; border:1px solid #dfe6e9; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer;">❌ Cancel</button>
+              </div>
+            </div>
+
+            <div class="up-prompt-msg" id="upPromptMsg">
+              ඔබ මෙම උප-පාඩම සඳහා දැනට Unit Papers 0ක් අවසන් කර ඇත.
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="color: #2d3436;">ලකුණු % (Marks) *</label>
+              <input type="number" class="form-input" id="upMarksInput" placeholder="ලකුණු ප්‍රතිශතය ඇතුළත් කරන්න (0 - 100)" min="0" max="100" required
+                onfocus="if(!checkMarksGate()){ this.blur(); }">
+              <div id="upMarksError" style="display: none; color: #d63031; font-size: 10px; margin-top: 4px; font-weight: 600;">
+                ⚠️ කරුණාකර වලංගු ලකුණු ප්‍රතිශතයක් (0 - 100) ඇතුළත් කරන්න.
+              </div>
+            </div>
+
+            <div class="up-btn-grid" id="upPrimaryActionRow">
+              <button type="button" class="btn-up-save" id="btnSubmitUnitPaper" onclick="showInlineConfirmation()">
+                + 1 වන Paper එක Tick කරන්න
+              </button>
+              <button type="button" class="btn-up-cancel" onclick="hideUnitPaperModal()">
+                ❌ Cancel
+              </button>
+            </div>
+
+            <div class="up-confirm-card" id="upConfirmCard">
+              <div class="confirm-title">⚠️ කරුණාකර තහවුරු කරන්න:</div>
+              <div class="confirm-details" id="confirmDetailsTxt">
+                විස්තර පූරණය වෙමින් පවතී...
+              </div>
+              <div class="confirm-btns">
+                <button type="button" class="btn-confirm-yes" id="btnConfirmYes" onclick="executeConfirmedUnitPaper()">
+                  ✅ ඔව්, සලකුණු කරන්න
+                </button>
+                <button type="button" class="btn-confirm-no" onclick="cancelInlineConfirmation()">
+                  ❌ අවලංගුයි
+                </button>
+              </div>
+            </div>
+
+            <div class="up-success-box" id="upSuccessCard">
+              <span style="font-size: 14px;">🎉</span> Paper එක සාර්ථකව සටහන් විය! (තත්පර 3කින් වැසෙයි...)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unit Papers Breakdown Modal -->
+    <div class="modal-overlay" id="unitBreakdownModal" onclick="closeUnitBreakdownModal(event)">
+      <div class="modal-window" style="max-width: 380px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #00cec9, #0984e3);">
+          <div class="modal-title">📄 Unit Papers විෂය අනුව විග්‍රහය</div>
+          <button class="modal-close-btn" onclick="hideUnitBreakdownModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 16px;">
+          <div class="breakdown-grid">
+            <div class="breakdown-card ict">
+              <div class="breakdown-subj-lbl ict">📘 ICT</div>
+              <div class="breakdown-val" id="bd_ict_val">0</div>
+              <div style="font-size: 8px; color: #7f8fa6;">Papers</div>
+            </div>
+            <div class="breakdown-card et">
+              <div class="breakdown-subj-lbl et">📙 ET</div>
+              <div class="breakdown-val" id="bd_et_val">0</div>
+              <div style="font-size: 8px; color: #7f8fa6;">Papers</div>
+            </div>
+            <div class="breakdown-card sft">
+              <div class="breakdown-subj-lbl sft">📗 SFT</div>
+              <div class="breakdown-val" id="bd_sft_val">0</div>
+              <div style="font-size: 8px; color: #7f8fa6;">Papers</div>
+            </div>
+          </div>
+
+          <div class="breakdown-total-card breakdown-total-unit">
+            <div style="text-align: left;">
+              <div style="font-size: 11px; font-weight: 700;">මුළු Unit Papers ගණන</div>
+              <div style="font-size: 8.5px; opacity: 0.9;">සියලුම විෂයයන්හි එකතුව</div>
+            </div>
+            <div style="font-size: 22px; font-weight: 700;" id="bd_total_val">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Papers Breakdown Modal -->
+    <div class="modal-overlay" id="fullBreakdownModal" onclick="closeFullBreakdownModal(event)">
+      <div class="modal-window" style="max-width: 380px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #6c5ce7, #8c7ae6);">
+          <div class="modal-title">🎓 Full Papers විෂය අනුව විග්‍රහය</div>
+          <button class="modal-close-btn" onclick="hideFullBreakdownModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 16px;">
+          <div class="breakdown-grid">
+            <div class="breakdown-card ict">
+              <div class="breakdown-subj-lbl ict">📘 ICT</div>
+              <div class="breakdown-val" id="bd_fp_ict_val">0</div>
+              <div style="font-size: 8px; color: #7f8fa6;">Full Papers</div>
+            </div>
+            <div class="breakdown-card et">
+              <div class="breakdown-subj-lbl et">📙 ET</div>
+              <div class="breakdown-val" id="bd_fp_et_val">0</div>
+              <div style="font-size: 8px; color: #7f8fa6;">Full Papers</div>
+            </div>
+            <div class="breakdown-card sft">
+              <div class="breakdown-subj-lbl sft">📗 SFT</div>
+              <div class="breakdown-val" id="bd_fp_sft_val">0</div>
+              <div style="font-size: 8px; color: #7f8fa6;">Full Papers</div>
+            </div>
+          </div>
+
+          <div class="breakdown-total-card breakdown-total-full">
+            <div style="text-align: left;">
+              <div style="font-size: 11px; font-weight: 700;">මුළු Full Papers ගණන</div>
+              <div style="font-size: 8.5px; opacity: 0.9;">සියලුම විෂයයන්හි එකතුව</div>
+            </div>
+            <div style="font-size: 22px; font-weight: 700;" id="bd_fp_total_val">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unit Performance Analytics Modal -->
+    <div class="modal-overlay" id="unitAnalyticsModal" onclick="closeUnitAnalyticsModal(event)">
+      <div class="modal-window" style="max-width: 520px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe);">
+          <div class="modal-title" id="unitAnalyticsTitle">📊 ඒකක ලකුණු හා සාමාන්‍ය විශ්ලේෂණය</div>
+          <button class="modal-close-btn" onclick="hideUnitAnalyticsModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="unit-rolling-grid">
+            <div class="rolling-card">
+              <div class="rolling-lbl">Last 3</div>
+              <div class="rolling-val" id="roll_3">-</div>
+            </div>
+            <div class="rolling-card">
+              <div class="rolling-lbl">Last 5</div>
+              <div class="rolling-val" id="roll_5">-</div>
+            </div>
+            <div class="rolling-card">
+              <div class="rolling-lbl">Last 7</div>
+              <div class="rolling-val" id="roll_7">-</div>
+            </div>
+            <div class="rolling-card">
+              <div class="rolling-lbl">Last 10</div>
+              <div class="rolling-val" id="roll_10">-</div>
+            </div>
+            <div class="rolling-card">
+              <div class="rolling-lbl">Last 25</div>
+              <div class="rolling-val" id="roll_25">-</div>
+            </div>
+            <div class="rolling-card">
+              <div class="rolling-lbl">All-Time</div>
+              <div class="rolling-val" id="roll_all">-</div>
+            </div>
+          </div>
+
+          <div style="font-size: 10px; font-weight: 700; color: #2d3436; margin-bottom: 4px; display: flex; justify-content: space-between;">
+            <span>📈 ඒකකයේ Unit Papers ලකුණු ප්‍රවණතාවය %</span>
+            <span style="font-size: 8.5px; color: #7f8fa6;" id="unitChartZoomLbl">Adaptive Zoom</span>
+          </div>
+          <div style="position: relative; width: 100%; height: 140px;">
+            <canvas id="unitChartCanvas" style="display: none;"></canvas>
+            <div id="noUnitChartMsg" class="chart-empty-msg">මෙම ඒකකය සඳහා තවම ලකුණු සහිත Unit Paper එකක් ලොග් කර නැත 📝</div>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- Embedded Sidebar Modal -->
+ <div class="modal-overlay" id="sidebarModal" onclick="closeSidebarModal(event)">
+ <div class="modal-window" style="max-width: 460px; height: 85vh;" onclick="event.stopPropagation()">
+ <div class="modal-header" style="background: linear-gradient(135deg, #8c7ae6, #6c5ce7);">
+ <div class="modal-title">📚 Syllabus Manager & Sidebar</div>
+ <button class="modal-close-btn" onclick="hideSidebarModal()">✕</button>
+ </div>
+ <div class="modal-body" style="padding: 0; height: 100%; overflow: hidden;">
+ <iframe id="sidebarFrame" src="sidebar.html" style="width: 100%; height: 100%; border: none;"></iframe>
+ </div>
+ </div>
+ </div>
+    <script>
+// --- Supabase Client Configuration ---
+const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
+window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      // 1. Live Countdown
+      const targetExamDate = new Date('2028-08-04T08:30:00+05:30').getTime();
+
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const diff = targetExamDate - now;
+
+        if (diff > 0) {
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+          document.getElementById('d').innerText = days;
+          document.getElementById('h').innerText = String(hours).padStart(2, '0');
+          document.getElementById('m').innerText = String(minutes).padStart(2, '0');
+          document.getElementById('s').innerText = String(seconds).padStart(2, '0');
+        }
+      }
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+
+      // 2. Focus Timer
+      let timerTotalSeconds = 45 * 60;
+      let timerRemaining = 45 * 60;
+      let timerInterval = null;
+      let isTimerRunning = false;
+
+      function updateTimerDisplay() {
+        const mins = Math.floor(timerRemaining / 60);
+        const secs = timerRemaining % 60;
+        document.getElementById('timerDisplay').innerText = 
+          `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      function setTimerMinutes(mins, evt) {
+        if (isTimerRunning) toggleTimer();
+        timerTotalSeconds = mins * 60;
+        timerRemaining = timerTotalSeconds;
+        updateTimerDisplay();
+
+        const btns = document.querySelectorAll('.preset-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        if (evt && evt.target) {
+          evt.target.classList.add('active');
+        }
+      }
+
+      function toggleTimer() {
+        const btn = document.getElementById('timerStartBtn');
+        if (isTimerRunning) {
+          clearInterval(timerInterval);
+          isTimerRunning = false;
+          btn.innerText = "▶️";
+        } else {
+          isTimerRunning = true;
+          btn.innerText = "⏸️";
+          timerInterval = setInterval(() => {
+            if (timerRemaining > 0) {
+              timerRemaining--;
+              updateTimerDisplay();
+            } else {
+              clearInterval(timerInterval);
+              isTimerRunning = false;
+              btn.innerText = "▶️";
+              onTimerFinished();
+            }
+          }, 1000);
+        }
+      }
+
+      function resetTimer() {
+        if (isTimerRunning) toggleTimer();
+        timerRemaining = timerTotalSeconds;
+        updateTimerDisplay();
+      }
+
+      let alarmAudioCtx = null;
+      let alarmLoopInterval = null;
+      let alarmAutoStopTimeout = null;
+
+      function startAlarm() {
+        stopAlarm();
+        try {
+          alarmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+          function playAlarmBeep() {
+            try {
+              const osc = alarmAudioCtx.createOscillator();
+              const gain = alarmAudioCtx.createGain();
+              osc.connect(gain);
+              gain.connect(alarmAudioCtx.destination);
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(880, alarmAudioCtx.currentTime);
+              osc.frequency.setValueAtTime(587.33, alarmAudioCtx.currentTime + 0.2);
+              osc.frequency.setValueAtTime(880, alarmAudioCtx.currentTime + 0.4);
+              gain.gain.setValueAtTime(0.4, alarmAudioCtx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.001, alarmAudioCtx.currentTime + 0.7);
+              osc.start();
+              osc.stop(alarmAudioCtx.currentTime + 0.7);
+            } catch(e) {}
+          }
+
+          playAlarmBeep();
+          alarmLoopInterval = setInterval(playAlarmBeep, 900);
+        } catch(e) {}
+      }
+
+      function stopAlarm() {
+        if (alarmLoopInterval) { clearInterval(alarmLoopInterval); alarmLoopInterval = null; }
+        if (alarmAutoStopTimeout) { clearTimeout(alarmAutoStopTimeout); alarmAutoStopTimeout = null; }
+        if (alarmAudioCtx) {
+          try { alarmAudioCtx.close(); } catch(e) {}
+          alarmAudioCtx = null;
+        }
+      }
+
+      function stopAlarmAndClosePopup() {
+        stopAlarm();
+        const popup = document.getElementById('timerAlarmPopup');
+        if (popup) popup.style.display = 'none';
+      }
+
+      function onTimerFinished() {
+        startAlarm();
+        try {
+          confetti({
+            particleCount: 90,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#00cec9', '#81ecec', '#55efc4', '#fdcb6e']
+          });
+        } catch(e) {}
+
+        const popup = document.getElementById('timerAlarmPopup');
+        if (popup) popup.style.display = 'flex';
+
+        let alarmSecondsLeft = 60;
+        const countdownEl = document.getElementById('alarmCountdownTxt');
+        if (countdownEl) countdownEl.innerText = alarmSecondsLeft + 's';
+
+        const countInterval = setInterval(function() {
+          alarmSecondsLeft--;
+          if (countdownEl) countdownEl.innerText = alarmSecondsLeft + 's';
+          if (alarmSecondsLeft <= 0) clearInterval(countInterval);
+        }, 1000);
+
+        alarmAutoStopTimeout = setTimeout(function() {
+          clearInterval(countInterval);
+          stopAlarmAndClosePopup();
+        }, 60000);
+      }
+
+      // 3. Progress Card Tabs
+      function switchProgressTab(tab) {
+        const btnOverall = document.getElementById('tabBtnOverall');
+        const btnWeekly = document.getElementById('tabBtnWeekly');
+        const viewOverall = document.getElementById('progViewOverall');
+        const viewWeekly = document.getElementById('progViewWeekly');
+
+        if (tab === 'overall') {
+          btnOverall.classList.add('active');
+          btnWeekly.classList.remove('active');
+          viewOverall.style.display = 'block';
+          viewWeekly.style.display = 'none';
+        } else {
+          btnWeekly.classList.add('active');
+          btnOverall.classList.remove('active');
+          viewOverall.style.display = 'none';
+          viewWeekly.style.display = 'block';
+        }
+      }
+
+      // 4. Telemetry State & Handlers
+      const prestigeTiers = [
+        { lvl: 10, name: "Novice", icon: "💻" },
+        { lvl: 20, name: "Explorer", icon: "⚡" },
+        { lvl: 30, name: "Crafter", icon: "🛠️" },
+        { lvl: 40, name: "Analyst", icon: "🔍" },
+        { lvl: 50, name: "Strategist", icon: "⚙️" },
+        { lvl: 60, name: "Sentinel", icon: "🛡️" },
+        { lvl: 70, name: "Scholar", icon: "🚀" },
+        { lvl: 80, name: "Architect", icon: "🧬" },
+        { lvl: 90, name: "Prodigy", icon: "👑" },
+        { lvl: 100, name: "Legend", icon: "🏆" }
+      ];
+
+      function setRingProgress(circleId, pct) {
+        const circle = document.getElementById(circleId);
+        if (!circle) return;
+        const radius = 30;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (pct / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+      }
+
+      let telemetryData = null;
+      let scoreChartInstance = null;
+      let unitChartInstance = null;
+      let currentActiveChartTab = 'ICT';
+      let cachedSyllabusList = [];
+      let currentSearchResults = [];
+      let selectedSubLessonObj = null;
+
+      window.onload = function() {
+ const today = new Date().toISOString().split('T')[0];
+ const fpDate = document.getElementById('fpDate');
+ if (fpDate) fpDate.value = today;
+ refreshTelemetry();
+ setupRealtimeSubscriptions();
+ };
+
+ function setupRealtimeSubscriptions() {
+ supabase
+ .channel('al-tracker-realtime')
+ .on(
+ 'postgres_changes',
+ { event: '*', schema: 'public', table: 'tracker_progress' },
+ () => refreshTelemetry()
+ )
+ .on(
+ 'postgres_changes',
+ { event: '*', schema: 'public', table: 'unit_papers' },
+ () => refreshTelemetry()
+ )
+ .on(
+ 'postgres_changes',
+ { event: '*', schema: 'public', table: 'full_papers' },
+ () => refreshTelemetry()
+ )
+ .on(
+ 'postgres_changes',
+ { event: '*', schema: 'public', table: 'spaced_repetition_log' },
+ () => refreshTelemetry()
+ )
+ .on(
+ 'postgres_changes',
+ { event: '*', schema: 'public', table: 'canonical_syllabus' },
+ () => refreshTelemetry()
+ )
+ .subscribe((status) => {
+ if (status === 'SUBSCRIBED') {
+ console.log('Realtime telemetry active.');
+ }
+ });
+ }
+
+      async function refreshTelemetry() {
+  try {
+    const { data, error } = await supabase.rpc('get_dashboard_telemetry');
+    if (error) throw error;
+    renderData(data);
+  } catch (err) {
+    console.error("Telemetry Error:", err);
+    const radar = document.getElementById('radarList');
+    if (radar) {
+      radar.innerHTML = '<div style="font-size: 10px; color: #d63031; text-align: center; padding: 4px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || '') + '</div>';
+    }
+  }
+}
+
+      function renderData(data) {
+        if (!data) return;
+        telemetryData = data;
+
+        cachedSyllabusList = [];
+        if (data.breakdown) {
+          ['ICT', 'ET', 'SFT'].forEach(function(s) {
+            (data.breakdown[s] || []).forEach(function(u) {
+              (u.subLessons || []).forEach(function(sl) {
+                const codeMatch = sl.title.match(/(\d+\.\d+(\.\d+)?|\d+)/);
+                const codeStr = codeMatch ? codeMatch[1] : sl.title;
+                cachedSyllabusList.push({
+                  subject: s,
+                  unit: u.unitName,
+                  subLesson: sl.title,
+                  code: codeStr,
+                  lessonDone: sl.lessonDone === true,
+                  hwDone: sl.hwDone === true,
+                  papersDone: sl.papersCount || 0,
+                  nextPaperNo: (sl.papersCount || 0) + 1
+                });
+              });
+            });
+          });
+        }
+
+        const streak = data.streak || 0;
+        document.getElementById('streakDaysTxt').innerText = `${streak} Days Streak`;
+        const streakTag = document.getElementById('streakStatusTag');
+        if (data.workedToday) {
+          streakTag.className = "streak-tag done";
+          streakTag.innerText = "අද දින සම්පූර්ණයි ✅";
+        } else {
+          streakTag.className = "streak-tag pending";
+          streakTag.innerText = "අද දින තවම පාඩම් කර නැත ⏳";
+        }
+
+        const unitPapers = data.totalUnitPapersDone || 0;
+        const fullPapers = data.totalFullPapersDone || 0;
+        const totalEffectivePapers = unitPapers + (fullPapers * 5);
+
+        document.getElementById('totalPapersDoneHeader').innerText = `${unitPapers} Unit + ${fullPapers} Full Papers Done`;
+        document.getElementById('unitPapersCount').innerText = unitPapers;
+        document.getElementById('fullPapersCount').innerText = fullPapers;
+
+        const stepSize = 15;
+        const currentLevel = Math.floor(totalEffectivePapers / stepSize) + 1;
+        const papersInCurrentLevel = totalEffectivePapers % stepSize;
+        const remainingToNext = stepSize - papersInCurrentLevel;
+        const levelPct = Math.round((papersInCurrentLevel / stepSize) * 100);
+
+        const tierIndex = Math.min(9, Math.floor((currentLevel - 1) / 10));
+        const currentTier = prestigeTiers[tierIndex];
+        const subLevelInTier = ((currentLevel - 1) % 10) + 1;
+
+        document.getElementById('tierTag').innerText = `Tier ${tierIndex + 1} • ${currentTier.name}`;
+        document.getElementById('currentLevelTitle').innerText = `Level ${currentLevel}: ${currentTier.name} ${subLevelInTier}`;
+        document.getElementById('levelGoalTxt').innerText = `ඊළඟ මට්ටමට (Level ${currentLevel + 1}) තව Papers ${remainingToNext}ක් ඉතිරියි`;
+
+        document.getElementById('levelBar').style.width = levelPct + "%";
+        document.getElementById('levelStepRatio').innerText = `${papersInCurrentLevel} / ${stepSize} Papers`;
+        document.getElementById('levelPct').innerText = `${levelPct}% Completed`;
+
+        const badgeContainer = document.getElementById('badgeRow');
+        badgeContainer.innerHTML = '';
+        let unlockedCount = 0;
+
+        prestigeTiers.forEach(tier => {
+          const isUnlocked = currentLevel >= tier.lvl;
+          if (isUnlocked) unlockedCount++;
+          badgeContainer.innerHTML += `
+            <div class="badge-pill ${isUnlocked ? 'unlocked' : ''}">
+              <div class="badge-icon">${isUnlocked ? tier.icon : '🔒'}</div>
+              <div class="badge-lbl">Lvl ${tier.lvl}</div>
+            </div>
+          `;
+        });
+        document.getElementById('prestigeRatio').innerText = `${unlockedCount} / 10 Badges Unlocked`;
+
+        renderWeeklyQuota(data.weeklyQuota);
+
+        if (data.ict) {
+          document.getElementById('ictPct').innerText = data.ict.pct + "%";
+          document.getElementById('ictDetail').innerText = data.ict.done + " / " + data.ict.total;
+          setRingProgress('ictCircle', data.ict.pct);
+        }
+        if (data.et) {
+          document.getElementById('etPct').innerText = data.et.pct + "%";
+          document.getElementById('etDetail').innerText = data.et.done + " / " + data.et.total;
+          setRingProgress('etCircle', data.et.pct);
+        }
+        if (data.sft) {
+          document.getElementById('sftPct').innerText = data.sft.pct + "%";
+          document.getElementById('sftDetail').innerText = data.sft.done + " / " + data.sft.total;
+          setRingProgress('sftCircle', data.sft.pct);
+        }
+
+        renderVelocityMetrics(data.velocityMetrics);
+        renderMultiTabChart();
+        renderZScoreMetrics(data.zScoreAnalytics);
+
+        const radarDiv = document.getElementById('radarList');
+        if (data.radar && data.radar.length > 0) {
+          radarDiv.innerHTML = '';
+          data.radar.forEach(item => {
+            radarDiv.innerHTML += `
+              <div class="radar-item">
+                <div>
+                  <strong>[${item.subject}]</strong> ${item.subLesson}
+                </div>
+                <div class="radar-tag">දින ${item.colH}ක්</div>
+              </div>
+            `;
+          });
+        } else {
+          radarDiv.innerHTML = '<div style="font-size: 10px; color: #27ae60; text-align: center; padding: 4px;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</div>';
+        }
+
+        const balanceBox = document.getElementById('balanceAlertBox');
+        if (data.balanceAlert) {
+          balanceBox.style.display = 'flex';
+          document.getElementById('balanceAlertTxt').innerText = data.balanceAlert.message;
+        } else {
+          balanceBox.style.display = 'none';
+        }
+
+        // v16: Multi-Cycle Ebbinghaus initialisation
+        initEbbinghausCycles(data);
+      }
+
+      // v16: Global storage for multi-cycle ebbinghaus items and filter state
+      let ebbCycleData = {};
+      let currentEbbCycle = 1;
+      let currentEbbFilter = 0; // 0 = all, 1/3/7/21/45 = stage filter
+      let pendingEbbConfirm = null;
+
+      function initEbbinghausCycles(data) {
+        ebbCycleData = (data && data.ebbCycleData) ? data.ebbCycleData : { 1: (data && data.ebbinghaus) || [], 2: [] };
+        const maxC = (data && data.maxCycle) ? data.maxCycle : Math.max(2, Object.keys(ebbCycleData).length);
+        currentEbbCycle = 1;
+        currentEbbFilter = 0;
+        renderEbbCycleTabs(maxC);
+        renderCurrentCycle();
+      }
+
+      function renderEbbCycleTabs(maxC) {
+        const tabContainer = document.getElementById('ebbCycleTabBar');
+        if (!tabContainer) return;
+        let html = '';
+        for (let c = 1; c <= maxC; c++) {
+          const list = ebbCycleData[c] || [];
+          const count = list.length;
+          const isActive = (c === currentEbbCycle);
+          html += `
+            <button class="ebb-cycle-tab ${isActive ? 'active' : ''}" id="ebbCycleTabBtn_${c}" onclick="switchEbbCycle(${c})" style="
+              padding: 5px 12px;
+              border-radius: 20px;
+              font-size: 10px;
+              font-weight: 700;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              border: 1.5px solid ${isActive ? '#6c5ce7' : '#dfe6e9'};
+              background: ${isActive ? 'linear-gradient(135deg, #6c5ce7, #8c7ae6)' : '#ffffff'};
+              color: ${isActive ? '#ffffff' : '#636e72'};
+              box-shadow: ${isActive ? '0 3px 10px rgba(108,92,231,0.25)' : 'none'};
+            ">
+              <span>🔄 Cycle ${c}</span>
+              <span style="
+                background: ${isActive ? 'rgba(255,255,255,0.3)' : '#edf2f7'};
+                color: ${isActive ? '#ffffff' : '#2d3436'};
+                font-size: 8px;
+                padding: 1px 6px;
+                border-radius: 10px;
+                font-weight: 800;
+              ">${count}</span>
+            </button>
+          `;
+        }
+        tabContainer.innerHTML = html;
+      }
+
+      function switchEbbCycle(c) {
+        currentEbbCycle = c;
+        currentEbbFilter = 0;
+        const maxC = Math.max(2, Object.keys(ebbCycleData).length);
+        renderEbbCycleTabs(maxC);
+        renderCurrentCycle();
+      }
+
+      function renderCurrentCycle() {
+        const descEl = document.getElementById('ebbCycleDesc');
+
+        // Highlight active filter button
+        [0, 1, 3, 7, 21, 45].forEach(function(s) {
+          const btn = document.getElementById('ebbF' + s);
+          if (btn) btn.style.opacity = (s === currentEbbFilter) ? '1' : '0.55';
+        });
+
+        const items = ebbCycleData[currentEbbCycle] || [];
+        const filtered = currentEbbFilter === 0 ? items : items.filter(function(it) {
+          return it.stageBucket === currentEbbFilter;
+        });
+
+        // 🌟 v17: Show only top five in scrollable list
+        const displayItems = filtered.slice(0, 5);
+
+        if (descEl) {
+          const totalCount = filtered.length;
+          const showingTxt = totalCount > 5 ? ` <span style="color:#6c5ce7; font-weight:700;">• Top 5 පෙන්වයි (${totalCount}කින්)</span>` : '';
+          if (currentEbbCycle === 1) {
+            descEl.innerHTML = `<strong>Cycle 1</strong> — ප්‍රථම Spaced Repetition චක්‍රය (HW Date ආරම්භය)${showingTxt}`;
+          } else {
+            descEl.innerHTML = `<strong>Cycle ${currentEbbCycle}</strong> — ${currentEbbCycle} වන Spaced Repetition චක්‍රය${showingTxt}`;
+          }
+        }
+
+        const ebbList = document.getElementById('ebbinghausList');
+        if (!ebbList) return;
+
+        if (displayItems.length > 0) {
+          ebbList.innerHTML = '';
+          displayItems.forEach(function(item, idx) {
+            ebbList.innerHTML += `
+              <div class="ebbinghaus-item" id="ebbItem_${idx}" data-subject="${item.subject}" data-sublesson="${encodeURIComponent(item.subLesson)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}" style="border-left-color: ${item.badgeColor}; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="width:16px; height:16px; cursor:pointer; accent-color:${item.badgeColor}; flex-shrink:0;"
+                  onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
+                <div style="flex:1;">
+                  <strong>[${item.subject}]</strong> ${item.subLesson}
+                  <span style="font-size:8px; color:#8c7ae6; margin-left:4px; font-weight:600;">(Cycle ${currentEbbCycle})</span>
+                </div>
+                <div class="ebbinghaus-tag" style="background-color: ${item.badgeColor}; white-space:nowrap;">
+                  ${item.stageTag}
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          if (items.length === 0) {
+            if (currentEbbCycle === 1) {
+              ebbList.innerHTML = '<div style="font-size: 10px; color: #27ae60; text-align: center; padding: 10px;">නියමයි! Cycle 1 හි නැවත මතක් කළ යුතු පාඩම් කිසිවක් නැත 🌟 (සියලු පාඩම් නියමිත කාල සීමාවලට අනුව රඳවා ඇත)</div>';
+            } else {
+              ebbList.innerHTML = `<div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 10px;">Cycle ${currentEbbCycle} සඳහා තවම පාඩම් සුදුසුකම් ලබා නැත.<br><span style="font-size:9px; color:#a4b0be;">(පෙර Cycle හි දිනය 45+ අවසන් කර දින 45ක් සම්පූර්ණ වූ පසු පාඩම් මෙහි ස්වයංක්‍රීයව දිස්වනු ඇත) ⏳</span></div>`;
+            }
+          } else {
+            ebbList.innerHTML = `<div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 8px;">තෝරාගත් දිනය (${currentEbbFilter === 45 ? '45+' : currentEbbFilter}) සඳහා Cycle ${currentEbbCycle} හි පාඩම් නොමැත.</div>`;
+          }
+        }
+      }
+
+      function filterEbbinghaus(stage) {
+        currentEbbFilter = stage;
+        renderCurrentCycle();
+      }
+
+      // v16: Handle tick box click — show Sinhala confirmation popup with cycle
+      function handleEbbTick(idx, checkbox) {
+        if (!checkbox.checked) return;
+        checkbox.checked = false; // revert — confirm first
+
+        const itemEl = document.getElementById('ebbItem_' + idx);
+        if (!itemEl) return;
+
+        const subject   = itemEl.getAttribute('data-subject') || '';
+        const subLesson = decodeURIComponent(itemEl.getAttribute('data-sublesson') || '');
+        const stage     = parseInt(itemEl.getAttribute('data-stage'), 10) || 1;
+        const cycle     = parseInt(itemEl.getAttribute('data-cycle'), 10) || currentEbbCycle || 1;
+
+        const items = ebbCycleData[cycle] || [];
+        const matched = items.find(function(it) {
+          return it.subject === subject && it.subLesson === subLesson;
+        });
+        const badgeColor = matched ? matched.badgeColor : '#8c7ae6';
+
+        pendingEbbConfirm = {
+          subject: subject,
+          subLesson: subLesson,
+          stage: stage,
+          cycle: cycle,
+          badgeColor: badgeColor
+        };
+
+        const subjNames  = {
+          ICT: 'ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)',
+          ET:  'ET (ඉංජිනේරු තාක්ෂණවේදය)',
+          SFT: 'SFT (තාක්ෂණවේදය සඳහා විද්‍යාව)'
+        };
+        const stageNames = { 1: 'දිනය 1', 3: 'දිනය 3', 7: 'දිනය 7', 21: 'දිනය 21', 45: 'දිනය 45+' };
+
+        const msgEl = document.getElementById('ebbConfirmMsg');
+        if (msgEl) {
+          msgEl.innerHTML = `ඔබ <strong>${subjNames[subject] || subject}</strong> විෂයේ<br><strong>${subLesson}</strong><br>පාඩම <strong>${stageNames[stage] || ('දිනය ' + stage)}</strong> අනුව <strong>(Cycle ${cycle})</strong> ඉගෙන ගත්තාද?<br><br><em style="font-size:10px; color:#636e72;">කරුණාකර තහවුරු කරන්න.</em>`;
+        }
+
+        document.getElementById('ebbConfirmPopup').style.display = 'flex';
+      }
+
+      async function confirmEbbDone() {
+  if (!pendingEbbConfirm) return;
+  const btn = document.getElementById('ebbConfirmOkBtn');
+  if (btn) { btn.disabled = true; btn.innerText = 'සටහන් වෙමින්...'; }
+
+  const c = pendingEbbConfirm.cycle || currentEbbCycle || 1;
+  const s = pendingEbbConfirm.subject;
+  const sl = pendingEbbConfirm.subLesson;
+  const stg = pendingEbbConfirm.stage;
+
+  const codeMatch = sl.match(/^(\d+(\.\d+)?)/);
+  const subCode = codeMatch ? codeMatch[1] : sl.split(' ')[0];
+
+  try {
+    const { data: syl, error: sylErr } = await supabase
+      .from('canonical_syllabus')
+      .select('id, sub_lesson_code')
+      .eq('subject', s)
+      .eq('sub_lesson_code', subCode)
+      .single();
+
+    if (sylErr || !syl) throw (sylErr || new Error('පාඩම හඳුනාගත නොහැකි විය.'));
+
+    const stageLabels = { 1: 'දිනය 1', 3: 'දිනය 3', 7: 'දිනය 7', 21: 'දිනය 21', 45: 'දිනය 45+' };
+
+    const { error: insErr } = await supabase
+      .from('spaced_repetition_log')
+      .insert([
+        {
+          syllabus_id: syl.id,
+          subject: s,
+          sub_lesson_code: syl.sub_lesson_code,
+          day_stage: stg,
+          stage_label: stageLabels[stg] || ('දිනය ' + stg),
+          cycle: c
+        }
+      ]);
+
+    if (insErr) throw insErr;
+
+    document.getElementById('ebbConfirmPopup').style.display = 'none';
+    if (btn) { btn.disabled = false; btn.innerText = 'ඔව්, සම්පූර්ණයි ✅'; }
+
+    if (ebbCycleData[c]) {
+      ebbCycleData[c] = ebbCycleData[c].filter(function(it) {
+        return !(it.subject === s && it.subLesson === sl);
+      });
+    }
+
+    const maxC = Math.max(2, Object.keys(ebbCycleData).length);
+    renderEbbCycleTabs(maxC);
+    renderCurrentCycle();
+
+    try {
+      confetti({ particleCount: 70, spread: 65, origin: { y: 0.7 }, colors: ['#8c7ae6','#55efc4','#fdcb6e','#00cec9'] });
+    } catch(e) {}
+
+    pendingEbbConfirm = null;
+    await refreshTelemetry();
+  } catch (err) {
+    document.getElementById('ebbConfirmPopup').style.display = 'none';
+    if (btn) { btn.disabled = false; btn.innerText = 'ඔව්, සම්පූර්ණයි ✅'; }
+    showHtmlAlert('දෝෂයකි: ' + (err.message || 'සටහන් කිරීම අසාර්ථක විය'), true);
+    pendingEbbConfirm = null;
+  }
+}
+
+      function cancelEbbConfirm() {
+        document.getElementById('ebbConfirmPopup').style.display = 'none';
+        pendingEbbConfirm = null;
+      }
+
+
+
+      function renderWeeklyQuota(q) {
+        if (!q) return;
+        const act = q.actual || {};
+        const tgt = q.targets || {};
+        const pct = q.percentages || {};
+
+        document.getElementById('quotaWeekStart').innerText = `Sprint: ${q.startOfWeekDate || 'This Week'}`;
+        document.getElementById('quotaOverallScore').innerText = `${pct.overall || 0}%`;
+
+        const tag = document.getElementById('quotaMomentumTag');
+        if (pct.overall >= 75) {
+          tag.innerText = "On Fire! 🔥";
+        } else if (pct.overall >= 40) {
+          tag.innerText = "Good Pace ⚡";
+        } else {
+          tag.innerText = "In Progress ⏳";
+        }
+
+        document.getElementById('q_unit_txt').innerText = `${act.unitPapers || 0} / ${tgt.unitPapers || 10}`;
+        document.getElementById('q_unit_bar').style.width = `${pct.unit || 0}%`;
+
+        document.getElementById('q_full_txt').innerText = `${act.fullPapers || 0} / ${tgt.fullPapers || 1}`;
+        document.getElementById('q_full_bar').style.width = `${pct.full || 0}%`;
+
+        document.getElementById('q_lesson_txt').innerText = `${act.lessons || 0} / ${tgt.lessons || 3}`;
+        document.getElementById('q_lesson_bar').style.width = `${pct.lesson || 0}%`;
+      }
+
+      function renderVelocityMetrics(v) {
+        if (!v) return;
+        document.getElementById('veloWeeksLeft').innerText = `${v.weeksToExam} Weeks to A/L 2028`;
+        document.getElementById('veloTotalRem').innerText = v.totalRemaining;
+        document.getElementById('veloReqRate').innerText = `${v.overallRequiredWeekly} /wk`;
+        document.getElementById('veloCurRate').innerText = `${v.overallCurrentWeekly} /wk`;
+
+        const subs = v.subjects || {};
+        ['ICT', 'ET', 'SFT'].forEach(s => {
+          const low = s.toLowerCase();
+          const info = subs[s];
+          if (info) {
+            document.getElementById(`v_${low}_rem`).innerText = info.remaining;
+            document.getElementById(`v_${low}_rate`).innerText = info.currentWeeklyVelocity;
+            document.getElementById(`v_${low}_req`).innerText = info.requiredWeeklyVelocity;
+
+            const badge = document.getElementById(`v_${low}_badge`);
+            badge.innerText = info.projectedDate;
+            if (info.isAheadOfSchedule) {
+              badge.className = "velocity-date-badge safe";
+              badge.innerText = `🎯 ${info.projectedDate}`;
+            } else {
+              badge.className = "velocity-date-badge alert";
+              badge.innerText = `⚡ ${info.projectedDate}`;
+            }
+          }
+        });
+      }
+
+      function openUnitBreakdownModal() {
+        if (!telemetryData) return;
+        const bd = telemetryData.unitBreakdown || {
+          ict: (telemetryData.ict ? telemetryData.ict.papers : 0),
+          et: (telemetryData.et ? telemetryData.et.papers : 0),
+          sft: (telemetryData.sft ? telemetryData.sft.papers : 0),
+          total: telemetryData.totalUnitPapersDone || 0
+        };
+
+        document.getElementById('bd_ict_val').innerText = bd.ict || 0;
+        document.getElementById('bd_et_val').innerText = bd.et || 0;
+        document.getElementById('bd_sft_val').innerText = bd.sft || 0;
+        document.getElementById('bd_total_val').innerText = bd.total || telemetryData.totalUnitPapersDone || 0;
+
+        document.getElementById('unitBreakdownModal').style.display = 'flex';
+      }
+      function hideUnitBreakdownModal() { document.getElementById('unitBreakdownModal').style.display = 'none'; }
+      function closeUnitBreakdownModal(event) { if (event.target.id === 'unitBreakdownModal') hideUnitBreakdownModal(); }
+
+      function openFullBreakdownModal() {
+        if (!telemetryData) return;
+        const fpList = telemetryData.fullPapersHistory || [];
+
+        const ictCount = fpList.filter(p => p.subject === 'ICT').length;
+        const etCount = fpList.filter(p => p.subject === 'ET').length;
+        const sftCount = fpList.filter(p => p.subject === 'SFT').length;
+        const totalCount = telemetryData.totalFullPapersDone || fpList.length;
+
+        document.getElementById('bd_fp_ict_val').innerText = ictCount;
+        document.getElementById('bd_fp_et_val').innerText = etCount;
+        document.getElementById('bd_fp_sft_val').innerText = sftCount;
+        document.getElementById('bd_fp_total_val').innerText = totalCount;
+
+        document.getElementById('fullBreakdownModal').style.display = 'flex';
+      }
+      function hideFullBreakdownModal() { document.getElementById('fullBreakdownModal').style.display = 'none'; }
+      function closeFullBreakdownModal(event) { if (event.target.id === 'fullBreakdownModal') hideFullBreakdownModal(); }
+
+      function switchChartTab(tab) {
+        currentActiveChartTab = tab;
+        const btns = document.querySelectorAll('.chart-tab-btn');
+        const tabOrder = ['ICT', 'ET', 'SFT', 'All', 'Z-score'];
+        btns.forEach((b, idx) => {
+          if (tabOrder[idx] === tab) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        renderMultiTabChart();
+        if (telemetryData && telemetryData.zScoreAnalytics) {
+          renderZScoreMetrics(telemetryData.zScoreAnalytics);
+        }
+      }
+
+      function renderMultiTabChart() {
+        if (!telemetryData) return;
+        const canvas = document.getElementById('scoreChart');
+        const emptyMsg = document.getElementById('noChartMsg');
+        const heading = document.getElementById('chartCardHeading');
+        const zoomIndicator = document.getElementById('chartZoomIndicator');
+
+        const history = (telemetryData.fullPapersHistory || []).filter(h => h.marks !== null && !isNaN(h.marks));
+        const zMetrics = telemetryData.zScoreAnalytics || { byCount: {}, byTime: {}, trend: [] };
+
+        if (currentActiveChartTab === 'Z-score') {
+          heading.innerText = "📈 Composite Z-Score Trend (විෂය ත්‍රිත්ව සම්මත අගය)";
+          const trend = zMetrics.trend || [];
+
+          if (trend.length === 0) {
+            canvas.style.display = 'none';
+            emptyMsg.style.display = 'flex';
+            emptyMsg.innerText = "Z-Score ප්‍රස්ථාරය සඳහා විෂයයන් 3න්ම (ICT, ET, SFT) අවම වශයෙන් එක් Paper එක බැගින්වත් සම්පූර්ණ කළ යුතුය 📝";
+            return;
+          }
+
+          canvas.style.display = 'block';
+          emptyMsg.style.display = 'none';
+
+          const labels = trend.map(t => t.label);
+          const zScores = trend.map(t => t.zScore);
+          const minZ = Math.min(...zScores);
+          const maxZ = Math.max(...zScores);
+
+          const yMin = Number((minZ - 0.25).toFixed(2));
+          const yMax = Number((maxZ + 0.25).toFixed(2));
+          zoomIndicator.innerText = `Range: ${yMin} ~ ${yMax}`;
+
+          if (scoreChartInstance) scoreChartInstance.destroy();
+          const ctx = canvas.getContext('2d');
+          scoreChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Composite Z-Score',
+                data: zScores,
+                borderColor: '#6c5ce7',
+                backgroundColor: 'rgba(108, 92, 231, 0.1)',
+                borderWidth: 2.5,
+                pointRadius: 4.5,
+                pointBackgroundColor: '#6c5ce7',
+                tension: 0.3
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function(ctx) { return ` Z-Score: ${ctx.parsed.y > 0 ? '+' : ''}${ctx.parsed.y.toFixed(3)}`; }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  min: yMin,
+                  max: yMax,
+                  ticks: {
+                    font: { size: 9 },
+                    callback: function(val) { return (val > 0 ? '+' : '') + Number(val).toFixed(2); }
+                  },
+                  grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                },
+                x: {
+                  ticks: { font: { size: 9 } },
+                  grid: { display: false }
+                }
+              }
+            }
+          });
+          return;
+        }
+
+        heading.innerText = `📈 Full Paper Score Progression (${currentActiveChartTab} %)`;
+
+        let relevantEntries = [];
+        if (currentActiveChartTab === 'All') {
+          relevantEntries = history;
+        } else {
+          relevantEntries = history.filter(e => e.subject === currentActiveChartTab);
+        }
+
+        if (relevantEntries.length === 0) {
+          canvas.style.display = 'none';
+          emptyMsg.style.display = 'flex';
+          emptyMsg.innerText = `${currentActiveChartTab} සඳහා තවම ලකුණු සහිත Full Paper එකක් සටහන් කර නොමැත 📝`;
+          return;
+        }
+
+        canvas.style.display = 'block';
+        emptyMsg.style.display = 'none';
+
+        const marksPool = relevantEntries.map(e => e.marks);
+        const minMark = Math.min(...marksPool);
+        const dynamicYMin = Math.max(0, Math.floor(minMark - 10));
+        zoomIndicator.innerText = `Zoomed: ${dynamicYMin}% ~ 100%`;
+
+        let chartData = null;
+
+        if (currentActiveChartTab === 'All') {
+          const labels = history.map((e, idx) => `P${idx + 1} (${e.date})`);
+          const ictData = history.map(e => e.subject === 'ICT' ? e.marks : null);
+          const etData = history.map(e => e.subject === 'ET' ? e.marks : null);
+          const sftData = history.map(e => e.subject === 'SFT' ? e.marks : null);
+
+          chartData = {
+            labels: labels,
+            datasets: [
+              { label: 'ICT', data: ictData, borderColor: '#4a90e2', borderWidth: 2, pointRadius: 4, tension: 0.25, spanGaps: true },
+              { label: 'ET', data: etData, borderColor: '#e67e22', borderWidth: 2, pointRadius: 4, tension: 0.25, spanGaps: true },
+              { label: 'SFT', data: sftData, borderColor: '#27ae60', borderWidth: 2, pointRadius: 4, tension: 0.25, spanGaps: true }
+            ]
+          };
+        } else {
+          const labels = relevantEntries.map((e, idx) => `P${idx + 1} (${e.date})`);
+          const datasetColor = currentActiveChartTab === 'ICT' ? '#4a90e2' : (currentActiveChartTab === 'ET' ? '#e67e22' : '#27ae60');
+
+          chartData = {
+            labels: labels,
+            datasets: [{
+              label: currentActiveChartTab,
+              data: relevantEntries.map(e => e.marks),
+              borderColor: datasetColor,
+              backgroundColor: datasetColor + '1a',
+              borderWidth: 2.5,
+              pointRadius: 4.5,
+              pointBackgroundColor: datasetColor,
+              tension: 0.25
+            }]
+          };
+        }
+
+        if (scoreChartInstance) scoreChartInstance.destroy();
+        const ctx = canvas.getContext('2d');
+        scoreChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: currentActiveChartTab === 'All',
+                position: 'top',
+                labels: { boxWidth: 10, font: { size: 9.5, family: 'Poppins' } }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(c) { return ` ${c.dataset.label}: ${c.parsed.y}%`; }
+                }
+              }
+            },
+            scales: {
+              y: {
+                min: dynamicYMin,
+                max: 100,
+                ticks: {
+                  font: { size: 9 },
+                  callback: function(val) { return val + '%'; }
+                },
+                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+              },
+              x: {
+                ticks: { font: { size: 8.5 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      function renderZScoreMetrics(zAnalytics) {
+        if (!zAnalytics) return;
+        const byTime = zAnalytics.byTime || {};
+        const byCount = zAnalytics.byCount || {};
+        const trend = zAnalytics.trend || [];
+
+        function formatZ(val, elemId) {
+          const el = document.getElementById(elemId);
+          if (!el) return;
+          if (val === null || val === undefined || isNaN(val)) {
+            el.className = "zscore-pill-val empty";
+            el.innerText = "-";
+          } else {
+            el.className = "zscore-pill-val";
+            el.innerText = (val > 0 ? "+" : "") + Number(val).toFixed(3);
+          }
+        }
+
+        formatZ(byTime["7d"], "z_time_7d");
+        formatZ(byTime["14d"], "z_time_14d");
+        formatZ(byTime["1m"], "z_time_1m");
+        formatZ(byTime["3m"], "z_time_3m");
+
+        const getCountVal = (n) => {
+          if (byCount[n] !== undefined && byCount[n] !== null) return byCount[n];
+          if (byCount["" + n] !== undefined && byCount["" + n] !== null) return byCount["" + n];
+          if (trend.length >= n) {
+            const slice = trend.slice(-n);
+            return slice.reduce((sum, item) => sum + item.zScore, 0) / n;
+          }
+          return null;
+        };
+
+        formatZ(getCountVal(3), "z_cnt_3");
+        formatZ(getCountVal(7), "z_cnt_7");
+        formatZ(getCountVal(10), "z_cnt_10");
+        formatZ(getCountVal(20), "z_cnt_20");
+        formatZ(getCountVal(50), "z_cnt_50");
+      }
+function openSidebarModal() {
+ const frame = document.getElementById('sidebarFrame');
+ if (frame) frame.src = 'sidebar.html?v=' + Date.now();
+ document.getElementById('sidebarModal').style.display = 'flex';
+ }
+ function hideSidebarModal() {
+ document.getElementById('sidebarModal').style.display = 'none';
+ }
+ function closeSidebarModal(event) {
+ if (event.target.id === 'sidebarModal') hideSidebarModal();
+ }
+      // 9. Log Full Paper Form
+      function openFullPaperModal() { document.getElementById('fullPaperModal').style.display = 'flex'; }
+      function hideFullPaperModal() { document.getElementById('fullPaperModal').style.display = 'none'; }
+      function closeFullPaperModal(event) { if (event.target.id === 'fullPaperModal') hideFullPaperModal(); }
+
+      async function submitFullPaper(e) {
+  e.preventDefault();
+  const btn = document.getElementById('fpSubmitBtn');
+  btn.innerText = "සුරැකෙමින් පවතී...";
+  btn.disabled = true;
+
+  const subject = document.getElementById('fpSubject').value;
+  const dateStr = document.getElementById('fpDate').value;
+  const marksVal = document.getElementById('fpMarks').value;
+  const timeTaken = document.getElementById('fpTime').value.trim();
+  const remarks = document.getElementById('fpRemarks').value.trim();
+
+  const numericMarks = marksVal !== '' && !isNaN(marksVal) ? parseFloat(marksVal) : null;
+
+  try {
+    const { error } = await supabase
+      .from('full_papers')
+      .insert([
+        {
+          subject: subject,
+          exam_date: dateStr,
+          marks: numericMarks,
+          time_taken: timeTaken || null,
+          remarks: remarks || null
+        }
+      ]);
+
+    if (error) throw error;
+
+    btn.innerText = "💾 Save Full Paper";
+    btn.disabled = false;
+    hideFullPaperModal();
+    document.getElementById('fpMarks').value = '';
+    document.getElementById('fpTime').value = '';
+    document.getElementById('fpRemarks').value = '';
+
+    try {
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#6c5ce7', '#8c7ae6', '#55efc4', '#f8a5c2']
+      });
+    } catch(err) {}
+
+    await refreshTelemetry();
+  } catch (err) {
+    btn.innerText = "💾 Save Full Paper";
+    btn.disabled = false;
+    showHtmlAlert("දෝෂයකි: " + (err.message || "සම්බන්ධතාව අසාර්ථක විය"), true);
+  }
+}
+      // 10. Drilldown Tree Modal
+      function openDrilldownModal(subject) {
+        if (!telemetryData || !telemetryData.breakdown || !telemetryData.breakdown[subject]) return;
+
+        const modal = document.getElementById('drillModal');
+        const title = document.getElementById('modalTitle');
+        const body = document.getElementById('modalBody');
+        const header = document.getElementById('modalHeader');
+
+        const ictPct = (telemetryData.ict && telemetryData.ict.pct !== undefined) ? telemetryData.ict.pct : 0;
+        const etPct = (telemetryData.et && telemetryData.et.pct !== undefined) ? telemetryData.et.pct : 0;
+        const sftPct = (telemetryData.sft && telemetryData.sft.pct !== undefined) ? telemetryData.sft.pct : 0;
+
+        if (subject === 'ICT') {
+          header.style.background = "linear-gradient(135deg, #4a90e2, #00cec9)";
+          title.innerHTML = `📘 ICT - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${ictPct}%)`;
+        } else if (subject === 'ET') {
+          header.style.background = "linear-gradient(135deg, #e67e22, #fdcb6e)";
+          title.innerHTML = `📙 ET - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${etPct}%)`;
+        } else {
+          header.style.background = "linear-gradient(135deg, #27ae60, #55efc4)";
+          title.innerHTML = `📗 SFT - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${sftPct}%)`;
+        }
+
+        const units = telemetryData.breakdown[subject];
+        let html = '';
+
+        units.forEach((u, idx) => {
+          const safeUnitName = encodeURIComponent(u.unitName);
+          html += `
+            <div class="unit-item">
+              <div class="unit-head" onclick="toggleUnit(${idx})">
+                <div class="unit-name-box">${u.unitName}</div>
+                <div class="unit-stat-box">
+                  <button class="btn-unit-analytics" onclick="event.stopPropagation(); openUnitAnalytics('${subject}', decodeURIComponent('${safeUnitName}'))">📊 Analytics</button>
+                  <div class="unit-bar-bg">
+                    <div class="unit-bar-fill" style="width: ${u.unitPct}%;"></div>
+                  </div>
+                  <div class="unit-pct-txt">${u.unitPct}%</div>
+                  <span style="font-size: 10px; color: #a4b0be;" id="arrow-${idx}">▼</span>
+                </div>
+              </div>
+              <div class="sub-list" id="sublist-${idx}">
+          `;
+
+          u.subLessons.forEach(sl => {
+            html += `
+              <div class="sub-item">
+                <div class="sub-title-txt">${sl.title}</div>
+                <div class="badge-group">
+                  <span class="state-badge ${sl.lessonDone ? 'done-lesson' : ''}">📘 Lesson</span>
+                  <span class="state-badge ${sl.hwDone ? 'done-hw' : ''}">📝 HW</span>
+                  <span class="state-badge ${sl.papersCount > 0 ? 'done-paper' : ''}">📄 Papers: ${sl.papersCount}</span>
+                </div>
+              </div>
+            `;
+          });
+
+          html += `
+              </div>
+            </div>
+          `;
+        });
+
+        body.innerHTML = html;
+        modal.style.display = 'flex';
+      }
+
+      function toggleUnit(idx) {
+        const list = document.getElementById(`sublist-${idx}`);
+        const arrow = document.getElementById(`arrow-${idx}`);
+        if (list.style.display === 'block') {
+          list.style.display = 'none';
+          arrow.innerText = '▼';
+        } else {
+          list.style.display = 'block';
+          arrow.innerText = '▲';
+        }
+      }
+
+      function hideDrillModal() { document.getElementById('drillModal').style.display = 'none'; }
+      function closeDrilldownModal(event) { if (event.target.id === 'drillModal') hideDrillModal(); }
+
+      // 11. Instant Search & Unit Paper Logging
+      function openUnitPaperModal() {
+        document.getElementById('unitPaperModal').style.display = 'flex';
+        document.getElementById('upSearchInput').value = '';
+        document.getElementById('upSuggestionsBox').style.display = 'none';
+        document.getElementById('upSelectedCard').style.display = 'none';
+        document.getElementById('upMarksInput').value = '';
+        document.getElementById('upMarksInput').style.borderColor = '#dfe6e9';
+        if (document.getElementById('upMarksError')) {
+          document.getElementById('upMarksError').style.display = 'none';
+        }
+        document.getElementById('upConfirmCard').style.display = 'none';
+        document.getElementById('upSuccessCard').style.display = 'none';
+        document.getElementById('btnSubmitUnitPaper').disabled = false;
+        document.getElementById('btnConfirmYes').disabled = false;
+        document.getElementById('upPrimaryActionRow').style.display = 'grid';
+      }
+
+      function hideUnitPaperModal() { document.getElementById('unitPaperModal').style.display = 'none'; }
+      function closeUnitPaperModal(event) { if (event.target.id === 'unitPaperModal') hideUnitPaperModal(); }
+
+      function handleUnitPaperSearch() {
+        const query = (document.getElementById('upSearchInput').value || '').trim().toLowerCase();
+        const filterSubj = document.getElementById('upSubjectFilter').value;
+        const box = document.getElementById('upSuggestionsBox');
+
+        if (!query || query.length < 1) {
+          box.style.display = 'none';
+          currentSearchResults = [];
+          return;
+        }
+
+        const sourceList = (cachedSyllabusList && cachedSyllabusList.length > 0) ? cachedSyllabusList : [];
+
+        currentSearchResults = sourceList.filter(function(item) {
+          if (!item) return false;
+          const matchSubj = (filterSubj === 'ALL' || item.subject === filterSubj);
+          const itemCode = String(item.code || '').toLowerCase();
+          const itemSub = String(item.subLesson || '').toLowerCase();
+          const itemUnit = String(item.unit || '').toLowerCase();
+          const matchText = itemCode.includes(query) || itemSub.includes(query) || itemUnit.includes(query);
+          return matchSubj && matchText;
+        });
+
+        if (currentSearchResults.length === 0) {
+          box.innerHTML = '<div style="font-size: 10px; color: #a4b0be; padding: 6px 10px;">ගැළපෙන උප-පාඩම් හමු නොවීය</div>';
+          box.style.display = 'block';
+          return;
+        }
+
+        let html = '';
+        currentSearchResults.slice(0, 10).forEach(function(item, index) {
+          html += '<div style="padding: 7px 10px; border-bottom: 1px dashed #edf2f7; cursor: pointer; font-size: 10.5px;" onclick="selectSubLessonByIndex(' + index + ')">' +
+                  '<strong>[' + item.subject + '] ' + item.code + '</strong> - ' + item.subLesson +
+                  '</div>';
+        });
+
+        box.innerHTML = html;
+        box.style.display = 'block';
+      }
+
+      function selectSubLessonByIndex(index) {
+        const selected = currentSearchResults[index];
+        if (!selected) return;
+
+        document.getElementById('upSuggestionsBox').style.display = 'none';
+        document.getElementById('upConfirmCard').style.display = 'none';
+        document.getElementById('upSuccessCard').style.display = 'none';
+        document.getElementById('btnSubmitUnitPaper').disabled = false;
+        document.getElementById('btnConfirmYes').disabled = false;
+        document.getElementById('upPrimaryActionRow').style.display = 'grid';
+
+        selectedSubLessonObj = {
+          subject: selected.subject,
+          unit: selected.unit,
+          subLesson: selected.subLesson,
+          code: selected.code,
+          lessonDone: selected.lessonDone,
+          hwDone: selected.hwDone,
+          papersDone: selected.papersDone,
+          nextPaperNo: selected.nextPaperNo
+        };
+
+        document.getElementById('upSelectedCard').style.display = 'block';
+        document.getElementById('upBadgeSubject').innerText = selected.subject;
+        document.getElementById('upBadgeUnit').innerText = selected.unit;
+        document.getElementById('upSelectedTitle').innerText = selected.code + ' - ' + selected.subLesson;
+
+        updateLessonHwButtonUI(selected.lessonDone, selected.hwDone);
+        updatePaperPromptUI(selected.papersDone, selected.nextPaperNo);
+      }
+
+      function updateLessonHwButtonUI(lessonDone, hwDone) {
+        const btnL = document.getElementById('btnToggleLesson');
+        const btnH = document.getElementById('btnToggleHW');
+        const lblL = document.getElementById('lblLessonState');
+        const lblH = document.getElementById('lblHwState');
+
+        // Always reset confirmation boxes when UI refreshes
+        document.getElementById('lessonConfirmBox').style.display = 'none';
+        document.getElementById('hwConfirmBox').style.display = 'none';
+
+        if (lessonDone) {
+          btnL.className = "toggle-btn done";
+          lblL.innerText = "Completed ✅";
+        } else {
+          btnL.className = "toggle-btn pending";
+          lblL.innerText = "Pending ⏳";
+        }
+
+        if (hwDone) {
+          btnH.className = "toggle-btn done";
+          lblH.innerText = "Completed ✅";
+        } else {
+          btnH.className = "toggle-btn pending";
+          lblH.innerText = "Pending ⏳";
+        }
+      }
+
+      function updatePaperPromptUI(papersDone, nextPaperNo) {
+        document.getElementById('upPromptMsg').innerText = 
+          `ඔබ මෙම උප-පාඩම සඳහා දැනට Unit Papers ${papersDone}ක් අවසන් කර ඇත. ${nextPaperNo} වන Paper එක සලකුණු (Tick) කරන්නද?`;
+        document.getElementById('btnSubmitUnitPaper').innerText = `+ ${nextPaperNo} වන Paper එක Tick කරන්න`;
+      }
+
+      function askLessonConfirm() {
+        if (!selectedSubLessonObj) return;
+        // Hide HW confirm box if open, show Lesson confirm box
+        document.getElementById('hwConfirmBox').style.display = 'none';
+        document.getElementById('lessonConfirmBox').style.display = 'block';
+      }
+
+      function askHwConfirm() {
+        if (!selectedSubLessonObj) return;
+        // Hide Lesson confirm box if open, show HW confirm box
+        document.getElementById('lessonConfirmBox').style.display = 'none';
+        document.getElementById('hwConfirmBox').style.display = 'block';
+      }
+
+      function cancelToggleConfirm(which) {
+        if (which === 'lesson') {
+          document.getElementById('lessonConfirmBox').style.display = 'none';
+        } else {
+          document.getElementById('hwConfirmBox').style.display = 'none';
+        }
+      }
+
+      function confirmToggle(type) {
+        // Hide confirmation boxes
+        document.getElementById('lessonConfirmBox').style.display = 'none';
+        document.getElementById('hwConfirmBox').style.display = 'none';
+        // Now actually run the toggle
+        triggerToggleHwLesson(type);
+      }
+
+      async function triggerToggleHwLesson(type) {
+        if (!selectedSubLessonObj) return;
+
+        try {
+          const { data: syl, error: sylErr } = await supabase
+            .from('canonical_syllabus')
+            .select('id')
+            .eq('subject', selectedSubLessonObj.subject)
+            .eq('sub_lesson_code', selectedSubLessonObj.code)
+            .single();
+
+          if (sylErr || !syl) throw (sylErr || new Error('පාඩම හඳුනාගත නොහැකි විය.'));
+
+          const nowIso = new Date().toISOString();
+          let updatePayload = { updated_at: nowIso };
+
+          if (type === 'LESSON') {
+            const newVal = !selectedSubLessonObj.lessonDone;
+            updatePayload.lesson_done = newVal;
+            updatePayload.lesson_done_at = newVal ? nowIso : null;
+            updatePayload.lesson_days = 0;
+          } else if (type === 'HW') {
+            const newVal = !selectedSubLessonObj.hwDone;
+            updatePayload.hw_done = newVal;
+            updatePayload.hw_done_at = newVal ? nowIso : null;
+            updatePayload.hw_days = 0;
+          }
+
+          const { data: updated, error: updErr } = await supabase
+            .from('tracker_progress')
+            .update(updatePayload)
+            .eq('syllabus_id', syl.id)
+            .select()
+            .single();
+
+          if (updErr) throw updErr;
+
+          if (type === 'LESSON') selectedSubLessonObj.lessonDone = updated.lesson_done;
+          if (type === 'HW') selectedSubLessonObj.hwDone = updated.hw_done;
+
+          updateLessonHwButtonUI(selectedSubLessonObj.lessonDone, selectedSubLessonObj.hwDone);
+          await refreshTelemetry();
+        } catch (err) {
+          showHtmlAlert("දෝෂයකි: " + (err.message || "යාවත්කාලීන කිරීම අසාර්ථක විය"), true);
+        }
+      }
+
+      function checkMarksGate() {
+        if (!selectedSubLessonObj) return true; // no item selected, allow normal flow
+        if (!selectedSubLessonObj.lessonDone || !selectedSubLessonObj.hwDone) {
+          document.getElementById('marksGatePopup').style.display = 'flex';
+          return false;
+        }
+        return true;
+      }
+
+      function showInlineConfirmation() {
+        if (!selectedSubLessonObj) return;
+
+        // Gate check: both Lesson AND HW must be done
+        if (!checkMarksGate()) return;
+
+        const marksInputElem = document.getElementById('upMarksInput');
+        const errorElem = document.getElementById('upMarksError');
+        const marksVal = marksInputElem.value.trim();
+
+        if (marksVal === '' || isNaN(marksVal) || Number(marksVal) < 0 || Number(marksVal) > 100) {
+          marksInputElem.style.borderColor = '#d63031';
+          if (errorElem) errorElem.style.display = 'block';
+          marksInputElem.focus();
+          return;
+        }
+
+        marksInputElem.style.borderColor = '#dfe6e9';
+        if (errorElem) errorElem.style.display = 'none';
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const marksTxt = `${Number(marksVal)}%`;
+
+        const detailsHtml = `
+          <strong>විෂය:</strong> ${selectedSubLessonObj.subject}<br>
+          <strong>ඒකකය:</strong> ${selectedSubLessonObj.unit}<br>
+          <strong>උප-පාඩම:</strong> [${selectedSubLessonObj.code}] ${selectedSubLessonObj.subLesson}<br>
+          <strong>ප්‍රශ්න පත්‍රය:</strong> Paper ${selectedSubLessonObj.nextPaperNo}<br>
+          <strong>දිනය:</strong> ${todayStr} • <strong>ලකුණු:</strong> ${marksTxt}
+        `;
+
+        document.getElementById('confirmDetailsTxt').innerHTML = detailsHtml;
+        document.getElementById('upConfirmCard').style.display = 'block';
+        document.getElementById('btnSubmitUnitPaper').disabled = true;
+      }
+
+      function cancelInlineConfirmation() {
+        document.getElementById('upConfirmCard').style.display = 'none';
+        document.getElementById('btnSubmitUnitPaper').disabled = false;
+      }
+
+      async function executeConfirmedUnitPaper() {
+  if (!selectedSubLessonObj) return;
+
+  const btnYes = document.getElementById('btnConfirmYes');
+  btnYes.disabled = true;
+  btnYes.innerText = "සටහන් වෙමින් පවතී...";
+
+  const marksVal = document.getElementById('upMarksInput').value;
+  const numericMarks = parseFloat(marksVal);
+
+  try {
+    const { data: syl, error: sylErr } = await supabase
+      .from('canonical_syllabus')
+      .select('id')
+      .eq('subject', selectedSubLessonObj.subject)
+      .eq('sub_lesson_code', selectedSubLessonObj.code)
+      .single();
+
+    if (sylErr || !syl) throw (sylErr || new Error('පාඩම හඳුනාගත නොහැකි විය.'));
+
+    const { count: existingCount, error: cntErr } = await supabase
+      .from('unit_papers')
+      .select('*', { count: 'exact', head: true })
+      .eq('syllabus_id', syl.id);
+
+    if (cntErr) throw cntErr;
+
+    const nextPaperNo = (existingCount || 0) + 1;
+
+    const { error: insErr } = await supabase
+      .from('unit_papers')
+      .insert([
+        {
+          syllabus_id: syl.id,
+          subject: selectedSubLessonObj.subject,
+          sub_lesson_code: selectedSubLessonObj.code,
+          paper_no: nextPaperNo,
+          marks: numericMarks
+        }
+      ]);
+
+    if (insErr) throw insErr;
+
+    await supabase
+      .from('tracker_progress')
+      .update({ paper_days: 0, updated_at: new Date().toISOString() })
+      .eq('syllabus_id', syl.id);
+
+    document.getElementById('upConfirmCard').style.display = 'none';
+    document.getElementById('upPrimaryActionRow').style.display = 'none';
+
+    const successBox = document.getElementById('upSuccessCard');
+    successBox.innerHTML = `<span>🎉</span> [${selectedSubLessonObj.subject}] Paper ${nextPaperNo} සාර්ථකව සටහන් විය! (තත්පර 3කින් වැසෙයි...)`;
+    successBox.style.display = 'block';
+
+    try {
+      confetti({
+        particleCount: 90,
+        spread: 75,
+        origin: { y: 0.6 },
+        colors: ['#00cec9', '#0984e3', '#55efc4', '#fdcb6e']
+      });
+    } catch(e) {}
+
+    await refreshTelemetry();
+
+    setTimeout(function() {
+      hideUnitPaperModal();
+    }, 3000);
+  } catch (err) {
+    btnYes.disabled = false;
+    btnYes.innerText = "✅ ඔව්, සලකුණු කරන්න";
+    showHtmlAlert("දෝෂයකි: " + (err.message || "ක්‍රියාවලිය අසාර්ථක විය"), true);
+  }
+}
+
+      // 12. Unit Performance Analytics Modal
+      async function openUnitAnalytics(subject, unitName) {
+  document.getElementById('unitAnalyticsTitle').innerText = `📊 [${subject}] ${unitName}`;
+  document.getElementById('unitAnalyticsModal').style.display = 'flex';
+
+  try {
+    const { data, error } = await supabase
+      .from('unit_papers')
+      .select('sub_lesson_code, paper_no, marks, canonical_syllabus!inner(unit_name)')
+      .eq('subject', subject)
+      .eq('canonical_syllabus.unit_name', unitName)
+      .order('logged_at', { ascending: true });
+
+    if (error) throw error;
+
+    const history = (data || []).map(row => ({
+      code: row.sub_lesson_code,
+      paperNo: row.paper_no,
+      marks: row.marks !== null ? Number(row.marks) : null
+    }));
+
+    const validMarks = history.map(h => h.marks).filter(m => m !== null && !isNaN(m));
+    const calcAvg = (n) => {
+      if (validMarks.length === 0) return null;
+      const slice = n ? validMarks.slice(-n) : validMarks;
+      if (slice.length === 0) return null;
+      return Math.round(slice.reduce((acc, curr) => acc + curr, 0) / slice.length);
+    };
+
+    const payload = {
+      history: history,
+      rolling: {
+        last3: calcAvg(3),
+        last5: calcAvg(5),
+        last7: calcAvg(7),
+        last10: calcAvg(10),
+        last25: calcAvg(25),
+        allTime: calcAvg(null)
+      }
+    };
+
+    renderUnitAnalytics(payload);
+  } catch (err) {
+    console.error("Unit Analytics Error:", err);
+  }
+}
+      function hideUnitAnalyticsModal() { document.getElementById('unitAnalyticsModal').style.display = 'none'; }
+      function closeUnitAnalyticsModal(event) { if (event.target.id === 'unitAnalyticsModal') hideUnitAnalyticsModal(); }
+
+      function renderUnitAnalytics(data) {
+        if (!data) return;
+        const r = data.rolling || {};
+
+        function setRoll(val, id) {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (val === null || val === undefined) {
+            el.className = "rolling-val empty";
+            el.innerText = "-";
+          } else {
+            el.className = "rolling-val";
+            el.innerText = val + "%";
+          }
+        }
+
+        setRoll(r.last3, 'roll_3');
+        setRoll(r.last5, 'roll_5');
+        setRoll(r.last7, 'roll_7');
+        setRoll(r.last10, 'roll_10');
+        setRoll(r.last25, 'roll_25');
+        setRoll(r.allTime, 'roll_all');
+
+        const canvas = document.getElementById('unitChartCanvas');
+        const noMsg = document.getElementById('noUnitChartMsg');
+        const zoomLbl = document.getElementById('unitChartZoomLbl');
+
+        const validHistory = (data.history || []).filter(h => h.marks !== null && !isNaN(h.marks));
+
+        if (!validHistory || validHistory.length === 0) {
+          canvas.style.display = 'none';
+          noMsg.style.display = 'flex';
+          return;
+        }
+
+        canvas.style.display = 'block';
+        noMsg.style.display = 'none';
+
+        const labels = validHistory.map((h, i) => `${h.code}-P${h.paperNo}`);
+        const marks = validHistory.map(h => h.marks);
+        const minM = Math.min(...marks);
+        const yMin = Math.max(0, Math.floor(minM - 10));
+        zoomLbl.innerText = `Zoom: ${yMin}% ~ 100%`;
+
+        if (unitChartInstance) unitChartInstance.destroy();
+        const ctx = canvas.getContext('2d');
+        unitChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Unit Paper Marks',
+              data: marks,
+              borderColor: '#00cec9',
+              backgroundColor: 'rgba(0, 206, 201, 0.15)',
+              borderWidth: 2,
+              pointRadius: 4,
+              pointBackgroundColor: '#00cec9',
+              tension: 0.25
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(ctx) { return ` ලකුණු: ${ctx.parsed.y}%`; }
+                }
+              }
+            },
+            scales: {
+              y: {
+                min: yMin,
+                max: 100,
+                ticks: {
+                  font: { size: 8.5 },
+                  callback: function(val) { return val + '%'; }
+                },
+                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+              },
+              x: {
+                ticks: { font: { size: 8 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      // Generic HTML Alert Popup helper (replaces all native alert() calls)
+      function showHtmlAlert(msg, isError) {
+        const popup = document.getElementById('genericAlertPopup');
+        const msgEl = document.getElementById('genericAlertMsg');
+        const iconEl = document.getElementById('genericAlertIcon');
+        if (!popup || !msgEl) return;
+        msgEl.innerHTML = msg;
+        iconEl.innerText = isError ? '❌' : 'ℹ️';
+        popup.style.display = 'flex';
+      }
+    </script>
+    <!-- Timer Alarm Popup -->
+    <div id="timerAlarmPopup" style="
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(45, 52, 54, 0.75); backdrop-filter: blur(5px);
+      justify-content: center; align-items: center; z-index: 99999;
+    ">
+      <div style="
+        background: #ffffff; border-radius: 20px; padding: 28px 24px;
+        max-width: 340px; width: 90%; text-align: center;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+        animation: popIn 0.3s ease-out;
+        border-top: 5px solid #00cec9;
+      ">
+        <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
+        <div style="font-size: 17px; font-weight: 700; color: #2d3436; margin-bottom: 6px;">
+          Focus Session Complete!
+        </div>
+        <div style="font-size: 12px; color: #636e72; margin-bottom: 16px; line-height: 1.5;">
+          විශිෂ්ටයි! ඔබගේ Focus Study Session එක<br>සාර්ථකව අවසන් විය! 🏆
+        </div>
+        <div style="
+          background: #f0fbfb; border: 1.5px solid #b2f5ea; border-radius: 10px;
+          padding: 8px 14px; margin-bottom: 16px; font-size: 12px; color: #0984e3; font-weight: 600;
+        ">
+          🔔 Alarm auto-stops in <span id="alarmCountdownTxt" style="font-weight:800; color:#e84393;">60s</span>
+        </div>
+        <button onclick="stopAlarmAndClosePopup()" style="
+          width: 100%; padding: 11px 0;
+          background: linear-gradient(135deg, #00cec9, #0984e3);
+          color: white; border: none; border-radius: 10px;
+          font-size: 13px; font-weight: 700; cursor: pointer;
+          box-shadow: 0 4px 14px rgba(0,206,201,0.35);
+          transition: transform 0.1s ease;
+        " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+          🛑 Stop Alarm
+        </button>
+      </div>
+    </div>
+
+    <!-- Marks Gate Popup (Lesson + HW not done) -->
+    <div id="marksGatePopup" style="
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(45, 52, 54, 0.65); backdrop-filter: blur(4px);
+      justify-content: center; align-items: center; z-index: 99998;
+    ">
+      <div style="
+        background: #ffffff; border-radius: 18px; padding: 24px 22px;
+        max-width: 320px; width: 88%; text-align: center;
+        box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+        animation: popIn 0.25s ease-out;
+        border-top: 5px solid #e17055;
+      ">
+        <div style="font-size: 42px; margin-bottom: 10px;">⚠️</div>
+        <div style="font-size: 15px; font-weight: 700; color: #2d3436; margin-bottom: 8px;">
+          Activate Required!
+        </div>
+        <div style="font-size: 11.5px; color: #636e72; line-height: 1.6; margin-bottom: 16px;">
+          ලකුණු ඇතුළත් කිරීමට පෙර<br>
+          <span style="font-weight:700; color:#0984e3;">📘 Lesson</span> සහ
+          <span style="font-weight:700; color:#e17055;">📝 HW</span><br>
+          <strong>දෙකම Completed</strong> ලෙස සලකුණු කළ යුතුය.
+          <br><br>
+          <span style="font-size:10.5px; color:#8c7ae6;">Please activate both buttons above before entering marks.</span>
+        </div>
+        <button onclick="document.getElementById('marksGatePopup').style.display='none'" style="
+          width: 100%; padding: 10px 0;
+          background: linear-gradient(135deg, #e17055, #d63031);
+          color: white; border: none; border-radius: 10px;
+          font-size: 12px; font-weight: 700; cursor: pointer;
+        ">
+          OK, Activate First
+        </button>
+      </div>
+    </div>
+
+    <!-- Generic HTML Alert Popup -->
+    <div id="genericAlertPopup" style="
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(45, 52, 54, 0.6); backdrop-filter: blur(4px);
+      justify-content: center; align-items: center; z-index: 99997;
+    ">
+      <div style="
+        background: #ffffff; border-radius: 18px; padding: 24px 22px;
+        max-width: 320px; width: 88%; text-align: center;
+        box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+        animation: popIn 0.25s ease-out;
+        border-top: 5px solid #e17055;
+      ">
+        <div id="genericAlertIcon" style="font-size: 40px; margin-bottom: 10px;">❌</div>
+        <div id="genericAlertMsg" style="font-size: 12px; color: #4a5568; line-height: 1.6; margin-bottom: 16px; word-break: break-word;"></div>
+        <button onclick="document.getElementById('genericAlertPopup').style.display='none'" style="
+          width: 100%; padding: 10px 0;
+          background: linear-gradient(135deg, #636e72, #2d3436);
+          color: white; border: none; border-radius: 10px;
+          font-size: 12px; font-weight: 700; cursor: pointer;
+        ">
+          OK
+        </button>
+      </div>
+    </div>
+
+    <!-- v15: Spaced Repetition Confirmation Popup (Sinhala) -->
+    <div id="ebbConfirmPopup" style="
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(45, 52, 54, 0.72); backdrop-filter: blur(6px);
+      justify-content: center; align-items: center; z-index: 99996;
+    ">
+      <div style="
+        background: #ffffff; border-radius: 20px; padding: 26px 22px;
+        max-width: 340px; width: 90%; text-align: center;
+        box-shadow: 0 16px 50px rgba(140,122,230,0.35);
+        animation: popIn 0.25s ease-out;
+        border-top: 5px solid #8c7ae6;
+      ">
+        <div style="font-size: 40px; margin-bottom: 8px;">🧠</div>
+        <div style="font-size: 14px; font-weight: 700; color: #6c5ce7; margin-bottom: 10px;">Spaced Repetition — තහවුරු කිරීම</div>
+        <div id="ebbConfirmMsg" style="font-size: 12px; color: #2d3436; line-height: 1.7; margin-bottom: 18px; background:#f3e7f9; border-radius:10px; padding:12px 10px; border:1px solid #d0adf5;"></div>
+        <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 10px;">
+          <button id="ebbConfirmOkBtn" onclick="confirmEbbDone()" style="
+            padding: 10px 0;
+            background: linear-gradient(135deg, #6c5ce7, #8c7ae6);
+            color: white; border: none; border-radius: 10px;
+            font-size: 12px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 14px rgba(108,92,231,0.3);
+          ">ඔව්, සම්පූර්ණයි ✅</button>
+          <button onclick="cancelEbbConfirm()" style="
+            padding: 10px 0;
+            background: #f1f2f6; color: #636e72;
+            border: 1px solid #dfe6e9; border-radius: 10px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+          ">නැත ❌</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
+

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html>
+  <head>
+ <meta charset="UTF-8">
+ <base target="_top">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      :root {
+        --primary: #8c7ae6;
+        --primary-hover: #786fa6;
+        --bg-color: #f8f9fa;
+        --card-bg: #ffffff;
+        --text-dark: #2d3436;
+        --text-muted: #7f8fa6;
+        --border-color: #dfe6e9;
+      }
+      body {
+ font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+        margin: 0;
+        padding: 10px;
+        font-size: 11px;
+      }
+      /* Tab Bar */
+      .tab-bar {
+        display: flex;
+        background: #e4e7eb;
+        border-radius: 10px;
+        padding: 3px;
+        margin-bottom: 12px;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 6px 2px;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+      .tab-btn.active {
+        background: var(--card-bg);
+        color: var(--primary);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      }
+      .tab-content { display: none; }
+      .tab-content.active { display: block; }
+
+      /* Card Styling */
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        margin-bottom: 10px;
+      }
+      .form-group { margin-bottom: 10px; }
+      .form-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+        display: block;
+      }
+      .form-input, .form-select {
+        width: 100%;
+        padding: 7px 9px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        font-size: 11px;
+        font-family: inherit;
+        box-sizing: border-box;
+        outline: none;
+      }
+      .form-input:focus, .form-select:focus {
+        border-color: var(--primary);
+      }
+
+      /* Locked Prefix Input Group */
+      .input-group-locked {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f1f2f6;
+      }
+      .locked-prefix {
+        padding: 7px 8px;
+        font-weight: 600;
+        color: #57606f;
+        font-size: 11px;
+        background: #e4e7eb;
+        white-space: nowrap;
+        user-select: none;
+      }
+      .locked-input {
+        border: none;
+        padding: 7px 8px;
+        font-family: inherit;
+        font-size: 11px;
+        outline: none;
+        width: 100%;
+        background: #ffffff;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        width: 100%;
+        padding: 9px;
+        background: linear-gradient(135deg, var(--primary), #6c5ce7);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 11px;
+        cursor: pointer;
+        transition: transform 0.1s ease;
+      }
+      .btn-primary:hover { transform: scale(1.02); }
+      .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+      /* Search List Results */
+      .search-result-item {
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
+        padding: 8px;
+        margin-bottom: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition: all 0.15s ease;
+      }
+      .search-result-item:hover {
+        border-color: var(--primary);
+        box-shadow: 0 2px 6px rgba(140, 122, 230, 0.15);
+      }
+      .res-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .badge-subj {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .badge-ICT { background: #e8f0fe; color: #1976d2; }
+      .badge-ET { background: #feefe3; color: #d35400; }
+      .badge-SFT { background: #e6f4ea; color: #2e7d32; }
+
+      .res-title { font-weight: 600; font-size: 11px; line-height: 1.3; }
+      .res-unit { font-size: 9px; color: var(--text-muted); }
+      .res-actions { display: flex; gap: 4px; margin-top: 4px; }
+      .action-btn {
+        flex: 1;
+        padding: 4px 6px;
+        font-size: 9px;
+        font-weight: 600;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: #f8f9fa;
+        cursor: pointer;
+      }
+      .action-btn.jump:hover { background: #8c7ae6; color: white; border-color: #8c7ae6; }
+      .action-btn.edit:hover { background: #00cec9; color: white; border-color: #00cec9; }
+
+      /* Alert Feedback */
+      .status-box {
+        padding: 8px;
+        border-radius: 8px;
+        font-size: 10px;
+        margin-top: 8px;
+        display: none;
+        line-height: 1.4;
+      }
+      .status-box.success { background: #e6f4ea; color: #2e7d32; border: 1px solid #c8e6c9; }
+      .status-box.error { background: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; }
+    </style>
+  </head>
+  <body>
+    <!-- Tab Navigation -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('tabSearch')">🔍 සොයන්න</button>
+      <button class="tab-btn" onclick="switchTab('tabAdd')">➕ එක් කරන්න</button>
+      <button class="tab-btn" onclick="switchTab('tabEdit')">✏️ සංස්කරණය</button>
+    </div>
+
+    <!-- 1. SEARCH & JUMP TAB -->
+    <div id="tabSearch" class="tab-content active">
+      <div class="card">
+        <div class="form-group">
+          <input type="text" class="form-input" id="searchBox" placeholder="අංකය (1.2) හෝ වචනයක් සොයන්න..." oninput="handleSearch()">
+        </div>
+        <div id="searchResults" style="max-height: 480px; overflow-y: auto;">
+          <div style="text-align: center; color: var(--text-muted); padding: 20px 0;">දත්ත පූරණය වෙමින් පවතී...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. ADD NEW LESSON TAB -->
+    <div id="tabAdd" class="tab-content">
+      <div class="card">
+        <form id="addForm" onsubmit="submitNewLesson(event)">
+          <div class="form-group">
+            <label class="form-label">විෂය (Subject) *</label>
+            <select class="form-select" id="addSubject" onchange="onAddSubjectChange()" required>
+              <option value="ICT">ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)</option>
+              <option value="ET">ET (ඉංජිනේරු තාක්ෂණවේදය)</option>
+              <option value="SFT">SFT (තාක්ෂණවේදය සඳහා විද්‍යාව)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">ප්‍රධාන ඒකකය (Unit Selection) *</label>
+            <select class="form-select" id="unitDropdown" onchange="onUnitDropdownChange()">
+              <!-- Populated Dynamically -->
+            </select>
+          </div>
+
+          <!-- New Unit Creator (if needed) -->
+          <div id="newUnitGroup" style="display: none; background: #f8f9fa; padding: 8px; border-radius: 8px; margin-bottom: 10px;">
+            <label class="form-label">නව ඒකකය අංකනය & නම *</label>
+            <div class="input-group-locked" style="margin-bottom: 6px;">
+              <span class="locked-prefix">ඒකකය </span>
+              <input type="number" class="locked-input" id="newUnitNum" placeholder="අංකය (උදා: 10)" min="1" max="99" oninput="onNewUnitNumChange()">
+            </div>
+            <input type="text" class="form-input" id="newUnitTitle" placeholder="ඒකකයේ නම (උදා: තොරතුරු පද්ධති)">
+          </div>
+
+          <!-- Sub-Lesson Inputs with Mandatory Constraints -->
+          <div class="form-group">
+            <label class="form-label">උප-පාඩම් අංකය (Sub-unit Number) *</label>
+            <div class="input-group-locked">
+              <span class="locked-prefix" id="subUnitPrefix">1.</span>
+              <input type="number" class="locked-input" id="subUnitNum" placeholder="දශමයෙන් පසු අංකය (උදා: 8)" min="1" required>
+            </div>
+            <div style="font-size: 9px; color: #7f8fa6; margin-top: 3px;" id="subNumberHint">අගය වෙනස් කළ හැක (අනිවාර්යයි)</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">උප-පාඩමේ නම (Sub-unit Title) *</label>
+            <input type="text" class="form-input" id="subUnitTitle" placeholder="උදා: තොරතුරු පද්ධති වර්ගීකරණය" required>
+          </div>
+
+          <button type="submit" class="btn-primary" id="addBtn">+ නව පාඩම සුරකින්න</button>
+        </form>
+        <div class="status-box" id="addStatus"></div>
+      </div>
+    </div>
+
+    <!-- 3. EDIT LESSON TAB -->
+    <div id="tabEdit" class="tab-content">
+      <div class="card">
+        <div id="editEmptyMsg" style="text-align: center; color: var(--text-muted); padding: 20px 0;">
+          කරුණාකර <strong>🔍 සොයන්න</strong> ටැබ් එක වෙත ගොස් සංස්කරණය කිරීමට අවශ්‍ය පාඩමෙහි <strong>✏️ Edit</strong> ඔබන්න.
+        </div>
+
+        <form id="editForm" style="display: none;" onsubmit="submitEditLesson(event)">
+          <div class="form-group">
+            <label class="form-label">තෝරාගත් පාඩම (Read-only)</label>
+            <div style="font-weight: 700; color: var(--primary); font-size: 12px;" id="editHeaderTag">[ICT] 1.2</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">ප්‍රධාන ඒකකයේ නම (Unit Name)</label>
+            <input type="text" class="form-input" id="editUnitTitle" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">උප-පාඩමේ නම (Sub-Lesson Title)</label>
+            <div class="input-group-locked">
+              <span class="locked-prefix" id="editPrefix">1.2</span>
+              <input type="text" class="locked-input" id="editSubTitle" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="editBtn">💾 නම යාවත්කාලීන කරන්න</button>
+        </form>
+        <div class="status-box" id="editStatus"></div>
+      </div>
+    </div>
+
+    <script>
+// --- Supabase Client Configuration ---
+// --- Supabase Client Configuration ---
+const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
+window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      let allLessons = [];
+      let currentEditingItem = null;
+
+      // Initial Load
+      window.onload = function() {
+        loadSyllabus();
+      };
+
+      async function loadSyllabus() {
+  try {
+    const { data, error } = await supabase
+      .from('canonical_syllabus')
+      .select('id, subject, unit_number, unit_name, sub_lesson_code, sub_lesson_title, sort_order')
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+
+    allLessons = (data || []).map(row => ({
+      id: row.id,
+      subject: row.subject,
+      unit: row.unit_name,
+      unitNum: row.unit_number,
+      code: row.sub_lesson_code,
+      subLesson: row.sub_lesson_title.startsWith(row.sub_lesson_code)
+        ? row.sub_lesson_title
+        : `${row.sub_lesson_code} ${row.sub_lesson_title}`
+    }));
+
+    handleSearch();
+    onAddSubjectChange();
+  } catch (err) {
+    console.error("Fetch Syllabus Error:", err);
+    document.getElementById('searchResults').innerHTML = 
+      '<div style="text-align: center; color: #c5221f; padding: 10px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || "නැවත උත්සාහ කරන්න") + '</div>';
+  }
+}
+      function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        if (tabId === 'tabSearch') document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        if (tabId === 'tabAdd') document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        if (tabId === 'tabEdit') document.querySelectorAll('.tab-btn')[2].classList.add('active');
+
+        document.getElementById(tabId).classList.add('active');
+      }
+
+      // 1. Search Engine
+      function handleSearch() {
+        const query = document.getElementById('searchBox').value.trim().toLowerCase();
+        const container = document.getElementById('searchResults');
+
+        if (!allLessons || allLessons.length === 0) {
+          container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">පාඩම් හමු නොවීය.</div>';
+          return;
+        }
+
+        const filtered = allLessons.filter(item => {
+          if (!query) return true;
+          return item.code.toLowerCase().includes(query) ||
+                 item.subLesson.toLowerCase().includes(query) ||
+                 item.unit.toLowerCase().includes(query) ||
+                 item.subject.toLowerCase().includes(query);
+        });
+
+        if (filtered.length === 0) {
+          container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ගැළපෙන පාඩම් කිසිවක් නැත.</div>';
+          return;
+        }
+
+        let html = '';
+        filtered.slice(0, 35).forEach(item => {
+          html += `
+            <div class="search-result-item">
+              <div class="res-header">
+                <span class="badge-subj badge-${item.subject}">${item.subject}</span>
+                <span style="font-weight: 700; color: #8c7ae6;">${item.code}</span>
+              </div>
+              <div class="res-title">${item.subLesson}</div>
+              <div class="res-unit">${item.unit}</div>
+              <div class="res-actions">
+                <button class="action-btn jump" onclick="jumpToRow('${item.subject}', '${item.code}')">🎯 පනින්න</button>
+                <button class="action-btn edit" onclick="startEditing('${item.subject}', '${item.code}')">✏️ Edit</button>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+     
+     function jumpToRow(subject, code) {
+        // Cloudflare Pages / Web Architecture: Cross-window communication
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ action: 'JUMP_DRILLDOWN', subject: subject, code: code }, '*');
+        } else {
+          localStorage.setItem('tracker_jump_target', JSON.stringify({ subject: subject, code: code, at: Date.now() }));
+        }
+      }
+
+      // 2. Add Lesson Engine with Auto-Suggestion
+      function onAddSubjectChange() {
+        const subj = document.getElementById('addSubject').value;
+        const unitDropdown = document.getElementById('unitDropdown');
+
+        const unitsMap = new Map();
+        allLessons.filter(l => l.subject === subj).forEach(l => {
+          if (!unitsMap.has(l.unitNum)) {
+            unitsMap.set(l.unitNum, l.unit);
+          }
+        });
+
+        let opts = '';
+        unitsMap.forEach((name, num) => {
+          opts += `<option value="${num}">${name}</option>`;
+        });
+        opts += `<option value="NEW">+ නව ඒකකයක් ඇතුළත් කරන්න</option>`;
+
+        unitDropdown.innerHTML = opts;
+        onUnitDropdownChange();
+      }
+
+      function onUnitDropdownChange() {
+        const val = document.getElementById('unitDropdown').value;
+        const newUnitGroup = document.getElementById('newUnitGroup');
+        const prefix = document.getElementById('subUnitPrefix');
+
+        if (val === "NEW") {
+          newUnitGroup.style.display = 'block';
+          const n = document.getElementById('newUnitNum').value || 1;
+          prefix.innerText = n + ".";
+          document.getElementById('subUnitNum').value = 1;
+        } else {
+          newUnitGroup.style.display = 'none';
+          const unitNum = parseInt(val, 10);
+          prefix.innerText = unitNum + ".";
+
+          // Calculate next suggested sub-lesson number
+          const subj = document.getElementById('addSubject').value;
+          const subLessonsInUnit = allLessons.filter(l => {
+            const lUnitNum = l.unitNum ? Number(l.unitNum) : parseInt((l.unit || '').toString().match(/\d+/) || 0, 10);
+            return l.subject === subj && lUnitNum === unitNum;
+          });
+
+          let maxMinor = 0;
+          subLessonsInUnit.forEach(l => {
+            if (l.code.includes('.')) {
+              const minor = parseInt(l.code.split('.')[1], 10);
+              if (minor > maxMinor) maxMinor = minor;
+            }
+          });
+
+          document.getElementById('subUnitNum').value = maxMinor + 1;
+        }
+      }
+
+      function onNewUnitNumChange() {
+        const n = document.getElementById('newUnitNum').value || 1;
+        document.getElementById('subUnitPrefix').innerText = n + ".";
+      }
+
+      async function submitNewLesson(e) {
+  e.preventDefault();
+  const btn = document.getElementById('addBtn');
+  const status = document.getElementById('addStatus');
+
+  const subject = document.getElementById('addSubject').value;
+  const unitVal = document.getElementById('unitDropdown').value;
+  const subNum = document.getElementById('subUnitNum').value.trim();
+  const subTitle = document.getElementById('subUnitTitle').value.trim();
+
+  if (!subNum) {
+    showStatus('addStatus', "දෝෂයකි: දශමයෙන් පසු අංකය ඇතුළත් කිරීම අනිවාර්යයි!", false);
+    return;
+  }
+
+  let unitNum = 1;
+  let unitName = "";
+  let finalCode = "";
+
+  if (unitVal === "NEW") {
+    const uNum = document.getElementById('newUnitNum').value.trim();
+    const uTitle = document.getElementById('newUnitTitle').value.trim();
+    if (!uNum || !uTitle) {
+      showStatus('addStatus', "දෝෂයකි: නව ඒකකයේ අංකය සහ නම ඇතුළත් කරන්න!", false);
+      return;
+    }
+    unitNum = parseInt(uNum, 10);
+    unitName = `ඒකකය ${String(unitNum).padStart(2, '0')}: ${uTitle}`;
+    finalCode = `${unitNum}.${subNum}`;
+  } else {
+    unitNum = parseInt(unitVal, 10);
+    const unitDropdown = document.getElementById('unitDropdown');
+    if (unitDropdown.selectedIndex >= 0) {
+      unitName = unitDropdown.options[unitDropdown.selectedIndex].text;
+    } else {
+      unitName = "ඒකකය " + unitVal;
+    }
+    finalCode = `${unitNum}.${subNum}`;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "සුරැකෙමින් පවතී...";
+
+  try {
+    const { data, error } = await supabase
+      .from('canonical_syllabus')
+      .insert([
+        {
+          subject: subject,
+          unit_number: unitNum,
+          unit_name: unitName,
+          sub_lesson_code: finalCode,
+          sub_lesson_title: subTitle
+        }
+      ])
+      .select();
+
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error(`[${subject}] ${finalCode} උප-පාඩම දැනටමත් පවතී!`);
+      }
+      throw error;
+    }
+
+    btn.disabled = false;
+    btn.innerText = "+ නව පාඩම සුරකින්න";
+    showStatus('addStatus', `නව පාඩම සාර්ථකව එක් විය! [${subject} ${finalCode}]`, true);
+    document.getElementById('subUnitTitle').value = '';
+    await loadSyllabus();
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerText = "+ නව පාඩම සුරකින්න";
+    showStatus('addStatus', "දෝෂයකි: " + (err.message || "සුරැකීම අසාර්ථක විය"), false);
+  }
+}
+
+      // 3. Edit Engine
+      function startEditing(subject, code) {
+        const item = allLessons.find(l => l.subject === subject && l.code === code);
+        if (!item) return;
+
+        currentEditingItem = item;
+        document.getElementById('editEmptyMsg').style.display = 'none';
+        document.getElementById('editForm').style.display = 'block';
+
+        document.getElementById('editHeaderTag').innerText = `[${item.subject}] ${item.code}`;
+        document.getElementById('editUnitTitle').value = item.unit;
+        document.getElementById('editPrefix').innerText = item.code;
+
+        // Strip prefix code from sublesson title if present
+        let cleanSubTitle = item.subLesson;
+        if (cleanSubTitle.startsWith(item.code)) {
+          cleanSubTitle = cleanSubTitle.substring(item.code.length).trim();
+        }
+        document.getElementById('editSubTitle').value = cleanSubTitle;
+
+        switchTab('tabEdit');
+      }
+
+      async function submitEditLesson(e) {
+  e.preventDefault();
+  if (!currentEditingItem) return;
+
+  const btn = document.getElementById('editBtn');
+  const unitName = document.getElementById('editUnitTitle').value.trim();
+  const subTitle = document.getElementById('editSubTitle').value.trim();
+
+  const unitMatch = unitName.match(/\d+/);
+  const unitNum = unitMatch ? parseInt(unitMatch[0], 10) : currentEditingItem.unitNum;
+
+  btn.disabled = true;
+  btn.innerText = "යාවත්කාලීන වෙමින් පවතී...";
+
+  try {
+    const { data, error } = await supabase
+      .from('canonical_syllabus')
+      .update({
+        unit_name: unitName,
+        unit_number: unitNum,
+        sub_lesson_title: subTitle,
+        updated_at: new Date().toISOString()
+      })
+      .eq('subject', currentEditingItem.subject)
+      .eq('sub_lesson_code', currentEditingItem.code)
+      .select();
+
+    if (error) throw error;
+
+    btn.disabled = false;
+    btn.innerText = "💾 නම යාවත්කාලීන කරන්න";
+    showStatus('editStatus', `[${currentEditingItem.subject} ${currentEditingItem.code}] නම සාර්ථකව යාවත්කාලීන විය!`, true);
+    await loadSyllabus();
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerText = "💾 නම යාවත්කාලීන කරන්න";
+    showStatus('editStatus', "දෝෂයකි: " + (err.message || "යාවත්කාලීන කිරීම අසාර්ථක විය"), false);
+  }
+}
+
+      function showStatus(id, msg, isSuccess) {
+        const box = document.getElementById(id);
+        box.className = "status-box " + (isSuccess ? "success" : "error");
+        box.innerText = msg;
+        box.style.display = 'block';
+      }
+    </script>
+  </body>
+</html>
