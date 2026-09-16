@@ -1847,54 +1847,409 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     openDrilldownModal(event.data.subject);
   }
 });
- function setupRealtimeSubscriptions() {
- supabase
- .channel('al-tracker-realtime')
- .on(
- 'postgres_changes',
- { event: '*', schema: 'public', table: 'tracker_progress' },
- () => refreshTelemetry()
- )
- .on(
- 'postgres_changes',
- { event: '*', schema: 'public', table: 'unit_papers' },
- () => refreshTelemetry()
- )
- .on(
- 'postgres_changes',
- { event: '*', schema: 'public', table: 'full_papers' },
- () => refreshTelemetry()
- )
- .on(
- 'postgres_changes',
- { event: '*', schema: 'public', table: 'spaced_repetition_log' },
- () => refreshTelemetry()
- )
- .on(
- 'postgres_changes',
- { event: '*', schema: 'public', table: 'canonical_syllabus' },
- () => refreshTelemetry()
- )
- .subscribe((status) => {
- if (status === 'SUBSCRIBED') {
- console.log('Realtime telemetry active.');
- }
- });
- }
+      let cachedCanonicalSyllabus = null;
+
+      function setupRealtimeSubscriptions() {
+        supabase
+          .channel('al-tracker-realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'tracker_progress' }, () => refreshTelemetry())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'unit_papers' }, () => refreshTelemetry())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'full_papers' }, () => refreshTelemetry())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'spaced_repetition_log' }, () => refreshTelemetry())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'canonical_syllabus' }, () => {
+            cachedCanonicalSyllabus = null;
+            refreshTelemetry();
+          })
+          .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+              console.log('Realtime telemetry active.');
+            }
+          });
+      }
+
+      function calculateSyllabusVelocity(syllabusList, trackerProgressList) {
+        const examDate = new Date("2028-08-04T08:30:00+05:30");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const daysToExam = Math.max(1, Math.floor((examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
+        const weeksToExam = Math.max(1, Math.round(daysToExam / 7));
+
+        const tpMap = {};
+        (trackerProgressList || []).forEach(tp => {
+          if (tp && tp.syllabus_id) tpMap[tp.syllabus_id] = tp;
+        });
+
+        const stats = {
+          ICT: { total: 0, done: 0, recentDone: 0 },
+          ET:  { total: 0, done: 0, recentDone: 0 },
+          SFT: { total: 0, done: 0, recentDone: 0 }
+        };
+
+        (syllabusList || []).forEach(item => {
+          const s = (item.subject || '').toUpperCase().trim();
+          if (!stats[s]) return;
+          stats[s].total++;
+          const p = tpMap[item.id];
+          if (p && p.lesson_done) {
+            stats[s].done++;
+            let daysAgo = p.lesson_days || 0;
+            if (p.lesson_done_at) {
+              const d = new Date(p.lesson_done_at);
+              if (!isNaN(d.getTime())) {
+                daysAgo = Math.max(0, Math.floor((today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24)));
+              }
+            }
+            if (daysAgo <= 30) {
+              stats[s].recentDone++;
+            }
+          }
+        });
+
+        const subjectsForecast = {};
+        let totalRemaining = 0;
+        let totalRecentDone = 0;
+
+        const monthNames = [
+          "ජනවාරි", "පෙබරවාරි", "මාර්තු", "අප්‍රේල්", "මැයි", "ජූනි",
+          "ජූලි", "අගෝස්තු", "සැප්තැම්බර්", "ඔක්තෝබර්", "නොවැම්බර්", "දෙසැම්බර්"
+        ];
+
+        ["ICT", "ET", "SFT"].forEach(s => {
+          const st = stats[s];
+          const remaining = Math.max(0, st.total - st.done);
+          totalRemaining += remaining;
+          totalRecentDone += st.recentDone;
+
+          const currentRate = Number((st.recentDone / 4.28).toFixed(1));
+          const requiredRate = Number((remaining / weeksToExam).toFixed(1));
+
+          let projectedDateStr = "තවම වේගයක් නැත";
+          let isSafe = false;
+
+          if (currentRate > 0) {
+            const weeksNeeded = remaining / currentRate;
+            const projDate = new Date(today.getTime() + (weeksNeeded * 7 * 24 * 60 * 60 * 1000));
+            projectedDateStr = `${projDate.getFullYear()} ${monthNames[projDate.getMonth()]}`;
+            isSafe = projDate.getTime() <= (examDate.getTime() - (90 * 24 * 60 * 60 * 1000));
+          } else if (remaining === 0 && st.total > 0) {
+            projectedDateStr = "සම්පූර්ණයි! 🎉";
+            isSafe = true;
+          }
+
+          subjectsForecast[s] = {
+            total: st.total,
+            done: st.done,
+            remaining: remaining,
+            currentWeeklyVelocity: currentRate,
+            requiredWeeklyVelocity: requiredRate,
+            projectedDate: projectedDateStr,
+            isAheadOfSchedule: isSafe
+          };
+        });
+
+        return {
+          daysToExam: daysToExam,
+          weeksToExam: weeksToExam,
+          totalRemaining: totalRemaining,
+          overallCurrentWeekly: Number((totalRecentDone / 4.28).toFixed(1)),
+          overallRequiredWeekly: Number((totalRemaining / weeksToExam).toFixed(1)),
+          subjects: subjectsForecast
+        };
+      }
+
+      function calculateEbbinghausCycles(syllabusList, trackerProgressList, srLogsList) {
+        const STAGE_SEQUENCE = [1, 3, 7, 21, 45];
+        const STAGE_HIDE_DAYS = { 1: 2, 3: 4, 7: 14, 21: 24, 45: 45 };
+        const STAGE_META = {
+          1:  { tag: "⚡ ඉක්මන් නැවත දැකීම (දිනය 1)", color: "#e74c3c", sortRank: 1, bucket: 1 },
+          3:  { tag: "📝 මූලික නැවත සිහිපත් (දිනය 3)", color: "#f39c12", sortRank: 2, bucket: 3 },
+          7:  { tag: "🔁 දීර්ඝ-කාලීන මතක (දිනය 7)", color: "#e67e22", sortRank: 3, bucket: 7 },
+          21: { tag: "🧠 ගැඹුරු මතක ස්ථාපනය (දිනය 21)", color: "#8c7ae6", sortRank: 4, bucket: 21 },
+          45: { tag: "♾️ දිගුකාලීන ප්‍රගුණ (දිනය 45+)", color: "#27ae60", sortRank: 5, bucket: 45 }
+        };
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tpMap = {};
+        (trackerProgressList || []).forEach(tp => {
+          if (tp && tp.syllabus_id) tpMap[tp.syllabus_id] = tp;
+        });
+
+        const srLogMap = {};
+        (srLogsList || []).forEach(log => {
+          const key = (log.subject || '').toUpperCase().trim() + '||' + (log.sub_lesson_code || '').trim();
+          if (!srLogMap[key]) srLogMap[key] = [];
+          const completedD = log.completed_at ? new Date(log.completed_at) : new Date();
+          srLogMap[key].push({
+            date: completedD,
+            stage: parseInt(log.day_stage, 10) || 1,
+            cycle: parseInt(log.cycle, 10) || 1
+          });
+        });
+
+        const ebbByCycle = {};
+
+        (syllabusList || []).forEach(item => {
+          const p = tpMap[item.id];
+          if (!p) return;
+          const isReady = p.hw_done === true || p.lesson_done === true;
+          if (!isReady) return;
+
+          let baseDate = null;
+          if (p.hw_done_at) baseDate = new Date(p.hw_done_at);
+          else if (p.lesson_done_at) baseDate = new Date(p.lesson_done_at);
+
+          let activeElapsed = 0;
+          if (baseDate && !isNaN(baseDate.getTime())) {
+            activeElapsed = Math.max(0, Math.floor((today.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24)));
+          } else {
+            activeElapsed = p.hw_days || p.lesson_days || 0;
+          }
+
+          const key = (item.subject || '').toUpperCase().trim() + '||' + (item.sub_lesson_code || '').trim();
+          const entries = srLogMap[key] || [];
+
+          let currentCycle = 1;
+          let targetStage = 1;
+          let isHidden = false;
+          let displayDays = activeElapsed;
+
+          if (entries.length === 0) {
+            if (activeElapsed >= 45) targetStage = 45;
+            else if (activeElapsed >= 21) targetStage = 21;
+            else if (activeElapsed >= 7)  targetStage = 7;
+            else if (activeElapsed >= 3)  targetStage = 3;
+            else targetStage = 1;
+          } else {
+            entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+            let deducedCycle = 1;
+            const cycleLastEntry = {};
+            for (let i = 0; i < entries.length; i++) {
+              const e = entries[i];
+              let c = e.cycle || deducedCycle;
+              if (c < deducedCycle) c = deducedCycle;
+              cycleLastEntry[c] = e;
+              if (e.stage === 45) deducedCycle = c + 1;
+            }
+            currentCycle = deducedCycle;
+            const lastEntry = cycleLastEntry[currentCycle] || cycleLastEntry[currentCycle - 1];
+            if (lastEntry) {
+              const lastDate = new Date(lastEntry.date.getFullYear(), lastEntry.date.getMonth(), lastEntry.date.getDate());
+              const diffDays = Math.max(0, Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)));
+              displayDays = diffDays;
+
+              if (lastEntry.stage === 45) {
+                if (diffDays < 45) {
+                  isHidden = true;
+                } else {
+                  targetStage = 1;
+                }
+              } else {
+                const hideWindow = STAGE_HIDE_DAYS[lastEntry.stage] || 7;
+                if (diffDays < hideWindow) {
+                  isHidden = true;
+                } else {
+                  const currIdx = STAGE_SEQUENCE.indexOf(lastEntry.stage);
+                  targetStage = (currIdx >= 0 && currIdx < STAGE_SEQUENCE.length - 1) ? STAGE_SEQUENCE[currIdx + 1] : 45;
+                }
+              }
+            }
+          }
+
+          if (!isHidden) {
+            const meta = STAGE_META[targetStage] || STAGE_META[1];
+            if (!ebbByCycle[currentCycle]) ebbByCycle[currentCycle] = [];
+            ebbByCycle[currentCycle].push({
+              subject: item.subject,
+              subLesson: item.sub_lesson_title,
+              code: item.sub_lesson_code,
+              days: displayDays,
+              stageTag: `දින ${displayDays}යි — ${meta.tag}`,
+              badgeColor: meta.color,
+              sortRank: meta.sortRank,
+              stageBucket: meta.bucket,
+              cycle: currentCycle
+            });
+          }
+        });
+
+        const detectedMax = Object.keys(ebbByCycle).reduce((m, k) => Math.max(m, parseInt(k, 10)), 1);
+        const maxCycle = Math.max(2, detectedMax);
+        const ebbCycleData = {};
+        for (let c = 1; c <= maxCycle; c++) {
+          const items = ebbByCycle[c] || [];
+          items.sort((a, b) => b.days - a.days);
+          ebbCycleData[c] = items;
+        }
+
+        return {
+          ebbCycleData: ebbCycleData,
+          maxCycle: maxCycle,
+          topEbbinghaus: (ebbCycleData[1] || []).slice(0, 5)
+        };
+      }
+
+      function computeALZScoreMetrics(history) {
+        const BENCH_MEAN = 50;
+        const BENCH_SD = 15;
+        const valid = (history || []).filter(h => h.marks !== null && !isNaN(h.marks) && h.marks !== '');
+
+        const ictList = valid.filter(e => e.subject === 'ICT').sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        const etList = valid.filter(e => e.subject === 'ET').sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        const sftList = valid.filter(e => e.subject === 'SFT').sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+        const minSets = Math.min(ictList.length, etList.length, sftList.length);
+        const zTrend = [];
+
+        for (let i = 0; i < minSets; i++) {
+          const zIct = (Number(ictList[i].marks) - BENCH_MEAN) / BENCH_SD;
+          const zEt = (Number(etList[i].marks) - BENCH_MEAN) / BENCH_SD;
+          const zSft = (Number(sftList[i].marks) - BENCH_MEAN) / BENCH_SD;
+          const compZ = Number(((zIct + zEt + zSft) / 3).toFixed(3));
+          const setTime = Math.max(ictList[i].timestamp || 0, etList[i].timestamp || 0, sftList[i].timestamp || 0);
+
+          zTrend.push({
+            setIndex: i + 1,
+            label: `Set ${i + 1}`,
+            zScore: compZ,
+            timestamp: setTime
+          });
+        }
+
+        const byCount = {};
+        [3, 7, 10, 20, 50].forEach(n => {
+          if (zTrend.length >= n) {
+            const slice = zTrend.slice(-n);
+            const avgZ = slice.reduce((sum, item) => sum + item.zScore, 0) / n;
+            byCount[n] = Number(avgZ.toFixed(3));
+            byCount['' + n] = Number(avgZ.toFixed(3));
+          } else {
+            byCount[n] = null;
+            byCount['' + n] = null;
+          }
+        });
+
+        const byTime = {};
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        const refTime = today.getTime();
+
+        const timeWindows = [
+          { key: '7d', days: 7 },
+          { key: '14d', days: 14 },
+          { key: '1m', days: 30 },
+          { key: '3m', days: 90 }
+        ];
+
+        timeWindows.forEach(w => {
+          const cutoff = refTime - (w.days * 24 * 60 * 60 * 1000);
+          const activeSets = zTrend.filter(s => s.timestamp >= cutoff);
+          if (activeSets.length > 0) {
+            const avgZ = activeSets.reduce((sum, item) => sum + item.zScore, 0) / activeSets.length;
+            byTime[w.key] = Number(avgZ.toFixed(3));
+          } else {
+            byTime[w.key] = null;
+          }
+        });
+
+        return { trend: zTrend, byCount: byCount, byTime: byTime };
+      }
 
       async function refreshTelemetry() {
-  try {
-    const { data, error } = await supabase.rpc('get_dashboard_telemetry');
-    if (error) throw error;
-    renderData(data);
-  } catch (err) {
-    console.error("Telemetry Error:", err);
-    const radar = document.getElementById('radarList');
-    if (radar) {
-      radar.innerHTML = '<div style="font-size: 10px; color: #d63031; text-align: center; padding: 4px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || '') + '</div>';
-    }
-  }
-}
+        try {
+          const promises = [
+            supabase.rpc('get_dashboard_telemetry'),
+            supabase.from('tracker_progress').select('*'),
+            supabase.from('spaced_repetition_log').select('*').order('completed_at', { ascending: true }),
+            supabase.from('full_papers').select('*').order('exam_date', { ascending: true }).order('logged_at', { ascending: true })
+          ];
+
+          if (!cachedCanonicalSyllabus) {
+            promises.push(supabase.from('canonical_syllabus').select('*').order('sort_order', { ascending: true }));
+          }
+
+          const results = await Promise.allSettled(promises);
+
+          const rpcRes = results[0];
+          const tpRes = results[1];
+          const srRes = results[2];
+          const fpRes = results[3];
+
+          if (!cachedCanonicalSyllabus && results[4] && results[4].status === 'fulfilled' && results[4].value.data) {
+            cachedCanonicalSyllabus = results[4].value.data;
+          }
+
+          let rpcData = (rpcRes.status === 'fulfilled' && !rpcRes.value.error) ? rpcRes.value.data : null;
+          const syllabusList = cachedCanonicalSyllabus || [];
+          const tpList = (tpRes.status === 'fulfilled' && tpRes.value.data) ? tpRes.value.data : [];
+          const srLogs = (srRes.status === 'fulfilled' && srRes.value.data) ? srRes.value.data : [];
+          const fpRawList = (fpRes.status === 'fulfilled' && fpRes.value.data) ? fpRes.value.data : [];
+
+          // Format full papers history directly from full_papers table
+          const fullPapersHistory = fpRawList.map(r => ({
+            id: r.id,
+            date: r.exam_date ? r.exam_date.substring(5) : (r.logged_at ? r.logged_at.substring(5, 10) : ''),
+            fullDate: r.exam_date || (r.logged_at ? r.logged_at.substring(0, 10) : ''),
+            subject: (r.subject || '').toUpperCase().trim(),
+            marks: (r.marks !== null && r.marks !== undefined && !isNaN(r.marks)) ? Number(r.marks) : null,
+            timeTaken: r.time_taken || null,
+            remarks: r.remarks || null,
+            timestamp: r.exam_date ? new Date(r.exam_date).getTime() : (r.logged_at ? new Date(r.logged_at).getTime() : 0)
+          }));
+
+          // Compute Z-score analytics
+          const zScoreAnalytics = computeALZScoreMetrics(fullPapersHistory);
+
+          // Compute Velocity metrics accurately
+          const velocityMetrics = calculateSyllabusVelocity(syllabusList, tpList);
+
+          // Compute Spaced Repetition cycles accurately
+          const ebbResult = calculateEbbinghausCycles(syllabusList, tpList, srLogs);
+
+          if (!rpcData) {
+            rpcData = {
+              breakdown: {},
+              streak: 0,
+              workedToday: false,
+              totalUnitPapersDone: 0,
+              totalFullPapersDone: fullPapersHistory.length,
+              weeklyQuota: { actual: {}, targets: {}, percentages: {} }
+            };
+          }
+
+          // Merge computed analytics into telemetryData
+          rpcData.velocityMetrics = velocityMetrics;
+          rpcData.ebbinghaus = ebbResult.topEbbinghaus;
+          rpcData.ebbCycleData = ebbResult.ebbCycleData;
+          rpcData.maxCycle = ebbResult.maxCycle;
+          rpcData.fullPapersHistory = fullPapersHistory;
+          rpcData.totalFullPapersDone = fullPapersHistory.length;
+          rpcData.zScoreAnalytics = zScoreAnalytics;
+
+          // Update weekly quota actual full papers count
+          if (rpcData.weeklyQuota) {
+            if (!rpcData.weeklyQuota.actual) rpcData.weeklyQuota.actual = {};
+            rpcData.weeklyQuota.actual.fullPapers = fullPapersHistory.length;
+            const act = rpcData.weeklyQuota.actual;
+            const tgt = rpcData.weeklyQuota.targets || { lessons: 3, unitPapers: 10, fullPapers: 1 };
+            const pUnit = Math.min(100, Math.round(((act.unitPapers || 0) / (tgt.unitPapers || 10)) * 100));
+            const pFull = Math.min(100, Math.round(((act.fullPapers || 0) / (tgt.fullPapers || 1)) * 100));
+            const pLesson = Math.min(100, Math.round(((act.lessons || 0) / (tgt.lessons || 3)) * 100));
+            const pOverall = Math.round((pUnit * 0.4) + (pFull * 0.3) + (pLesson * 0.3));
+            rpcData.weeklyQuota.percentages = { unit: pUnit, full: pFull, lesson: pLesson, overall: pOverall };
+          }
+
+          renderData(rpcData);
+        } catch (err) {
+          console.error("Telemetry Error:", err);
+          const radar = document.getElementById('radarList');
+          if (radar) {
+            radar.innerHTML = '<div style="font-size: 10px; color: #d63031; text-align: center; padding: 4px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || '') + '</div>';
+          }
+        }
+      }
 
       function renderData(data) {
         if (!data) return;
@@ -2480,7 +2835,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const marksPool = relevantEntries.map(e => e.marks);
         const minMark = Math.min(...marksPool);
-        const dynamicYMin = Math.max(0, Math.floor(minMark - 10));
+        const dynamicYMin = Math.max(0, Math.floor(Math.min(minMark, 75) - 10));
         zoomIndicator.innerText = `Zoomed: ${dynamicYMin}% ~ 100%`;
 
         let chartData = null;
@@ -2490,31 +2845,49 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
           const ictData = history.map(e => e.subject === 'ICT' ? e.marks : null);
           const etData = history.map(e => e.subject === 'ET' ? e.marks : null);
           const sftData = history.map(e => e.subject === 'SFT' ? e.marks : null);
+          const benchmarkData = new Array(labels.length).fill(75);
 
           chartData = {
             labels: labels,
             datasets: [
-              { label: 'ICT', data: ictData, borderColor: '#4a90e2', borderWidth: 2, pointRadius: 4, tension: 0.25, spanGaps: true },
-              { label: 'ET', data: etData, borderColor: '#e67e22', borderWidth: 2, pointRadius: 4, tension: 0.25, spanGaps: true },
-              { label: 'SFT', data: sftData, borderColor: '#27ae60', borderWidth: 2, pointRadius: 4, tension: 0.25, spanGaps: true }
+              { label: 'ICT', data: ictData, borderColor: '#4a90e2', backgroundColor: 'rgba(74, 144, 226, 0.1)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#4a90e2', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
+              { label: 'ET', data: etData, borderColor: '#e67e22', backgroundColor: 'rgba(230, 126, 34, 0.1)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#e67e22', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
+              { label: 'SFT', data: sftData, borderColor: '#27ae60', backgroundColor: 'rgba(39, 174, 96, 0.1)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#27ae60', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
+              { label: 'ඉලක්කය (A: 75%)', data: benchmarkData, borderColor: 'rgba(108, 92, 231, 0.4)', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false }
             ]
           };
         } else {
           const labels = relevantEntries.map((e, idx) => `P${idx + 1} (${e.date})`);
           const datasetColor = currentActiveChartTab === 'ICT' ? '#4a90e2' : (currentActiveChartTab === 'ET' ? '#e67e22' : '#27ae60');
+          const benchmarkData = new Array(labels.length).fill(75);
 
           chartData = {
             labels: labels,
-            datasets: [{
-              label: currentActiveChartTab,
-              data: relevantEntries.map(e => e.marks),
-              borderColor: datasetColor,
-              backgroundColor: datasetColor + '1a',
-              borderWidth: 2.5,
-              pointRadius: 4.5,
-              pointBackgroundColor: datasetColor,
-              tension: 0.25
-            }]
+            datasets: [
+              {
+                label: currentActiveChartTab,
+                data: relevantEntries.map(e => e.marks),
+                borderColor: datasetColor,
+                backgroundColor: datasetColor + '1a',
+                borderWidth: 2.5,
+                pointRadius: 6,
+                pointHoverRadius: 9,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: datasetColor,
+                pointBorderWidth: 3,
+                tension: 0.25,
+                fill: true
+              },
+              {
+                label: 'ඉලක්කය (A: 75%)',
+                data: benchmarkData,
+                borderColor: 'rgba(108, 92, 231, 0.4)',
+                borderWidth: 1.5,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                fill: false
+              }
+            ]
           };
         }
 
@@ -2528,13 +2901,20 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             maintainAspectRatio: false,
             plugins: {
               legend: {
-                display: currentActiveChartTab === 'All',
+                display: true,
                 position: 'top',
                 labels: { boxWidth: 10, font: { size: 9.5, family: 'Poppins' } }
               },
               tooltip: {
                 callbacks: {
-                  label: function(c) { return ` ${c.dataset.label}: ${c.parsed.y}%`; }
+                  label: function(c) {
+                    if (c.dataset.label && c.dataset.label.includes('ඉලක්කය')) return ` ඉලක්කය: 75% (A Grade)`;
+                    const item = relevantEntries[c.dataIndex];
+                    let tip = ` ${c.dataset.label}: ${c.parsed.y}%`;
+                    if (item && item.timeTaken) tip += ` • ගතවූ කාලය: ${item.timeTaken}`;
+                    if (item && item.remarks) tip += ` • ${item.remarks}`;
+                    return tip;
+                  }
                 }
               }
             },
