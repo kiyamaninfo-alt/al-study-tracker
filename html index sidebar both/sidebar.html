@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <base target="_top">
     <title>Syllabus Manager</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📘</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📘</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
       :root {
@@ -203,7 +202,7 @@
     <div id="tabSearch" class="tab-content active">
       <div class="card">
         <div class="form-group">
-          <input type="text" class="form-input" id="searchBox" placeholder="අංකය (1 හෝ 1.2) හෝ නම සොයන්න..." oninput="handleSearch()">
+          <input type="text" class="form-input" id="searchBox" placeholder="අංකය (1.2) හෝ වචනයක් සොයන්න..." oninput="handleSearch()">
         </div>
         <div id="searchResults" style="max-height: 480px; overflow-y: auto;">
           <div style="text-align: center; color: var(--text-muted); padding: 20px 0;">දත්ත පූරණය වෙමින් පවතී...</div>
@@ -296,8 +295,8 @@
 
     <script>
       const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
-      const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
-      window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
+window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       let allLessons = [];
       let currentEditingItem = null;
@@ -345,7 +344,7 @@
         document.getElementById(tabId).classList.add('active');
       }
 
-      // 1. Search Engine - Boundary Aware
+      // 1. Search Engine
       function handleSearch() {
         const query = document.getElementById('searchBox').value.trim().toLowerCase();
         const container = document.getElementById('searchResults');
@@ -357,24 +356,10 @@
 
         const filtered = allLessons.filter(item => {
           if (!query) return true;
-          const code = (item.code || '').toLowerCase().trim();
-          const subLesson = (item.subLesson || '').toLowerCase().trim();
-          const unit = (item.unit || '').toLowerCase().trim();
-          const subject = (item.subject || '').toLowerCase().trim();
-
-          let matchesCode = false;
-          if (/^\d+$/.test(query)) {
-            // "1" ගැසූ විට 1 හෝ 1.x පමණක් තෝරයි (11, 21 නොපෙන්වයි)
-            matchesCode = code === query || code.startsWith(query + '.');
-          } else if (/^\d+\./.test(query)) {
-            // "1." හෝ "1.2" ගැසූ විට එම උප-අංකයෙන් පටන් ගන්නා දේ තෝරයි
-            matchesCode = code.startsWith(query);
-          } else {
-            matchesCode = code.startsWith(query);
-          }
-
-          const matchesText = subLesson.includes(query) || unit.includes(query) || subject === query;
-          return matchesCode || matchesText;
+          return item.code.toLowerCase().includes(query) ||
+                 item.subLesson.toLowerCase().includes(query) ||
+                 item.unit.toLowerCase().includes(query) ||
+                 item.subject.toLowerCase().includes(query);
         });
 
         if (filtered.length === 0) {
@@ -411,7 +396,7 @@
         }
       }
 
-      // 2. Add Lesson Engine
+      // 2. Add Lesson Engine with Auto-Suggestion
       function onAddSubjectChange() {
         const subj = document.getElementById('addSubject').value;
         const unitDropdown = document.getElementById('unitDropdown');
