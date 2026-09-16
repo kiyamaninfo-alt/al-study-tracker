@@ -4,8 +4,6 @@
  <meta charset="UTF-8">
  <base target="_top">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Sinethmi Study Tracker & Mission Control</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>"> 
  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1628,9 +1626,10 @@
  </div>
  </div>
     <script>
+// --- Supabase Client Configuration ---
 const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
-window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       // 1. Live Countdown
       const targetExamDate = new Date('2028-08-04T08:30:00+05:30').getTime();
 
@@ -3368,4 +3367,3 @@ function openSidebarModal() {
 
   </body>
 </html>
-
