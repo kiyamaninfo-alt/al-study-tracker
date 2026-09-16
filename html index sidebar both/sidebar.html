@@ -6,6 +6,7 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
       :root {
         --primary: #8c7ae6;
@@ -297,6 +298,7 @@
 const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
 window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+ 
       let allLessons = [];
       let currentEditingItem = null;
 
@@ -309,7 +311,7 @@ window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   try {
     const { data, error } = await supabase
       .from('canonical_syllabus')
-      .select('id, subject, unit_number, unit_name, sub_lesson_code, sub_lesson_title, sort_order')
+      .select('id, subject, unit_number, unit_name, sub_lesson_code, sub_lesson_title')
       .order('sort_order', { ascending: true });
 
     if (error) throw error;
@@ -317,18 +319,16 @@ window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     allLessons = (data || []).map(row => ({
       id: row.id,
       subject: row.subject,
-      unit: row.unit_name,
       unitNum: row.unit_number,
+      unit: row.unit_name,
       code: row.sub_lesson_code,
-      subLesson: row.sub_lesson_title.startsWith(row.sub_lesson_code)
-        ? row.sub_lesson_title
-        : `${row.sub_lesson_code} ${row.sub_lesson_title}`
+      subLesson: row.sub_lesson_title
     }));
 
     handleSearch();
     onAddSubjectChange();
   } catch (err) {
-    console.error("Fetch Syllabus Error:", err);
+    console.error("Supabase load error:", err);
     document.getElementById('searchResults').innerHTML = 
       '<div style="text-align: center; color: #c5221f; padding: 10px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || "නැවත උත්සාහ කරන්න") + '</div>';
   }
