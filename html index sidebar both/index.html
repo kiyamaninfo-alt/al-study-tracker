@@ -1846,7 +1846,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
   window.addEventListener('message', function(event) {
   if (event.data && event.data.action === 'JUMP_DRILLDOWN') {
     hideSidebarModal();
-    openDrilldownModal(event.data.subject);
+    openDrilldownModal(event.data.subject, event.data.code);
   }
 });
       let cachedCanonicalSyllabus = null;
@@ -3047,7 +3047,7 @@ function openSidebarModal() {
   }
 }
       // 10. Drilldown Tree Modal
-      function openDrilldownModal(subject) {
+      function openDrilldownModal(subject, targetCode) {
         if (!telemetryData || !telemetryData.breakdown || !telemetryData.breakdown[subject]) return;
 
         const modal = document.getElementById('drillModal');
@@ -3072,9 +3072,36 @@ function openSidebarModal() {
 
         const units = telemetryData.breakdown[subject];
         let html = '';
+        let targetUnitIdx = -1;
 
         units.forEach((u, idx) => {
           const safeUnitName = encodeURIComponent(u.unitName);
+          let subListHtml = '';
+          let unitMatchesTarget = false;
+
+          u.subLessons.forEach(sl => {
+            const isMatch = targetCode && (
+              sl.title.startsWith(targetCode + ' ') ||
+              sl.title.startsWith(targetCode + '-') ||
+              sl.title === targetCode ||
+              sl.title.includes('[' + targetCode + ']')
+            );
+            if (isMatch) unitMatchesTarget = true;
+
+            subListHtml += `
+              <div class="sub-item" ${isMatch ? 'id="jumpTargetItem" style="background: #f1f2f6; border-left: 3px solid #6c5ce7;"' : ''}>
+                <div class="sub-title-txt">${sl.title}</div>
+                <div class="badge-group">
+                  <span class="state-badge ${sl.lessonDone ? 'done-lesson' : ''}">📘 Lesson</span>
+                  <span class="state-badge ${sl.hwDone ? 'done-hw' : ''}">📝 HW</span>
+                  <span class="state-badge ${sl.papersCount > 0 ? 'done-paper' : ''}">📄 Papers: ${sl.papersCount}</span>
+                </div>
+              </div>
+            `;
+          });
+
+          if (unitMatchesTarget) targetUnitIdx = idx;
+
           html += `
             <div class="unit-item">
               <div class="unit-head" onclick="toggleUnit(${idx})">
@@ -3089,22 +3116,7 @@ function openSidebarModal() {
                 </div>
               </div>
               <div class="sub-list" id="sublist-${idx}">
-          `;
-
-          u.subLessons.forEach(sl => {
-            html += `
-              <div class="sub-item">
-                <div class="sub-title-txt">${sl.title}</div>
-                <div class="badge-group">
-                  <span class="state-badge ${sl.lessonDone ? 'done-lesson' : ''}">📘 Lesson</span>
-                  <span class="state-badge ${sl.hwDone ? 'done-hw' : ''}">📝 HW</span>
-                  <span class="state-badge ${sl.papersCount > 0 ? 'done-paper' : ''}">📄 Papers: ${sl.papersCount}</span>
-                </div>
-              </div>
-            `;
-          });
-
-          html += `
+                ${subListHtml}
               </div>
             </div>
           `;
@@ -3112,6 +3124,14 @@ function openSidebarModal() {
 
         body.innerHTML = html;
         modal.style.display = 'flex';
+
+        if (targetUnitIdx >= 0) {
+          toggleUnit(targetUnitIdx);
+          setTimeout(() => {
+            const el = document.getElementById('jumpTargetItem');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 150);
+        }
       }
 
       function toggleUnit(idx) {

@@ -318,14 +318,23 @@
 
           if (error) throw error;
 
-          allLessons = (data || []).map(row => ({
-            id: row.id,
-            subject: row.subject,
-            unitNum: row.unit_number,
-            unit: row.unit_name,
-            code: row.sub_lesson_code,
-            subLesson: row.sub_lesson_title
-          }));
+          allLessons = (data || []).map(row => {
+            const code = String(row.sub_lesson_code || '').trim();
+            let rawTitle = String(row.sub_lesson_title || '').trim();
+            let cleanTitle = rawTitle;
+            if (code && cleanTitle.startsWith(code)) {
+              cleanTitle = cleanTitle.substring(code.length).trim().replace(/^[-:–]\s*/, '');
+            }
+            return {
+              id: row.id,
+              subject: row.subject,
+              unitNum: row.unit_number,
+              unit: row.unit_name,
+              code: code,
+              subLesson: cleanTitle,
+              displayTitle: code ? `${code} ${cleanTitle}` : cleanTitle
+            };
+          });
 
           handleSearch();
           onAddSubjectChange();
@@ -361,6 +370,7 @@
           if (!query) return true;
           return item.code.toLowerCase().includes(query) ||
                  item.subLesson.toLowerCase().includes(query) ||
+                 item.displayTitle.toLowerCase().includes(query) ||
                  item.unit.toLowerCase().includes(query) ||
                  item.subject.toLowerCase().includes(query);
         });
@@ -376,9 +386,9 @@
             <div class="search-result-item">
               <div class="res-header">
                 <span class="badge-subj badge-${item.subject}">${item.subject}</span>
-                <span style="font-weight: 700; color: #8c7ae6;">${item.code}</span>
+                <span style="font-weight: 700; color: #8c7ae6; font-size: 11px;">උප-ඒකකය ${item.code}</span>
               </div>
-              <div class="res-title">${item.subLesson}</div>
+              <div class="res-title"><span style="color: #6c5ce7; font-weight: 700; margin-right: 6px;">${item.code}</span>${item.subLesson}</div>
               <div class="res-unit">${item.unit}</div>
               <div class="res-actions">
                 <button class="action-btn jump" onclick="jumpToRow('${item.subject}', '${item.code}')">🎯 පනින්න</button>
