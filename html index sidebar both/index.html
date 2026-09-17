@@ -3783,7 +3783,7 @@
                 <div style="font-size: 11.5px; font-weight: 700;" class="settings-title-label">📜 මෑත සටහන් සහ Undo කිරීම:</div>
                 <div style="font-size: 9.5px; color: #7f8fa6; margin-top: 2px;">වැරදීමකින් ලොග් කළ ප්‍රශ්න පත්‍ර හෝ ප්‍රගති සටහන් මෙතැනින් Undo කරන්න.</div>
               </div>
-              <button type="button" onclick="renderActivityLog()" class="btn-refresh-log" title="නැවත පූරණය කරන්න">🔄 Refresh</button>
+              <button type="button" id="btnRefreshActivityLog" onclick="refreshActivityLogBtn(this)" class="btn-refresh-log" title="නැවත පූරණය කරන්න">🔄 Refresh</button>
             </div>
 
             <!-- Filter Buttons -->
@@ -6350,12 +6350,53 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (btnLog) btnLog.classList.add('active');
           if (tabGeneral) tabGeneral.style.display = 'none';
           if (tabLog) tabLog.style.display = 'block';
-          renderActivityLog();
+
+          if (!globalActivityData || getAllActivityLogs().length === 0) {
+            refreshActivityLogBtn();
+          } else {
+            renderActivityLog();
+          }
         } else {
           if (btnGeneral) btnGeneral.classList.add('active');
           if (btnLog) btnLog.classList.remove('active');
           if (tabGeneral) tabGeneral.style.display = 'block';
           if (tabLog) tabLog.style.display = 'none';
+        }
+      }
+
+      async function refreshActivityLogBtn(btn) {
+        const refreshBtn = btn || document.getElementById('btnRefreshActivityLog');
+        if (refreshBtn) {
+          refreshBtn.disabled = true;
+          refreshBtn.innerText = '⏳ පූරණය වෙමින්...';
+          refreshBtn.style.opacity = '0.7';
+        }
+
+        const listEl = document.getElementById('activityLogList');
+        if (listEl && (!globalActivityData || getAllActivityLogs().length === 0)) {
+          listEl.innerHTML = '<div style="text-align: center; color: #a4b0be; font-size: 11px; padding: 24px;">ක්‍රියාකාරකම් පූරණය වෙමින් පවතී... ⏳</div>';
+        }
+
+        try {
+          await refreshTelemetry();
+          renderActivityLog();
+        } catch (err) {
+          console.error('refreshActivityLogBtn error:', err);
+          if (listEl) {
+            listEl.innerHTML = `<div style="text-align: center; color: #eb4d4b; font-size: 11px; padding: 20px;">දත්ත පූරණය අසාර්ථක විය: ${escapeHtml(err.message || '')}</div>`;
+          }
+        } finally {
+          if (refreshBtn) {
+            refreshBtn.disabled = false;
+            refreshBtn.innerText = '🔄 Refresh';
+            refreshBtn.style.opacity = '1';
+          }
+        }
+      }
+
+      function closeUndoConfirm(event) {
+        if (event.target && event.target.id === 'undoConfirmPopup') {
+          cancelUndoConfirm();
         }
       }
 
@@ -6577,7 +6618,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <div class="log-item-title" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
                 <div class="log-item-meta" title="${escapeHtml(item.subTitle)}">${escapeHtml(item.subTitle)}</div>
               </div>
-              <button type="button" class="btn-log-undo" onclick="requestUndo('${safeId}', '${safeType}')" title="මෙම සටහන Undo කර ඉවත් කරන්න">
+              <button type="button" class="btn-log-undo" data-id="${escapeHtml(String(item.id))}" data-type="${escapeHtml(String(item.type))}" onclick="requestUndo(this.getAttribute('data-id'), this.getAttribute('data-type'))" title="මෙම සටහන Undo කර ඉවත් කරන්න">
                 ↩️ Undo
               </button>
             </div>
@@ -6600,9 +6641,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (msgEl) {
           let detail = '';
           if (item.type === 'UNIT_PAPER') {
-            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Unit Paper සටහන දත්ත සමුදායෙන් සම්පූර්ණයෙන්ම ඉවත් කිරීමට අවශ්‍යද? සියලු ප්‍රස්ථාර හා ලකුණු ස්වයංක්‍රීයව යාවත්කාලීන වනු ඇත.`;
+            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Unit Paper සටහන දත්ත සමුදායෙන් සම්පූර්ණයෙන්ම ඉවත් කිරීමට අවශ්‍යද?<br>සියලු ප්‍රස්ථාර හා ලකුණු ස්වයංක්‍රීයව යාවත්කාලීන වනු ඇත.`;
           } else if (item.type === 'FULL_PAPER') {
-            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Full Exam Paper සටහන දත්ත සමුදායෙන් ඉවත් කිරීමට අවශ්‍යද? Z-Score හා ප්‍රගති ප්‍රස්ථාර ස්වයංක්‍රීයව යාවත්කාලීන වනු ඇත.`;
+            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Full Exam Paper සටහන දත්ත සමුදායෙන් ඉවත් කිරීමට අවශ්‍යද?<br>Z-Score හා ප්‍රගති ප්‍රස්ථාර ස්වයංක්‍රීයව යාවත්කාලීන වනු ඇත.`;
           } else if (item.type === 'SPACED_REPETITION') {
             detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Spaced Repetition සම්පූර්ණ කිරීම Undo කර මෙම පාඩම නැවත සක්‍රීය චක්‍රයට එකතු කිරීමට අවශ්‍යද?`;
           } else if (item.type === 'PROGRESS') {
@@ -6639,25 +6680,26 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         try {
+          const rawId = (item.raw && item.raw.id !== undefined) ? item.raw.id : item.id;
           if (item.type === 'UNIT_PAPER') {
             const { error } = await supabase
               .from('unit_papers')
               .delete()
-              .eq('id', item.id);
+              .eq('id', rawId);
             if (error) throw error;
             showHtmlAlert(`[${item.subject}] Unit Paper සටහන සාර්ථකව Undo කර ඉවත් කරන ලදී! ↩️`, false);
           } else if (item.type === 'FULL_PAPER') {
             const { error } = await supabase
               .from('full_papers')
               .delete()
-              .eq('id', item.id);
+              .eq('id', rawId);
             if (error) throw error;
             showHtmlAlert(`[${item.subject}] Full Paper සටහන සාර්ථකව Undo කර ඉවත් කරන ලදී! ↩️`, false);
           } else if (item.type === 'SPACED_REPETITION') {
             const { error } = await supabase
               .from('spaced_repetition_log')
               .delete()
-              .eq('id', item.id);
+              .eq('id', rawId);
             if (error) throw error;
             showHtmlAlert(`Spaced Repetition සටහන සාර්ථකව Undo කරන ලදී! ↩️`, false);
           } else if (item.type === 'PROGRESS') {
@@ -7862,11 +7904,12 @@ function openSidebarModal() {
             නැත ❌
           </button>
         </div>
+      </div>
     </div>
 
     <!-- Undo Confirmation Modal -->
-    <div id="undoConfirmPopup" class="modal-overlay-alert" style="z-index: 99997;">
-      <div class="alert-popup-card" style="border-top: 5px solid #eb4d4b; max-width: 380px;">
+    <div id="undoConfirmPopup" class="modal-overlay-alert" style="z-index: 100000;" onclick="closeUndoConfirm(event)">
+      <div class="alert-popup-card" style="border-top: 5px solid #eb4d4b; max-width: 380px;" onclick="event.stopPropagation()">
         <div class="alert-popup-icon">↩️</div>
         <div class="alert-popup-title" style="color: #eb4d4b;">ක්‍රියාව Undo කර ඉවත් කිරීම</div>
         <div id="undoConfirmMsg" class="alert-popup-msg" style="background: rgba(235, 77, 75, 0.08); border-radius: 10px; padding: 12px 10px; border: 1px solid rgba(235, 77, 75, 0.25); color: inherit; font-size: 11px; line-height: 1.5;"></div>
@@ -7874,7 +7917,7 @@ function openSidebarModal() {
           <button id="undoConfirmOkBtn" class="alert-popup-btn" onclick="executeUndoConfirmed()" style="background: linear-gradient(135deg, #eb4d4b, #d63031); color: white; box-shadow: 0 4px 14px rgba(235,77,75,0.3); font-weight: 700;">
             ඔව්, Undo කරන්න ↩️
           </button>
-          <button onclick="cancelUndoConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
+          <button type="button" onclick="cancelUndoConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
             අවලංගු කරන්න ✕
           </button>
         </div>
