@@ -1355,6 +1355,90 @@
           <span style="color: #636e72;">සමස්ත සාමාන්‍යය:</span> <strong id="upSummaryOverallAvg" style="color: #27ae60;">-</strong>
         </div>
       </div>
+
+      <!-- Unit Paper Multi-Window Analytics Panel (Count: 3,5,7,10,20,50,All & Time: 3,5,7,14,30,60,90d,All) -->
+      <div class="zscore-panel" id="upAnalyticsPanel" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #dfe6e9;">
+        <div class="zscore-panel-title">
+          <span>📊 Unit Paper සාමාන්‍ය ලකුණු විග්‍රහය (Analytics)</span>
+          <span style="font-size: 8.5px; color: #6c5ce7; font-weight: 600;" id="upAnalyticsSubjectBadge">සියලු විෂයයන් (All)</span>
+        </div>
+
+        <div class="zscore-grid">
+          <!-- 1. By Paper Count -->
+          <div class="zscore-box">
+            <div class="zscore-box-lbl">📝 ප්‍රශ්න පත්‍ර ගණන අනුව (Count Avg)</div>
+            <div class="zscore-row">
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 3:</span>
+                <span class="zscore-pill-val empty" id="up_cnt_3">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 5:</span>
+                <span class="zscore-pill-val empty" id="up_cnt_5">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 7:</span>
+                <span class="zscore-pill-val empty" id="up_cnt_7">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 10:</span>
+                <span class="zscore-pill-val empty" id="up_cnt_10">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 20:</span>
+                <span class="zscore-pill-val empty" id="up_cnt_20">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 50:</span>
+                <span class="zscore-pill-val empty" id="up_cnt_50">-</span>
+              </div>
+              <div class="zscore-pill" style="flex: 1 1 100%;">
+                <span class="zscore-pill-tag">සියල්ල (All Papers):</span>
+                <span class="zscore-pill-val empty" id="up_cnt_all">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. By Time Range -->
+          <div class="zscore-box">
+            <div class="zscore-box-lbl">📅 කාල පරාස අනුව (Time Window Avg)</div>
+            <div class="zscore-row">
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 3:</span>
+                <span class="zscore-pill-val empty" id="up_time_3d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 5:</span>
+                <span class="zscore-pill-val empty" id="up_time_5d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 7:</span>
+                <span class="zscore-pill-val empty" id="up_time_7d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 14:</span>
+                <span class="zscore-pill-val empty" id="up_time_14d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 30:</span>
+                <span class="zscore-pill-val empty" id="up_time_30d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 60:</span>
+                <span class="zscore-pill-val empty" id="up_time_60d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 90:</span>
+                <span class="zscore-pill-val empty" id="up_time_90d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">සමස්ත කාලය:</span>
+                <span class="zscore-pill-val empty" id="up_time_all">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
 
@@ -2194,6 +2278,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       async function refreshTelemetry() {
         try {
+          unitAnalyticsCache = {};
           const promises = [
             supabase.rpc('get_dashboard_telemetry'),
             supabase.from('tracker_progress').select('*'),
@@ -3082,6 +3167,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             unitScoreChartInstance.destroy();
             unitScoreChartInstance = null;
           }
+          renderUnitPaperAnalytics([], currentActiveUnitChartTab);
           return;
         }
 
@@ -3289,7 +3375,148 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             }
           }
         });
+
+        // Trigger multi-window analytics update for the active view
+        renderUnitPaperAnalytics(relevantEntries, currentActiveUnitChartTab);
       }
+
+      // =========================================================================
+      // RESOURCE-SAVING METHOD 2: In-Memory Memoization Cache per Subject Tab
+      // Avoids repeated calculation when toggling between All, ICT, ET, SFT
+      // =========================================================================
+      let unitAnalyticsCache = {};
+
+      // =========================================================================
+      // RESOURCE-SAVING METHOD 3: DOM Element Reference Cache
+      // Caches document.getElementById to eliminate repeated DOM tree lookups
+      // =========================================================================
+      const upPillElementsCache = {};
+
+      function formatUpStat(val, elemId) {
+        if (!upPillElementsCache[elemId]) {
+          upPillElementsCache[elemId] = document.getElementById(elemId);
+        }
+        const el = upPillElementsCache[elemId];
+        if (!el) return;
+
+        if (val === null || val === undefined || isNaN(val)) {
+          el.className = "zscore-pill-val empty";
+          el.style.color = "";
+          el.innerText = "-";
+        } else {
+          el.className = "zscore-pill-val";
+          const num = Number(val);
+          // Highlight based on A/L score brackets
+          if (num >= 75) el.style.color = "#27ae60";      // Distinction (A Grade)
+          else if (num >= 65) el.style.color = "#0984e3"; // Credit (B Grade)
+          else if (num >= 50) el.style.color = "#e67e22"; // Pass (C/S Grade)
+          else el.style.color = "#e84393";                // Review needed
+          el.innerText = num.toFixed(1) + "%";
+        }
+      }
+
+      function renderUnitPaperAnalytics(entries, tab) {
+        const badgeEl = document.getElementById('upAnalyticsSubjectBadge');
+        if (badgeEl) {
+          const tabTitles = {
+            'All': 'සියලු විෂයයන් (All Subjects)',
+            'ICT': '📘 ICT විෂය සඳහා',
+            'ET': '📙 ET විෂය සඳහා',
+            'SFT': '📗 SFT විෂය සඳහා'
+          };
+          badgeEl.innerText = tabTitles[tab] || tab;
+        }
+
+        // Method 2: Check in-memory memoization cache first (instant O(1) response on tab switches)
+        let stats = unitAnalyticsCache[tab];
+        if (!stats) {
+          // =========================================================================
+          // RESOURCE-SAVING METHOD 1: Single-Pass O(N) Backward Traversal
+          // Calculates all 15 metrics in a single pass with ZERO array churn
+          // =========================================================================
+          const targetCounts = [3, 5, 7, 10, 20, 50];
+          const countAverages = { 3: null, 5: null, 7: null, 10: null, 20: null, 50: null };
+
+          const targetDays = [3, 5, 7, 14, 30, 60, 90];
+          const timeSums = { 3: 0, 5: 0, 7: 0, 14: 0, 30: 0, 60: 0, 90: 0 };
+          const timeCounts = { 3: 0, 5: 0, 7: 0, 14: 0, 30: 0, 60: 0, 90: 0 };
+
+          const N = entries.length;
+          const now = Date.now();
+          let countProcessed = 0;
+          let countSum = 0;
+          let allTimeSum = 0;
+          let allTimeCount = 0;
+
+          // Single backward loop: iterates from newest to oldest paper
+          for (let i = N - 1; i >= 0; i--) {
+            const item = entries[i];
+            const marks = item.marks;
+            if (marks === null || marks === undefined || isNaN(marks)) continue;
+
+            countProcessed++;
+            countSum += marks;
+
+            // Record paper count averages as milestones are hit
+            for (let j = 0; j < targetCounts.length; j++) {
+              const c = targetCounts[j];
+              if (countProcessed === c) {
+                countAverages[c] = countSum / c;
+              }
+            }
+
+            // Record time range averages using timestamp
+            const ts = item.timestamp || (item.loggedAt ? new Date(item.loggedAt).getTime() : 0);
+            if (ts > 0) {
+              const diffDays = (now - ts) / 86400000; // 1000 * 60 * 60 * 24
+              allTimeSum += marks;
+              allTimeCount++;
+
+              for (let k = 0; k < targetDays.length; k++) {
+                const d = targetDays[k];
+                if (diffDays <= d) {
+                  timeSums[d] += marks;
+                  timeCounts[d]++;
+                }
+              }
+            }
+          }
+
+          const byCount = {};
+          targetCounts.forEach(c => {
+            byCount[c] = countAverages[c] !== null ? Number(countAverages[c].toFixed(1)) : null;
+          });
+          byCount.all = countProcessed > 0 ? Number((countSum / countProcessed).toFixed(1)) : null;
+
+          const byTime = {};
+          targetDays.forEach(d => {
+            byTime[d] = timeCounts[d] > 0 ? Number((timeSums[d] / timeCounts[d]).toFixed(1)) : null;
+          });
+          byTime.all = allTimeCount > 0 ? Number((allTimeSum / allTimeCount).toFixed(1)) : null;
+
+          stats = { byCount, byTime };
+          unitAnalyticsCache[tab] = stats;
+        }
+
+        // Method 3: Apply stats to DOM in-place without rebuilding DOM nodes
+        formatUpStat(stats.byCount[3], "up_cnt_3");
+        formatUpStat(stats.byCount[5], "up_cnt_5");
+        formatUpStat(stats.byCount[7], "up_cnt_7");
+        formatUpStat(stats.byCount[10], "up_cnt_10");
+        formatUpStat(stats.byCount[20], "up_cnt_20");
+        formatUpStat(stats.byCount[50], "up_cnt_50");
+        formatUpStat(stats.byCount.all, "up_cnt_all");
+
+        formatUpStat(stats.byTime[3], "up_time_3d");
+        formatUpStat(stats.byTime[5], "up_time_5d");
+        formatUpStat(stats.byTime[7], "up_time_7d");
+        formatUpStat(stats.byTime[14], "up_time_14d");
+        formatUpStat(stats.byTime[30], "up_time_30d");
+        formatUpStat(stats.byTime[60], "up_time_60d");
+        formatUpStat(stats.byTime[90], "up_time_90d");
+        formatUpStat(stats.byTime.all, "up_time_all");
+      }
+
 
 function openSidebarModal() {
  const frame = document.getElementById('sidebarFrame');
