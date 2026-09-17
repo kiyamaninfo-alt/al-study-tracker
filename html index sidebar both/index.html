@@ -1249,7 +1249,7 @@
         <span style="font-size: 8.5px; color: #a4b0be;" id="chartZoomIndicator">Adaptive Zoom</span>
       </div>
 
-      <div class="chart-tab-bar">
+      <div class="chart-tab-bar" id="fullPaperChartTabBar">
         <button class="chart-tab-btn active" onclick="switchChartTab('ICT')">ICT</button>
         <button class="chart-tab-btn" onclick="switchChartTab('ET')">ET</button>
         <button class="chart-tab-btn" onclick="switchChartTab('SFT')">SFT</button>
@@ -1320,6 +1320,39 @@
         </div>
         <div class="zscore-footnote">
           * විෂයයන් 3න්ම (ICT, ET, SFT) සමාන Full Papers සංඛ්‍යාවක් සලකා ත්‍රිත්ව සාමාන්‍යය මඟින් ගණනය කෙරේ.
+        </div>
+      </div>
+    </div>
+
+    <!-- Unit Test Paper Score Progression Card -->
+    <div class="chart-card" id="unitPaperChartCard" style="margin-top: 14px;">
+      <div class="chart-header">
+        <span id="unitChartCardHeading">📈 Unit Paper Score Progression (All)</span>
+        <span style="font-size: 8.5px; color: #a4b0be;" id="unitChartZoomIndicator">Adaptive Zoom</span>
+      </div>
+
+      <div class="chart-tab-bar" id="unitChartTabBar">
+        <button class="chart-tab-btn active" onclick="switchUnitChartTab('All')">All</button>
+        <button class="chart-tab-btn" onclick="switchUnitChartTab('ICT')">ICT</button>
+        <button class="chart-tab-btn" onclick="switchUnitChartTab('ET')">ET</button>
+        <button class="chart-tab-btn" onclick="switchUnitChartTab('SFT')">SFT</button>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="unitScoreChart" style="display: none;"></canvas>
+        <div id="noUnitChartMsg" class="chart-empty-msg">තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝</div>
+      </div>
+
+      <!-- Unit Papers Quick Summary Bar -->
+      <div id="unitPaperSummaryBar" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 12px 4px; border-top: 1px dashed rgba(0,0,0,0.06); font-size: 9.5px;">
+        <div style="flex: 1; min-width: 110px; background: rgba(108, 92, 231, 0.06); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(108, 92, 231, 0.15);">
+          <span style="color: #636e72;">මුළු Papers:</span> <strong id="upSummaryTotal" style="color: #6c5ce7;">0</strong>
+        </div>
+        <div style="flex: 1; min-width: 160px; background: rgba(243, 156, 18, 0.08); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(243, 156, 18, 0.25);">
+          <span style="color: #636e72;">පසුගිය Papers 5 සාමාන්‍යය:</span> <strong id="upSummaryLast5Avg" style="color: #d35400;">-</strong>
+        </div>
+        <div style="flex: 1; min-width: 110px; background: rgba(39, 174, 96, 0.06); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(39, 174, 96, 0.15);">
+          <span style="color: #636e72;">සමස්ත සාමාන්‍යය:</span> <strong id="upSummaryOverallAvg" style="color: #27ae60;">-</strong>
         </div>
       </div>
     </div>
@@ -2165,7 +2198,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             supabase.rpc('get_dashboard_telemetry'),
             supabase.from('tracker_progress').select('*'),
             supabase.from('spaced_repetition_log').select('*').order('completed_at', { ascending: true }),
-            supabase.from('full_papers').select('*').order('exam_date', { ascending: true }).order('logged_at', { ascending: true })
+            supabase.from('full_papers').select('*').order('exam_date', { ascending: true }).order('logged_at', { ascending: true }),
+            supabase.from('unit_papers').select('*').order('logged_at', { ascending: true })
           ];
 
           if (!cachedCanonicalSyllabus) {
@@ -2178,9 +2212,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const tpRes = results[1];
           const srRes = results[2];
           const fpRes = results[3];
+          const upRes = results[4];
 
-          if (!cachedCanonicalSyllabus && results[4] && results[4].status === 'fulfilled' && results[4].value.data) {
-            cachedCanonicalSyllabus = results[4].value.data;
+          if (!cachedCanonicalSyllabus && results[5] && results[5].status === 'fulfilled' && results[5].value.data) {
+            cachedCanonicalSyllabus = results[5].value.data;
           }
 
           let rpcData = (rpcRes.status === 'fulfilled' && !rpcRes.value.error) ? rpcRes.value.data : null;
@@ -2188,6 +2223,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const tpList = (tpRes.status === 'fulfilled' && tpRes.value.data) ? tpRes.value.data : [];
           const srLogs = (srRes.status === 'fulfilled' && srRes.value.data) ? srRes.value.data : [];
           const fpRawList = (fpRes.status === 'fulfilled' && fpRes.value.data) ? fpRes.value.data : [];
+          const upRawList = (upRes && upRes.status === 'fulfilled' && upRes.value.data) ? upRes.value.data : [];
 
           // Format full papers history directly from full_papers table
           const fullPapersHistory = fpRawList.map(r => ({
@@ -2199,6 +2235,20 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             timeTaken: r.time_taken || null,
             remarks: r.remarks || null,
             timestamp: r.exam_date ? new Date(r.exam_date).getTime() : (r.logged_at ? new Date(r.logged_at).getTime() : 0)
+          }));
+
+          // Format unit papers history directly from unit_papers table
+          const unitPapersHistory = upRawList.map(r => ({
+            id: r.id,
+            syllabusId: r.syllabus_id,
+            subject: (r.subject || '').toUpperCase().trim(),
+            code: r.sub_lesson_code || '',
+            paperNo: r.paper_no || 1,
+            marks: (r.marks !== null && r.marks !== undefined && !isNaN(r.marks)) ? Number(r.marks) : null,
+            loggedAt: r.logged_at,
+            date: r.logged_at ? r.logged_at.substring(5, 10) : '',
+            fullDate: r.logged_at ? r.logged_at.substring(0, 10) : '',
+            timestamp: r.logged_at ? new Date(r.logged_at).getTime() : 0
           }));
 
           // Compute Z-score analytics
@@ -2215,7 +2265,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               breakdown: {},
               streak: 0,
               workedToday: false,
-              totalUnitPapersDone: 0,
+              totalUnitPapersDone: unitPapersHistory.length,
               totalFullPapersDone: fullPapersHistory.length,
               weeklyQuota: { actual: {}, targets: {}, percentages: {} }
             };
@@ -2227,6 +2277,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           rpcData.ebbCycleData = ebbResult.ebbCycleData;
           rpcData.maxCycle = ebbResult.maxCycle;
           rpcData.fullPapersHistory = fullPapersHistory;
+          rpcData.unitPapersHistory = unitPapersHistory;
           rpcData.totalFullPapersDone = fullPapersHistory.length;
           rpcData.zScoreAnalytics = zScoreAnalytics;
 
@@ -2353,6 +2404,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         renderVelocityMetrics(data.velocityMetrics);
         renderMultiTabChart();
         renderZScoreMetrics(data.zScoreAnalytics);
+        renderUnitPaperChart();
 
         const radarDiv = document.getElementById('radarList');
         if (data.radar && data.radar.length > 0) {
@@ -2723,7 +2775,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       function switchChartTab(tab) {
         currentActiveChartTab = tab;
-        const btns = document.querySelectorAll('.chart-tab-btn');
+        const btns = document.querySelectorAll('#fullPaperChartTabBar .chart-tab-btn');
         const tabOrder = ['ICT', 'ET', 'SFT', 'All', 'Z-score'];
         btns.forEach((b, idx) => {
           if (tabOrder[idx] === tab) b.classList.add('active');
@@ -2978,6 +3030,267 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         formatZ(getCountVal(20), "z_cnt_20");
         formatZ(getCountVal(50), "z_cnt_50");
       }
+
+      // --- Unit Paper Score Progression Chart Engine ---
+      let currentActiveUnitChartTab = 'All';
+      let unitScoreChartInstance = null;
+
+      function switchUnitChartTab(tab) {
+        currentActiveUnitChartTab = tab;
+        const btns = document.querySelectorAll('#unitChartTabBar .chart-tab-btn');
+        const tabOrder = ['All', 'ICT', 'ET', 'SFT'];
+        btns.forEach((b, idx) => {
+          if (tabOrder[idx] === tab) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        renderUnitPaperChart();
+      }
+
+      function renderUnitPaperChart() {
+        if (!telemetryData) return;
+        const canvas = document.getElementById('unitScoreChart');
+        const emptyMsg = document.getElementById('noUnitChartMsg');
+        const heading = document.getElementById('unitChartCardHeading');
+        const zoomIndicator = document.getElementById('unitChartZoomIndicator');
+
+        const totalEl = document.getElementById('upSummaryTotal');
+        const last5AvgEl = document.getElementById('upSummaryLast5Avg');
+        const overallAvgEl = document.getElementById('upSummaryOverallAvg');
+
+        const history = (telemetryData.unitPapersHistory || []).filter(h => h.marks !== null && !isNaN(h.marks));
+
+        heading.innerText = `📈 Unit Paper Score Progression (${currentActiveUnitChartTab})`;
+
+        let relevantEntries = [];
+        if (currentActiveUnitChartTab === 'All') {
+          relevantEntries = history;
+        } else {
+          relevantEntries = history.filter(e => e.subject === currentActiveUnitChartTab);
+        }
+
+        if (relevantEntries.length === 0) {
+          canvas.style.display = 'none';
+          emptyMsg.style.display = 'flex';
+          emptyMsg.innerText = currentActiveUnitChartTab === 'All' 
+            ? "තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝"
+            : `${currentActiveUnitChartTab} සඳහා තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝`;
+          if (totalEl) totalEl.innerText = "0";
+          if (last5AvgEl) last5AvgEl.innerText = "-";
+          if (overallAvgEl) overallAvgEl.innerText = "-";
+          if (zoomIndicator) zoomIndicator.innerText = "No Data";
+          if (unitScoreChartInstance) {
+            unitScoreChartInstance.destroy();
+            unitScoreChartInstance = null;
+          }
+          return;
+        }
+
+        canvas.style.display = 'block';
+        emptyMsg.style.display = 'none';
+
+        const marksPool = relevantEntries.map(e => e.marks);
+        const totalCount = relevantEntries.length;
+        const overallSum = marksPool.reduce((acc, v) => acc + v, 0);
+        const overallAvg = overallSum / totalCount;
+
+        // Last 5 papers slice and average
+        const last5Slice = relevantEntries.slice(-5);
+        const last5Sum = last5Slice.reduce((acc, v) => acc + v.marks, 0);
+        const last5Avg = last5Sum / last5Slice.length;
+
+        if (totalEl) totalEl.innerText = `${totalCount} Papers`;
+        if (last5AvgEl) last5AvgEl.innerText = `${last5Avg.toFixed(1)}% (${last5Slice.length} Papers)`;
+        if (overallAvgEl) overallAvgEl.innerText = `${overallAvg.toFixed(1)}%`;
+
+        const minMark = Math.min(...marksPool);
+        const dynamicYMin = Math.max(0, Math.floor(Math.min(minMark, last5Avg) - 10));
+        if (zoomIndicator) {
+          zoomIndicator.innerText = `පසුගිය 5 සාමාන්‍යය: ${last5Avg.toFixed(1)}% • Zoomed: ${dynamicYMin}% ~ 100%`;
+        }
+
+        const labels = relevantEntries.map((e, idx) => {
+          const codeTag = e.code ? `${e.code}` : e.subject;
+          return `P${idx + 1} [${codeTag}] (${e.date || ''})`;
+        });
+
+        // 1. Horizontal Reference Line for the Last 5 Papers Average
+        const last5LineData = new Array(labels.length).fill(Number(last5Avg.toFixed(1)));
+
+        // 2. Rolling 5-Paper Moving Average Line
+        const rolling5Data = relevantEntries.map((_, i) => {
+          const windowSlice = relevantEntries.slice(Math.max(0, i - 4), i + 1);
+          const wSum = windowSlice.reduce((acc, x) => acc + x.marks, 0);
+          return Number((wSum / windowSlice.length).toFixed(1));
+        });
+
+        let datasets = [];
+
+        if (currentActiveUnitChartTab === 'All') {
+          const ictData = relevantEntries.map(e => e.subject === 'ICT' ? e.marks : null);
+          const etData = relevantEntries.map(e => e.subject === 'ET' ? e.marks : null);
+          const sftData = relevantEntries.map(e => e.subject === 'SFT' ? e.marks : null);
+
+          datasets = [
+            {
+              label: 'ICT',
+              data: ictData,
+              borderColor: '#4a90e2',
+              backgroundColor: 'rgba(74, 144, 226, 0.1)',
+              borderWidth: 2.2,
+              pointRadius: 5.5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#4a90e2',
+              pointBorderWidth: 2.5,
+              tension: 0.25,
+              spanGaps: true
+            },
+            {
+              label: 'ET',
+              data: etData,
+              borderColor: '#e67e22',
+              backgroundColor: 'rgba(230, 126, 34, 0.1)',
+              borderWidth: 2.2,
+              pointRadius: 5.5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#e67e22',
+              pointBorderWidth: 2.5,
+              tension: 0.25,
+              spanGaps: true
+            },
+            {
+              label: 'SFT',
+              data: sftData,
+              borderColor: '#27ae60',
+              backgroundColor: 'rgba(39, 174, 96, 0.1)',
+              borderWidth: 2.2,
+              pointRadius: 5.5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#27ae60',
+              pointBorderWidth: 2.5,
+              tension: 0.25,
+              spanGaps: true
+            },
+            {
+              label: `📊 පසුගිය Papers 5 සාමාන්‍යය (${last5Avg.toFixed(1)}%)`,
+              data: last5LineData,
+              borderColor: '#f39c12',
+              borderWidth: 2,
+              borderDash: [6, 6],
+              pointRadius: 0,
+              fill: false,
+              order: 0
+            },
+            {
+              label: `📈 5-Paper Moving Trend`,
+              data: rolling5Data,
+              borderColor: '#8c7ae6',
+              borderWidth: 1.8,
+              borderDash: [3, 3],
+              pointRadius: 3,
+              pointBackgroundColor: '#8c7ae6',
+              tension: 0.3,
+              fill: false,
+              order: 1
+            }
+          ];
+        } else {
+          const datasetColor = currentActiveUnitChartTab === 'ICT' ? '#4a90e2' : (currentActiveUnitChartTab === 'ET' ? '#e67e22' : '#27ae60');
+          datasets = [
+            {
+              label: `${currentActiveUnitChartTab} Marks`,
+              data: relevantEntries.map(e => e.marks),
+              borderColor: datasetColor,
+              backgroundColor: datasetColor + '1a',
+              borderWidth: 2.5,
+              pointRadius: 6,
+              pointHoverRadius: 9,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: datasetColor,
+              pointBorderWidth: 3,
+              tension: 0.25,
+              fill: true
+            },
+            {
+              label: `📊 පසුගිය Papers 5 සාමාන්‍යය (${last5Avg.toFixed(1)}%)`,
+              data: last5LineData,
+              borderColor: '#f39c12',
+              borderWidth: 2,
+              borderDash: [6, 6],
+              pointRadius: 0,
+              fill: false,
+              order: 0
+            },
+            {
+              label: `📈 5-Paper Moving Trend`,
+              data: rolling5Data,
+              borderColor: '#8c7ae6',
+              borderWidth: 1.8,
+              borderDash: [3, 3],
+              pointRadius: 3,
+              pointBackgroundColor: '#8c7ae6',
+              tension: 0.3,
+              fill: false,
+              order: 1
+            }
+          ];
+        }
+
+        if (unitScoreChartInstance) unitScoreChartInstance.destroy();
+        const ctx = canvas.getContext('2d');
+        unitScoreChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: datasets
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: { boxWidth: 10, font: { size: 9.5, family: 'Poppins' } }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(c) {
+                    if (c.dataset.label && c.dataset.label.includes('පසුගිය Papers 5 සාමාන්‍යය')) {
+                      return ` 📊 පසුගිය Papers 5 සාමාන්‍යය: ${c.parsed.y}%`;
+                    }
+                    if (c.dataset.label && c.dataset.label.includes('Moving')) {
+                      return ` 📈 5-Paper Moving Trend: ${c.parsed.y}%`;
+                    }
+                    const item = relevantEntries[c.dataIndex];
+                    let tip = ` [${item.subject}] ${item.code} (Paper ${item.paperNo}): ${c.parsed.y}%`;
+                    if (item && item.fullDate) tip += ` • ${item.fullDate}`;
+                    return tip;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                min: dynamicYMin,
+                max: 100,
+                ticks: {
+                  font: { size: 9 },
+                  callback: function(val) { return val + '%'; }
+                },
+                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+              },
+              x: {
+                ticks: { font: { size: 8.5 } },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
 function openSidebarModal() {
  const frame = document.getElementById('sidebarFrame');
  if (frame) frame.src = 'sidebar.html?v=' + Date.now();
