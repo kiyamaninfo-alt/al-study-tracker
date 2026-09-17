@@ -579,6 +579,24 @@
         font-weight: 600;
         font-size: 8px;
       }
+      #radarList {
+        max-height: 195px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      #radarList::-webkit-scrollbar {
+        width: 5px;
+      }
+      #radarList::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      #radarList::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      body.dark-mode #radarList::-webkit-scrollbar-thumb {
+        background: #30363d;
+      }
 
       /* Subject Balance Alert Banner */
       .balance-alert-card {
@@ -991,7 +1009,8 @@
       body.dark-mode .quota-card,
       body.dark-mode .radar-card,
       body.dark-mode .balance-alert-card,
-      body.dark-mode .sr-cycle-card,
+      body.dark-mode .ebbinghaus-card,
+      body.dark-mode .velocity-card,
       body.dark-mode .modal-window {
         background: #161b22 !important;
         color: #f0f6fc !important;
@@ -1004,11 +1023,17 @@
       body.dark-mode .timer-mode-lbl,
       body.dark-mode .zscore-footnote,
       body.dark-mode .rolling-lbl,
-      body.dark-mode .ranking-subtitle {
+      body.dark-mode .ranking-subtitle,
+      body.dark-mode .velocity-subtext,
+      body.dark-mode .ebbinghaus-desc,
+      body.dark-mode .sub-detail {
         color: #8b949e !important;
       }
       body.dark-mode .chart-header,
-      body.dark-mode .ranking-title {
+      body.dark-mode .ranking-title,
+      body.dark-mode .ebbinghaus-header,
+      body.dark-mode .velocity-header,
+      body.dark-mode .zscore-panel-title {
         color: #f0f6fc !important;
       }
       body.dark-mode .chart-tab-bar {
@@ -1022,12 +1047,86 @@
         background: #30363d !important;
         color: #58a6ff !important;
       }
-      body.dark-mode .zscore-subcard,
+      body.dark-mode .prog-tab-btn {
+        color: rgba(255, 255, 255, 0.7) !important;
+      }
+      body.dark-mode .prog-tab-btn.active {
+        background: #161b22 !important;
+        color: #58a6ff !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+      }
+      body.dark-mode .badge-pill {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .badge-pill.unlocked {
+        background: rgba(253, 203, 110, 0.15) !important;
+        border-color: #fdcb6e !important;
+      }
+      body.dark-mode .badge-lbl {
+        color: #8b949e !important;
+      }
+      body.dark-mode .badge-pill.unlocked .badge-lbl {
+        color: #ffeaa7 !important;
+      }
+      body.dark-mode .velocity-banner {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .velocity-box {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .velocity-date-badge.safe {
+        background: rgba(46, 204, 113, 0.18) !important;
+        color: #2ecc71 !important;
+        border-color: rgba(46, 204, 113, 0.3) !important;
+      }
+      body.dark-mode .velocity-date-badge.alert {
+        background: rgba(230, 126, 34, 0.18) !important;
+        color: #f39c12 !important;
+        border-color: rgba(230, 126, 34, 0.3) !important;
+      }
+      body.dark-mode .radar-item {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+        border-left: 4px solid #ff7675 !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .radar-item strong {
+        color: #58a6ff !important;
+      }
+      body.dark-mode .radar-tag {
+        background: #21262d !important;
+        color: #f39c12 !important;
+        border: 1px solid #30363d !important;
+      }
+      body.dark-mode .ebbinghaus-item {
+        background: #0d1117 !important;
+        border: 1px solid #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .ebbinghaus-item strong {
+        color: #58a6ff !important;
+      }
+      body.dark-mode .ebbinghaus-item div {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .ebbinghaus-item span {
+        color: #a29bfe !important;
+      }
+      body.dark-mode #ebbinghausList::-webkit-scrollbar-track {
+        background: #0d1117 !important;
+      }
+      body.dark-mode #ebbinghausList::-webkit-scrollbar-thumb {
+        background: #30363d !important;
+      }
+      body.dark-mode .zscore-box,
       body.dark-mode .rolling-card,
       body.dark-mode .unit-item,
-      body.dark-mode .badge-item,
-      body.dark-mode .radar-item,
-      body.dark-mode .sr-cycle-item,
       body.dark-mode .form-input,
       body.dark-mode .form-select,
       body.dark-mode .form-textarea,
@@ -1037,19 +1136,11 @@
         color: #f0f6fc !important;
         border-color: #30363d !important;
       }
-      body.dark-mode .action-bar-stat-clickable {
-        background: #21262d !important;
-        border-color: #30363d !important;
-      }
-      body.dark-mode .ring-bg {
-        stroke: #21262d !important;
-      }
-      body.dark-mode .radar-tag {
-        background: #30363d !important;
-        color: #f39c12 !important;
+      body.dark-mode .zscore-box-lbl {
+        color: #a29bfe !important;
       }
       body.dark-mode .zscore-pill {
-        background: #1f242c !important;
+        background: #161b22 !important;
         border-color: #30363d !important;
       }
       body.dark-mode .zscore-pill-tag {
@@ -1061,11 +1152,139 @@
       body.dark-mode .zscore-pill-val.empty {
         color: #484f58 !important;
       }
+      body.dark-mode #fullPaperSummaryBar,
       body.dark-mode #unitPaperSummaryBar {
         border-top-color: #30363d !important;
       }
+      body.dark-mode #fullPaperSummaryBar > div,
       body.dark-mode #unitPaperSummaryBar > div {
         background: #0d1117 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode #fullPaperSummaryBar span,
+      body.dark-mode #unitPaperSummaryBar span {
+        color: #8b949e !important;
+      }
+      body.dark-mode .action-bar-stat-clickable {
+        background: #21262d !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .action-bar-stat-clickable span {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .badge-unit-stat,
+      body.dark-mode .badge-full-stat {
+        background: #21262d !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode #unitPapersCount {
+        color: #58a6ff !important;
+      }
+      body.dark-mode #fullPapersCount {
+        color: #a29bfe !important;
+      }
+      body.dark-mode #ebbCycleTabBar {
+        border-bottom-color: #30363d !important;
+      }
+      body.dark-mode #ebbCycleDesc {
+        color: #8b949e !important;
+      }
+      body.dark-mode #ebbCycleDesc strong {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .ebb-cycle-tab:not(.active) {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+        color: #8b949e !important;
+      }
+      body.dark-mode .ebb-cycle-tab:not(.active) span:last-child {
+        background: #21262d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .ebbinghaus-tag {
+        color: #ffffff !important;
+      }
+      body.dark-mode .level-card {
+        background: linear-gradient(135deg, #2d1e4e, #4a1936) !important;
+        border: 1px solid #4a2d5e !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4) !important;
+      }
+      body.dark-mode .progress-tab-nav {
+        background: rgba(0, 0, 0, 0.35) !important;
+      }
+      body.dark-mode .prog-tab-btn.active {
+        background: rgba(255, 255, 255, 0.18) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      }
+      body.dark-mode .timer-clock {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .breakdown-card {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode .breakdown-val {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .breakdown-subj-lbl {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .rank-badge-def {
+        background: #21262d !important;
+        color: #8b949e !important;
+      }
+      body.dark-mode .rank-badge-2 {
+        background: #21262d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .ranking-table td a {
+        color: #58a6ff !important;
+      }
+      body.dark-mode .ring-bg {
+        stroke: #21262d !important;
+      }
+      body.dark-mode .unit-head {
+        background: #161b22 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .unit-head.active {
+        background: #1c2128 !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode .unit-name-box {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .sub-list {
+        background: #0d1117 !important;
+      }
+      body.dark-mode .sub-item {
+        border-bottom-color: #21262d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .state-badge {
+        background: #21262d !important;
+        color: #8b949e !important;
+      }
+      body.dark-mode .state-badge.done-lesson {
+        background: rgba(25, 118, 210, 0.25) !important;
+        color: #58a6ff !important;
+      }
+      body.dark-mode .state-badge.done-hw {
+        background: rgba(211, 84, 0, 0.25) !important;
+        color: #f39c12 !important;
+      }
+      body.dark-mode .state-badge.done-paper {
+        background: rgba(46, 125, 50, 0.25) !important;
+        color: #3fb950 !important;
+      }
+      body.dark-mode .btn-unit-analytics {
+        background: #21262d !important;
+        color: #8b949e !important;
         border-color: #30363d !important;
       }
       body.dark-mode .breakdown-table th,
@@ -1084,6 +1303,13 @@
       }
       body.dark-mode .ranking-table-responsive {
         border-color: #30363d !important;
+      }
+      body.dark-mode strong,
+      body.dark-mode b {
+        color: #f0f6fc;
+      }
+      body.dark-mode .settings-title-label {
+        color: #f0f6fc !important;
       }
       body.dark-mode input,
       body.dark-mode select,
@@ -2012,7 +2238,7 @@
         <span class="ranking-badge" style="background: rgba(9, 132, 227, 0.12); color: #0984e3;">Oldest Pending</span>
       </div>
       <div class="ranking-subtitle">
-        විෂය නිර්දේශයේ මුල සිට තවමත් ඉගෙන ගෙන අවසන් කර නොමැති මුල් පාඩම් 5. එක ක්ලික් එකකින් "ඉගෙන ගත්තා" ලෙස සලකුණු කළ හැක.
+        විෂය නිර්දේශයේ තවමත් ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් 5 (Oldest Activity).
       </div>
       <div class="ranking-table-responsive">
         <table class="ranking-table">
@@ -2024,14 +2250,12 @@
               <th>Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
-              <th style="text-align: center;">Marks</th>
               <th style="text-align: center;">Date</th>
-              <th style="text-align: center;">Direct Action</th>
             </tr>
           </thead>
           <tbody id="oldestLessonPendingBody">
             <tr>
-              <td colspan="9" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
+              <td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -2048,7 +2272,7 @@
         <span class="ranking-badge" style="background: rgba(225, 112, 85, 0.12); color: #e17055;">Unstarted Top 5</span>
       </div>
       <div class="ranking-subtitle">
-        📘 ඉගෙනීමත් 📝 පාඩම් කිරීමත් තවම සිදු නොවූ සහ කිසිදු Unit Paper එකක් නොකළ විෂය නිර්දේශයේ මුල්ම පාඩම් 5.
+        📘 ඉගෙනීමත් 📝 පාඩම් කිරීමත් තවම සිදු නොවූ සහ කිසිදු Unit Paper එකක් නොකළ මුල්ම පාඩම් 5.
       </div>
       <div class="ranking-table-responsive">
         <table class="ranking-table">
@@ -2060,14 +2284,12 @@
               <th>Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
-              <th style="text-align: center;">Marks</th>
               <th style="text-align: center;">Date</th>
-              <th style="text-align: center;">Quick Actions</th>
             </tr>
           </thead>
           <tbody id="oldestBothPendingBody">
             <tr>
-              <td colspan="9" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
+              <td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -2362,6 +2584,8 @@
           </div>
         </div>
       </div>
+    </div>
+
     <!-- Dashboard Settings & Export Modal -->
     <div class="modal-overlay" id="settingsModal" onclick="closeSettingsModal(event)">
       <div class="modal-window" style="max-width: 440px;" onclick="event.stopPropagation()">
@@ -3048,6 +3272,32 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           rpcData.zScoreAnalytics = zScoreAnalytics;
           rpcData.syllabusList = syllabusList;
           rpcData.tpList = tpList;
+
+          // Calculate Urgent Radar (lessons where hw_done === true and no unit paper has been logged yet)
+          const paperSyllabusIds = new Set(unitPapersHistory.map(p => p.syllabusId).filter(Boolean));
+          const urgentRadarItems = [];
+          const tpMapById = {};
+          tpList.forEach(t => { if (t.syllabus_id) tpMapById[t.syllabus_id] = t; });
+          syllabusList.forEach(s => {
+            const tp = tpMapById[s.id];
+            if (tp && tp.hw_done === true && !paperSyllabusIds.has(s.id)) {
+              let days = Number(tp.hw_days) || 0;
+              if (tp.hw_done_at) {
+                const diffMs = Math.max(0, Date.now() - new Date(tp.hw_done_at).getTime());
+                const calcDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                if (calcDays > 0) days = calcDays;
+              }
+              urgentRadarItems.push({
+                subject: s.subject,
+                subLesson: ((s.sub_lesson_code || '') + ' ' + (s.sub_lesson_title || '')).trim(),
+                colH: days,
+                syllabusId: s.id,
+                code: s.sub_lesson_code
+              });
+            }
+          });
+          urgentRadarItems.sort((a, b) => b.colH - a.colH);
+          rpcData.radar = urgentRadarItems;
 
           // Update weekly quota actual full papers count
           if (rpcData.weeklyQuota) {
@@ -4657,17 +4907,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const tp = tpMap[s.id];
             return !tp || tp.lesson_done !== true;
           })
-          .sort((a, b) => (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0))
-          .slice(0, 5)
           .map(s => {
-            const papers = paperMapBySylId[s.id] || [];
-            let markStr = '-';
-            if (papers.length > 0) {
-              const highest = Math.max(...papers.map(p => p.marks || 0));
-              markStr = `${highest}%`;
-            }
             const tp = tpMap[s.id];
-            const dateStr = tp && tp.updated_at ? tp.updated_at.substring(0, 10) : 'Pending ⏳';
+            const rawDate = (tp && (tp.hw_done_at || tp.lesson_done_at || tp.updated_at)) || s.created_at;
+            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+            const timestamp = rawDate ? new Date(rawDate).getTime() : 0;
             return {
               id: s.id,
               subject: s.subject || 'ICT',
@@ -4675,16 +4919,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               unitName: s.unit_name || '-',
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
-              marks: markStr,
               date: dateStr,
-              sortOrder: s.sort_order
+              timestamp: timestamp,
+              sortOrder: Number(s.sort_order) || 0
             };
-          });
+          })
+          .sort((a, b) => {
+            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp;
+            return a.sortOrder - b.sortOrder;
+          })
+          .slice(0, 5);
 
         const dBody = document.getElementById('oldestLessonPendingBody');
         if (dBody) {
           if (pendingLessons.length === 0) {
-            dBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! සියලු පාඩම් ඉගෙන ගෙන අවසන් කර ඇත 🌟</td></tr>`;
+            dBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! සියලු පාඩම් ඉගෙන ගෙන අවසන් කර ඇත 🌟</td></tr>`;
           } else {
             dBody.innerHTML = pendingLessons.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -4693,18 +4942,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
                   <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
                   <td style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
                   <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
+                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${escapeHtml(item.marks)}</td>
-                  <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 500;">${escapeHtml(item.date)}</td>
-                  <td style="text-align: center;">
-                    <button type="button" class="btn-pending-action" id="btn-d-lesson-${item.id}" onclick="quickMarkLessonDone('${item.id}', '${item.subject}', '${item.subUnitNumber}', '${escapeHtml(item.subUnitName)}', 'btn-d-lesson-${item.id}')">
-                      📘 ඉගෙන ගත්තද? Pending ⏳
-                    </button>
-                  </td>
+                  <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 600;">${escapeHtml(item.date)}</td>
                 </tr>
               `;
             }).join('');
@@ -4720,11 +4963,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const papers = paperMapBySylId[s.id] || [];
             return lessonPending && hwPending && papers.length === 0;
           })
-          .sort((a, b) => (Number(a.sort_order) || 0) - (Number(b.sort_order) || 0))
-          .slice(0, 5)
           .map(s => {
             const tp = tpMap[s.id];
-            const dateStr = tp && tp.updated_at ? tp.updated_at.substring(0, 10) : 'Pending ⏳';
+            const rawDate = (tp && (tp.hw_done_at || tp.lesson_done_at || tp.updated_at)) || s.created_at;
+            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+            const timestamp = rawDate ? new Date(rawDate).getTime() : 0;
             return {
               id: s.id,
               subject: s.subject || 'ICT',
@@ -4732,16 +4975,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               unitName: s.unit_name || '-',
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
-              marks: 'නැත (0 Papers)',
               date: dateStr,
-              sortOrder: s.sort_order
+              timestamp: timestamp,
+              sortOrder: Number(s.sort_order) || 0
             };
-          });
+          })
+          .sort((a, b) => {
+            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp;
+            return a.sortOrder - b.sortOrder;
+          })
+          .slice(0, 5);
 
         const eBody = document.getElementById('oldestBothPendingBody');
         if (eBody) {
           if (bothPending.length === 0) {
-            eBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ආරම්භ නොකළ කිසිදු පාඩමක් නොමැත 🌟</td></tr>`;
+            eBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ආරම්භ නොකළ කිසිදු පාඩමක් නොමැත 🌟</td></tr>`;
           } else {
             eBody.innerHTML = bothPending.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -4750,23 +4998,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
                   <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
                   <td style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
                   <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
+                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${escapeHtml(item.marks)}</td>
-                  <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 500;">${escapeHtml(item.date)}</td>
-                  <td style="text-align: center;">
-                    <div style="display: flex; gap: 4px; justify-content: center; align-items: center;">
-                      <button type="button" class="btn-quick-pill btn-quick-lesson" id="btn-e-lesson-${item.id}" onclick="quickMarkLessonDone('${item.id}', '${item.subject}', '${item.subUnitNumber}', '${escapeHtml(item.subUnitName)}', 'btn-e-lesson-${item.id}')">
-                        📘 ඉගෙන ගත්තා
-                      </button>
-                      <button type="button" class="btn-quick-pill btn-quick-hw" id="btn-e-hw-${item.id}" onclick="quickMarkHwDone('${item.id}', '${item.subject}', '${item.subUnitNumber}', '${escapeHtml(item.subUnitName)}', 'btn-e-hw-${item.id}')">
-                        📝 පාඩම් කලා
-                      </button>
-                    </div>
-                  </td>
+                  <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 600;">${escapeHtml(item.date)}</td>
                 </tr>
               `;
             }).join('');
