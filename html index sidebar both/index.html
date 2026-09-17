@@ -2004,6 +2004,299 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 14px rgba(108, 92, 231, 0.35);
       }
+      /* Settings Tabs & Activity Log Styling */
+      .settings-tab-nav {
+        display: flex;
+        background: #f1f2f6;
+        border-radius: 8px;
+        padding: 3px;
+        gap: 4px;
+        margin-bottom: 14px;
+      }
+      .settings-tab-btn {
+        flex: 1;
+        padding: 7px 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: transparent;
+        color: #7f8fa6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-family: inherit;
+      }
+      .settings-tab-btn.active {
+        background: #ffffff;
+        color: #2d3436;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+      body.dark-mode .settings-tab-nav,
+      :root.dark-mode .settings-tab-nav {
+        background: #21262d;
+        border: 1px solid #30363d;
+      }
+      body.dark-mode .settings-tab-btn,
+      :root.dark-mode .settings-tab-btn {
+        color: #8b949e;
+      }
+      body.dark-mode .settings-tab-btn.active,
+      :root.dark-mode .settings-tab-btn.active {
+        background: #30363d;
+        color: #f0f6fc;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      .log-count-pill {
+        background: rgba(140, 122, 230, 0.15);
+        color: #6c5ce7;
+        font-size: 8.5px;
+        font-weight: 800;
+        padding: 1px 6px;
+        border-radius: 10px;
+      }
+      body.dark-mode .log-count-pill,
+      :root.dark-mode .log-count-pill {
+        background: rgba(140, 122, 230, 0.3);
+        color: #a29bfe;
+      }
+
+      /* Log Filter Bar */
+      .log-filter-bar {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        padding: 2px 0 6px;
+      }
+      .log-filter-btn {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        border: 1px solid #dfe6e9;
+        background: #f8f9fa;
+        color: #636e72;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-family: inherit;
+      }
+      .log-filter-btn.active {
+        background: #2d3436;
+        color: #ffffff;
+        border-color: #2d3436;
+      }
+      body.dark-mode .log-filter-btn,
+      :root.dark-mode .log-filter-btn {
+        background: #21262d;
+        border-color: #30363d;
+        color: #8b949e;
+      }
+      body.dark-mode .log-filter-btn.active,
+      :root.dark-mode .log-filter-btn.active {
+        background: #6c5ce7;
+        color: #ffffff;
+        border-color: #6c5ce7;
+      }
+
+      .btn-refresh-log {
+        background: #f1f2f6;
+        border: 1px solid #dfe6e9;
+        border-radius: 6px;
+        font-size: 9.5px;
+        font-weight: 700;
+        padding: 3px 8px;
+        cursor: pointer;
+        color: #636e72;
+        transition: all 0.2s ease;
+      }
+      .btn-refresh-log:hover {
+        background: #e2e8f0;
+      }
+      body.dark-mode .btn-refresh-log,
+      :root.dark-mode .btn-refresh-log {
+        background: #21262d;
+        border-color: #30363d;
+        color: #c9d1d9;
+      }
+      body.dark-mode .btn-refresh-log:hover,
+      :root.dark-mode .btn-refresh-log:hover {
+        background: #30363d;
+      }
+
+      /* Log Item Card */
+      .log-item-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        transition: all 0.15s ease;
+      }
+      .log-item-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      body.dark-mode .log-item-card,
+      :root.dark-mode .log-item-card {
+        background: #161b22;
+        border-color: #30363d;
+      }
+      body.dark-mode .log-item-card:hover,
+      :root.dark-mode .log-item-card:hover {
+        background: #1c2128;
+        border-color: #484f58;
+      }
+      .log-item-content {
+        flex: 1;
+        min-width: 0;
+      }
+      .log-item-header {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 3px;
+        flex-wrap: wrap;
+      }
+      .log-item-date {
+        font-size: 9.5px;
+        color: #7f8fa6;
+        font-weight: 500;
+      }
+      body.dark-mode .log-item-date,
+      :root.dark-mode .log-item-date {
+        color: #8b949e;
+      }
+      .log-item-title {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #2d3436;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      body.dark-mode .log-item-title,
+      :root.dark-mode .log-item-title {
+        color: #f0f6fc;
+      }
+      .log-item-meta {
+        font-size: 10px;
+        color: #636e72;
+        line-height: 1.35;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      body.dark-mode .log-item-meta,
+      :root.dark-mode .log-item-meta {
+        color: #8b949e;
+      }
+      .log-type-tag {
+        font-size: 8.5px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+      }
+      .log-tag-unit {
+        background: rgba(9, 132, 227, 0.12);
+        color: #0984e3;
+        border: 1px solid rgba(9, 132, 227, 0.25);
+      }
+      body.dark-mode .log-tag-unit,
+      :root.dark-mode .log-tag-unit {
+        background: rgba(56, 189, 248, 0.18);
+        color: #38bdf8;
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+      .log-tag-full {
+        background: rgba(108, 92, 231, 0.12);
+        color: #6c5ce7;
+        border: 1px solid rgba(108, 92, 231, 0.25);
+      }
+      body.dark-mode .log-tag-full,
+      :root.dark-mode .log-tag-full {
+        background: rgba(167, 139, 250, 0.18);
+        color: #a78bfa;
+        border-color: rgba(167, 139, 250, 0.35);
+      }
+      .log-tag-sr {
+        background: rgba(0, 184, 148, 0.12);
+        color: #00b894;
+        border: 1px solid rgba(0, 184, 148, 0.25);
+      }
+      body.dark-mode .log-tag-sr,
+      :root.dark-mode .log-tag-sr {
+        background: rgba(52, 211, 153, 0.18);
+        color: #34d399;
+        border-color: rgba(52, 211, 153, 0.35);
+      }
+      .log-tag-lesson {
+        background: rgba(225, 112, 85, 0.12);
+        color: #e17055;
+        border: 1px solid rgba(225, 112, 85, 0.25);
+      }
+      body.dark-mode .log-tag-lesson,
+      :root.dark-mode .log-tag-lesson {
+        background: rgba(251, 146, 60, 0.18);
+        color: #fb923c;
+        border-color: rgba(251, 146, 60, 0.35);
+      }
+      .log-tag-hw {
+        background: rgba(253, 203, 110, 0.18);
+        color: #d68100;
+        border: 1px solid rgba(253, 203, 110, 0.4);
+      }
+      body.dark-mode .log-tag-hw,
+      :root.dark-mode .log-tag-hw {
+        background: rgba(250, 204, 21, 0.18);
+        color: #facc15;
+        border-color: rgba(250, 204, 21, 0.35);
+      }
+
+      /* Log Undo Button */
+      .btn-log-undo {
+        background: rgba(235, 77, 75, 0.1);
+        color: #eb4d4b;
+        border: 1px solid rgba(235, 77, 75, 0.28);
+        border-radius: 6px;
+        padding: 4px 9px;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+        font-family: inherit;
+      }
+      .btn-log-undo:hover {
+        background: #eb4d4b;
+        color: #ffffff;
+        transform: scale(1.03);
+      }
+      body.dark-mode .btn-log-undo,
+      :root.dark-mode .btn-log-undo {
+        background: rgba(235, 77, 75, 0.18);
+        color: #ff7675;
+        border-color: rgba(235, 77, 75, 0.45);
+      }
+      body.dark-mode .btn-log-undo:hover,
+      :root.dark-mode .btn-log-undo:hover {
+        background: #eb4d4b;
+        color: #ffffff;
+      }
+
       .settings-section {
         margin-bottom: 18px;
         padding-bottom: 14px;
@@ -3352,121 +3645,160 @@
 
     <!-- Dashboard Settings & Export Modal -->
     <div class="modal-overlay" id="settingsModal" onclick="closeSettingsModal(event)">
-      <div class="modal-window" style="max-width: 440px;" onclick="event.stopPropagation()">
+      <div class="modal-window" style="max-width: 530px; width: 95%; max-height: 88vh;" onclick="event.stopPropagation()">
         <div class="modal-header" style="background: linear-gradient(135deg, #2f3542, #57606f);">
           <div class="modal-title">⚙️ Dashboard Settings &amp; Export</div>
           <button class="modal-close-btn" onclick="hideSettingsModal()">✕</button>
         </div>
-        <div class="modal-body" style="padding: 18px 20px;">
-          <!-- 1. Theme Toggle -->
-          <div class="settings-section">
-            <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 8px;" class="settings-title-label" id="lblThemeHeading" data-i18n="themeLabel">
-              🎨 Dashboard Theme (වර්ණ තේමාව):
-            </label>
-            <div class="theme-selector-grid">
-              <button type="button" class="theme-select-btn" id="themeBtnDark" onclick="setDashboardTheme('dark')">
-                <span class="theme-btn-icon">🌙</span>
-                <span class="theme-btn-title">Dark Mode</span>
-                <span class="theme-btn-sub">අඳුරු තේමාව</span>
-              </button>
-              <button type="button" class="theme-select-btn" id="themeBtnSystem" onclick="setDashboardTheme('system')">
-                <span class="theme-btn-icon">💻</span>
-                <span class="theme-btn-title">System</span>
-                <span class="theme-btn-sub">පද්ධති තේමාව</span>
-              </button>
-              <button type="button" class="theme-select-btn" id="themeBtnLight" onclick="setDashboardTheme('light')">
-                <span class="theme-btn-icon">☀️</span>
-                <span class="theme-btn-title">White Mode</span>
-                <span class="theme-btn-sub">සුදු තේමාව</span>
-              </button>
-            </div>
+        <div class="modal-body" style="padding: 16px 18px; max-height: calc(88vh - 65px); overflow-y: auto;">
+          <!-- Tab Navigation -->
+          <div class="settings-tab-nav">
+            <button type="button" class="settings-tab-btn active" id="btnSettingsTabGeneral" onclick="switchSettingsTab('general')">
+              ⚙️ <span id="lblTabGeneral" data-i18n="settingsTabGeneral">සැකසුම් (Settings)</span>
+            </button>
+            <button type="button" class="settings-tab-btn" id="btnSettingsTabLog" onclick="switchSettingsTab('log')">
+              📜 <span id="lblTabLog" data-i18n="settingsTabLog">Activity Log &amp; Undo</span>
+              <span class="log-count-pill" id="settingsLogCount">0</span>
+            </button>
           </div>
 
-          <!-- 2. Font Size Adjustment (Accessibility - Slider & Presets) -->
-          <div class="settings-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <label style="font-size: 11.5px; font-weight: 700; margin: 0;" class="settings-title-label" id="lblFontHeading" data-i18n="fontLabel">
-                🔤 Text Size (අකුරු ප්‍රමාණය):
+          <!-- TAB 1: General Settings -->
+          <div id="settingsTabGeneral" class="settings-tab-content">
+            <!-- 1. Theme Toggle -->
+            <div class="settings-section">
+              <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 8px;" class="settings-title-label" id="lblThemeHeading" data-i18n="themeLabel">
+                🎨 Dashboard Theme (වර්ණ තේමාව):
               </label>
-              <span id="fontScaleDisplay" style="font-size: 12px; font-weight: 700; color: #8c7ae6; background: rgba(140,122,230,0.12); padding: 2px 8px; border-radius: 6px;">100%</span>
-            </div>
-
-            <!-- Free Scaling Range Slider -->
-            <div style="margin-bottom: 8px;">
-              <input type="range" id="fontScaleSlider" min="75" max="150" step="5" value="100"
-                oninput="handleFontSliderInput(this.value)"
-                style="width: 100%; accent-color: #8c7ae6; cursor: pointer; height: 6px;">
-              <div style="display: flex; justify-content: space-between; font-size: 8px; color: #7f8fa6; margin-top: 2px;">
-                <span>75% (Fine)</span>
-                <span>100% (Default)</span>
-                <span>150% (Max)</span>
+              <div class="theme-selector-grid">
+                <button type="button" class="theme-select-btn" id="themeBtnDark" onclick="setDashboardTheme('dark')">
+                  <span class="theme-btn-icon">🌙</span>
+                  <span class="theme-btn-title">Dark Mode</span>
+                  <span class="theme-btn-sub">අඳුරු තේමාව</span>
+                </button>
+                <button type="button" class="theme-select-btn" id="themeBtnSystem" onclick="setDashboardTheme('system')">
+                  <span class="theme-btn-icon">💻</span>
+                  <span class="theme-btn-title">System</span>
+                  <span class="theme-btn-sub">පද්ධති තේමාව</span>
+                </button>
+                <button type="button" class="theme-select-btn" id="themeBtnLight" onclick="setDashboardTheme('light')">
+                  <span class="theme-btn-icon">☀️</span>
+                  <span class="theme-btn-title">White Mode</span>
+                  <span class="theme-btn-sub">සුදු තේමාව</span>
+                </button>
               </div>
             </div>
 
-            <!-- Quick Adjust A- / Reset / A+ Buttons -->
-            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-              <button type="button" class="btn-scale-step" onclick="adjustFontScale(-5)" style="flex: 1; padding: 6px 0; font-size: 10px; font-weight: 700; border-radius: 6px; border: 1px solid #dfe6e9; background: #f8f9fa; cursor: pointer;">
-                🔍 A- කුඩා
-              </button>
-              <button type="button" class="btn-scale-step" onclick="resetFontScale()" style="flex: 1; padding: 6px 0; font-size: 10px; font-weight: 700; border-radius: 6px; border: 1px solid #dfe6e9; background: #f8f9fa; cursor: pointer;">
-                🔄 Reset 100%
-              </button>
-              <button type="button" class="btn-scale-step" onclick="adjustFontScale(5)" style="flex: 1; padding: 6px 0; font-size: 10px; font-weight: 700; border-radius: 6px; border: 1px solid #dfe6e9; background: #f8f9fa; cursor: pointer;">
-                🔎 A+ විශාල
-              </button>
+            <!-- 2. Font Size Adjustment (Accessibility - Slider & Presets) -->
+            <div class="settings-section">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-size: 11.5px; font-weight: 700; margin: 0;" class="settings-title-label" id="lblFontHeading" data-i18n="fontLabel">
+                  🔤 Text Size (අකුරු ප්‍රමාණය):
+                </label>
+                <span id="fontScaleDisplay" style="font-size: 12px; font-weight: 700; color: #8c7ae6; background: rgba(140,122,230,0.12); padding: 2px 8px; border-radius: 6px;">100%</span>
+              </div>
+
+              <!-- Free Scaling Range Slider -->
+              <div style="margin-bottom: 8px;">
+                <input type="range" id="fontScaleSlider" min="75" max="150" step="5" value="100"
+                  oninput="handleFontSliderInput(this.value)"
+                  style="width: 100%; accent-color: #8c7ae6; cursor: pointer; height: 6px;">
+                <div style="display: flex; justify-content: space-between; font-size: 8px; color: #7f8fa6; margin-top: 2px;">
+                  <span>75% (Fine)</span>
+                  <span>100% (Default)</span>
+                  <span>150% (Max)</span>
+                </div>
+              </div>
+
+              <!-- Quick Adjust A- / Reset / A+ Buttons -->
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <button type="button" class="btn-scale-step" onclick="adjustFontScale(-5)" style="flex: 1; padding: 6px 0; font-size: 10px; font-weight: 700; border-radius: 6px; border: 1px solid #dfe6e9; background: #f8f9fa; cursor: pointer;">
+                  🔍 A- කුඩා
+                </button>
+                <button type="button" class="btn-scale-step" onclick="resetFontScale()" style="flex: 1; padding: 6px 0; font-size: 10px; font-weight: 700; border-radius: 6px; border: 1px solid #dfe6e9; background: #f8f9fa; cursor: pointer;">
+                  🔄 Reset 100%
+                </button>
+                <button type="button" class="btn-scale-step" onclick="adjustFontScale(5)" style="flex: 1; padding: 6px 0; font-size: 10px; font-weight: 700; border-radius: 6px; border: 1px solid #dfe6e9; background: #f8f9fa; cursor: pointer;">
+                  🔎 A+ විශාල
+                </button>
+              </div>
+
+              <!-- Presets -->
+              <div class="font-selector-grid">
+                <button type="button" class="font-select-btn" id="fontBtn_small" onclick="setFontScalePreset(85)">
+                  <span class="font-btn-title" style="font-size: 11px;">85%</span>
+                  <span class="font-btn-sub">කුඩා</span>
+                </button>
+                <button type="button" class="font-select-btn active" id="fontBtn_normal" onclick="setFontScalePreset(100)">
+                  <span class="font-btn-title" style="font-size: 12px;">100%</span>
+                  <span class="font-btn-sub">Default</span>
+                </button>
+                <button type="button" class="font-select-btn" id="fontBtn_large" onclick="setFontScalePreset(115)">
+                  <span class="font-btn-title" style="font-size: 13px;">115%</span>
+                  <span class="font-btn-sub">විශාල</span>
+                </button>
+                <button type="button" class="font-select-btn" id="fontBtn_xlarge" onclick="setFontScalePreset(130)">
+                  <span class="font-btn-title" style="font-size: 14px;">130%</span>
+                  <span class="font-btn-sub">ඉතා විශාල</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Presets -->
-            <div class="font-selector-grid">
-              <button type="button" class="font-select-btn" id="fontBtn_small" onclick="setFontScalePreset(85)">
-                <span class="font-btn-title" style="font-size: 11px;">85%</span>
-                <span class="font-btn-sub">කුඩා</span>
-              </button>
-              <button type="button" class="font-select-btn active" id="fontBtn_normal" onclick="setFontScalePreset(100)">
-                <span class="font-btn-title" style="font-size: 12px;">100%</span>
-                <span class="font-btn-sub">Default</span>
-              </button>
-              <button type="button" class="font-select-btn" id="fontBtn_large" onclick="setFontScalePreset(115)">
-                <span class="font-btn-title" style="font-size: 13px;">115%</span>
-                <span class="font-btn-sub">විශාල</span>
-              </button>
-              <button type="button" class="font-select-btn" id="fontBtn_xlarge" onclick="setFontScalePreset(130)">
-                <span class="font-btn-title" style="font-size: 14px;">130%</span>
-                <span class="font-btn-sub">ඉතා විශාල</span>
+            <!-- 3. Language Switch (Localization) -->
+            <div class="settings-section">
+              <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 8px;" class="settings-title-label" id="lblLangHeading" data-i18n="langLabel">
+                🌐 Language (භාෂාව):
+              </label>
+              <div class="lang-selector-grid">
+                <button type="button" class="lang-select-btn active" id="langBtn_si" onclick="setLanguage('si')">
+                  <span style="font-size: 16px;">🇱🇰</span>
+                  <span class="lang-btn-title">සිංහල</span>
+                  <span class="lang-btn-sub">Default (පෙරනිමි)</span>
+                </button>
+                <button type="button" class="lang-select-btn" id="langBtn_en" onclick="setLanguage('en')">
+                  <span style="font-size: 16px;">🇬🇧</span>
+                  <span class="lang-btn-title">English</span>
+                  <span class="lang-btn-sub">Toggle Switch</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 4. Save Data as PDF -->
+            <div style="padding-top: 4px;">
+              <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 6px;" class="settings-title-label" id="lblPdfHeading" data-i18n="pdfLabel">
+                📄 Save Data as PDF (දත්ත PDF ලෙස සුරැකීම):
+              </label>
+              <div style="font-size: 10px; color: #7f8fa6; margin-bottom: 12px; line-height: 1.4;" id="lblPdfDesc" data-i18n="pdfDesc">
+                සම්පූර්ණ ප්‍රගති දත්ත, ලකුණු සටහන් සහ ප්‍රස්ථාර A4 මුද්‍රණයට ගැළපෙන පරිදි PDF ගොනුවක් ලෙස සුරකින්න.
+              </div>
+              <button type="button" class="btn-export-pdf" onclick="exportDashboardPdf()" id="lblPdfBtn" data-i18n="pdfBtn">
+                📥 Save Data as PDF (A4 වාර්තාව)
               </button>
             </div>
           </div>
 
-          <!-- 3. Language Switch (Localization) -->
-          <div class="settings-section">
-            <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 8px;" class="settings-title-label" id="lblLangHeading" data-i18n="langLabel">
-              🌐 Language (භාෂාව):
-            </label>
-            <div class="lang-selector-grid">
-              <button type="button" class="lang-select-btn active" id="langBtn_si" onclick="setLanguage('si')">
-                <span style="font-size: 16px;">🇱🇰</span>
-                <span class="lang-btn-title">සිංහල</span>
-                <span class="lang-btn-sub">Default (පෙරනිමි)</span>
-              </button>
-              <button type="button" class="lang-select-btn" id="langBtn_en" onclick="setLanguage('en')">
-                <span style="font-size: 16px;">🇬🇧</span>
-                <span class="lang-btn-title">English</span>
-                <span class="lang-btn-sub">Toggle Switch</span>
-              </button>
+          <!-- TAB 2: Activity Log & Undo -->
+          <div id="settingsTabLog" class="settings-tab-content" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+              <div>
+                <div style="font-size: 11.5px; font-weight: 700;" class="settings-title-label">📜 මෑත සටහන් සහ Undo කිරීම:</div>
+                <div style="font-size: 9.5px; color: #7f8fa6; margin-top: 2px;">වැරදීමකින් ලොග් කළ ප්‍රශ්න පත්‍ර හෝ ප්‍රගති සටහන් මෙතැනින් Undo කරන්න.</div>
+              </div>
+              <button type="button" onclick="renderActivityLog()" class="btn-refresh-log" title="නැවත පූරණය කරන්න">🔄 Refresh</button>
             </div>
-          </div>
 
-          <!-- 4. Save Data as PDF -->
-          <div style="padding-top: 4px;">
-            <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 6px;" class="settings-title-label" id="lblPdfHeading" data-i18n="pdfLabel">
-              📄 Save Data as PDF (දත්ත PDF ලෙස සුරැකීම):
-            </label>
-            <div style="font-size: 10px; color: #7f8fa6; margin-bottom: 12px; line-height: 1.4;" id="lblPdfDesc" data-i18n="pdfDesc">
-              සම්පූර්ණ ප්‍රගති දත්ත, ලකුණු සටහන් සහ ප්‍රස්ථාර A4 මුද්‍රණයට ගැළපෙන පරිදි PDF ගොනුවක් ලෙස සුරකින්න.
+            <!-- Filter Buttons -->
+            <div class="log-filter-bar">
+              <button type="button" class="log-filter-btn active" id="logFilterAll" onclick="filterActivityLog('ALL')">📋 සියල්ල</button>
+              <button type="button" class="log-filter-btn" id="logFilterUnit" onclick="filterActivityLog('UNIT_PAPER')">📄 Unit Papers</button>
+              <button type="button" class="log-filter-btn" id="logFilterFull" onclick="filterActivityLog('FULL_PAPER')">📝 Full Papers</button>
+              <button type="button" class="log-filter-btn" id="logFilterSr" onclick="filterActivityLog('SPACED_REPETITION')">🧠 Repetition</button>
+              <button type="button" class="log-filter-btn" id="logFilterProgress" onclick="filterActivityLog('PROGRESS')">📘 Lessons/HW</button>
             </div>
-            <button type="button" class="btn-export-pdf" onclick="exportDashboardPdf()" id="lblPdfBtn" data-i18n="pdfBtn">
-              📥 Save Data as PDF (A4 වාර්තාව)
-            </button>
+
+            <!-- Scrollable Log List -->
+            <div id="activityLogList" class="custom-scroll-container" style="max-height: 380px; overflow-y: auto; margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="text-align: center; color: #a4b0be; font-size: 11px; padding: 20px;">ක්‍රියාකාරකම් පූරණය වෙමින් පවතී... ⏳</div>
+            </div>
           </div>
         </div>
       </div>
@@ -3712,6 +4044,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
   }
 });
       let cachedCanonicalSyllabus = null;
+      let globalActivityData = null;
+      let currentSettingsTab = 'general';
+      let currentActivityFilter = 'ALL';
+      let pendingUndoItem = null;
 
       function setupRealtimeSubscriptions() {
         supabase
@@ -4180,7 +4516,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             rpcData.weeklyQuota.percentages = { unit: pUnit, full: pFull, lesson: pLesson, overall: pOverall };
           }
 
+          // Populate global activity data for Activity Log & Undo
+          globalActivityData = {
+            unitPapers: unitPapersHistory || [],
+            fullPapers: fullPapersHistory || [],
+            srLogs: srLogs || [],
+            trackerProgress: tpList || [],
+            syllabus: syllabusList || []
+          };
+          rpcData.globalActivityData = globalActivityData;
+
           renderData(rpcData);
+          updateActivityLogBadge();
+          if (currentSettingsTab === 'log') {
+            renderActivityLog();
+          }
         } catch (err) {
           console.error("Telemetry Error:", err);
           const radar = document.getElementById('radarList');
@@ -5862,6 +6212,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       const I18N_DICT = {
         si: {
+          settingsTabGeneral: 'සැකසුම් (Settings)',
+          settingsTabLog: 'Activity Log & Undo',
           themeLabel: '🎨 Dashboard Theme (වර්ණ තේමාව):',
           fontLabel: '🔤 Text Size (අකුරු ප්‍රමාණය):',
           langLabel: '🌐 Language (භාෂාව):',
@@ -5878,6 +6230,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           oldestBothSub: '📘 ඉගෙනීමත් 📝 පාඩම් කිරීමත් තවම සිදු නොවූ සහ කිසිදු Unit Paper එකක් නොකළ මුල්ම පාඩම් 5.'
         },
         en: {
+          settingsTabGeneral: 'Settings',
+          settingsTabLog: 'Activity Log & Undo',
           themeLabel: '🎨 Dashboard Theme:',
           fontLabel: '🔤 Text Size (Accessibility):',
           langLabel: '🌐 Language:',
@@ -5949,6 +6303,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         updateThemeButtonsUI(currentThemeMode);
         applyFontScale(currentFontScale);
         applyLanguage(currentLang);
+        switchSettingsTab(currentSettingsTab || 'general');
+        updateActivityLogBadge();
         const modal = document.getElementById('settingsModal');
         if (modal) {
           modal.style.display = 'flex';
@@ -5977,6 +6333,371 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         setTimeout(() => {
           window.print();
         }, 250);
+      }
+
+      // =========================================================================
+      // SETTINGS TABS & ACTIVITY LOG / UNDO CONTROLLER
+      // =========================================================================
+      function switchSettingsTab(tab) {
+        currentSettingsTab = tab;
+        const btnGeneral = document.getElementById('btnSettingsTabGeneral');
+        const btnLog = document.getElementById('btnSettingsTabLog');
+        const tabGeneral = document.getElementById('settingsTabGeneral');
+        const tabLog = document.getElementById('settingsTabLog');
+
+        if (tab === 'log') {
+          if (btnGeneral) btnGeneral.classList.remove('active');
+          if (btnLog) btnLog.classList.add('active');
+          if (tabGeneral) tabGeneral.style.display = 'none';
+          if (tabLog) tabLog.style.display = 'block';
+          renderActivityLog();
+        } else {
+          if (btnGeneral) btnGeneral.classList.add('active');
+          if (btnLog) btnLog.classList.remove('active');
+          if (tabGeneral) tabGeneral.style.display = 'block';
+          if (tabLog) tabLog.style.display = 'none';
+        }
+      }
+
+      function updateActivityLogBadge() {
+        const badge = document.getElementById('settingsLogCount');
+        if (!badge) return;
+        const logs = getAllActivityLogs();
+        badge.innerText = logs.length;
+      }
+
+      function filterActivityLog(filterType) {
+        currentActivityFilter = filterType;
+        const filterMap = {
+          'ALL': 'logFilterAll',
+          'UNIT_PAPER': 'logFilterUnit',
+          'FULL_PAPER': 'logFilterFull',
+          'SPACED_REPETITION': 'logFilterSr',
+          'PROGRESS': 'logFilterProgress'
+        };
+        Object.keys(filterMap).forEach(key => {
+          const btn = document.getElementById(filterMap[key]);
+          if (btn) {
+            if (key === filterType) btn.classList.add('active');
+            else btn.classList.remove('active');
+          }
+        });
+        renderActivityLog();
+      }
+
+      function formatActivityDate(dateStr) {
+        if (!dateStr) return 'දිනය සටහන්ව නැත';
+        try {
+          const d = new Date(dateStr);
+          if (isNaN(d.getTime())) return String(dateStr);
+          const now = new Date();
+          const isToday = d.toDateString() === now.toDateString();
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const isYesterday = d.toDateString() === yesterday.toDateString();
+
+          const timePart = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          if (isToday) return `අද ${timePart}`;
+          if (isYesterday) return `ඊයේ ${timePart}`;
+          return `${d.toLocaleDateString('en-CA')} ${timePart}`;
+        } catch (e) {
+          return String(dateStr);
+        }
+      }
+
+      function getAllActivityLogs() {
+        if (!globalActivityData) return [];
+        const sylMapById = {};
+        const sylMapByKey = {};
+        (globalActivityData.syllabus || []).forEach(s => {
+          if (s.id) sylMapById[s.id] = s;
+          const key = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+          sylMapByKey[key] = s;
+        });
+
+        const logs = [];
+
+        // 1. Unit Papers
+        (globalActivityData.unitPapers || []).forEach(p => {
+          const code = p.code || '';
+          const subject = (p.subject || '').toUpperCase().trim();
+          const syl = sylMapById[p.syllabusId] || sylMapByKey[`${subject}||${code}`] || {};
+          const subLessonTitle = syl.sub_lesson_title || '';
+          const unitName = syl.unit_name || '';
+          const marksText = (p.marks !== null && p.marks !== undefined && !isNaN(p.marks)) ? `${p.marks}%` : 'සටහන් කර නැත';
+
+          logs.push({
+            id: p.id,
+            type: 'UNIT_PAPER',
+            typeLabel: '📄 Unit Paper',
+            subject: subject,
+            code: code,
+            title: `[${subject}] Unit Paper ${p.paperNo || 1} • ${code} ${subLessonTitle}`.trim(),
+            subTitle: unitName ? `ඒකකය: ${unitName} • ලකුණු: ${marksText}` : `ලකුණු: ${marksText}`,
+            timestamp: p.timestamp || (p.loggedAt ? new Date(p.loggedAt).getTime() : 0),
+            dateFormatted: formatActivityDate(p.loggedAt || p.fullDate),
+            raw: p
+          });
+        });
+
+        // 2. Full Papers
+        (globalActivityData.fullPapers || []).forEach(fp => {
+          const subject = (fp.subject || '').toUpperCase().trim() || 'N/A';
+          const marksText = `${fp.marks}%`;
+          const timeText = fp.timeTaken ? ` • ගතවූ කාලය: ${fp.timeTaken} min` : '';
+          const remText = fp.remarks ? ` • ${fp.remarks}` : '';
+
+          logs.push({
+            id: fp.id,
+            type: 'FULL_PAPER',
+            typeLabel: '📝 Full Paper',
+            subject: subject,
+            code: '',
+            title: `[${subject}] Full Exam Paper (${marksText})`,
+            subTitle: `දිනය: ${fp.fullDate || fp.date || '-'}${timeText}${remText}`,
+            timestamp: fp.timestamp || (fp.exam_date ? new Date(fp.exam_date).getTime() : (fp.logged_at ? new Date(fp.logged_at).getTime() : 0)),
+            dateFormatted: formatActivityDate(fp.exam_date || fp.logged_at || fp.fullDate),
+            raw: fp
+          });
+        });
+
+        // 3. Spaced Repetition Logs
+        (globalActivityData.srLogs || []).forEach(sr => {
+          const subject = (sr.subject || '').toUpperCase().trim() || 'N/A';
+          const code = sr.sub_lesson_code || '';
+          const syl = sylMapById[sr.syllabus_id] || sylMapByKey[`${subject}||${code}`] || {};
+          const subLessonTitle = syl.sub_lesson_title || '';
+          const unitName = syl.unit_name || '';
+          const completedAt = sr.completed_at || sr.created_at;
+
+          logs.push({
+            id: sr.id,
+            type: 'SPACED_REPETITION',
+            typeLabel: '🧠 Repetition',
+            subject: subject,
+            code: code,
+            title: `[${subject}] Repetition Cycle ${sr.cycle || 1}: ${sr.stage_label || ('දිනය ' + sr.day_stage)}`,
+            subTitle: `${code} ${subLessonTitle}${unitName ? ' • ' + unitName : ''}`.trim(),
+            timestamp: completedAt ? new Date(completedAt).getTime() : 0,
+            dateFormatted: formatActivityDate(completedAt),
+            raw: sr
+          });
+        });
+
+        // 4. Tracker Progress: Lessons & HW
+        (globalActivityData.trackerProgress || []).forEach(tp => {
+          const syl = sylMapById[tp.syllabus_id];
+          if (!syl) return;
+          const subject = (syl.subject || '').toUpperCase().trim();
+          const code = syl.sub_lesson_code || '';
+          const title = syl.sub_lesson_title || '';
+          const unitName = syl.unit_name || '';
+
+          if (tp.lesson_done && tp.lesson_done_at) {
+            logs.push({
+              id: `tp_lesson_${tp.syllabus_id}`,
+              type: 'PROGRESS',
+              subType: 'LESSON_DONE',
+              typeLabel: '📘 Lesson Done',
+              subject: subject,
+              code: code,
+              syllabusId: tp.syllabus_id,
+              title: `[${subject}] පාඩම අවසන්: ${code} ${title}`.trim(),
+              subTitle: `ඒකකය: ${unitName || '-'} • ඉගෙන ගත් බව සලකුණු කරන ලදී`,
+              timestamp: new Date(tp.lesson_done_at).getTime() || (tp.updated_at ? new Date(tp.updated_at).getTime() : 0),
+              dateFormatted: formatActivityDate(tp.lesson_done_at || tp.updated_at),
+              raw: tp
+            });
+          }
+
+          if (tp.hw_done && tp.hw_done_at) {
+            logs.push({
+              id: `tp_hw_${tp.syllabus_id}`,
+              type: 'PROGRESS',
+              subType: 'HW_DONE',
+              typeLabel: '📝 HW Done',
+              subject: subject,
+              code: code,
+              syllabusId: tp.syllabus_id,
+              title: `[${subject}] පාඩම් කළා: ${code} ${title}`.trim(),
+              subTitle: `ඒකකය: ${unitName || '-'} • ගෙදර වැඩ/පාඩම් කිරීම සලකුණු කරන ලදී`,
+              timestamp: new Date(tp.hw_done_at).getTime() || (tp.updated_at ? new Date(tp.updated_at).getTime() : 0),
+              dateFormatted: formatActivityDate(tp.hw_done_at || tp.updated_at),
+              raw: tp
+            });
+          }
+        });
+
+        // Sort chronological descending (most recent first)
+        logs.sort((a, b) => b.timestamp - a.timestamp);
+        return logs;
+      }
+
+      function renderActivityLog() {
+        const container = document.getElementById('activityLogList');
+        if (!container) return;
+
+        const allLogs = getAllActivityLogs();
+        updateActivityLogBadge();
+
+        let filtered = allLogs;
+        if (currentActivityFilter !== 'ALL') {
+          filtered = allLogs.filter(l => l.type === currentActivityFilter);
+        }
+
+        if (!filtered || filtered.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; color: #a4b0be; font-size: 11.5px; padding: 32px 16px; background: rgba(0,0,0,0.02); border-radius: 10px; border: 1px dashed rgba(0,0,0,0.08);">
+              <div style="font-size: 24px; margin-bottom: 6px;">📭</div>
+              <div>මෑතකදී සටහන් කළ කිසිදු ක්‍රියාකාරකමක් හමු නොවීය.</div>
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        filtered.forEach(item => {
+          let typeClass = 'log-tag-unit';
+          if (item.type === 'FULL_PAPER') typeClass = 'log-tag-full';
+          else if (item.type === 'SPACED_REPETITION') typeClass = 'log-tag-sr';
+          else if (item.type === 'PROGRESS') {
+            typeClass = item.subType === 'HW_DONE' ? 'log-tag-hw' : 'log-tag-lesson';
+          }
+
+          const safeId = String(item.id).replace(/'/g, "\\'");
+          const safeType = String(item.type).replace(/'/g, "\\'");
+
+          html += `
+            <div class="log-item-card">
+              <div class="log-item-content">
+                <div class="log-item-header">
+                  <span class="log-type-tag ${typeClass}">${item.typeLabel}</span>
+                  <span class="log-item-date">${item.dateFormatted}</span>
+                </div>
+                <div class="log-item-title" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
+                <div class="log-item-meta" title="${escapeHtml(item.subTitle)}">${escapeHtml(item.subTitle)}</div>
+              </div>
+              <button type="button" class="btn-log-undo" onclick="requestUndo('${safeId}', '${safeType}')" title="මෙම සටහන Undo කර ඉවත් කරන්න">
+                ↩️ Undo
+              </button>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      function requestUndo(itemId, itemType) {
+        const allLogs = getAllActivityLogs();
+        const item = allLogs.find(l => String(l.id) === String(itemId) && l.type === itemType);
+        if (!item) {
+          showHtmlAlert("මෙම ක්‍රියාකාරකම හමු නොවීය හෝ දැනටමත් ඉවත් කර ඇත.", true);
+          return;
+        }
+
+        pendingUndoItem = item;
+        const msgEl = document.getElementById('undoConfirmMsg');
+        if (msgEl) {
+          let detail = '';
+          if (item.type === 'UNIT_PAPER') {
+            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Unit Paper සටහන දත්ත සමුදායෙන් සම්පූර්ණයෙන්ම ඉවත් කිරීමට අවශ්‍යද? සියලු ප්‍රස්ථාර හා ලකුණු ස්වයංක්‍රීයව යාවත්කාලීන වනු ඇත.`;
+          } else if (item.type === 'FULL_PAPER') {
+            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Full Exam Paper සටහන දත්ත සමුදායෙන් ඉවත් කිරීමට අවශ්‍යද? Z-Score හා ප්‍රගති ප්‍රස්ථාර ස්වයංක්‍රීයව යාවත්කාලීන වනු ඇත.`;
+          } else if (item.type === 'SPACED_REPETITION') {
+            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම Spaced Repetition සම්පූර්ණ කිරීම Undo කර මෙම පාඩම නැවත සක්‍රීය චක්‍රයට එකතු කිරීමට අවශ්‍යද?`;
+          } else if (item.type === 'PROGRESS') {
+            const isLesson = item.subType === 'LESSON_DONE';
+            detail = `<strong>${escapeHtml(item.title)}</strong><br><span style="color:#7f8fa6;">(${escapeHtml(item.subTitle)})</span><br><br>මෙම පාඩමේ ${isLesson ? 'ඉගෙන ගත් (Lesson Done)' : 'පාඩම් කළ (HW Done)'} තත්ත්වය නොකළ බවට (Pending) ආපසු හරවන්නද?`;
+          }
+          msgEl.innerHTML = detail;
+        }
+
+        const popup = document.getElementById('undoConfirmPopup');
+        if (popup) {
+          popup.style.display = 'flex';
+          focusModal(popup);
+        }
+      }
+
+      function cancelUndoConfirm() {
+        pendingUndoItem = null;
+        const popup = document.getElementById('undoConfirmPopup');
+        if (popup) popup.style.display = 'none';
+      }
+
+      async function executeUndoConfirmed() {
+        if (!pendingUndoItem) {
+          cancelUndoConfirm();
+          return;
+        }
+
+        const item = pendingUndoItem;
+        const okBtn = document.getElementById('undoConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = true;
+          okBtn.innerText = 'Undo වෙමින් පවතී... ⏳';
+        }
+
+        try {
+          if (item.type === 'UNIT_PAPER') {
+            const { error } = await supabase
+              .from('unit_papers')
+              .delete()
+              .eq('id', item.id);
+            if (error) throw error;
+            showHtmlAlert(`[${item.subject}] Unit Paper සටහන සාර්ථකව Undo කර ඉවත් කරන ලදී! ↩️`, false);
+          } else if (item.type === 'FULL_PAPER') {
+            const { error } = await supabase
+              .from('full_papers')
+              .delete()
+              .eq('id', item.id);
+            if (error) throw error;
+            showHtmlAlert(`[${item.subject}] Full Paper සටහන සාර්ථකව Undo කර ඉවත් කරන ලදී! ↩️`, false);
+          } else if (item.type === 'SPACED_REPETITION') {
+            const { error } = await supabase
+              .from('spaced_repetition_log')
+              .delete()
+              .eq('id', item.id);
+            if (error) throw error;
+            showHtmlAlert(`Spaced Repetition සටහන සාර්ථකව Undo කරන ලදී! ↩️`, false);
+          } else if (item.type === 'PROGRESS') {
+            const nowIso = new Date().toISOString();
+            const updatePayload = { updated_at: nowIso };
+            if (item.subType === 'LESSON_DONE') {
+              updatePayload.lesson_done = false;
+              updatePayload.lesson_done_at = null;
+            } else {
+              updatePayload.hw_done = false;
+              updatePayload.hw_done_at = null;
+            }
+            const { error } = await supabase
+              .from('tracker_progress')
+              .update(updatePayload)
+              .eq('syllabus_id', item.syllabusId);
+            if (error) throw error;
+
+            if (typeof selectedSubLessonObj !== 'undefined' && selectedSubLessonObj && selectedSubLessonObj.syllabusId === item.syllabusId) {
+              if (item.subType === 'LESSON_DONE') selectedSubLessonObj.lessonDone = false;
+              if (item.subType === 'HW_DONE') selectedSubLessonObj.hwDone = false;
+              if (typeof updateLessonHwButtonUI === 'function') {
+                updateLessonHwButtonUI(selectedSubLessonObj.lessonDone, selectedSubLessonObj.hwDone);
+              }
+            }
+            showHtmlAlert(`[${item.subject}] ${item.code} ප්‍රගති සටහන සාර්ථකව Undo කරන ලදී! ↩️`, false);
+          }
+
+          cancelUndoConfirm();
+          await refreshTelemetry();
+          renderActivityLog();
+        } catch (err) {
+          console.error('executeUndoConfirmed error:', err);
+          showHtmlAlert('Undo කිරීමේදී දෝෂයක් හටගැනිණි: ' + (err.message || 'නැවත උත්සාහ කරන්න'), true);
+        } finally {
+          if (okBtn) {
+            okBtn.disabled = false;
+            okBtn.innerText = 'ඔව්, Undo කරන්න ↩️';
+          }
+        }
       }
 
       // =========================================================================
@@ -7139,6 +7860,22 @@ function openSidebarModal() {
           </button>
           <button onclick="cancelEbbConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
             නැත ❌
+          </button>
+        </div>
+    </div>
+
+    <!-- Undo Confirmation Modal -->
+    <div id="undoConfirmPopup" class="modal-overlay-alert" style="z-index: 99997;">
+      <div class="alert-popup-card" style="border-top: 5px solid #eb4d4b; max-width: 380px;">
+        <div class="alert-popup-icon">↩️</div>
+        <div class="alert-popup-title" style="color: #eb4d4b;">ක්‍රියාව Undo කර ඉවත් කිරීම</div>
+        <div id="undoConfirmMsg" class="alert-popup-msg" style="background: rgba(235, 77, 75, 0.08); border-radius: 10px; padding: 12px 10px; border: 1px solid rgba(235, 77, 75, 0.25); color: inherit; font-size: 11px; line-height: 1.5;"></div>
+        <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 10px; margin-top: 14px;">
+          <button id="undoConfirmOkBtn" class="alert-popup-btn" onclick="executeUndoConfirmed()" style="background: linear-gradient(135deg, #eb4d4b, #d63031); color: white; box-shadow: 0 4px 14px rgba(235,77,75,0.3); font-weight: 700;">
+            ඔව්, Undo කරන්න ↩️
+          </button>
+          <button onclick="cancelUndoConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
+            අවලංගු කරන්න ✕
           </button>
         </div>
       </div>
