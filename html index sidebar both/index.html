@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
- <meta charset="UTF-8">
- <base target="_top">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <base target="_top">
+    <title>Sinethmi A/L 2028 Mission Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,10 +16,13 @@
         if (isDark) {
           document.documentElement.classList.add('dark-mode');
         }
-        const savedFont = localStorage.getItem('al_study_tracker_font_size');
+        const savedFont = localStorage.getItem('al_study_tracker_font_size') || 'normal';
         const fontMap = { small: '88%', normal: '100%', large: '112%', xlarge: '125%' };
-        if (savedFont && fontMap[savedFont]) {
+        const zoomMap = { small: '0.88', normal: '1', large: '1.12', xlarge: '1.25' };
+        if (fontMap[savedFont]) {
           document.documentElement.style.fontSize = fontMap[savedFont];
+          document.documentElement.setAttribute('data-font-size', savedFont);
+          document.documentElement.style.zoom = zoomMap[savedFont] || '1';
         }
       })();
     </script>
@@ -603,6 +607,59 @@
         background: #30363d;
       }
 
+      /* Font Size Scaling Rules */
+      html[data-font-size="small"], body[data-font-size="small"] { zoom: 0.88; }
+      html[data-font-size="normal"], body[data-font-size="normal"] { zoom: 1; }
+      html[data-font-size="large"], body[data-font-size="large"] { zoom: 1.12; }
+      html[data-font-size="xlarge"], body[data-font-size="xlarge"] { zoom: 1.25; }
+
+      /* Styled Badges / Chips for Urgent Radar & Spaced Repetition */
+      .chip-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 7px;
+        border-radius: 6px;
+        font-size: 10px;
+        line-height: 1.35;
+        box-sizing: border-box;
+      }
+      .chip-badge.chip-subj {
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+      .chip-badge.chip-unit-no {
+        font-weight: 600;
+        background: #f1f2f6;
+        color: #2d3436;
+        border: 1px solid #dfe6e9;
+      }
+      .chip-badge.chip-unit-name {
+        font-weight: 500;
+        background: #f8f9fa;
+        color: #4a5568;
+        border: 1px solid #e2e8f0;
+      }
+      .chip-badge.chip-code {
+        font-weight: 700;
+        background: #edf2f7;
+        color: #2d3748;
+        border: 1px solid #cbd5e0;
+      }
+      .chip-badge.chip-title {
+        font-weight: 600;
+        background: #ffffff;
+        color: #1a202c;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      }
+      .radar-chips-container, .ebb-chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        flex: 1;
+      }
+
       /* Subject Balance Alert Banner */
       .balance-alert-card {
         background: #fff8e1;
@@ -662,9 +719,9 @@
         border-radius: 6px;
         color: #fff;
       }
-      /* v17: Scrollable Ebbinghaus List (Top 5) */
+      /* Scrollable Ebbinghaus List */
       #ebbinghausList {
-        max-height: 220px;
+        max-height: 280px;
         overflow-y: auto;
         padding-right: 4px;
       }
@@ -1098,11 +1155,7 @@
       body.dark-mode .radar-item {
         background: #0d1117 !important;
         border-color: #30363d !important;
-        border-left: 4px solid #ff7675 !important;
         color: #f0f6fc !important;
-      }
-      body.dark-mode .radar-item strong {
-        color: #58a6ff !important;
       }
       body.dark-mode .radar-tag {
         background: #21262d !important;
@@ -1114,20 +1167,49 @@
         border: 1px solid #30363d !important;
         color: #f0f6fc !important;
       }
-      body.dark-mode .ebbinghaus-item strong {
-        color: #58a6ff !important;
-      }
-      body.dark-mode .ebbinghaus-item div {
-        color: #f0f6fc !important;
-      }
-      body.dark-mode .ebbinghaus-item span {
-        color: #a29bfe !important;
-      }
       body.dark-mode #ebbinghausList::-webkit-scrollbar-track {
         background: #0d1117 !important;
       }
       body.dark-mode #ebbinghausList::-webkit-scrollbar-thumb {
         background: #30363d !important;
+      }
+
+      /* Dark mode overrides for chip badges */
+      body.dark-mode .chip-badge.chip-unit-no {
+        background: #21262d !important;
+        color: #c9d1d9 !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode .chip-badge.chip-unit-name {
+        background: #161b22 !important;
+        color: #8b949e !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode .chip-badge.chip-code {
+        background: #30363d !important;
+        color: #f0f6fc !important;
+        border-color: #484f58 !important;
+      }
+      body.dark-mode .chip-badge.chip-title {
+        background: #161b22 !important;
+        color: #f0f6fc !important;
+        border-color: #30363d !important;
+        box-shadow: none !important;
+      }
+      body.dark-mode .chip-subj-ict {
+        background: rgba(32, 191, 107, 0.2) !important;
+        border-color: rgba(32, 191, 107, 0.45) !important;
+        color: #2ecc71 !important;
+      }
+      body.dark-mode .chip-subj-et {
+        background: rgba(140, 122, 230, 0.2) !important;
+        border-color: rgba(140, 122, 230, 0.45) !important;
+        color: #a29bfe !important;
+      }
+      body.dark-mode .chip-subj-sft {
+        background: rgba(9, 132, 227, 0.2) !important;
+        border-color: rgba(9, 132, 227, 0.45) !important;
+        color: #58a6ff !important;
       }
       body.dark-mode .zscore-box,
       body.dark-mode .rolling-card,
@@ -1426,6 +1508,102 @@
       }
       body.dark-mode .unit-bar-bg {
         background: #21262d !important;
+      }
+
+      /* Dark mode rules for Breakdown, Log Exam, and Warning Modals */
+      body.dark-mode #unitBreakdownModal .modal-header {
+        background: linear-gradient(135deg, #10ac84, #1b4d3e) !important;
+        border-bottom: 1px solid #30363d !important;
+      }
+      body.dark-mode #fullBreakdownModal .modal-header {
+        background: linear-gradient(135deg, #6c5ce7, #3d2b69) !important;
+        border-bottom: 1px solid #30363d !important;
+      }
+      body.dark-mode #unitPaperModal .modal-header {
+        background: linear-gradient(135deg, #10ac84, #1b4d3e) !important;
+        border-bottom: 1px solid #30363d !important;
+      }
+      body.dark-mode #fullPaperModal .modal-header {
+        background: linear-gradient(135deg, #4834d4, #1a1a2e) !important;
+        border-bottom: 1px solid #30363d !important;
+      }
+      body.dark-mode #sidebarModal .modal-header {
+        background: linear-gradient(135deg, #d35400, #2c1a0e) !important;
+        border-bottom: 1px solid #30363d !important;
+      }
+      body.dark-mode .breakdown-card.ict {
+        background: rgba(32, 191, 107, 0.1) !important;
+        border: 1px solid rgba(32, 191, 107, 0.35) !important;
+      }
+      body.dark-mode .breakdown-card.et {
+        background: rgba(140, 122, 230, 0.1) !important;
+        border: 1px solid rgba(140, 122, 230, 0.35) !important;
+      }
+      body.dark-mode .breakdown-card.sft {
+        background: rgba(9, 132, 227, 0.1) !important;
+        border: 1px solid rgba(9, 132, 227, 0.35) !important;
+      }
+      body.dark-mode .breakdown-total-unit {
+        background: linear-gradient(135deg, #10ac84, #0984e3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      }
+      body.dark-mode .breakdown-total-full {
+        background: linear-gradient(135deg, #6c5ce7, #4834d4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      }
+      body.dark-mode .breakdown-sub-label {
+        color: #8b949e !important;
+      }
+
+      /* Warning Message / Alert Colors in Dark Mode */
+      body.dark-mode #lessonConfirmBox button[onclick*="cancelToggleConfirm"],
+      body.dark-mode #hwConfirmBox button[onclick*="cancelToggleConfirm"] {
+        background: #21262d !important;
+        color: #8b949e !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode #upMarksError {
+        color: #ff6b6b !important;
+      }
+      body.dark-mode #marksGatePopup > div {
+        background: #161b22 !important;
+        border: 1px solid #30363d !important;
+        border-top: 5px solid #e17055 !important;
+        color: #f0f6fc !important;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6) !important;
+      }
+      body.dark-mode #marksGatePopup div {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode #marksGatePopup div[style*="color: #636e72"] {
+        color: #8b949e !important;
+      }
+      body.dark-mode #genericAlertPopup > div {
+        background: #161b22 !important;
+        border: 1px solid #30363d !important;
+        border-top: 5px solid #e17055 !important;
+        color: #f0f6fc !important;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6) !important;
+      }
+      body.dark-mode #genericAlertPopup #genericAlertMsg {
+        color: #c9d1d9 !important;
+      }
+      body.dark-mode #ebbConfirmPopup > div {
+        background: #161b22 !important;
+        border: 1px solid #30363d !important;
+        border-top: 5px solid #8c7ae6 !important;
+        color: #f0f6fc !important;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6) !important;
+      }
+      body.dark-mode #ebbConfirmPopup #ebbConfirmMsg {
+        background: #21262d !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode #ebbConfirmPopup button[onclick*="cancelEbbConfirm"] {
+        background: #21262d !important;
+        color: #8b949e !important;
+        border: 1px solid #30363d !important;
       }
 
       /* =========================================================
@@ -1829,7 +2007,7 @@
 
     <!-- Header -->
     <div class="header-card">
-      <h2 class="title">✨ My A/L 2028 Mission Control ✨</h2>
+      <h2 class="title">✨ Sinethmi A/L 2028 Mission Control ✨</h2>
       <div class="quote-box">
         "විශ්වාසයෙන් සහ නොසැලෙන උත්සාහයෙන් පියවරෙන් පියවර ඉදිරියට යන්න. ඔබගේ ජයග්‍රහණය ස්ථිරයි!"
       </div>
@@ -2654,17 +2832,17 @@
             <div class="breakdown-card ict">
               <div class="breakdown-subj-lbl ict">📘 ICT</div>
               <div class="breakdown-val" id="bd_ict_val">0</div>
-              <div style="font-size: 8px; color: #7f8fa6;">Papers</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Papers</div>
             </div>
             <div class="breakdown-card et">
               <div class="breakdown-subj-lbl et">📙 ET</div>
               <div class="breakdown-val" id="bd_et_val">0</div>
-              <div style="font-size: 8px; color: #7f8fa6;">Papers</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Papers</div>
             </div>
             <div class="breakdown-card sft">
               <div class="breakdown-subj-lbl sft">📗 SFT</div>
               <div class="breakdown-val" id="bd_sft_val">0</div>
-              <div style="font-size: 8px; color: #7f8fa6;">Papers</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Papers</div>
             </div>
           </div>
 
@@ -2691,17 +2869,17 @@
             <div class="breakdown-card ict">
               <div class="breakdown-subj-lbl ict">📘 ICT</div>
               <div class="breakdown-val" id="bd_fp_ict_val">0</div>
-              <div style="font-size: 8px; color: #7f8fa6;">Full Papers</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Full Papers</div>
             </div>
             <div class="breakdown-card et">
               <div class="breakdown-subj-lbl et">📙 ET</div>
               <div class="breakdown-val" id="bd_fp_et_val">0</div>
-              <div style="font-size: 8px; color: #7f8fa6;">Full Papers</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Full Papers</div>
             </div>
             <div class="breakdown-card sft">
               <div class="breakdown-subj-lbl sft">📗 SFT</div>
               <div class="breakdown-val" id="bd_fp_sft_val">0</div>
-              <div style="font-size: 8px; color: #7f8fa6;">Full Papers</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Full Papers</div>
             </div>
           </div>
 
@@ -3498,6 +3676,26 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           rpcData.syllabusList = syllabusList;
           rpcData.tpList = tpList;
 
+          // Compute accurate unit breakdown by subject
+          const sylMapForBd = {};
+          syllabusList.forEach(s => { if (s.id) sylMapForBd[s.id] = s; });
+          const getSubjForBd = p => {
+            let s = (p.subject || '').toUpperCase().trim();
+            if (!s && p.syllabusId && sylMapForBd[p.syllabusId]) {
+              s = (sylMapForBd[p.syllabusId].subject || '').toUpperCase().trim();
+            }
+            return s;
+          };
+          const ubIct = unitPapersHistory.filter(p => getSubjForBd(p) === 'ICT').length;
+          const ubEt = unitPapersHistory.filter(p => getSubjForBd(p) === 'ET').length;
+          const ubSft = unitPapersHistory.filter(p => getSubjForBd(p) === 'SFT').length;
+          rpcData.unitBreakdown = {
+            ict: ubIct,
+            et: ubEt,
+            sft: ubSft,
+            total: unitPapersHistory.length
+          };
+
           // Calculate Urgent Radar (lessons where hw_done === true and no unit paper has been logged yet)
           const paperSyllabusIds = new Set(unitPapersHistory.map(p => p.syllabusId).filter(Boolean));
           const urgentRadarItems = [];
@@ -3658,16 +3856,25 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           data.radar.forEach(item => {
             const subj = item.subject || 'ICT';
             const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
+            const subjBg = subj === 'ICT' ? 'rgba(32, 191, 107, 0.12)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.12)' : 'rgba(9, 132, 227, 0.12)');
+            const subjBorder = subj === 'ICT' ? 'rgba(32, 191, 107, 0.28)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.28)' : 'rgba(9, 132, 227, 0.28)');
             const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : 'Unit -';
             const unitName = item.unitName || '-';
             const subUnitNo = item.code || '-';
-            const subUnitName = item.title || item.subLesson || '-';
+            let cleanTitle = (item.title || item.subLesson || '-').trim();
+            if (item.code && cleanTitle.startsWith(item.code)) {
+              cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+            }
             radarDiv.innerHTML += `
-              <div class="radar-item" style="border-left-color: ${subjColor};">
-                <div style="line-height: 1.4;">
-                  <strong style="color: ${subjColor};">[${subj}]</strong> / ${escapeHtml(unitNo)} / ${escapeHtml(unitName)} / ${escapeHtml(subUnitNo)} / ${escapeHtml(subUnitName)}
+              <div class="radar-item" style="border-left-color: ${subjColor}; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <div class="radar-chips-container">
+                  <span class="chip-badge chip-subj chip-subj-${subj.toLowerCase()}" style="color: ${subjColor}; background: ${subjBg}; border: 1px solid ${subjBorder};">${subj}</span>
+                  <span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span>
+                  <span class="chip-badge chip-unit-name">${escapeHtml(unitName)}</span>
+                  <span class="chip-badge chip-code">${escapeHtml(subUnitNo)}</span>
+                  <span class="chip-badge chip-title">${escapeHtml(cleanTitle)}</span>
                 </div>
-                <div class="radar-tag">දින ${item.colH}ක්</div>
+                <div class="radar-tag" style="white-space: nowrap; flex-shrink: 0;">දින ${item.colH}ක්</div>
               </div>
             `;
           });
@@ -3763,16 +3970,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           return it.stageBucket === currentEbbFilter;
         });
 
-        // 🌟 v17: Show only top five in scrollable list
-        const displayItems = filtered.slice(0, 5);
+        // Scrollable list showing all filtered items
+        const displayItems = filtered;
 
         if (descEl) {
           const totalCount = filtered.length;
-          const showingTxt = totalCount > 5 ? ` <span style="color:#6c5ce7; font-weight:700;">• Top 5 පෙන්වයි (${totalCount}කින්)</span>` : '';
+          const countTxt = totalCount > 0 ? ` <span style="color:#6c5ce7; font-weight:700;">(${totalCount} පාඩම්)</span>` : '';
           if (currentEbbCycle === 1) {
-            descEl.innerHTML = `<strong>Cycle 1</strong> — ප්‍රථම Spaced Repetition චක්‍රය (HW Date ආරම්භය)${showingTxt}`;
+            descEl.innerHTML = `<strong>Cycle 1</strong> — ප්‍රථම Spaced Repetition චක්‍රය (HW Date ආරම්භය)${countTxt}`;
           } else {
-            descEl.innerHTML = `<strong>Cycle ${currentEbbCycle}</strong> — ${currentEbbCycle} වන Spaced Repetition චක්‍රය${showingTxt}`;
+            descEl.innerHTML = `<strong>Cycle ${currentEbbCycle}</strong> — ${currentEbbCycle} වන Spaced Repetition චක්‍රය${countTxt}`;
           }
         }
 
@@ -3784,20 +3991,31 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           displayItems.forEach(function(item, idx) {
             const subj = item.subject || 'ICT';
             const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
+            const subjBg = subj === 'ICT' ? 'rgba(32, 191, 107, 0.12)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.12)' : 'rgba(9, 132, 227, 0.12)');
+            const subjBorder = subj === 'ICT' ? 'rgba(32, 191, 107, 0.28)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.28)' : 'rgba(9, 132, 227, 0.28)');
             const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : 'Unit -';
             const unitName = item.unitName || '-';
             const subUnitNo = item.code || '-';
-            const subUnitName = item.subLesson || item.title || '-';
+            let cleanTitle = (item.title || item.subLesson || '-').trim();
+            if (item.code && cleanTitle.startsWith(item.code)) {
+              cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+            }
 
             ebbList.innerHTML += `
-              <div class="ebbinghaus-item" id="ebbItem_${idx}" data-subject="${subj}" data-sublesson="${encodeURIComponent(subUnitName)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}" style="border-left-color: ${item.badgeColor}; display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="width:16px; height:16px; cursor:pointer; accent-color:${item.badgeColor}; flex-shrink:0;"
-                  onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
-                <div style="flex:1; line-height: 1.4;">
-                  <strong style="color: ${subjColor};">[${subj}]</strong> / ${escapeHtml(unitNo)} / ${escapeHtml(unitName)} / ${escapeHtml(subUnitNo)} / ${escapeHtml(subUnitName)}
-                  <span style="font-size:8px; color:#8c7ae6; margin-left:4px; font-weight:600;">(Cycle ${currentEbbCycle})</span>
+              <div class="ebbinghaus-item" id="ebbItem_${idx}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}" style="border-left-color: ${item.badgeColor}; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                  <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="width:16px; height:16px; cursor:pointer; accent-color:${item.badgeColor}; flex-shrink:0;"
+                    onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
+                  <div class="ebb-chips-container">
+                    <span class="chip-badge chip-subj chip-subj-${subj.toLowerCase()}" style="color: ${subjColor}; background: ${subjBg}; border: 1px solid ${subjBorder};">${subj}</span>
+                    <span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span>
+                    <span class="chip-badge chip-unit-name">${escapeHtml(unitName)}</span>
+                    <span class="chip-badge chip-code">${escapeHtml(subUnitNo)}</span>
+                    <span class="chip-badge chip-title">${escapeHtml(cleanTitle)}</span>
+                    <span class="chip-badge" style="font-size:8.5px; font-weight:700; color:#8c7ae6; background:rgba(140,122,230,0.12); border:1px solid rgba(140,122,230,0.25);">Cycle ${currentEbbCycle}</span>
+                  </div>
                 </div>
-                <div class="ebbinghaus-tag" style="background-color: ${item.badgeColor}; white-space:nowrap;">
+                <div class="ebbinghaus-tag" style="background-color: ${item.badgeColor}; white-space:nowrap; flex-shrink: 0;">
                   ${item.stageTag}
                 </div>
               </div>
@@ -3996,12 +4214,25 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       function openUnitBreakdownModal() {
         if (!telemetryData) return;
-        const bd = telemetryData.unitBreakdown || {
-          ict: (telemetryData.ict ? telemetryData.ict.papers : 0),
-          et: (telemetryData.et ? telemetryData.et.papers : 0),
-          sft: (telemetryData.sft ? telemetryData.sft.papers : 0),
-          total: telemetryData.totalUnitPapersDone || 0
-        };
+        let bd = telemetryData.unitBreakdown;
+        if (!bd) {
+          const upList = telemetryData.unitPapersHistory || [];
+          const sylMap = {};
+          if (telemetryData.syllabusList) {
+            telemetryData.syllabusList.forEach(s => { if (s.id) sylMap[s.id] = s; });
+          }
+          const getSubj = p => {
+            let s = (p.subject || '').toUpperCase().trim();
+            if (!s && p.syllabusId && sylMap[p.syllabusId]) {
+              s = (sylMap[p.syllabusId].subject || '').toUpperCase().trim();
+            }
+            return s;
+          };
+          const ictC = upList.filter(p => getSubj(p) === 'ICT').length;
+          const etC = upList.filter(p => getSubj(p) === 'ET').length;
+          const sftC = upList.filter(p => getSubj(p) === 'SFT').length;
+          bd = { ict: ictC, et: etC, sft: sftC, total: telemetryData.totalUnitPapersDone || upList.length };
+        }
 
         document.getElementById('bd_ict_val').innerText = bd.ict || 0;
         document.getElementById('bd_et_val').innerText = bd.et || 0;
@@ -4017,9 +4248,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (!telemetryData) return;
         const fpList = telemetryData.fullPapersHistory || [];
 
-        const ictCount = fpList.filter(p => p.subject === 'ICT').length;
-        const etCount = fpList.filter(p => p.subject === 'ET').length;
-        const sftCount = fpList.filter(p => p.subject === 'SFT').length;
+        const ictCount = fpList.filter(p => (p.subject || '').toUpperCase().trim() === 'ICT').length;
+        const etCount = fpList.filter(p => (p.subject || '').toUpperCase().trim() === 'ET').length;
+        const sftCount = fpList.filter(p => (p.subject || '').toUpperCase().trim() === 'SFT').length;
         const totalCount = telemetryData.totalFullPapersDone || fpList.length;
 
         document.getElementById('bd_fp_ict_val').innerText = ictCount;
@@ -4958,6 +5189,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           document.documentElement.classList.remove('dark-mode');
         }
         updateThemeButtonsUI(mode);
+        const frame = document.getElementById('sidebarFrame');
+        if (frame && frame.contentWindow) {
+          try {
+            frame.contentWindow.postMessage({ action: 'THEME_CHANGE', theme: isDark ? 'dark' : 'light' }, '*');
+          } catch(e) {}
+        }
       }
 
       function setDashboardTheme(mode) {
@@ -5001,11 +5238,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         'large': '112%',
         'xlarge': '125%'
       };
+      const FONT_ZOOM = {
+        'small': '0.88',
+        'normal': '1',
+        'large': '1.12',
+        'xlarge': '1.25'
+      };
       let currentFontSize = localStorage.getItem('al_study_tracker_font_size') || 'normal';
 
       function applyFontSize(sizeKey) {
         const pct = FONT_SIZES[sizeKey] || '100%';
+        const zoomVal = FONT_ZOOM[sizeKey] || '1';
         document.documentElement.style.fontSize = pct;
+        document.documentElement.setAttribute('data-font-size', sizeKey);
+        document.documentElement.style.zoom = zoomVal;
+        if (document.body) document.body.style.zoom = zoomVal;
         updateFontSizeButtonsUI(sizeKey);
       }
 
@@ -5460,10 +5707,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
 
 function openSidebarModal() {
- const frame = document.getElementById('sidebarFrame');
- if (frame) frame.src = 'sidebar.html?v=' + Date.now();
- document.getElementById('sidebarModal').style.display = 'flex';
- }
+  const frame = document.getElementById('sidebarFrame');
+  const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+  if (frame) frame.src = 'sidebar.html?v=' + Date.now() + '&theme=' + (isDark ? 'dark' : 'light');
+  document.getElementById('sidebarModal').style.display = 'flex';
+}
  function hideSidebarModal() {
  document.getElementById('sidebarModal').style.display = 'none';
  }
@@ -5490,7 +5738,7 @@ function openSidebarModal() {
         }
 
         if (marksVal === '' || marksVal === null || marksVal === undefined || isNaN(marksVal)) {
-          showHtmlAlert("කරුණාකර වලංගු ලකුණු ප්‍රතිශතයක් (0 - 100) ඇතුළත් කරන්න (Marks are mandatory)", true);
+          showHtmlAlert("කරුණාකර ලකුණු ඇතුළත් කරන්න", true);
           return;
         }
 

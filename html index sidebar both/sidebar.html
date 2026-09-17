@@ -8,6 +8,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      (function() {
+        function syncTheme() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const paramTheme = urlParams.get('theme');
+          const saved = paramTheme || localStorage.getItem('al_study_tracker_theme') || 'system';
+          const isDark = saved === 'dark' || (saved === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark-mode');
+            if (document.body) document.body.classList.add('dark-mode');
+          } else {
+            document.documentElement.classList.remove('dark-mode');
+            if (document.body) document.body.classList.remove('dark-mode');
+          }
+        }
+        syncTheme();
+        window.syncTheme = syncTheme;
+        window.addEventListener('message', function(e) {
+          if (e.data && e.data.action === 'THEME_CHANGE') {
+            if (e.data.theme === 'dark') {
+              document.documentElement.classList.add('dark-mode');
+              if (document.body) document.body.classList.add('dark-mode');
+            } else if (e.data.theme === 'light') {
+              document.documentElement.classList.remove('dark-mode');
+              if (document.body) document.body.classList.remove('dark-mode');
+            } else {
+              syncTheme();
+            }
+          }
+        });
+      })();
+    </script>
     <style>
       :root {
         --primary: #8c7ae6;
@@ -18,6 +50,15 @@
         --text-muted: #7f8fa6;
         --border-color: #dfe6e9;
       }
+      :root.dark-mode, body.dark-mode {
+        --primary: #8c7ae6;
+        --primary-hover: #a29bfe;
+        --bg-color: #0d1117;
+        --card-bg: #161b22;
+        --text-dark: #f0f6fc;
+        --text-muted: #8b949e;
+        --border-color: #30363d;
+      }
       body {
         font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
         background-color: var(--bg-color);
@@ -26,6 +67,10 @@
         padding: 10px;
         font-size: 11px;
       }
+      body.dark-mode {
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+      }
       /* Tab Bar */
       .tab-bar {
         display: flex;
@@ -33,6 +78,10 @@
         border-radius: 10px;
         padding: 3px;
         margin-bottom: 12px;
+      }
+      body.dark-mode .tab-bar {
+        background: #161b22;
+        border: 1px solid #30363d;
       }
       .tab-btn {
         flex: 1;
@@ -53,6 +102,11 @@
         color: var(--primary);
         box-shadow: 0 2px 6px rgba(0,0,0,0.06);
       }
+      body.dark-mode .tab-btn.active {
+        background: #21262d;
+        color: #a29bfe;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      }
       .tab-content { display: none; }
       .tab-content.active { display: block; }
 
@@ -63,6 +117,11 @@
         padding: 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         margin-bottom: 10px;
+      }
+      body.dark-mode .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.5);
       }
       .form-group { margin-bottom: 10px; }
       .form-label {
@@ -82,6 +141,12 @@
         box-sizing: border-box;
         outline: none;
       }
+      body.dark-mode .form-input, body.dark-mode .form-select {
+        background: #0d1117;
+        color: #f0f6fc;
+        border-color: #30363d;
+        color-scheme: dark;
+      }
       .form-input:focus, .form-select:focus {
         border-color: var(--primary);
       }
@@ -95,6 +160,10 @@
         overflow: hidden;
         background: #f1f2f6;
       }
+      body.dark-mode .input-group-locked {
+        background: #0d1117;
+        border-color: #30363d;
+      }
       .locked-prefix {
         padding: 7px 8px;
         font-weight: 600;
@@ -104,6 +173,11 @@
         white-space: nowrap;
         user-select: none;
       }
+      body.dark-mode .locked-prefix {
+        background: #21262d;
+        color: #8b949e;
+        border-right: 1px solid #30363d;
+      }
       .locked-input {
         border: none;
         padding: 7px 8px;
@@ -112,6 +186,10 @@
         outline: none;
         width: 100%;
         background: #ffffff;
+      }
+      body.dark-mode .locked-input {
+        background: #0d1117;
+        color: #f0f6fc;
       }
 
       /* Buttons */
@@ -142,9 +220,17 @@
         gap: 4px;
         transition: all 0.15s ease;
       }
+      body.dark-mode .search-result-item {
+        background: #161b22;
+        border-color: #30363d;
+      }
       .search-result-item:hover {
         border-color: var(--primary);
         box-shadow: 0 2px 6px rgba(140, 122, 230, 0.15);
+      }
+      body.dark-mode .search-result-item:hover {
+        border-color: var(--primary);
+        background: #1c2128;
       }
       .res-header {
         display: flex;
@@ -157,12 +243,19 @@
         padding: 2px 6px;
         border-radius: 4px;
       }
-      .badge-ICT { background: #e8f0fe; color: #1976d2; }
-      .badge-ET { background: #feefe3; color: #d35400; }
-      .badge-SFT { background: #e6f4ea; color: #2e7d32; }
+      /* Theme Subject Colors: ICT (Green), ET (Purple), SFT (Blue) */
+      .badge-ICT { background: rgba(32, 191, 107, 0.12); color: #20bf6b; border: 1px solid rgba(32, 191, 107, 0.25); }
+      .badge-ET { background: rgba(140, 122, 230, 0.12); color: #8c7ae6; border: 1px solid rgba(140, 122, 230, 0.25); }
+      .badge-SFT { background: rgba(9, 132, 227, 0.12); color: #0984e3; border: 1px solid rgba(9, 132, 227, 0.25); }
+
+      body.dark-mode .badge-ICT { background: rgba(32, 191, 107, 0.2); color: #2ecc71; border-color: rgba(32, 191, 107, 0.4); }
+      body.dark-mode .badge-ET { background: rgba(140, 122, 230, 0.2); color: #a29bfe; border-color: rgba(140, 122, 230, 0.4); }
+      body.dark-mode .badge-SFT { background: rgba(9, 132, 227, 0.2); color: #58a6ff; border-color: rgba(9, 132, 227, 0.4); }
 
       .res-title { font-weight: 600; font-size: 11px; line-height: 1.3; }
+      body.dark-mode .res-title { color: #f0f6fc; }
       .res-unit { font-size: 9px; color: var(--text-muted); }
+      body.dark-mode .res-unit { color: #8b949e; }
       .res-actions { display: flex; gap: 4px; margin-top: 4px; }
       .action-btn {
         flex: 1;
@@ -173,6 +266,11 @@
         border: 1px solid var(--border-color);
         background: #f8f9fa;
         cursor: pointer;
+      }
+      body.dark-mode .action-btn {
+        background: #21262d;
+        color: #c9d1d9;
+        border-color: #30363d;
       }
       .action-btn.jump:hover { background: #8c7ae6; color: white; border-color: #8c7ae6; }
       .action-btn.edit:hover { background: #00cec9; color: white; border-color: #00cec9; }
@@ -188,6 +286,8 @@
       }
       .status-box.success { background: #e6f4ea; color: #2e7d32; border: 1px solid #c8e6c9; }
       .status-box.error { background: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; }
+      body.dark-mode .status-box.success { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border-color: rgba(46, 204, 113, 0.35); }
+      body.dark-mode .status-box.error { background: rgba(231, 76, 60, 0.15); color: #ff7675; border-color: rgba(231, 76, 60, 0.35); }
     </style>
   </head>
   <body>
@@ -382,13 +482,14 @@
 
         let html = '';
         filtered.slice(0, 35).forEach(item => {
+          const subjColor = item.subject === 'ICT' ? '#20bf6b' : (item.subject === 'ET' ? '#8c7ae6' : '#0984e3');
           html += `
             <div class="search-result-item">
               <div class="res-header">
                 <span class="badge-subj badge-${item.subject}">${item.subject}</span>
-                <span style="font-weight: 700; color: #8c7ae6; font-size: 11px;">උප-ඒකකය ${item.code}</span>
+                <span style="font-weight: 700; color: ${subjColor}; font-size: 11px;">උප-ඒකකය ${item.code}</span>
               </div>
-              <div class="res-title"><span style="color: #6c5ce7; font-weight: 700; margin-right: 6px;">${item.code}</span>${item.subLesson}</div>
+              <div class="res-title"><span style="color: ${subjColor}; font-weight: 700; margin-right: 6px;">${item.code}</span>${item.subLesson}</div>
               <div class="res-unit">${item.unit}</div>
               <div class="res-actions">
                 <button class="action-btn jump" onclick="jumpToRow('${item.subject}', '${item.code}')">🎯 පනින්න</button>
@@ -556,7 +657,10 @@
         document.getElementById('editEmptyMsg').style.display = 'none';
         document.getElementById('editForm').style.display = 'block';
 
-        document.getElementById('editHeaderTag').innerText = `[${item.subject}] ${item.code}`;
+        const subjColor = item.subject === 'ICT' ? '#20bf6b' : (item.subject === 'ET' ? '#8c7ae6' : '#0984e3');
+        const headerTag = document.getElementById('editHeaderTag');
+        headerTag.innerText = `[${item.subject}] ${item.code}`;
+        headerTag.style.color = subjColor;
         document.getElementById('editUnitTitle').value = item.unit;
         document.getElementById('editPrefix').innerText = item.code;
 
