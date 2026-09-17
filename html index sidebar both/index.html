@@ -674,6 +674,10 @@
         color: #1a202c;
         border: 1px solid #e2e8f0;
         box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        max-width: 380px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .radar-chips-container, .ebb-chips-container {
         display: flex;
@@ -681,6 +685,103 @@
         align-items: center;
         gap: 5px;
         flex: 1;
+        min-width: 0;
+      }
+
+      /* Container Queries & Dynamic Details for Data Cards */
+      .ranking-card {
+        container-type: inline-size;
+        container-name: rankingCard;
+      }
+      .ranking-card.compact-row-details .col-unit-no,
+      .ranking-card.compact-row-details .col-unit-name,
+      .ranking-card.compact-row-details .chip-unit-no,
+      .ranking-card.compact-row-details .chip-unit-name {
+        display: none !important;
+      }
+      .ranking-card.compact-row-details .chip-title {
+        max-width: 100% !important;
+      }
+      @container rankingCard (max-width: 680px) {
+        .ranking-table th.col-unit-no,
+        .ranking-table td.col-unit-no,
+        .ranking-table th.col-unit-name,
+        .ranking-table td.col-unit-name,
+        .chip-unit-no,
+        .chip-unit-name {
+          display: none !important;
+        }
+        .chip-title {
+          max-width: 100% !important;
+        }
+      }
+
+      /* Modern Polished Tickable Checkbox */
+      .ebb-tick,
+      input[type="checkbox"].styled-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        min-height: 18px;
+        border: 2px solid #cbd5e1;
+        border-radius: 5px;
+        background: #ffffff;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+        position: relative;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        margin: 0;
+        outline: none;
+        flex-shrink: 0;
+      }
+      .ebb-tick:hover,
+      input[type="checkbox"].styled-checkbox:hover {
+        border-color: var(--chk-accent, #8c7ae6);
+        box-shadow: 0 0 0 3px rgba(140, 122, 230, 0.18);
+      }
+      .ebb-tick:focus-visible,
+      input[type="checkbox"].styled-checkbox:focus-visible {
+        box-shadow: 0 0 0 3px rgba(140, 122, 230, 0.35);
+        border-color: var(--chk-accent, #8c7ae6);
+      }
+      .ebb-tick:checked,
+      input[type="checkbox"].styled-checkbox:checked {
+        background: var(--chk-accent, #8c7ae6);
+        border-color: var(--chk-accent, #8c7ae6);
+      }
+      .ebb-tick:checked::after,
+      input[type="checkbox"].styled-checkbox:checked::after {
+        content: '';
+        display: block;
+        width: 4px;
+        height: 8px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) translate(-1px, -1px);
+      }
+      body.dark-mode .ebb-tick,
+      :root.dark-mode .ebb-tick,
+      body.dark-mode input[type="checkbox"].styled-checkbox,
+      :root.dark-mode input[type="checkbox"].styled-checkbox {
+        background: #21262d;
+        border-color: #30363d;
+      }
+      body.dark-mode .ebb-tick:hover,
+      :root.dark-mode .ebb-tick:hover,
+      body.dark-mode input[type="checkbox"].styled-checkbox:hover,
+      :root.dark-mode input[type="checkbox"].styled-checkbox:hover {
+        box-shadow: 0 0 0 3px rgba(162, 155, 254, 0.25);
+      }
+      body.dark-mode .ebb-tick:checked::after,
+      :root.dark-mode .ebb-tick:checked::after,
+      body.dark-mode input[type="checkbox"].styled-checkbox:checked::after,
+      :root.dark-mode input[type="checkbox"].styled-checkbox:checked::after {
+        border-color: #ffffff;
       }
 
       /* Subject Balance Alert Banner */
@@ -766,27 +867,31 @@
       /* Modals */
       .modal-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
+        inset: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(45, 52, 54, 0.65);
         backdrop-filter: blur(4px);
         display: none;
         justify-content: center;
         align-items: center;
+        padding: 16px;
+        box-sizing: border-box;
         z-index: 9999;
+        overflow-y: auto;
       }
       .modal-window {
         background: #ffffff;
         width: 90%;
-        max-width: 720px;
-        max-height: 85vh;
+        max-width: min(90vw, 720px);
+        max-height: 90vh;
         border-radius: 18px;
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        margin: auto;
+        box-sizing: border-box;
         animation: popIn 0.25s ease-out;
       }
       @keyframes popIn {
@@ -800,6 +905,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-shrink: 0;
       }
       .modal-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
       .modal-close-btn {
@@ -816,7 +922,34 @@
         align-items: center;
         justify-content: center;
       }
-      .modal-body { padding: 14px 18px; overflow-y: auto; }
+      .modal-body {
+        padding: 14px 18px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1 1 auto;
+        min-height: 0;
+        box-sizing: border-box;
+      }
+      .modal-body::-webkit-scrollbar,
+      .alert-popup-card::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      .modal-body::-webkit-scrollbar-track,
+      .alert-popup-card::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .modal-body::-webkit-scrollbar-thumb,
+      .alert-popup-card::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      body.dark-mode .modal-body::-webkit-scrollbar-thumb,
+      :root.dark-mode .modal-body::-webkit-scrollbar-thumb,
+      body.dark-mode .alert-popup-card::-webkit-scrollbar-thumb,
+      :root.dark-mode .alert-popup-card::-webkit-scrollbar-thumb {
+        background: #30363d;
+      }
 
       /* Drilldown Accordion */
       .unit-item { background: #fdfdfd; border: 1px solid #edf2f7; border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
@@ -1582,20 +1715,29 @@
       .modal-overlay-alert {
         display: none;
         position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
+        inset: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(45, 52, 54, 0.65);
         backdrop-filter: blur(4px);
         justify-content: center;
         align-items: center;
+        padding: 16px;
+        box-sizing: border-box;
         z-index: 99998;
+        overflow-y: auto;
       }
       .alert-popup-card {
         background: #ffffff;
         border-radius: 18px;
         padding: 24px 22px;
-        max-width: 320px;
-        width: 88%;
+        max-width: min(90vw, 360px);
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: auto;
+        box-sizing: border-box;
         text-align: center;
         box-shadow: 0 14px 40px rgba(0,0,0,0.22);
         animation: popIn 0.25s ease-out;
@@ -1637,12 +1779,16 @@
       }
       body.dark-mode .alert-popup-card, :root.dark-mode .alert-popup-card,
       body.dark-mode #marksGatePopup > div, :root.dark-mode #marksGatePopup > div,
-      body.dark-mode #genericAlertPopup > div, :root.dark-mode #genericAlertPopup > div {
+      body.dark-mode #genericAlertPopup > div, :root.dark-mode #genericAlertPopup > div,
+      body.dark-mode #timerAlarmPopup > div, :root.dark-mode #timerAlarmPopup > div {
         background: #161b22 !important;
         border: 1px solid #30363d !important;
         border-top: 5px solid #e17055 !important;
         color: #f0f6fc !important;
         box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7) !important;
+      }
+      body.dark-mode #timerAlarmPopup > div, :root.dark-mode #timerAlarmPopup > div {
+        border-top: 5px solid #00cec9 !important;
       }
       body.dark-mode .alert-popup-title, :root.dark-mode .alert-popup-title,
       body.dark-mode #marksGatePopup div, :root.dark-mode #marksGatePopup div {
@@ -2651,8 +2797,8 @@
             <tr>
               <th style="width: 50px; text-align: center;">Rank</th>
               <th>Subject</th>
-              <th>Unit No</th>
-              <th>Unit Name</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
               <th style="text-align: right;">Marks</th>
@@ -2686,8 +2832,8 @@
             <tr>
               <th style="width: 50px; text-align: center;">Rank</th>
               <th>Subject</th>
-              <th>Unit No</th>
-              <th>Unit Name</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
               <th style="text-align: right;">Marks</th>
@@ -2721,8 +2867,8 @@
             <tr>
               <th style="width: 35px; text-align: center;">#</th>
               <th>Subject</th>
-              <th>Unit No</th>
-              <th>Unit Name</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
               <th style="text-align: center;">Date</th>
@@ -2755,8 +2901,8 @@
             <tr>
               <th style="width: 35px; text-align: center;">#</th>
               <th>Subject</th>
-              <th>Unit No</th>
-              <th>Unit Name</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
               <th style="text-align: center;">Date</th>
@@ -4025,7 +4171,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span>
                   <span class="chip-badge chip-unit-name">${escapeHtml(unitName)}</span>
                   <span class="chip-badge chip-code">${escapeHtml(subUnitNo)}</span>
-                  <span class="chip-badge chip-title">${escapeHtml(cleanTitle)}</span>
+                  <span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span>
                 </div>
                 <div class="radar-tag" style="white-space: nowrap; flex-shrink: 0;">දින ${item.colH}ක්</div>
               </div>
@@ -4045,6 +4191,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // v16: Multi-Cycle Ebbinghaus initialisation
         initEbbinghausCycles(data);
+
+        if (typeof updateCardRowSpace === 'function') {
+          setTimeout(updateCardRowSpace, 50);
+        }
       }
 
       // v16: Global storage for multi-cycle ebbinghaus items and filter state
@@ -4156,16 +4306,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             ebbList.innerHTML += `
               <div class="ebbinghaus-item" id="ebbItem_${idx}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}" style="border-left-color: ${item.badgeColor}; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-                  <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="width:16px; height:16px; cursor:pointer; accent-color:${item.badgeColor}; flex-shrink:0;"
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+                  <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="--chk-accent:${item.badgeColor};"
                     onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
                   <div class="ebb-chips-container">
                     <span class="chip-badge chip-subj chip-subj-${subj.toLowerCase()}" style="color: ${subjColor}; background: ${subjBg}; border: 1px solid ${subjBorder};">${subj}</span>
                     <span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span>
                     <span class="chip-badge chip-unit-name">${escapeHtml(unitName)}</span>
                     <span class="chip-badge chip-code">${escapeHtml(subUnitNo)}</span>
-                    <span class="chip-badge chip-title">${escapeHtml(cleanTitle)}</span>
-                    <span class="chip-badge" style="font-size:8.5px; font-weight:700; color:#8c7ae6; background:rgba(140,122,230,0.12); border:1px solid rgba(140,122,230,0.25);">Cycle ${currentEbbCycle}</span>
+                    <span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span>
+                    <span class="chip-badge chip-cycle" style="font-size:8.5px; font-weight:700; color:#8c7ae6; background:rgba(140,122,230,0.12); border:1px solid rgba(140,122,230,0.25);">Cycle ${currentEbbCycle}</span>
                   </div>
                 </div>
                 <div class="ebbinghaus-tag" style="background-color: ${item.badgeColor}; white-space:nowrap; flex-shrink: 0;">
@@ -4184,6 +4334,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           } else {
             ebbList.innerHTML = `<div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 8px;">තෝරාගත් දිනය (${currentEbbFilter === 45 ? '45+' : currentEbbFilter}) සඳහා Cycle ${currentEbbCycle} හි පාඩම් නොමැත.</div>`;
           }
+        }
+
+        if (typeof updateCardRowSpace === 'function') {
+          setTimeout(updateCardRowSpace, 30);
         }
       }
 
@@ -4510,6 +4664,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const yMax = Number((maxZ + 0.25).toFixed(2));
           zoomIndicator.innerText = `Range: ${yMin} ~ ${yMax}`;
 
+          const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+          const chartTextColor = isDark ? '#e6edf3' : '#2d3436';
+          const chartMutedColor = isDark ? '#8b949e' : '#636e72';
+          const chartGridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+
           if (scoreChartInstance) scoreChartInstance.destroy();
           const ctx = canvas.getContext('2d');
           scoreChartInstance = new Chart(ctx, {
@@ -4523,7 +4682,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 backgroundColor: 'rgba(108, 92, 231, 0.1)',
                 borderWidth: 2.5,
                 pointRadius: 4.5,
-                pointBackgroundColor: '#6c5ce7',
+                pointBackgroundColor: isDark ? '#161b22' : '#6c5ce7',
+                pointBorderColor: '#6c5ce7',
                 tension: 0.3
               }]
             },
@@ -4543,13 +4703,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   min: yMin,
                   max: yMax,
                   ticks: {
+                    color: chartMutedColor,
                     font: { size: 9 },
                     callback: function(val) { return (val > 0 ? '+' : '') + Number(val).toFixed(2); }
                   },
-                  grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                  grid: { color: chartGridColor }
                 },
                 x: {
-                  ticks: { font: { size: 9 } },
+                  ticks: { color: chartMutedColor, font: { size: 9 } },
                   grid: { display: false }
                 }
               }
@@ -4584,69 +4745,97 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         canvas.style.display = 'block';
         emptyMsg.style.display = 'none';
 
-        const marksPool = relevantEntries.map(e => e.marks);
-        const minMark = Math.min(...marksPool);
-        const dynamicYMin = Math.max(0, Math.floor(Math.min(minMark, 75) - 10));
-        zoomIndicator.innerText = `Zoomed: ${dynamicYMin}% ~ 100%`;
+        const marks = relevantEntries.map(e => e.marks);
+        const minMark = Math.min(...marks);
+        const dynamicYMin = Math.max(0, Math.floor(minMark - 10));
+        if (zoomIndicator) zoomIndicator.innerText = `Zoomed: ${dynamicYMin}% ~ 100%`;
 
-        let chartData = null;
+        const labels = relevantEntries.map((e, idx) => `P${idx + 1} (${e.date || ''})`);
+
+        let datasets = [];
+
+        const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+        const chartTextColor = isDark ? '#e6edf3' : '#2d3436';
+        const chartMutedColor = isDark ? '#8b949e' : '#636e72';
+        const chartGridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+        const pointBg = isDark ? '#161b22' : '#ffffff';
 
         if (currentActiveChartTab === 'All') {
-          const labels = history.map((e, idx) => `P${idx + 1} (${e.date})`);
-          const ictData = history.map(e => e.subject === 'ICT' ? e.marks : null);
-          const etData = history.map(e => e.subject === 'ET' ? e.marks : null);
-          const sftData = history.map(e => e.subject === 'SFT' ? e.marks : null);
-          const benchmarkData = new Array(labels.length).fill(75);
-
-          chartData = {
-            labels: labels,
-            datasets: [
-              { label: 'ICT', data: ictData, borderColor: '#20bf6b', backgroundColor: 'rgba(32, 191, 107, 0.12)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#20bf6b', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
-              { label: 'ET', data: etData, borderColor: '#8c7ae6', backgroundColor: 'rgba(140, 122, 230, 0.12)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#8c7ae6', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
-              { label: 'SFT', data: sftData, borderColor: '#0984e3', backgroundColor: 'rgba(9, 132, 227, 0.12)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#0984e3', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
-              { label: 'ඉලක්කය (A: 75%)', data: benchmarkData, borderColor: 'rgba(108, 92, 231, 0.4)', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false }
-            ]
-          };
+          datasets = [
+            {
+              label: 'ICT',
+              data: relevantEntries.map(e => e.subject === 'ICT' ? e.marks : null),
+              borderColor: '#20bf6b',
+              backgroundColor: isDark ? 'rgba(32, 191, 107, 0.18)' : 'rgba(32, 191, 107, 0.12)',
+              borderWidth: 2.2,
+              pointRadius: 5,
+              pointBackgroundColor: pointBg,
+              pointBorderColor: '#20bf6b',
+              tension: 0.2,
+              spanGaps: true
+            },
+            {
+              label: 'ET',
+              data: relevantEntries.map(e => e.subject === 'ET' ? e.marks : null),
+              borderColor: isDark ? '#a29bfe' : '#8c7ae6',
+              backgroundColor: isDark ? 'rgba(162, 155, 254, 0.18)' : 'rgba(140, 122, 230, 0.12)',
+              borderWidth: 2.2,
+              pointRadius: 5,
+              pointBackgroundColor: pointBg,
+              pointBorderColor: isDark ? '#a29bfe' : '#8c7ae6',
+              tension: 0.2,
+              spanGaps: true
+            },
+            {
+              label: 'SFT',
+              data: relevantEntries.map(e => e.subject === 'SFT' ? e.marks : null),
+              borderColor: isDark ? '#58a6ff' : '#0984e3',
+              backgroundColor: isDark ? 'rgba(88, 166, 255, 0.18)' : 'rgba(9, 132, 227, 0.12)',
+              borderWidth: 2.2,
+              pointRadius: 5,
+              pointBackgroundColor: pointBg,
+              pointBorderColor: isDark ? '#58a6ff' : '#0984e3',
+              tension: 0.2,
+              spanGaps: true
+            }
+          ];
         } else {
-          const labels = relevantEntries.map((e, idx) => `P${idx + 1} (${e.date})`);
-          const datasetColor = currentActiveChartTab === 'ICT' ? '#20bf6b' : (currentActiveChartTab === 'ET' ? '#8c7ae6' : '#0984e3');
-          const benchmarkData = new Array(labels.length).fill(75);
-
-          chartData = {
-            labels: labels,
-            datasets: [
-              {
-                label: currentActiveChartTab,
-                data: relevantEntries.map(e => e.marks),
-                borderColor: datasetColor,
-                backgroundColor: datasetColor + '1a',
-                borderWidth: 2.5,
-                pointRadius: 6,
-                pointHoverRadius: 9,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: datasetColor,
-                pointBorderWidth: 3,
-                tension: 0.25,
-                fill: true
-              },
-              {
-                label: 'ඉලක්කය (A: 75%)',
-                data: benchmarkData,
-                borderColor: 'rgba(108, 92, 231, 0.4)',
-                borderWidth: 1.5,
-                borderDash: [5, 5],
-                pointRadius: 0,
-                fill: false
-              }
-            ]
-          };
+          const datasetColor = currentActiveChartTab === 'ICT' ? '#20bf6b' : (currentActiveChartTab === 'ET' ? (isDark ? '#a29bfe' : '#8c7ae6') : (isDark ? '#58a6ff' : '#0984e3'));
+          datasets = [{
+            label: `${currentActiveChartTab} Marks`,
+            data: marks,
+            borderColor: datasetColor,
+            backgroundColor: datasetColor + '1a',
+            borderWidth: 2.5,
+            pointRadius: 5.5,
+            pointBackgroundColor: pointBg,
+            pointBorderColor: datasetColor,
+            pointBorderWidth: 2,
+            tension: 0.25,
+            fill: true
+          }];
         }
+
+        // Add 75% target benchmark line
+        const benchmarkLine = new Array(labels.length).fill(75);
+        datasets.push({
+          label: '🎯 ඉලක්කය (75% A Grade)',
+          data: benchmarkLine,
+          borderColor: '#e74c3c',
+          borderWidth: 1.8,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        });
 
         if (scoreChartInstance) scoreChartInstance.destroy();
         const ctx = canvas.getContext('2d');
         scoreChartInstance = new Chart(ctx, {
           type: 'line',
-          data: chartData,
+          data: {
+            labels: labels,
+            datasets: datasets
+          },
           options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -4654,7 +4843,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               legend: {
                 display: true,
                 position: 'top',
-                labels: { boxWidth: 10, font: { size: 9.5, family: 'Poppins' } }
+                labels: {
+                  boxWidth: 10,
+                  font: { size: 9.5, family: 'Poppins', weight: '500' },
+                  color: chartTextColor
+                }
               },
               tooltip: {
                 callbacks: {
@@ -4674,13 +4867,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 min: dynamicYMin,
                 max: 100,
                 ticks: {
+                  color: chartMutedColor,
                   font: { size: 9 },
                   callback: function(val) { return val + '%'; }
                 },
-                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                grid: { color: chartGridColor }
               },
               x: {
-                ticks: { font: { size: 8.5 } },
+                ticks: { color: chartMutedColor, font: { size: 8.5 } },
                 grid: { display: false }
               }
             }
@@ -5029,6 +5223,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           return Number((wSum / windowSlice.length).toFixed(1));
         });
 
+        const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+        const chartTextColor = isDark ? '#e6edf3' : '#2d3436';
+        const chartMutedColor = isDark ? '#8b949e' : '#636e72';
+        const chartGridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+        const pointBg = isDark ? '#161b22' : '#ffffff';
+
         let datasets = [];
 
         if (currentActiveUnitChartTab === 'All') {
@@ -5041,11 +5241,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               label: 'ICT',
               data: ictData,
               borderColor: '#20bf6b',
-              backgroundColor: 'rgba(32, 191, 107, 0.12)',
+              backgroundColor: isDark ? 'rgba(32, 191, 107, 0.18)' : 'rgba(32, 191, 107, 0.12)',
               borderWidth: 2.2,
               pointRadius: 5.5,
               pointHoverRadius: 8,
-              pointBackgroundColor: '#ffffff',
+              pointBackgroundColor: pointBg,
               pointBorderColor: '#20bf6b',
               pointBorderWidth: 2.5,
               tension: 0.25,
@@ -5054,13 +5254,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             {
               label: 'ET',
               data: etData,
-              borderColor: '#8c7ae6',
-              backgroundColor: 'rgba(140, 122, 230, 0.12)',
+              borderColor: isDark ? '#a29bfe' : '#8c7ae6',
+              backgroundColor: isDark ? 'rgba(162, 155, 254, 0.18)' : 'rgba(140, 122, 230, 0.12)',
               borderWidth: 2.2,
               pointRadius: 5.5,
               pointHoverRadius: 8,
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#8c7ae6',
+              pointBackgroundColor: pointBg,
+              pointBorderColor: isDark ? '#a29bfe' : '#8c7ae6',
               pointBorderWidth: 2.5,
               tension: 0.25,
               spanGaps: true
@@ -5068,13 +5268,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             {
               label: 'SFT',
               data: sftData,
-              borderColor: '#0984e3',
-              backgroundColor: 'rgba(9, 132, 227, 0.12)',
+              borderColor: isDark ? '#58a6ff' : '#0984e3',
+              backgroundColor: isDark ? 'rgba(88, 166, 255, 0.18)' : 'rgba(9, 132, 227, 0.12)',
               borderWidth: 2.2,
               pointRadius: 5.5,
               pointHoverRadius: 8,
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#0984e3',
+              pointBackgroundColor: pointBg,
+              pointBorderColor: isDark ? '#58a6ff' : '#0984e3',
               pointBorderWidth: 2.5,
               tension: 0.25,
               spanGaps: true
@@ -5092,18 +5292,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             {
               label: `📈 5-Paper Moving Trend`,
               data: rolling5Data,
-              borderColor: '#8c7ae6',
+              borderColor: isDark ? '#a29bfe' : '#8c7ae6',
               borderWidth: 1.8,
               borderDash: [3, 3],
               pointRadius: 3,
-              pointBackgroundColor: '#8c7ae6',
+              pointBackgroundColor: isDark ? '#a29bfe' : '#8c7ae6',
               tension: 0.3,
               fill: false,
               order: 1
             }
           ];
         } else {
-          const datasetColor = currentActiveUnitChartTab === 'ICT' ? '#20bf6b' : (currentActiveUnitChartTab === 'ET' ? '#8c7ae6' : '#0984e3');
+          const datasetColor = currentActiveUnitChartTab === 'ICT' ? '#20bf6b' : (currentActiveUnitChartTab === 'ET' ? (isDark ? '#a29bfe' : '#8c7ae6') : (isDark ? '#58a6ff' : '#0984e3'));
           datasets = [
             {
               label: `${currentActiveUnitChartTab} Marks`,
@@ -5113,7 +5313,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               borderWidth: 2.5,
               pointRadius: 6,
               pointHoverRadius: 9,
-              pointBackgroundColor: '#ffffff',
+              pointBackgroundColor: pointBg,
               pointBorderColor: datasetColor,
               pointBorderWidth: 3,
               tension: 0.25,
@@ -5132,11 +5332,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             {
               label: `📈 5-Paper Moving Trend`,
               data: rolling5Data,
-              borderColor: '#8c7ae6',
+              borderColor: isDark ? '#a29bfe' : '#8c7ae6',
               borderWidth: 1.8,
               borderDash: [3, 3],
               pointRadius: 3,
-              pointBackgroundColor: '#8c7ae6',
+              pointBackgroundColor: isDark ? '#a29bfe' : '#8c7ae6',
               tension: 0.3,
               fill: false,
               order: 1
@@ -5159,7 +5359,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               legend: {
                 display: true,
                 position: 'top',
-                labels: { boxWidth: 10, font: { size: 9.5, family: 'Poppins' } }
+                labels: {
+                  boxWidth: 10,
+                  font: { size: 9.5, family: 'Poppins', weight: '500' },
+                  color: chartTextColor
+                }
               },
               tooltip: {
                 callbacks: {
@@ -5183,13 +5387,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 min: dynamicYMin,
                 max: 100,
                 ticks: {
+                  color: chartMutedColor,
                   font: { size: 9 },
                   callback: function(val) { return val + '%'; }
                 },
-                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                grid: { color: chartGridColor }
               },
               x: {
-                ticks: { font: { size: 8.5 } },
+                ticks: {
+                  color: chartMutedColor,
+                  font: { size: 8.5 }
+                },
                 grid: { display: false }
               }
             }
@@ -5392,6 +5600,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             frame.contentWindow.postMessage({ action: 'THEME_CHANGE', theme: isDark ? 'dark' : 'light' }, '*');
           } catch(e) {}
         }
+        if (typeof renderUnitPaperChart === 'function') {
+          try { renderUnitPaperChart(); } catch(e) {}
+        }
+        if (typeof renderMultiTabChart === 'function') {
+          try { renderMultiTabChart(); } catch(e) {}
+        }
       }
 
       function setDashboardTheme(mode) {
@@ -5464,6 +5678,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             else btn.classList.remove('active');
           }
         });
+
+        if (typeof updateCardRowSpace === 'function') {
+          updateCardRowSpace();
+        }
       }
 
       function handleFontSliderInput(val) {
@@ -5702,10 +5920,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <tr>
                   <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
                   <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
                   <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
                   <td style="text-align: right;"><span class="marks-pill marks-high">${item.marks}%</span></td>
                   <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${escapeHtml(item.date)}</td>
                 </tr>
@@ -5735,10 +5953,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <tr>
                   <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
                   <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
                   <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
                   <td style="text-align: right;"><span class="marks-pill ${markClass}">${item.marks}%</span></td>
                   <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${escapeHtml(item.date)}</td>
                 </tr>
@@ -5787,10 +6005,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <tr>
                   <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
                   <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
                   <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
+                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 600;">${escapeHtml(item.date)}</td>
@@ -5843,10 +6061,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <tr>
                   <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
                   <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
                   <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
+                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 600;">${escapeHtml(item.date)}</td>
@@ -5855,6 +6073,87 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             }).join('');
           }
         }
+
+        if (typeof updateCardRowSpace === 'function') {
+          setTimeout(updateCardRowSpace, 30);
+        }
+      }
+
+      // =========================================================================
+      // DATA CARD ROW SPACE & DYNAMIC DETAIL CONTROLLER
+      // Checks available horizontal space per row / card; if space is tight, hides
+      // Unit Number and Unit Name, displaying only the Sub-unit Name.
+      // If space is sufficient, retains and displays all details.
+      // =========================================================================
+      function updateCardRowSpace() {
+        const scale = (typeof currentFontScale === 'number' && currentFontScale > 0) ? (currentFontScale / 100) : 1;
+
+        // 1. Table Ranking Cards (Cards B, C, D, E)
+        const tableCards = [
+          document.getElementById('cardTopHighestUnitPapers'),
+          document.getElementById('cardLowestScoreUnitPapers'),
+          document.getElementById('cardOldestLessonPending'),
+          document.getElementById('cardOldestBothPendingNoPaper')
+        ];
+
+        tableCards.forEach(card => {
+          if (!card) return;
+          const container = card.querySelector('.ranking-table-responsive');
+          const table = card.querySelector('.ranking-table');
+          if (!container || !table) return;
+
+          const availableWidth = container.clientWidth;
+          const threshold = 720 * scale;
+          const isTight = availableWidth < threshold || (table.scrollWidth > availableWidth + 10);
+
+          if (isTight) {
+            card.classList.add('compact-row-details');
+          } else {
+            card.classList.remove('compact-row-details');
+          }
+        });
+
+        // 2. Urgent Radar Card (#cardUrgentRadar)
+        const radarCard = document.getElementById('cardUrgentRadar');
+        if (radarCard) {
+          const list = document.getElementById('radarList');
+          const availableWidth = (list && list.clientWidth > 0) ? list.clientWidth : radarCard.clientWidth;
+          const threshold = 660 * scale;
+          const isTight = availableWidth < threshold;
+          if (isTight) {
+            radarCard.classList.add('compact-row-details');
+          } else {
+            radarCard.classList.remove('compact-row-details');
+          }
+        }
+
+        // 3. Spaced Repetition Card (#cardEbbinghaus)
+        const ebbCard = document.getElementById('cardEbbinghaus');
+        if (ebbCard) {
+          const list = document.getElementById('ebbinghausList');
+          const availableWidth = (list && list.clientWidth > 0) ? list.clientWidth : ebbCard.clientWidth;
+          const threshold = 680 * scale;
+          const isTight = availableWidth < threshold;
+          if (isTight) {
+            ebbCard.classList.add('compact-row-details');
+          } else {
+            ebbCard.classList.remove('compact-row-details');
+          }
+        }
+      }
+
+      // Dynamic Row Space listeners
+      window.addEventListener('resize', () => {
+        if (typeof updateCardRowSpace === 'function') updateCardRowSpace();
+      });
+
+      if (window.ResizeObserver) {
+        const rankingResizeObserver = new ResizeObserver(() => {
+          if (typeof updateCardRowSpace === 'function') updateCardRowSpace();
+        });
+        document.querySelectorAll('.ranking-card').forEach(card => {
+          rankingResizeObserver.observe(card);
+        });
       }
 
       // =========================================================================
@@ -6582,6 +6881,10 @@ function openSidebarModal() {
         const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
         const subjBg = subj === 'ICT' ? 'rgba(32, 191, 107, 0.15)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.15)' : 'rgba(9, 132, 227, 0.15)');
 
+        const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+        const chartMutedColor = isDark ? '#8b949e' : '#636e72';
+        const chartGridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+
         if (unitChartInstance) unitChartInstance.destroy();
         const ctx = canvas.getContext('2d');
         unitChartInstance = new Chart(ctx, {
@@ -6595,7 +6898,8 @@ function openSidebarModal() {
               backgroundColor: subjBg,
               borderWidth: 2,
               pointRadius: 4,
-              pointBackgroundColor: subjColor,
+              pointBackgroundColor: isDark ? '#161b22' : subjColor,
+              pointBorderColor: subjColor,
               tension: 0.25
             }]
           },
@@ -6615,13 +6919,14 @@ function openSidebarModal() {
                 min: yMin,
                 max: 100,
                 ticks: {
+                  color: chartMutedColor,
                   font: { size: 8.5 },
                   callback: function(val) { return val + '%'; }
                 },
-                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                grid: { color: chartGridColor }
               },
               x: {
-                ticks: { font: { size: 8 } },
+                ticks: { color: chartMutedColor, font: { size: 8 } },
                 grid: { display: false }
               }
             }
@@ -6656,24 +6961,13 @@ function openSidebarModal() {
       }
     </script>
     <!-- Timer Alarm Popup -->
-    <div id="timerAlarmPopup" style="
-      display: none;
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(45, 52, 54, 0.75); backdrop-filter: blur(5px);
-      justify-content: center; align-items: center; z-index: 99999;
-    ">
-      <div style="
-        background: #ffffff; border-radius: 20px; padding: 28px 24px;
-        max-width: 340px; width: 90%; text-align: center;
-        box-shadow: 0 16px 48px rgba(0,0,0,0.3);
-        animation: popIn 0.3s ease-out;
-        border-top: 5px solid #00cec9;
-      ">
-        <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
-        <div style="font-size: 17px; font-weight: 700; color: #2d3436; margin-bottom: 6px;">
+    <div id="timerAlarmPopup" class="modal-overlay-alert" style="z-index: 99999;">
+      <div class="alert-popup-card" style="border-top: 5px solid #00cec9;">
+        <div class="alert-popup-icon">🎉</div>
+        <div class="alert-popup-title">
           Focus Session Complete!
         </div>
-        <div style="font-size: 12px; color: #636e72; margin-bottom: 16px; line-height: 1.5;">
+        <div class="alert-popup-msg">
           විශිෂ්ටයි! ඔබගේ Focus Study Session එක<br>සාර්ථකව අවසන් විය! 🏆
         </div>
         <div style="
@@ -6682,14 +6976,7 @@ function openSidebarModal() {
         ">
           🔔 Alarm auto-stops in <span id="alarmCountdownTxt" style="font-weight:800; color:#e84393;">60s</span>
         </div>
-        <button onclick="stopAlarmAndClosePopup()" style="
-          width: 100%; padding: 11px 0;
-          background: linear-gradient(135deg, #00cec9, #0984e3);
-          color: white; border: none; border-radius: 10px;
-          font-size: 13px; font-weight: 700; cursor: pointer;
-          box-shadow: 0 4px 14px rgba(0,206,201,0.35);
-          transition: transform 0.1s ease;
-        " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <button class="alert-popup-btn" onclick="stopAlarmAndClosePopup()" style="background: linear-gradient(135deg, #00cec9, #0984e3); box-shadow: 0 4px 14px rgba(0,206,201,0.35);">
           🛑 Stop Alarm
         </button>
       </div>
@@ -6728,36 +7015,18 @@ function openSidebarModal() {
     </div>
 
     <!-- v15: Spaced Repetition Confirmation Popup (Sinhala) -->
-    <div id="ebbConfirmPopup" style="
-      display: none;
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(45, 52, 54, 0.72); backdrop-filter: blur(6px);
-      justify-content: center; align-items: center; z-index: 99996;
-    ">
-      <div style="
-        background: #ffffff; border-radius: 20px; padding: 26px 22px;
-        max-width: 340px; width: 90%; text-align: center;
-        box-shadow: 0 16px 50px rgba(140,122,230,0.35);
-        animation: popIn 0.25s ease-out;
-        border-top: 5px solid #8c7ae6;
-      ">
-        <div style="font-size: 40px; margin-bottom: 8px;">🧠</div>
-        <div style="font-size: 14px; font-weight: 700; color: #6c5ce7; margin-bottom: 10px;">Spaced Repetition — තහවුරු කිරීම</div>
-        <div id="ebbConfirmMsg" style="font-size: 12px; color: #2d3436; line-height: 1.7; margin-bottom: 18px; background:#f3e7f9; border-radius:10px; padding:12px 10px; border:1px solid #d0adf5;"></div>
+    <div id="ebbConfirmPopup" class="modal-overlay-alert" style="z-index: 99996;">
+      <div class="alert-popup-card" style="border-top: 5px solid #8c7ae6;">
+        <div class="alert-popup-icon">🧠</div>
+        <div class="alert-popup-title" style="color: #6c5ce7;">Spaced Repetition — තහවුරු කිරීම</div>
+        <div id="ebbConfirmMsg" class="alert-popup-msg" style="background:#f3e7f9; border-radius:10px; padding:12px 10px; border:1px solid #d0adf5; color: #2d3436;"></div>
         <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 10px;">
-          <button id="ebbConfirmOkBtn" onclick="confirmEbbDone()" style="
-            padding: 10px 0;
-            background: linear-gradient(135deg, #6c5ce7, #8c7ae6);
-            color: white; border: none; border-radius: 10px;
-            font-size: 12px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 4px 14px rgba(108,92,231,0.3);
-          ">ඔව්, සම්පූර්ණයි ✅</button>
-          <button onclick="cancelEbbConfirm()" style="
-            padding: 10px 0;
-            background: #f1f2f6; color: #636e72;
-            border: 1px solid #dfe6e9; border-radius: 10px;
-            font-size: 12px; font-weight: 600; cursor: pointer;
-          ">නැත ❌</button>
+          <button id="ebbConfirmOkBtn" class="alert-popup-btn" onclick="confirmEbbDone()" style="background: linear-gradient(135deg, #6c5ce7, #8c7ae6); box-shadow: 0 4px 14px rgba(108,92,231,0.3);">
+            ඔව්, සම්පූර්ණයි ✅
+          </button>
+          <button onclick="cancelEbbConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
+            නැත ❌
+          </button>
         </div>
       </div>
     </div>
