@@ -15,6 +15,11 @@
         if (isDark) {
           document.documentElement.classList.add('dark-mode');
         }
+        const savedFont = localStorage.getItem('al_study_tracker_font_size');
+        const fontMap = { small: '88%', normal: '100%', large: '112%', xlarge: '125%' };
+        if (savedFont && fontMap[savedFont]) {
+          document.documentElement.style.fontSize = fontMap[savedFont];
+        }
       })();
     </script>
     <style>
@@ -422,9 +427,9 @@
         box-shadow: 0 1px 4px rgba(0,0,0,0.02);
       }
       .velocity-subj-title { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
-      .velocity-subj-title.ict { color: #2980b9; }
-      .velocity-subj-title.et { color: #d35400; }
-      .velocity-subj-title.sft { color: #27ae60; }
+      .velocity-subj-title.ict { color: #20bf6b; }
+      .velocity-subj-title.et { color: #8c7ae6; }
+      .velocity-subj-title.sft { color: #0984e3; }
       .velocity-subtext { font-size: 8.5px; color: #7f8fa6; margin-bottom: 2px; }
       .velocity-date-badge {
         font-size: 9px;
@@ -948,13 +953,13 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         border: 1px solid #edf2f7;
       }
-      .breakdown-card.ict { background: #f0f7ff; border-color: #d0e2ff; }
-      .breakdown-card.et { background: #fffaf0; border-color: #feebc8; }
-      .breakdown-card.sft { background: #f0fff4; border-color: #c6f6d5; }
+      .breakdown-card.ict { background: #f0fff4; border-color: #c6f6d5; }
+      .breakdown-card.et { background: #f8f4ff; border-color: #e2d9f3; }
+      .breakdown-card.sft { background: #f0f7ff; border-color: #d0e2ff; }
       .breakdown-subj-lbl { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
-      .breakdown-subj-lbl.ict { color: #2980b9; }
-      .breakdown-subj-lbl.et { color: #d35400; }
-      .breakdown-subj-lbl.sft { color: #27ae60; }
+      .breakdown-subj-lbl.ict { color: #20bf6b; }
+      .breakdown-subj-lbl.et { color: #8c7ae6; }
+      .breakdown-subj-lbl.sft { color: #0984e3; }
       .breakdown-val { font-size: 18px; font-weight: 700; color: #2d3436; }
       .breakdown-total-card {
         color: white;
@@ -1233,6 +1238,18 @@
       body.dark-mode .breakdown-subj-lbl {
         color: #f0f6fc !important;
       }
+      body.dark-mode .breakdown-subj-lbl.ict,
+      body.dark-mode .velocity-subj-title.ict {
+        color: #2ecc71 !important;
+      }
+      body.dark-mode .breakdown-subj-lbl.et,
+      body.dark-mode .velocity-subj-title.et {
+        color: #a29bfe !important;
+      }
+      body.dark-mode .breakdown-subj-lbl.sft,
+      body.dark-mode .velocity-subj-title.sft {
+        color: #58a6ff !important;
+      }
       body.dark-mode .rank-badge-def {
         background: #21262d !important;
         color: #8b949e !important;
@@ -1315,6 +1332,100 @@
       body.dark-mode select,
       body.dark-mode textarea {
         color-scheme: dark;
+      }
+      body.dark-mode .form-label {
+        color: #f0f6fc !important;
+      }
+
+      /* Unit Paper Modal Dark Mode Styles */
+      body.dark-mode .up-status-box {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .up-status-header {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .up-badge {
+        background: #21262d !important;
+        color: #8b949e !important;
+      }
+      body.dark-mode .up-badge.subj {
+        background: rgba(32, 191, 107, 0.2) !important;
+        color: #2ecc71 !important;
+      }
+      body.dark-mode .up-badge.unit {
+        background: rgba(140, 122, 230, 0.2) !important;
+        color: #a29bfe !important;
+      }
+      body.dark-mode .toggle-btn {
+        background: #161b22 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .toggle-btn.done {
+        background: rgba(46, 204, 113, 0.15) !important;
+        border-color: rgba(46, 204, 113, 0.35) !important;
+        color: #2ecc71 !important;
+      }
+      body.dark-mode .toggle-btn.pending {
+        background: rgba(230, 126, 34, 0.15) !important;
+        border-color: rgba(230, 126, 34, 0.35) !important;
+        color: #f39c12 !important;
+      }
+      body.dark-mode #upSuggestionsBox {
+        background: #161b22 !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .up-suggestion-item {
+        border-bottom-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .up-suggestion-item:hover {
+        background: #21262d !important;
+      }
+      body.dark-mode #lessonConfirmBox {
+        background: rgba(9, 132, 227, 0.12) !important;
+        border-color: #0984e3 !important;
+      }
+      body.dark-mode #lessonConfirmBox div {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode #hwConfirmBox {
+        background: rgba(230, 126, 34, 0.12) !important;
+        border-color: #e67e22 !important;
+      }
+      body.dark-mode #hwConfirmBox div {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .up-prompt-msg {
+        background: #161b22 !important;
+        border-color: #30363d !important;
+        color: #8b949e !important;
+      }
+      body.dark-mode .btn-up-cancel {
+        background: #21262d !important;
+        color: #8b949e !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode .up-confirm-card {
+        background: #1c1917 !important;
+        border-color: #b7791f !important;
+      }
+      body.dark-mode .confirm-title {
+        color: #f39c12 !important;
+      }
+      body.dark-mode .confirm-details {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .btn-confirm-no {
+        background: #21262d !important;
+        color: #8b949e !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode .unit-bar-bg {
+        background: #21262d !important;
       }
 
       /* =========================================================
@@ -1400,6 +1511,68 @@
       .btn-export-pdf:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 14px rgba(108, 92, 231, 0.35);
+      }
+      .settings-section {
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      body.dark-mode .settings-section {
+        border-bottom-color: #30363d;
+      }
+      .font-selector-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+      .lang-selector-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .font-select-btn, .lang-select-btn {
+        background: #f8f9fa;
+        border: 2px solid #edf2f7;
+        border-radius: 10px;
+        padding: 8px 4px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        transition: all 0.2s ease;
+      }
+      .font-select-btn:hover, .lang-select-btn:hover {
+        border-color: #8c7ae6;
+        background: #fdfdff;
+      }
+      .font-select-btn.active, .lang-select-btn.active {
+        border-color: #6c5ce7;
+        background: rgba(108, 92, 231, 0.08);
+        box-shadow: 0 2px 8px rgba(108, 92, 231, 0.15);
+      }
+      .font-btn-title, .lang-btn-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #2d3436;
+      }
+      .font-btn-sub, .lang-btn-sub {
+        font-size: 8.5px;
+        color: #7f8fa6;
+      }
+      body.dark-mode .font-select-btn, body.dark-mode .lang-select-btn {
+        background: #151b26;
+        border-color: #30363d;
+      }
+      body.dark-mode .font-btn-title, body.dark-mode .lang-btn-title {
+        color: #f1f2f6;
+      }
+      body.dark-mode .font-select-btn.active, body.dark-mode .lang-select-btn.active {
+        background: rgba(140, 122, 230, 0.25);
+        border-color: #a29bfe;
       }
 
       /* =========================================================
@@ -1501,12 +1674,12 @@
         font-weight: 700;
         letter-spacing: 0.5px;
       }
-      .subj-pill-ict { background: rgba(9, 132, 227, 0.12); color: #0984e3; }
-      .subj-pill-et { background: rgba(230, 126, 34, 0.12); color: #d35400; }
-      .subj-pill-sft { background: rgba(39, 174, 96, 0.12); color: #27ae60; }
-      body.dark-mode .subj-pill-ict { background: rgba(9, 132, 227, 0.25); color: #74b9ff; }
-      body.dark-mode .subj-pill-et { background: rgba(230, 126, 34, 0.25); color: #fdcb6e; }
-      body.dark-mode .subj-pill-sft { background: rgba(39, 174, 96, 0.25); color: #55efc4; }
+      .subj-pill-ict { background: rgba(32, 191, 107, 0.12); color: #20bf6b; }
+      .subj-pill-et { background: rgba(140, 122, 230, 0.12); color: #8c7ae6; }
+      .subj-pill-sft { background: rgba(9, 132, 227, 0.12); color: #0984e3; }
+      body.dark-mode .subj-pill-ict { background: rgba(32, 191, 107, 0.25); color: #2ecc71; }
+      body.dark-mode .subj-pill-et { background: rgba(140, 122, 230, 0.25); color: #a29bfe; }
+      body.dark-mode .subj-pill-sft { background: rgba(9, 132, 227, 0.25); color: #58a6ff; }
 
       .marks-pill {
         display: inline-block;
@@ -1812,11 +1985,11 @@
         <div class="ring-wrapper">
           <svg>
             <circle class="ring-bg" cx="35" cy="35" r="30"></circle>
-            <circle class="ring-progress" id="ictCircle" cx="35" cy="35" r="30" stroke="#4a90e2"></circle>
+            <circle class="ring-progress" id="ictCircle" cx="35" cy="35" r="30" stroke="#20bf6b"></circle>
           </svg>
-          <div class="ring-text" id="ictPct" style="color: #4a90e2;">0%</div>
+          <div class="ring-text" id="ictPct" style="color: #20bf6b;">0%</div>
         </div>
-        <div class="sub-name" style="color: #2980b9;">ICT</div>
+        <div class="sub-name" style="color: #20bf6b;">ICT</div>
         <div class="sub-detail" id="ictDetail">0 / 58 පාඩම්</div>
         <div class="click-hint">🔍 ඒකක බලන්න</div>
       </div>
@@ -1825,11 +1998,11 @@
         <div class="ring-wrapper">
           <svg>
             <circle class="ring-bg" cx="35" cy="35" r="30"></circle>
-            <circle class="ring-progress" id="etCircle" cx="35" cy="35" r="30" stroke="#e67e22"></circle>
+            <circle class="ring-progress" id="etCircle" cx="35" cy="35" r="30" stroke="#8c7ae6"></circle>
           </svg>
-          <div class="ring-text" id="etPct" style="color: #e67e22;">0%</div>
+          <div class="ring-text" id="etPct" style="color: #8c7ae6;">0%</div>
         </div>
-        <div class="sub-name" style="color: #d35400;">ET</div>
+        <div class="sub-name" style="color: #8c7ae6;">ET</div>
         <div class="sub-detail" id="etDetail">0 / 52 පාඩම්</div>
         <div class="click-hint">🔍 ඒකක බලන්න</div>
       </div>
@@ -1838,11 +2011,11 @@
         <div class="ring-wrapper">
           <svg>
             <circle class="ring-bg" cx="35" cy="35" r="30"></circle>
-            <circle class="ring-progress" id="sftCircle" cx="35" cy="35" r="30" stroke="#27ae60"></circle>
+            <circle class="ring-progress" id="sftCircle" cx="35" cy="35" r="30" stroke="#0984e3"></circle>
           </svg>
-          <div class="ring-text" id="sftPct" style="color: #27ae60;">0%</div>
+          <div class="ring-text" id="sftPct" style="color: #0984e3;">0%</div>
         </div>
-        <div class="sub-name" style="color: #27ae60;">SFT</div>
+        <div class="sub-name" style="color: #0984e3;">SFT</div>
         <div class="sub-detail" id="sftDetail">0 / 54 පාඩම්</div>
         <div class="click-hint">🔍 ඒකක බලන්න</div>
       </div>
@@ -1858,26 +2031,26 @@
       <div class="velocity-banner">
         <div>ඉතිරි මුළු පාඩම්: <strong id="veloTotalRem" style="color: #e84393;">0</strong></div>
         <div>අවශ්‍ය වේගය: <strong id="veloReqRate" style="color: #0984e3;">0 /wk</strong></div>
-        <div>වත්මන් වේගය: <strong id="veloCurRate" style="color: #27ae60;">0 /wk</strong></div>
+        <div>වත්මන් වේගය: <strong id="veloCurRate" style="color: #20bf6b;">0 /wk</strong></div>
       </div>
 
       <div class="velocity-grid">
         <div class="velocity-box">
-          <div class="velocity-subj-title ict">📘 ICT</div>
+          <div class="velocity-subj-title ict">📗 ICT</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_ict_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_ict_rate">0</strong>/wk (අවශ්‍ය: <span id="v_ict_req">0</span>)</div>
           <div class="velocity-date-badge alert" id="v_ict_badge">-</div>
         </div>
 
         <div class="velocity-box">
-          <div class="velocity-subj-title et">📙 ET</div>
+          <div class="velocity-subj-title et">⚙️ ET</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_et_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_et_rate">0</strong>/wk (අවශ්‍ය: <span id="v_et_req">0</span>)</div>
           <div class="velocity-date-badge alert" id="v_et_badge">-</div>
         </div>
 
         <div class="velocity-box">
-          <div class="velocity-subj-title sft">📗 SFT</div>
+          <div class="velocity-subj-title sft">📘 SFT</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_sft_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_sft_rate">0</strong>/wk (අවශ්‍ය: <span id="v_sft_req">0</span>)</div>
           <div class="velocity-date-badge alert" id="v_sft_badge">-</div>
@@ -2008,6 +2181,10 @@
               <div class="zscore-pill">
                 <span class="zscore-pill-tag">Papers 3:</span>
                 <span class="zscore-pill-val empty" id="z_cnt_3">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 5:</span>
+                <span class="zscore-pill-val empty" id="z_cnt_5">-</span>
               </div>
               <div class="zscore-pill">
                 <span class="zscore-pill-tag">Papers 7:</span>
@@ -2163,11 +2340,11 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">🏆</span>
-          <span>Top 5 Highest Score Unit Papers (ඉහළම ලකුණු ලැබූ Unit Papers)</span>
+          <span id="cardBTitle">🏆 වැඩිම ලකුණු සහිත Unit Papers (Top 5 Highest Score Unit Papers)</span>
         </div>
         <span class="ranking-badge" style="background: rgba(39, 174, 96, 0.12); color: #27ae60;">Top 5 High</span>
       </div>
-      <div class="ranking-subtitle">
+      <div class="ranking-subtitle" id="cardBSub">
         විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5.
       </div>
       <div class="ranking-table-responsive">
@@ -2198,11 +2375,11 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⚠️</span>
-          <span>Lowest 5 Score Unit Papers (අවධානය අවශ්‍ය / අඩු ලකුණු Unit Papers)</span>
+          <span id="cardCTitle">📉 අඩුම ලකුණු සහිත Unit Papers (Lowest 5 Score Unit Papers)</span>
         </div>
         <span class="ranking-badge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Least 5</span>
       </div>
-      <div class="ranking-subtitle">
+      <div class="ranking-subtitle" id="cardCSub">
         නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 5.
       </div>
       <div class="ranking-table-responsive">
@@ -2233,11 +2410,11 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">📘</span>
-          <span>📘 ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් (Oldest 5 Pending Lessons)</span>
+          <span id="cardDTitle">📘 ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් (Oldest 5 Pending Lessons)</span>
         </div>
         <span class="ranking-badge" style="background: rgba(9, 132, 227, 0.12); color: #0984e3;">Oldest Pending</span>
       </div>
-      <div class="ranking-subtitle">
+      <div class="ranking-subtitle" id="cardDSub">
         විෂය නිර්දේශයේ තවමත් ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් 5 (Oldest Activity).
       </div>
       <div class="ranking-table-responsive">
@@ -2267,11 +2444,11 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⏳</span>
-          <span>සම්පූර්ණයෙන්ම ආරම්භ නොකළ මුල්ම පාඩම් (Both Lesson &amp; HW Pending + No Paper)</span>
+          <span id="cardETitle">⏳ සම්පූර්ණයෙන්ම ආරම්භ නොකළ මුල්ම පාඩම් (Both Lesson &amp; HW Pending + No Paper)</span>
         </div>
         <span class="ranking-badge" style="background: rgba(225, 112, 85, 0.12); color: #e17055;">Unstarted Top 5</span>
       </div>
-      <div class="ranking-subtitle">
+      <div class="ranking-subtitle" id="cardESub">
         📘 ඉගෙනීමත් 📝 පාඩම් කිරීමත් තවම සිදු නොවූ සහ කිසිදු Unit Paper එකක් නොකළ මුල්ම පාඩම් 5.
       </div>
       <div class="ranking-table-responsive">
@@ -2333,8 +2510,8 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label class="form-label">ලකුණු % (Marks - Optional)</label>
-                <input type="number" class="form-input" id="fpMarks" placeholder="උදා: 75" min="0" max="100">
+                <label class="form-label">ලකුණු % (Marks) *</label>
+                <input type="number" class="form-input" id="fpMarks" placeholder="උදා: 75" min="0" max="100" required>
               </div>
               <div class="form-group">
                 <label class="form-label">ගතවූ කාලය (Time - Optional)</label>
@@ -2425,7 +2602,7 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" style="color: #2d3436;">ලකුණු % (Marks) *</label>
+              <label class="form-label">ලකුණු % (Marks) *</label>
               <input type="number" class="form-input" id="upMarksInput" placeholder="ලකුණු ප්‍රතිශතය ඇතුළත් කරන්න (0 - 100)" min="0" max="100" required
                 onfocus="if(!checkMarksGate()){ this.blur(); }">
               <div id="upMarksError" style="display: none; color: #d63031; font-size: 10px; margin-top: 4px; font-weight: 600;">
@@ -2595,8 +2772,8 @@
         </div>
         <div class="modal-body" style="padding: 18px 20px;">
           <!-- 1. Theme Toggle -->
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 11.5px; font-weight: 700; color: #2d3436; margin-bottom: 8px;" class="settings-title-label">
+          <div class="settings-section">
+            <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 8px;" class="settings-title-label" id="lblThemeHeading" data-i18n="themeLabel">
               🎨 Dashboard Theme (වර්ණ තේමාව):
             </label>
             <div class="theme-selector-grid">
@@ -2618,15 +2795,59 @@
             </div>
           </div>
 
-          <!-- 2. Save Data as PDF -->
-          <div style="padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.08);">
-            <label style="display: block; font-size: 11.5px; font-weight: 700; color: #2d3436; margin-bottom: 6px;" class="settings-title-label">
+          <!-- 2. Font Size Adjustment (Accessibility) -->
+          <div class="settings-section">
+            <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 8px;" class="settings-title-label" id="lblFontHeading" data-i18n="fontLabel">
+              🔤 Text Size (අකුරු ප්‍රමාණය):
+            </label>
+            <div class="font-selector-grid">
+              <button type="button" class="font-select-btn" id="fontBtn_small" onclick="setFontSize('small')">
+                <span class="font-btn-title" style="font-size: 11px;">A-</span>
+                <span class="font-btn-sub">කුඩා (88%)</span>
+              </button>
+              <button type="button" class="font-select-btn active" id="fontBtn_normal" onclick="setFontSize('normal')">
+                <span class="font-btn-title" style="font-size: 13px;">A</span>
+                <span class="font-btn-sub">සාමාන්‍ය (100%)</span>
+              </button>
+              <button type="button" class="font-select-btn" id="fontBtn_large" onclick="setFontSize('large')">
+                <span class="font-btn-title" style="font-size: 15px;">A+</span>
+                <span class="font-btn-sub">විශාල (112%)</span>
+              </button>
+              <button type="button" class="font-select-btn" id="fontBtn_xlarge" onclick="setFontSize('xlarge')">
+                <span class="font-btn-title" style="font-size: 17px;">A++</span>
+                <span class="font-btn-sub">ඉතා විශාල (125%)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Language Switch (Localization) -->
+          <div class="settings-section">
+            <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 8px;" class="settings-title-label" id="lblLangHeading" data-i18n="langLabel">
+              🌐 Language (භාෂාව):
+            </label>
+            <div class="lang-selector-grid">
+              <button type="button" class="lang-select-btn active" id="langBtn_si" onclick="setLanguage('si')">
+                <span style="font-size: 16px;">🇱🇰</span>
+                <span class="lang-btn-title">සිංහල</span>
+                <span class="lang-btn-sub">Default (පෙරනිමි)</span>
+              </button>
+              <button type="button" class="lang-select-btn" id="langBtn_en" onclick="setLanguage('en')">
+                <span style="font-size: 16px;">🇬🇧</span>
+                <span class="lang-btn-title">English</span>
+                <span class="lang-btn-sub">Toggle Switch</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Save Data as PDF -->
+          <div style="padding-top: 4px;">
+            <label style="display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 6px;" class="settings-title-label" id="lblPdfHeading" data-i18n="pdfLabel">
               📄 Save Data as PDF (දත්ත PDF ලෙස සුරැකීම):
             </label>
-            <div style="font-size: 10px; color: #7f8fa6; margin-bottom: 12px; line-height: 1.4;">
+            <div style="font-size: 10px; color: #7f8fa6; margin-bottom: 12px; line-height: 1.4;" id="lblPdfDesc" data-i18n="pdfDesc">
               සම්පූර්ණ ප්‍රගති දත්ත, ලකුණු සටහන් සහ ප්‍රස්ථාර A4 මුද්‍රණයට ගැළපෙන පරිදි PDF ගොනුවක් ලෙස සුරකින්න.
             </div>
-            <button type="button" class="btn-export-pdf" onclick="exportDashboardPdf()">
+            <button type="button" class="btn-export-pdf" onclick="exportDashboardPdf()" id="lblPdfBtn" data-i18n="pdfBtn">
               📥 Save Data as PDF (A4 වාර්තාව)
             </button>
           </div>
@@ -3088,6 +3309,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subject: item.subject,
               subLesson: item.sub_lesson_title,
               code: item.sub_lesson_code,
+              unitNumber: (item.unit_number !== undefined && item.unit_number !== null) ? item.unit_number : '',
+              unitName: item.unit_name || '',
               days: displayDays,
               stageTag: `දින ${displayDays}යි — ${meta.tag}`,
               badgeColor: meta.color,
@@ -3142,10 +3365,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         const byCount = {};
-        [3, 7, 10, 20, 50].forEach(n => {
-          if (zTrend.length >= n) {
-            const slice = zTrend.slice(-n);
-            const avgZ = slice.reduce((sum, item) => sum + item.zScore, 0) / n;
+        [3, 5, 7, 10, 20, 50].forEach(n => {
+          if (zTrend.length > 0) {
+            const countToTake = Math.min(zTrend.length, n);
+            const slice = zTrend.slice(-countToTake);
+            const avgZ = slice.reduce((sum, item) => sum + item.zScore, 0) / slice.length;
             byCount[n] = Number(avgZ.toFixed(3));
             byCount['' + n] = Number(avgZ.toFixed(3));
           } else {
@@ -3215,13 +3439,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const fpRawList = (fpRes.status === 'fulfilled' && fpRes.value.data) ? fpRes.value.data : [];
           const upRawList = (upRes && upRes.status === 'fulfilled' && upRes.value.data) ? upRes.value.data : [];
 
-          // Format full papers history directly from full_papers table
-          const fullPapersHistory = fpRawList.map(r => ({
+          // Format full papers history directly from full_papers table (valid numeric marks only)
+          const validFpRawList = fpRawList.filter(r => r.marks !== null && r.marks !== undefined && !isNaN(r.marks));
+          const fullPapersHistory = validFpRawList.map(r => ({
             id: r.id,
             date: r.exam_date ? r.exam_date.substring(5) : (r.logged_at ? r.logged_at.substring(5, 10) : ''),
             fullDate: r.exam_date || (r.logged_at ? r.logged_at.substring(0, 10) : ''),
             subject: (r.subject || '').toUpperCase().trim(),
-            marks: (r.marks !== null && r.marks !== undefined && !isNaN(r.marks)) ? Number(r.marks) : null,
+            marks: Number(r.marks),
             timeTaken: r.time_taken || null,
             remarks: r.remarks || null,
             timestamp: r.exam_date ? new Date(r.exam_date).getTime() : (r.logged_at ? new Date(r.logged_at).getTime() : 0)
@@ -3289,10 +3514,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
               urgentRadarItems.push({
                 subject: s.subject,
+                unitNumber: (s.unit_number !== undefined && s.unit_number !== null) ? s.unit_number : '',
+                unitName: s.unit_name || '',
+                code: s.sub_lesson_code || '',
+                title: s.sub_lesson_title || '',
                 subLesson: ((s.sub_lesson_code || '') + ' ' + (s.sub_lesson_title || '')).trim(),
                 colH: days,
-                syllabusId: s.id,
-                code: s.sub_lesson_code
+                syllabusId: s.id
               });
             }
           });
@@ -3428,17 +3656,23 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (data.radar && data.radar.length > 0) {
           radarDiv.innerHTML = '';
           data.radar.forEach(item => {
+            const subj = item.subject || 'ICT';
+            const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
+            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : 'Unit -';
+            const unitName = item.unitName || '-';
+            const subUnitNo = item.code || '-';
+            const subUnitName = item.title || item.subLesson || '-';
             radarDiv.innerHTML += `
-              <div class="radar-item">
-                <div>
-                  <strong>[${item.subject}]</strong> ${item.subLesson}
+              <div class="radar-item" style="border-left-color: ${subjColor};">
+                <div style="line-height: 1.4;">
+                  <strong style="color: ${subjColor};">[${subj}]</strong> / ${escapeHtml(unitNo)} / ${escapeHtml(unitName)} / ${escapeHtml(subUnitNo)} / ${escapeHtml(subUnitName)}
                 </div>
                 <div class="radar-tag">දින ${item.colH}ක්</div>
               </div>
             `;
           });
         } else {
-          radarDiv.innerHTML = '<div style="font-size: 10px; color: #27ae60; text-align: center; padding: 4px;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</div>';
+          radarDiv.innerHTML = '<div style="font-size: 10px; color: #20bf6b; text-align: center; padding: 4px;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</div>';
         }
 
         const balanceBox = document.getElementById('balanceAlertBox');
@@ -3548,12 +3782,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (displayItems.length > 0) {
           ebbList.innerHTML = '';
           displayItems.forEach(function(item, idx) {
+            const subj = item.subject || 'ICT';
+            const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
+            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : 'Unit -';
+            const unitName = item.unitName || '-';
+            const subUnitNo = item.code || '-';
+            const subUnitName = item.subLesson || item.title || '-';
+
             ebbList.innerHTML += `
-              <div class="ebbinghaus-item" id="ebbItem_${idx}" data-subject="${item.subject}" data-sublesson="${encodeURIComponent(item.subLesson)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}" style="border-left-color: ${item.badgeColor}; display: flex; align-items: center; gap: 8px;">
+              <div class="ebbinghaus-item" id="ebbItem_${idx}" data-subject="${subj}" data-sublesson="${encodeURIComponent(subUnitName)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}" style="border-left-color: ${item.badgeColor}; display: flex; align-items: center; gap: 8px;">
                 <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="width:16px; height:16px; cursor:pointer; accent-color:${item.badgeColor}; flex-shrink:0;"
                   onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
-                <div style="flex:1;">
-                  <strong>[${item.subject}]</strong> ${item.subLesson}
+                <div style="flex:1; line-height: 1.4;">
+                  <strong style="color: ${subjColor};">[${subj}]</strong> / ${escapeHtml(unitNo)} / ${escapeHtml(unitName)} / ${escapeHtml(subUnitNo)} / ${escapeHtml(subUnitName)}
                   <span style="font-size:8px; color:#8c7ae6; margin-left:4px; font-weight:600;">(Cycle ${currentEbbCycle})</span>
                 </div>
                 <div class="ebbinghaus-tag" style="background-color: ${item.badgeColor}; white-space:nowrap;">
@@ -3932,15 +4173,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           chartData = {
             labels: labels,
             datasets: [
-              { label: 'ICT', data: ictData, borderColor: '#4a90e2', backgroundColor: 'rgba(74, 144, 226, 0.1)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#4a90e2', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
-              { label: 'ET', data: etData, borderColor: '#e67e22', backgroundColor: 'rgba(230, 126, 34, 0.1)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#e67e22', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
-              { label: 'SFT', data: sftData, borderColor: '#27ae60', backgroundColor: 'rgba(39, 174, 96, 0.1)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#27ae60', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
+              { label: 'ICT', data: ictData, borderColor: '#20bf6b', backgroundColor: 'rgba(32, 191, 107, 0.12)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#20bf6b', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
+              { label: 'ET', data: etData, borderColor: '#8c7ae6', backgroundColor: 'rgba(140, 122, 230, 0.12)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#8c7ae6', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
+              { label: 'SFT', data: sftData, borderColor: '#0984e3', backgroundColor: 'rgba(9, 132, 227, 0.12)', borderWidth: 2.5, pointRadius: 6, pointHoverRadius: 9, pointBackgroundColor: '#ffffff', pointBorderColor: '#0984e3', pointBorderWidth: 2.5, tension: 0.25, spanGaps: true },
               { label: 'ඉලක්කය (A: 75%)', data: benchmarkData, borderColor: 'rgba(108, 92, 231, 0.4)', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false }
             ]
           };
         } else {
           const labels = relevantEntries.map((e, idx) => `P${idx + 1} (${e.date})`);
-          const datasetColor = currentActiveChartTab === 'ICT' ? '#4a90e2' : (currentActiveChartTab === 'ET' ? '#e67e22' : '#27ae60');
+          const datasetColor = currentActiveChartTab === 'ICT' ? '#20bf6b' : (currentActiveChartTab === 'ET' ? '#8c7ae6' : '#0984e3');
           const benchmarkData = new Array(labels.length).fill(75);
 
           chartData = {
@@ -4122,6 +4363,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           formatFpStat(null, "z_time_3m");
           formatFpStat(null, "z_time_all");
           formatFpStat(null, "z_cnt_3");
+          formatFpStat(null, "z_cnt_5");
           formatFpStat(null, "z_cnt_7");
           formatFpStat(null, "z_cnt_10");
           formatFpStat(null, "z_cnt_20");
@@ -4132,16 +4374,29 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         let stats = fullAnalyticsCache[tab];
         if (!stats) {
-          const targetCounts = [3, 7, 10, 20, 50];
-          const countAverages = { 3: null, 7: null, 10: null, 20: null, 50: null };
+          const targetCounts = [3, 5, 7, 10, 20, 50];
+          const validMarks = safeEntries
+            .filter(e => e.marks !== null && e.marks !== undefined && !isNaN(e.marks))
+            .map(e => Number(e.marks));
+
+          const byCount = {};
+          targetCounts.forEach(c => {
+            if (validMarks.length > 0) {
+              const sliceCount = Math.min(validMarks.length, c);
+              const slice = validMarks.slice(-sliceCount);
+              const avg = slice.reduce((acc, v) => acc + v, 0) / slice.length;
+              byCount[c] = Number(avg.toFixed(1));
+            } else {
+              byCount[c] = null;
+            }
+          });
+          byCount.all = validMarks.length > 0 ? Number((validMarks.reduce((acc, v) => acc + v, 0) / validMarks.length).toFixed(1)) : null;
 
           const targetDays = { "7d": 7, "14d": 14, "1m": 30, "3m": 90 };
           const timeSums = { "7d": 0, "14d": 0, "1m": 0, "3m": 0 };
           const timeCounts = { "7d": 0, "14d": 0, "1m": 0, "3m": 0 };
 
           const now = Date.now();
-          let countProcessed = 0;
-          let countSum = 0;
           let allTimeSum = 0;
           let allTimeCount = 0;
 
@@ -4149,16 +4404,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const item = safeEntries[i];
             const marks = item.marks;
             if (marks === null || marks === undefined || isNaN(marks)) continue;
-
-            countProcessed++;
-            countSum += marks;
-
-            for (let j = 0; j < targetCounts.length; j++) {
-              const c = targetCounts[j];
-              if (countProcessed === c) {
-                countAverages[c] = countSum / c;
-              }
-            }
 
             allTimeSum += marks;
             allTimeCount++;
@@ -4174,12 +4419,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
             }
           }
-
-          const byCount = {};
-          targetCounts.forEach(c => {
-            byCount[c] = countAverages[c] !== null ? Number(countAverages[c].toFixed(1)) : null;
-          });
-          byCount.all = countProcessed > 0 ? Number((countSum / countProcessed).toFixed(1)) : null;
 
           const byTime = {};
           for (const key of Object.keys(targetDays)) {
@@ -4206,6 +4445,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         formatFpStat(stats.byTime.all, "z_time_all");
 
         formatFpStat(stats.byCount[3], "z_cnt_3");
+        formatFpStat(stats.byCount[5], "z_cnt_5");
         formatFpStat(stats.byCount[7], "z_cnt_7");
         formatFpStat(stats.byCount[10], "z_cnt_10");
         formatFpStat(stats.byCount[20], "z_cnt_20");
@@ -4243,14 +4483,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const getCountVal = (n) => {
           if (byCount[n] !== undefined && byCount[n] !== null) return byCount[n];
           if (byCount["" + n] !== undefined && byCount["" + n] !== null) return byCount["" + n];
-          if (trend.length >= n) {
-            const slice = trend.slice(-n);
-            return slice.reduce((sum, item) => sum + item.zScore, 0) / n;
+          if (trend.length > 0) {
+            const countToTake = Math.min(trend.length, n);
+            const slice = trend.slice(-countToTake);
+            return slice.reduce((sum, item) => sum + item.zScore, 0) / slice.length;
           }
           return null;
         };
 
         formatZ(getCountVal(3), "z_cnt_3");
+        formatZ(getCountVal(5), "z_cnt_5");
         formatZ(getCountVal(7), "z_cnt_7");
         formatZ(getCountVal(10), "z_cnt_10");
         formatZ(getCountVal(20), "z_cnt_20");
@@ -4370,13 +4612,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             {
               label: 'ICT',
               data: ictData,
-              borderColor: '#4a90e2',
-              backgroundColor: 'rgba(74, 144, 226, 0.1)',
+              borderColor: '#20bf6b',
+              backgroundColor: 'rgba(32, 191, 107, 0.12)',
               borderWidth: 2.2,
               pointRadius: 5.5,
               pointHoverRadius: 8,
               pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#4a90e2',
+              pointBorderColor: '#20bf6b',
               pointBorderWidth: 2.5,
               tension: 0.25,
               spanGaps: true
@@ -4384,13 +4626,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             {
               label: 'ET',
               data: etData,
-              borderColor: '#e67e22',
-              backgroundColor: 'rgba(230, 126, 34, 0.1)',
+              borderColor: '#8c7ae6',
+              backgroundColor: 'rgba(140, 122, 230, 0.12)',
               borderWidth: 2.2,
               pointRadius: 5.5,
               pointHoverRadius: 8,
               pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#e67e22',
+              pointBorderColor: '#8c7ae6',
               pointBorderWidth: 2.5,
               tension: 0.25,
               spanGaps: true
@@ -4398,13 +4640,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             {
               label: 'SFT',
               data: sftData,
-              borderColor: '#27ae60',
-              backgroundColor: 'rgba(39, 174, 96, 0.1)',
+              borderColor: '#0984e3',
+              backgroundColor: 'rgba(9, 132, 227, 0.12)',
               borderWidth: 2.2,
               pointRadius: 5.5,
               pointHoverRadius: 8,
               pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#27ae60',
+              pointBorderColor: '#0984e3',
               pointBorderWidth: 2.5,
               tension: 0.25,
               spanGaps: true
@@ -4433,7 +4675,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             }
           ];
         } else {
-          const datasetColor = currentActiveUnitChartTab === 'ICT' ? '#4a90e2' : (currentActiveUnitChartTab === 'ET' ? '#e67e22' : '#27ae60');
+          const datasetColor = currentActiveUnitChartTab === 'ICT' ? '#20bf6b' : (currentActiveUnitChartTab === 'ET' ? '#8c7ae6' : '#0984e3');
           datasets = [
             {
               label: `${currentActiveUnitChartTab} Marks`,
@@ -4750,8 +4992,136 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // Apply initial theme on script execution
       applyTheme(currentThemeMode);
 
+      // =========================================================
+      // DASHBOARD ACCESSIBILITY: FONT SIZE CONTROLLER
+      // =========================================================
+      const FONT_SIZES = {
+        'small': '88%',
+        'normal': '100%',
+        'large': '112%',
+        'xlarge': '125%'
+      };
+      let currentFontSize = localStorage.getItem('al_study_tracker_font_size') || 'normal';
+
+      function applyFontSize(sizeKey) {
+        const pct = FONT_SIZES[sizeKey] || '100%';
+        document.documentElement.style.fontSize = pct;
+        updateFontSizeButtonsUI(sizeKey);
+      }
+
+      function setFontSize(sizeKey) {
+        currentFontSize = sizeKey;
+        try {
+          localStorage.setItem('al_study_tracker_font_size', sizeKey);
+        } catch (e) {}
+        applyFontSize(sizeKey);
+      }
+
+      function updateFontSizeButtonsUI(sizeKey) {
+        ['small', 'normal', 'large', 'xlarge'].forEach(s => {
+          const btn = document.getElementById('fontBtn_' + s);
+          if (btn) {
+            if (s === sizeKey) btn.classList.add('active');
+            else btn.classList.remove('active');
+          }
+        });
+      }
+      applyFontSize(currentFontSize);
+
+      // =========================================================
+      // DASHBOARD LOCALIZATION: SINHALA / ENGLISH CONTROLLER
+      // =========================================================
+      let currentLang = localStorage.getItem('al_study_tracker_lang') || 'si';
+
+      const I18N_DICT = {
+        si: {
+          themeLabel: '🎨 Dashboard Theme (වර්ණ තේමාව):',
+          fontLabel: '🔤 Text Size (අකුරු ප්‍රමාණය):',
+          langLabel: '🌐 Language (භාෂාව):',
+          pdfLabel: '📄 Save Data as PDF (දත්ත PDF ලෙස සුරැකීම):',
+          pdfDesc: 'සම්පූර්ණ ප්‍රගති දත්ත, ලකුණු සටහන් සහ ප්‍රස්ථාර A4 මුද්‍රණයට ගැළපෙන පරිදි PDF ගොනුවක් ලෙස සුරකින්න.',
+          pdfBtn: '📥 Save Data as PDF (A4 වාර්තාව)',
+          topUnitTitle: '🏆 වැඩිම ලකුණු සහිත Unit Papers (Top 5 Highest Score Unit Papers)',
+          topUnitSub: 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5.',
+          lowUnitTitle: '📉 අඩුම ලකුණු සහිත Unit Papers (Lowest 5 Score Unit Papers)',
+          lowUnitSub: 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 5.',
+          oldestLessonTitle: '📘 ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් (Oldest 5 Pending Lessons)',
+          oldestLessonSub: 'විෂය නිර්දේශයේ තවමත් ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් 5 (Oldest Activity).',
+          oldestBothTitle: '⏳ සම්පූර්ණයෙන්ම ආරම්භ නොකළ මුල්ම පාඩම් (Both Lesson & HW Pending + No Paper)',
+          oldestBothSub: '📘 ඉගෙනීමත් 📝 පාඩම් කිරීමත් තවම සිදු නොවූ සහ කිසිදු Unit Paper එකක් නොකළ මුල්ම පාඩම් 5.'
+        },
+        en: {
+          themeLabel: '🎨 Dashboard Theme:',
+          fontLabel: '🔤 Text Size (Accessibility):',
+          langLabel: '🌐 Language:',
+          pdfLabel: '📄 Save Data as PDF (Export Report):',
+          pdfDesc: 'Export complete progress data, scores, and analytics as an A4 printable PDF report.',
+          pdfBtn: '📥 Save Data as PDF (A4 Report)',
+          topUnitTitle: '🏆 Top 5 Highest Score Unit Papers',
+          topUnitSub: 'Top 5 highest scoring unit papers across all subjects.',
+          lowUnitTitle: '📉 Lowest 5 Score Unit Papers',
+          lowUnitSub: 'Top 5 unit papers requiring review and additional practice.',
+          oldestLessonTitle: '📘 Oldest 5 Pending Lessons',
+          oldestLessonSub: 'Oldest 5 uncompleted lessons in the syllabus (Lesson Pending).',
+          oldestBothTitle: '⏳ Oldest 5 Unstarted Lessons (Both Lesson & HW Pending + No Paper)',
+          oldestBothSub: 'Oldest 5 lessons with neither lesson nor homework completed and no paper done.'
+        }
+      };
+
+      function applyLanguage(lang) {
+        currentLang = lang;
+        const dict = I18N_DICT[lang] || I18N_DICT.si;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (dict[key]) el.innerText = dict[key];
+        });
+
+        const btnSi = document.getElementById('langBtn_si');
+        const btnEn = document.getElementById('langBtn_en');
+        if (btnSi && btnEn) {
+          if (lang === 'si') {
+            btnSi.classList.add('active');
+            btnEn.classList.remove('active');
+          } else {
+            btnEn.classList.add('active');
+            btnSi.classList.remove('active');
+          }
+        }
+
+        const cardBTitle = document.getElementById('cardBTitle');
+        const cardBSub = document.getElementById('cardBSub');
+        if (cardBTitle && dict.topUnitTitle) cardBTitle.innerText = dict.topUnitTitle;
+        if (cardBSub && dict.topUnitSub) cardBSub.innerText = dict.topUnitSub;
+
+        const cardCTitle = document.getElementById('cardCTitle');
+        const cardCSub = document.getElementById('cardCSub');
+        if (cardCTitle && dict.lowUnitTitle) cardCTitle.innerText = dict.lowUnitTitle;
+        if (cardCSub && dict.lowUnitSub) cardCSub.innerText = dict.lowUnitSub;
+
+        const cardDTitle = document.getElementById('cardDTitle');
+        const cardDSub = document.getElementById('cardDSub');
+        if (cardDTitle && dict.oldestLessonTitle) cardDTitle.innerText = dict.oldestLessonTitle;
+        if (cardDSub && dict.oldestLessonSub) cardDSub.innerText = dict.oldestLessonSub;
+
+        const cardETitle = document.getElementById('cardETitle');
+        const cardESub = document.getElementById('cardESub');
+        if (cardETitle && dict.oldestBothTitle) cardETitle.innerText = dict.oldestBothTitle;
+        if (cardESub && dict.oldestBothSub) cardESub.innerText = dict.oldestBothSub;
+      }
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        try {
+          localStorage.setItem('al_study_tracker_lang', lang);
+        } catch (e) {}
+        applyLanguage(lang);
+      }
+      applyLanguage(currentLang);
+
       function openSettingsModal() {
         updateThemeButtonsUI(currentThemeMode);
+        updateFontSizeButtonsUI(currentFontSize);
+        applyLanguage(currentLang);
         const modal = document.getElementById('settingsModal');
         if (modal) modal.style.display = 'flex';
       }
@@ -5106,57 +5476,71 @@ function openSidebarModal() {
       function closeFullPaperModal(event) { if (event.target.id === 'fullPaperModal') hideFullPaperModal(); }
 
       async function submitFullPaper(e) {
-  e.preventDefault();
-  const btn = document.getElementById('fpSubmitBtn');
-  btn.innerText = "සුරැකෙමින් පවතී...";
-  btn.disabled = true;
+        e.preventDefault();
+        const btn = document.getElementById('fpSubmitBtn');
+        const subject = document.getElementById('fpSubject').value;
+        const dateStr = document.getElementById('fpDate').value;
+        const marksVal = document.getElementById('fpMarks').value;
+        const timeTaken = document.getElementById('fpTime').value.trim();
+        const remarks = document.getElementById('fpRemarks').value.trim();
 
-  const subject = document.getElementById('fpSubject').value;
-  const dateStr = document.getElementById('fpDate').value;
-  const marksVal = document.getElementById('fpMarks').value;
-  const timeTaken = document.getElementById('fpTime').value.trim();
-  const remarks = document.getElementById('fpRemarks').value.trim();
-
-  const numericMarks = marksVal !== '' && !isNaN(marksVal) ? parseFloat(marksVal) : null;
-
-  try {
-    const { error } = await supabase
-      .from('full_papers')
-      .insert([
-        {
-          subject: subject,
-          exam_date: dateStr,
-          marks: numericMarks,
-          time_taken: timeTaken || null,
-          remarks: remarks || null
+        if (!dateStr) {
+          showHtmlAlert("කරුණාකර විභාග දිනය තෝරන්න", true);
+          return;
         }
-      ]);
 
-    if (error) throw error;
+        if (marksVal === '' || marksVal === null || marksVal === undefined || isNaN(marksVal)) {
+          showHtmlAlert("කරුණාකර වලංගු ලකුණු ප්‍රතිශතයක් (0 - 100) ඇතුළත් කරන්න (Marks are mandatory)", true);
+          return;
+        }
 
-    btn.innerText = "💾 Save Full Paper";
-    btn.disabled = false;
-    hideFullPaperModal();
-    document.getElementById('fpMarks').value = '';
-    document.getElementById('fpTime').value = '';
-    document.getElementById('fpRemarks').value = '';
+        const numericMarks = parseFloat(marksVal);
+        if (numericMarks < 0 || numericMarks > 100) {
+          showHtmlAlert("ලකුණු ප්‍රතිශතය 0 සිට 100 අතර අගයක් විය යුතුය", true);
+          return;
+        }
 
-    try {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#6c5ce7', '#8c7ae6', '#55efc4', '#f8a5c2']
-      });
-    } catch(err) {}
+        btn.innerText = "සුරැකෙමින් පවතී...";
+        btn.disabled = true;
 
-    await refreshTelemetry();
-  } catch (err) {
-    btn.innerText = "💾 Save Full Paper";
-    btn.disabled = false;
-    showHtmlAlert("දෝෂයකි: " + (err.message || "සම්බන්ධතාව අසාර්ථක විය"), true);
-  }
-}
+        try {
+          const { error } = await supabase
+            .from('full_papers')
+            .insert([
+              {
+                subject: subject,
+                exam_date: dateStr,
+                marks: numericMarks,
+                time_taken: timeTaken || null,
+                remarks: remarks || null
+              }
+            ]);
+
+          if (error) throw error;
+
+          btn.innerText = "💾 Save Full Paper";
+          btn.disabled = false;
+          hideFullPaperModal();
+          document.getElementById('fpMarks').value = '';
+          document.getElementById('fpTime').value = '';
+          document.getElementById('fpRemarks').value = '';
+
+          try {
+            confetti({
+              particleCount: 80,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#6c5ce7', '#8c7ae6', '#55efc4', '#f8a5c2']
+            });
+          } catch(err) {}
+
+          await refreshTelemetry();
+        } catch (err) {
+          btn.innerText = "💾 Save Full Paper";
+          btn.disabled = false;
+          showHtmlAlert("දෝෂයකි: " + (err.message || "සම්බන්ධතාව අසාර්ථක විය"), true);
+        }
+      }
       // 10. Drilldown Tree Modal
       function openDrilldownModal(subject, targetCode) {
         if (!telemetryData || !telemetryData.breakdown || !telemetryData.breakdown[subject]) return;
@@ -5170,15 +5554,27 @@ function openSidebarModal() {
         const etPct = (telemetryData.et && telemetryData.et.pct !== undefined) ? telemetryData.et.pct : 0;
         const sftPct = (telemetryData.sft && telemetryData.sft.pct !== undefined) ? telemetryData.sft.pct : 0;
 
+        const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+        let subjColor = '#20bf6b';
+
         if (subject === 'ICT') {
-          header.style.background = "linear-gradient(135deg, #4a90e2, #00cec9)";
-          title.innerHTML = `📘 ICT - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${ictPct}%)`;
+          subjColor = '#20bf6b';
+          header.style.background = isDark 
+            ? "linear-gradient(135deg, #10ac84, #1b4d3e)"
+            : "linear-gradient(135deg, #20bf6b, #00cec9)";
+          title.innerHTML = `📗 ICT - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${ictPct}%)`;
         } else if (subject === 'ET') {
-          header.style.background = "linear-gradient(135deg, #e67e22, #fdcb6e)";
-          title.innerHTML = `📙 ET - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${etPct}%)`;
+          subjColor = '#8c7ae6';
+          header.style.background = isDark 
+            ? "linear-gradient(135deg, #6c5ce7, #3d2b69)"
+            : "linear-gradient(135deg, #8c7ae6, #6c5ce7)";
+          title.innerHTML = `⚙️ ET - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${etPct}%)`;
         } else {
-          header.style.background = "linear-gradient(135deg, #27ae60, #55efc4)";
-          title.innerHTML = `📗 SFT - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${sftPct}%)`;
+          subjColor = '#0984e3';
+          header.style.background = isDark 
+            ? "linear-gradient(135deg, #0984e3, #162447)"
+            : "linear-gradient(135deg, #0984e3, #74b9ff)";
+          title.innerHTML = `📘 SFT - ඒකක සහ උප-පාඩම් ප්‍රගතිය (${sftPct}%)`;
         }
 
         const units = telemetryData.breakdown[subject];
@@ -5199,8 +5595,14 @@ function openSidebarModal() {
             );
             if (isMatch) unitMatchesTarget = true;
 
+            const jumpStyle = isMatch 
+              ? (isDark 
+                  ? `id="jumpTargetItem" style="background: #21262d; border-left: 3px solid ${subjColor};"` 
+                  : `id="jumpTargetItem" style="background: #f1f2f6; border-left: 3px solid ${subjColor};"`)
+              : '';
+
             subListHtml += `
-              <div class="sub-item" ${isMatch ? 'id="jumpTargetItem" style="background: #f1f2f6; border-left: 3px solid #6c5ce7;"' : ''}>
+              <div class="sub-item" ${jumpStyle}>
                 <div class="sub-title-txt">${sl.title}</div>
                 <div class="badge-group">
                   <span class="state-badge ${sl.lessonDone ? 'done-lesson' : ''}">📘 Lesson</span>
@@ -5220,9 +5622,9 @@ function openSidebarModal() {
                 <div class="unit-stat-box">
                   <button class="btn-unit-analytics" onclick="event.stopPropagation(); openUnitAnalytics('${subject}', decodeURIComponent('${safeUnitName}'))">📊 Analytics</button>
                   <div class="unit-bar-bg">
-                    <div class="unit-bar-fill" style="width: ${u.unitPct}%;"></div>
+                    <div class="unit-bar-fill" style="width: ${u.unitPct}%; background-color: ${subjColor};"></div>
                   </div>
-                  <div class="unit-pct-txt">${u.unitPct}%</div>
+                  <div class="unit-pct-txt" style="color: ${subjColor};">${u.unitPct}%</div>
                   <span style="font-size: 10px; color: #a4b0be;" id="arrow-${idx}">▼</span>
                 </div>
               </div>
@@ -5618,6 +6020,7 @@ function openSidebarModal() {
     };
 
     const payload = {
+      subject: subject,
       history: history,
       rolling: {
         last3: calcAvg(3),
@@ -5681,6 +6084,10 @@ function openSidebarModal() {
         const yMin = Math.max(0, Math.floor(minM - 10));
         zoomLbl.innerText = `Zoom: ${yMin}% ~ 100%`;
 
+        const subj = data.subject || 'ICT';
+        const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
+        const subjBg = subj === 'ICT' ? 'rgba(32, 191, 107, 0.15)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.15)' : 'rgba(9, 132, 227, 0.15)');
+
         if (unitChartInstance) unitChartInstance.destroy();
         const ctx = canvas.getContext('2d');
         unitChartInstance = new Chart(ctx, {
@@ -5690,11 +6097,11 @@ function openSidebarModal() {
             datasets: [{
               label: 'Unit Paper Marks',
               data: marks,
-              borderColor: '#00cec9',
-              backgroundColor: 'rgba(0, 206, 201, 0.15)',
+              borderColor: subjColor,
+              backgroundColor: subjBg,
               borderWidth: 2,
               pointRadius: 4,
-              pointBackgroundColor: '#00cec9',
+              pointBackgroundColor: subjColor,
               tension: 0.25
             }]
           },
