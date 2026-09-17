@@ -588,12 +588,15 @@
         align-items: center;
       }
       .radar-tag {
-        background: #ffeaa7;
-        color: #d35400;
-        padding: 2px 5px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 8px;
+        background: rgba(235, 77, 75, 0.12);
+        color: #eb4d4b;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 9.5px;
+        display: inline-block;
+        border: 1px solid rgba(235, 77, 75, 0.28);
+        white-space: nowrap;
       }
       #radarList {
         max-height: 240px;
@@ -693,26 +696,48 @@
         container-type: inline-size;
         container-name: rankingCard;
       }
-      .ranking-card.compact-row-details .col-unit-no,
       .ranking-card.compact-row-details .col-unit-name,
-      .ranking-card.compact-row-details .chip-unit-no,
       .ranking-card.compact-row-details .chip-unit-name {
         display: none !important;
       }
+      .ranking-card.compact-row-details .col-sub-name,
       .ranking-card.compact-row-details .chip-title {
-        max-width: 100% !important;
+        max-width: 320px !important;
       }
       @container rankingCard (max-width: 680px) {
-        .ranking-table th.col-unit-no,
-        .ranking-table td.col-unit-no,
         .ranking-table th.col-unit-name,
         .ranking-table td.col-unit-name,
-        .chip-unit-no,
         .chip-unit-name {
           display: none !important;
         }
+        .ranking-table td.col-sub-name,
         .chip-title {
-          max-width: 100% !important;
+          max-width: 280px !important;
+        }
+      }
+      @media (max-width: 680px) {
+        .ranking-table th.col-unit-name,
+        .ranking-table td.col-unit-name,
+        .chip-unit-name {
+          display: none !important;
+        }
+        .ranking-table td.col-sub-name,
+        .chip-title {
+          max-width: 280px !important;
+        }
+      }
+      @container rankingCard (max-width: 480px) {
+        .ranking-table th.col-unit-no,
+        .ranking-table td.col-unit-no,
+        .chip-unit-no {
+          display: none !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .ranking-table th.col-unit-no,
+        .ranking-table td.col-unit-no,
+        .chip-unit-no {
+          display: none !important;
         }
       }
 
@@ -837,11 +862,38 @@
         border-left-width: 4px;
       }
       .ebbinghaus-tag {
-        font-size: 8px;
+        font-size: 9px;
         font-weight: 700;
-        padding: 2px 7px;
-        border-radius: 6px;
-        color: #fff;
+        padding: 3px 8px;
+        border-radius: 12px;
+        display: inline-block;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+      }
+      .ebbinghaus-tag.ebb-stage-1 {
+        background: rgba(231, 76, 60, 0.12);
+        color: #c0392b;
+        border: 1px solid rgba(231, 76, 60, 0.3);
+      }
+      .ebbinghaus-tag.ebb-stage-3 {
+        background: rgba(243, 156, 18, 0.15);
+        color: #b7791f;
+        border: 1px solid rgba(243, 156, 18, 0.35);
+      }
+      .ebbinghaus-tag.ebb-stage-7 {
+        background: rgba(230, 126, 34, 0.12);
+        color: #d35400;
+        border: 1px solid rgba(230, 126, 34, 0.3);
+      }
+      .ebbinghaus-tag.ebb-stage-21 {
+        background: rgba(140, 122, 230, 0.12);
+        color: #6c5ce7;
+        border: 1px solid rgba(140, 122, 230, 0.3);
+      }
+      .ebbinghaus-tag.ebb-stage-45 {
+        background: rgba(39, 174, 96, 0.12);
+        color: #27ae60;
+        border: 1px solid rgba(39, 174, 96, 0.3);
       }
       /* Scrollable Ebbinghaus List */
       #ebbinghausList {
@@ -1313,10 +1365,12 @@
         border-color: #30363d !important;
         color: #f0f6fc !important;
       }
-      body.dark-mode .radar-tag {
-        background: #21262d !important;
-        color: #f39c12 !important;
-        border: 1px solid #30363d !important;
+      body.dark-mode .radar-tag,
+      :root.dark-mode .radar-tag {
+        background: rgba(235, 77, 75, 0.18) !important;
+        color: #ff7675 !important;
+        border: 1px solid rgba(235, 77, 75, 0.45) !important;
+        font-weight: 700 !important;
       }
       body.dark-mode .ebbinghaus-item {
         background: #0d1117 !important;
@@ -1447,8 +1501,54 @@
         background: #21262d !important;
         color: #f0f6fc !important;
       }
-      body.dark-mode .ebbinghaus-tag {
-        color: #ffffff !important;
+      /* Ebbinghaus stage tags in dark mode: high contrast, vibrant, bold */
+      body.dark-mode .ebbinghaus-tag,
+      :root.dark-mode .ebbinghaus-tag {
+        font-weight: 700 !important;
+      }
+      body.dark-mode .ebbinghaus-tag.ebb-stage-1,
+      :root.dark-mode .ebbinghaus-tag.ebb-stage-1,
+      body.dark-mode .ebbinghaus-tag[data-stage="1"] {
+        background: rgba(231, 76, 60, 0.22) !important;
+        color: #ff7675 !important;
+        border: 1px solid rgba(231, 76, 60, 0.5) !important;
+      }
+      body.dark-mode .ebbinghaus-tag.ebb-stage-3,
+      :root.dark-mode .ebbinghaus-tag.ebb-stage-3,
+      body.dark-mode .ebbinghaus-tag[data-stage="3"] {
+        background: rgba(243, 156, 18, 0.25) !important;
+        color: #fed330 !important; /* High contrast yellow/gold */
+        border: 1px solid rgba(243, 156, 18, 0.65) !important;
+        font-weight: 800 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      }
+      body.dark-mode .ebbinghaus-tag.ebb-stage-7,
+      :root.dark-mode .ebbinghaus-tag.ebb-stage-7,
+      body.dark-mode .ebbinghaus-tag[data-stage="7"] {
+        background: rgba(230, 126, 34, 0.22) !important;
+        color: #fa8231 !important;
+        border: 1px solid rgba(230, 126, 34, 0.55) !important;
+      }
+      body.dark-mode .ebbinghaus-tag.ebb-stage-21,
+      :root.dark-mode .ebbinghaus-tag.ebb-stage-21,
+      body.dark-mode .ebbinghaus-tag[data-stage="21"] {
+        background: rgba(140, 122, 230, 0.25) !important;
+        color: #a29bfe !important;
+        border: 1px solid rgba(140, 122, 230, 0.55) !important;
+      }
+      body.dark-mode .ebbinghaus-tag.ebb-stage-45,
+      :root.dark-mode .ebbinghaus-tag.ebb-stage-45,
+      body.dark-mode .ebbinghaus-tag[data-stage="45"] {
+        background: rgba(39, 174, 96, 0.22) !important;
+        color: #2ecc71 !important;
+        border: 1px solid rgba(39, 174, 96, 0.55) !important;
+      }
+      /* Ensure filter button for Day 3 in dark mode also has high contrast */
+      body.dark-mode #ebbF3,
+      :root.dark-mode #ebbF3 {
+        background: #f39c12 !important;
+        color: #1a1a1a !important;
+        font-weight: 800 !important;
       }
       body.dark-mode .level-card {
         background: linear-gradient(135deg, #2d1e4e, #4a1936) !important;
@@ -2125,6 +2225,15 @@
       body.dark-mode .marks-mid { background: rgba(9, 132, 227, 0.25); color: #74b9ff; }
       body.dark-mode .marks-low { background: rgba(235, 77, 75, 0.25); color: #ff7675; }
 
+      .col-sub-no {
+        font-weight: 700;
+        color: #0984e3;
+      }
+      body.dark-mode .col-sub-no,
+      :root.dark-mode .col-sub-no {
+        color: #58a6ff;
+      }
+
       .btn-pending-action {
         background: linear-gradient(135deg, #0984e3, #6c5ce7);
         color: white;
@@ -2500,8 +2609,25 @@
       <div class="ranking-subtitle">
         පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ පාඩම්.
       </div>
-      <div id="radarList" class="custom-scroll-container">
-        <div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 4px;">දත්ත පූරණය වෙමින් පවතී...</div>
+      <div class="ranking-table-responsive">
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th style="width: 45px; text-align: center;">Priority</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: right;">Days Elapsed</th>
+            </tr>
+          </thead>
+          <tbody id="radarList">
+            <tr>
+              <td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත පූරණය වෙමින් පවතී... ⏳</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -2546,9 +2672,26 @@
         Cycle 1 — ප්‍රථම Spaced Repetition චක්‍රය (Day 1 → 3 → 7 → 21 → 45+)
       </div>
 
-      <!-- Lesson list (with tick boxes) -->
-      <div id="ebbinghausList" class="custom-scroll-container">
-        <div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 6px;">දත්ත පූරණය වෙමින් පවතී...</div>
+      <!-- Table format with Done checkbox -->
+      <div class="ranking-table-responsive">
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th style="width: 45px; text-align: center;">Done</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: right;">Stage &amp; Days</th>
+            </tr>
+          </thead>
+          <tbody id="ebbinghausList">
+            <tr>
+              <td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත පූරණය වෙමින් පවතී... ⏳</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -4042,7 +4185,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           console.error("Telemetry Error:", err);
           const radar = document.getElementById('radarList');
           if (radar) {
-            radar.innerHTML = '<div style="font-size: 10px; color: #d63031; text-align: center; padding: 4px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || '') + '</div>';
+            radar.innerHTML = '<tr><td colspan="7" style="font-size: 10px; color: #d63031; text-align: center; padding: 10px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || '') + '</td></tr>';
           }
         }
       }
@@ -4151,34 +4294,30 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         const radarDiv = document.getElementById('radarList');
         if (data.radar && data.radar.length > 0) {
-          radarDiv.innerHTML = '';
-          data.radar.forEach(item => {
+          radarDiv.innerHTML = data.radar.map((item, idx) => {
             const subj = item.subject || 'ICT';
-            const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
-            const subjBg = subj === 'ICT' ? 'rgba(32, 191, 107, 0.12)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.12)' : 'rgba(9, 132, 227, 0.12)');
-            const subjBorder = subj === 'ICT' ? 'rgba(32, 191, 107, 0.28)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.28)' : 'rgba(9, 132, 227, 0.28)');
-            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : 'Unit -';
+            const subjClass = `subj-pill-${subj.toLowerCase()}`;
+            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
             const unitName = item.unitName || '-';
             const subUnitNo = item.code || '-';
             let cleanTitle = (item.title || item.subLesson || '-').trim();
             if (item.code && cleanTitle.startsWith(item.code)) {
               cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
             }
-            radarDiv.innerHTML += `
-              <div class="radar-item" style="border-left-color: ${subjColor}; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                <div class="radar-chips-container">
-                  <span class="chip-badge chip-subj chip-subj-${subj.toLowerCase()}" style="color: ${subjColor}; background: ${subjBg}; border: 1px solid ${subjBorder};">${subj}</span>
-                  <span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span>
-                  <span class="chip-badge chip-unit-name">${escapeHtml(unitName)}</span>
-                  <span class="chip-badge chip-code">${escapeHtml(subUnitNo)}</span>
-                  <span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span>
-                </div>
-                <div class="radar-tag" style="white-space: nowrap; flex-shrink: 0;">දින ${item.colH}ක්</div>
-              </div>
+            return `
+              <tr>
+                <td style="text-align: center;"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
+                <td><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(unitNo)}</td>
+                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</td>
+                <td class="col-sub-no" style="font-weight: 700; color: #e17055;">${escapeHtml(subUnitNo)}</td>
+                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</td>
+                <td style="text-align: right;"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+              </tr>
             `;
-          });
+          }).join('');
         } else {
-          radarDiv.innerHTML = '<div style="font-size: 10px; color: #20bf6b; text-align: center; padding: 4px;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</div>';
+          radarDiv.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 14px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
         }
 
         const balanceBox = document.getElementById('balanceAlertBox');
@@ -4290,49 +4429,46 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (!ebbList) return;
 
         if (displayItems.length > 0) {
-          ebbList.innerHTML = '';
-          displayItems.forEach(function(item, idx) {
+          ebbList.innerHTML = displayItems.map(function(item, idx) {
             const subj = item.subject || 'ICT';
-            const subjColor = subj === 'ICT' ? '#20bf6b' : (subj === 'ET' ? '#8c7ae6' : '#0984e3');
-            const subjBg = subj === 'ICT' ? 'rgba(32, 191, 107, 0.12)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.12)' : 'rgba(9, 132, 227, 0.12)');
-            const subjBorder = subj === 'ICT' ? 'rgba(32, 191, 107, 0.28)' : (subj === 'ET' ? 'rgba(140, 122, 230, 0.28)' : 'rgba(9, 132, 227, 0.28)');
-            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : 'Unit -';
+            const subjClass = `subj-pill-${subj.toLowerCase()}`;
+            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
             const unitName = item.unitName || '-';
             const subUnitNo = item.code || '-';
             let cleanTitle = (item.title || item.subLesson || '-').trim();
             if (item.code && cleanTitle.startsWith(item.code)) {
               cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
             }
+            const stageClass = `ebb-stage-${item.stageBucket || 1}`;
 
-            ebbList.innerHTML += `
-              <div class="ebbinghaus-item" id="ebbItem_${idx}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}" style="border-left-color: ${item.badgeColor}; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+            return `
+              <tr id="ebbItem_${idx}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}">
+                <td style="text-align: center;">
                   <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="--chk-accent:${item.badgeColor};"
                     onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
-                  <div class="ebb-chips-container">
-                    <span class="chip-badge chip-subj chip-subj-${subj.toLowerCase()}" style="color: ${subjColor}; background: ${subjBg}; border: 1px solid ${subjBorder};">${subj}</span>
-                    <span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span>
-                    <span class="chip-badge chip-unit-name">${escapeHtml(unitName)}</span>
-                    <span class="chip-badge chip-code">${escapeHtml(subUnitNo)}</span>
-                    <span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span>
-                    <span class="chip-badge chip-cycle" style="font-size:8.5px; font-weight:700; color:#8c7ae6; background:rgba(140,122,230,0.12); border:1px solid rgba(140,122,230,0.25);">Cycle ${currentEbbCycle}</span>
-                  </div>
-                </div>
-                <div class="ebbinghaus-tag" style="background-color: ${item.badgeColor}; white-space:nowrap; flex-shrink: 0;">
-                  ${item.stageTag}
-                </div>
-              </div>
+                </td>
+                <td><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(unitNo)}</td>
+                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</td>
+                <td class="col-sub-no" style="font-weight: 700; color: #8c7ae6;">${escapeHtml(subUnitNo)}</td>
+                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</td>
+                <td style="text-align: right;">
+                  <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}" style="white-space: nowrap;">
+                    ${item.stageTag}
+                  </span>
+                </td>
+              </tr>
             `;
-          });
+          }).join('');
         } else {
           if (items.length === 0) {
             if (currentEbbCycle === 1) {
-              ebbList.innerHTML = '<div style="font-size: 10px; color: #27ae60; text-align: center; padding: 10px;">නියමයි! Cycle 1 හි නැවත මතක් කළ යුතු පාඩම් කිසිවක් නැත 🌟 (සියලු පාඩම් නියමිත කාල සීමාවලට අනුව රඳවා ඇත)</div>';
+              ebbList.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #27ae60; text-align: center; padding: 14px; font-weight: 600;">නියමයි! Cycle 1 හි නැවත මතක් කළ යුතු පාඩම් කිසිවක් නැත 🌟 (සියලු පාඩම් නියමිත කාල සීමාවලට අනුව රඳවා ඇත)</td></tr>';
             } else {
-              ebbList.innerHTML = `<div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 10px;">Cycle ${currentEbbCycle} සඳහා තවම පාඩම් සුදුසුකම් ලබා නැත.<br><span style="font-size:9px; color:#a4b0be;">(පෙර Cycle හි දිනය 45+ අවසන් කර දින 45ක් සම්පූර්ණ වූ පසු පාඩම් මෙහි ස්වයංක්‍රීයව දිස්වනු ඇත) ⏳</span></div>`;
+              ebbList.innerHTML = `<tr><td colspan="7" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 14px;">Cycle ${currentEbbCycle} සඳහා තවම පාඩම් සුදුසුකම් ලබා නැත.<br><span style="font-size:9.5px; color:#a4b0be;">(පෙර Cycle හි දිනය 45+ අවසන් කර දින 45ක් සම්පූර්ණ වූ පසු පාඩම් මෙහි ස්වයංක්‍රීයව දිස්වනු ඇත) ⏳</span></td></tr>`;
             }
           } else {
-            ebbList.innerHTML = `<div style="font-size: 10px; color: #7f8fa6; text-align: center; padding: 8px;">තෝරාගත් දිනය (${currentEbbFilter === 45 ? '45+' : currentEbbFilter}) සඳහා Cycle ${currentEbbCycle} හි පාඩම් නොමැත.</div>`;
+            ebbList.innerHTML = `<tr><td colspan="7" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 12px;">තෝරාගත් දිනය (${currentEbbFilter === 45 ? '45+' : currentEbbFilter}) සඳහා Cycle ${currentEbbCycle} හි පාඩම් නොමැත.</td></tr>`;
           }
         }
 
@@ -6088,23 +6224,28 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       function updateCardRowSpace() {
         const scale = (typeof currentFontScale === 'number' && currentFontScale > 0) ? (currentFontScale / 100) : 1;
 
-        // 1. Table Ranking Cards (Cards B, C, D, E)
-        const tableCards = [
+        // All Data Ranking & Table Cards
+        const allRankingCards = [
+          document.getElementById('cardUrgentRadar'),
+          document.getElementById('cardEbbinghaus'),
           document.getElementById('cardTopHighestUnitPapers'),
           document.getElementById('cardLowestScoreUnitPapers'),
           document.getElementById('cardOldestLessonPending'),
           document.getElementById('cardOldestBothPendingNoPaper')
         ];
 
-        tableCards.forEach(card => {
+        allRankingCards.forEach(card => {
           if (!card) return;
           const container = card.querySelector('.ranking-table-responsive');
           const table = card.querySelector('.ranking-table');
           if (!container || !table) return;
 
           const availableWidth = container.clientWidth;
+          if (availableWidth <= 0) return;
+
           const threshold = 720 * scale;
-          const isTight = availableWidth < threshold || (table.scrollWidth > availableWidth + 10);
+          // Hide long Unit Name when space is tight or content would cause horizontal overflow
+          const isTight = availableWidth < threshold || (table.scrollWidth > availableWidth + 5);
 
           if (isTight) {
             card.classList.add('compact-row-details');
@@ -6112,34 +6253,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             card.classList.remove('compact-row-details');
           }
         });
-
-        // 2. Urgent Radar Card (#cardUrgentRadar)
-        const radarCard = document.getElementById('cardUrgentRadar');
-        if (radarCard) {
-          const list = document.getElementById('radarList');
-          const availableWidth = (list && list.clientWidth > 0) ? list.clientWidth : radarCard.clientWidth;
-          const threshold = 660 * scale;
-          const isTight = availableWidth < threshold;
-          if (isTight) {
-            radarCard.classList.add('compact-row-details');
-          } else {
-            radarCard.classList.remove('compact-row-details');
-          }
-        }
-
-        // 3. Spaced Repetition Card (#cardEbbinghaus)
-        const ebbCard = document.getElementById('cardEbbinghaus');
-        if (ebbCard) {
-          const list = document.getElementById('ebbinghausList');
-          const availableWidth = (list && list.clientWidth > 0) ? list.clientWidth : ebbCard.clientWidth;
-          const threshold = 680 * scale;
-          const isTight = availableWidth < threshold;
-          if (isTight) {
-            ebbCard.classList.add('compact-row-details');
-          } else {
-            ebbCard.classList.remove('compact-row-details');
-          }
-        }
       }
 
       // Dynamic Row Space listeners
