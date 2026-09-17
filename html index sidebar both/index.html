@@ -1261,17 +1261,29 @@
         <canvas id="scoreChart" style="display: none;"></canvas>
         <div id="noChartMsg" class="chart-empty-msg">තවම ලකුණු සහිත Full Paper එකක් සටහන් කර නොමැත 📝</div>
       </div>
+      <!-- Full Paper Quick Summary Bar -->
+      <div id="fullPaperSummaryBar" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 12px 4px; border-top: 1px dashed rgba(0,0,0,0.06); font-size: 9.5px;">
+        <div style="flex: 1; min-width: 110px; background: rgba(108, 92, 231, 0.06); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(108, 92, 231, 0.15);">
+          <span style="color: #636e72;">මුළු Papers:</span> <strong id="fpSummaryTotal" style="color: #6c5ce7;">0</strong>
+        </div>
+        <div style="flex: 1; min-width: 160px; background: rgba(243, 156, 18, 0.08); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(243, 156, 18, 0.25);">
+          <span style="color: #636e72;">පසුගිය Papers 5 සාමාන්‍යය:</span> <strong id="fpSummaryLast5Avg" style="color: #d35400;">-</strong>
+        </div>
+        <div style="flex: 1; min-width: 110px; background: rgba(39, 174, 96, 0.06); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(39, 174, 96, 0.15);">
+          <span style="color: #636e72;">සමස්ත සාමාන්‍යය:</span> <strong id="fpSummaryOverallAvg" style="color: #27ae60;">-</strong>
+        </div>
+      </div>
 
-      <!-- Z-Score Analytics Panel -->
-      <div class="zscore-panel">
+      <!-- Full Paper Multi-Window Analytics Panel (Dynamic by tab: ICT, ET, SFT, All, Z-score) -->
+      <div class="zscore-panel" id="fullPaperAnalyticsPanel">
         <div class="zscore-panel-title">
-          <span>🎯 ශ්‍රී ලංකා A/L Composite Z-Score විග්‍රහය</span>
-          <span style="font-size: 8px; color: #6c5ce7; font-weight: 600;">Benchmark: μ=50, σ=15</span>
+          <span id="fullPanelTitle">📊 Full Paper සාමාන්‍ය ලකුණු විග්‍රහය (Analytics)</span>
+          <span style="font-size: 8px; color: #6c5ce7; font-weight: 600;" id="fullPanelBadge">📘 ICT විෂය සඳහා</span>
         </div>
 
         <div class="zscore-grid">
           <div class="zscore-box">
-            <div class="zscore-box-lbl">📅 කාල පරාස අනුව</div>
+            <div class="zscore-box-lbl" id="fullTimeBoxLbl">📅 කාල පරාස අනුව</div>
             <div class="zscore-row">
               <div class="zscore-pill">
                 <span class="zscore-pill-tag">දින 7:</span>
@@ -1289,11 +1301,15 @@
                 <span class="zscore-pill-tag">මාස 3:</span>
                 <span class="zscore-pill-val empty" id="z_time_3m">-</span>
               </div>
+              <div class="zscore-pill" id="fp_pill_time_all" style="flex: 1 1 100%;">
+                <span class="zscore-pill-tag">සියලු කාලය:</span>
+                <span class="zscore-pill-val empty" id="z_time_all">-</span>
+              </div>
             </div>
           </div>
 
           <div class="zscore-box">
-            <div class="zscore-box-lbl">📝 ප්‍රශ්න පත්‍ර ගණන අනුව</div>
+            <div class="zscore-box-lbl" id="fullCntBoxLbl">📝 ප්‍රශ්න පත්‍ර ගණන අනුව</div>
             <div class="zscore-row">
               <div class="zscore-pill">
                 <span class="zscore-pill-tag">Papers 3:</span>
@@ -1311,15 +1327,19 @@
                 <span class="zscore-pill-tag">Papers 20:</span>
                 <span class="zscore-pill-val empty" id="z_cnt_20">-</span>
               </div>
-              <div class="zscore-pill" style="flex: 1 1 100%;">
+              <div class="zscore-pill">
                 <span class="zscore-pill-tag">Papers 50:</span>
                 <span class="zscore-pill-val empty" id="z_cnt_50">-</span>
+              </div>
+              <div class="zscore-pill" id="fp_pill_cnt_all" style="flex: 1 1 100%;">
+                <span class="zscore-pill-tag">සියලු Papers (All):</span>
+                <span class="zscore-pill-val empty" id="z_cnt_all">-</span>
               </div>
             </div>
           </div>
         </div>
-        <div class="zscore-footnote">
-          * විෂයයන් 3න්ම (ICT, ET, SFT) සමාන Full Papers සංඛ්‍යාවක් සලකා ත්‍රිත්ව සාමාන්‍යය මඟින් ගණනය කෙරේ.
+        <div class="zscore-footnote" id="fullPanelFootnote">
+          * තෝරාගත් විෂය පථය අනුව සාමාන්‍ය ලකුණු ගණනය කෙරේ.
         </div>
       </div>
     </div>
@@ -1437,6 +1457,9 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="zscore-footnote" id="upAnalyticsFootnote">
+          * තෝරාගත් විෂය පථය අනුව සාමාන්‍ය ලකුණු ගණනය කෙරේ.
         </div>
       </div>
     </div>
@@ -2279,6 +2302,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       async function refreshTelemetry() {
         try {
           unitAnalyticsCache = {};
+          fullAnalyticsCache = {};
           const promises = [
             supabase.rpc('get_dashboard_telemetry'),
             supabase.from('tracker_progress').select('*'),
@@ -2488,7 +2512,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         renderVelocityMetrics(data.velocityMetrics);
         renderMultiTabChart();
-        renderZScoreMetrics(data.zScoreAnalytics);
         renderUnitPaperChart();
 
         const radarDiv = document.getElementById('radarList');
@@ -2867,9 +2890,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           else b.classList.remove('active');
         });
         renderMultiTabChart();
-        if (telemetryData && telemetryData.zScoreAnalytics) {
-          renderZScoreMetrics(telemetryData.zScoreAnalytics);
-        }
       }
 
       function renderMultiTabChart() {
@@ -2890,6 +2910,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             canvas.style.display = 'none';
             emptyMsg.style.display = 'flex';
             emptyMsg.innerText = "Z-Score ප්‍රස්ථාරය සඳහා විෂයයන් 3න්ම (ICT, ET, SFT) අවම වශයෙන් එක් Paper එක බැගින්වත් සම්පූර්ණ කළ යුතුය 📝";
+            if (zoomIndicator) zoomIndicator.innerText = "No Data";
+            if (scoreChartInstance) {
+              scoreChartInstance.destroy();
+              scoreChartInstance = null;
+            }
+            renderFullPaperAnalytics(null, 'Z-score');
             return;
           }
 
@@ -2950,6 +2976,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
             }
           });
+          renderFullPaperAnalytics(null, 'Z-score');
           return;
         }
 
@@ -2966,6 +2993,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           canvas.style.display = 'none';
           emptyMsg.style.display = 'flex';
           emptyMsg.innerText = `${currentActiveChartTab} සඳහා තවම ලකුණු සහිත Full Paper එකක් සටහන් කර නොමැත 📝`;
+          if (zoomIndicator) zoomIndicator.innerText = "No Data";
+          if (scoreChartInstance) {
+            scoreChartInstance.destroy();
+            scoreChartInstance = null;
+          }
+          renderFullPaperAnalytics([], currentActiveChartTab);
           return;
         }
 
@@ -3074,6 +3107,200 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             }
           }
         });
+
+        // Trigger multi-window analytics update for the active Full Paper tab
+        renderFullPaperAnalytics(relevantEntries, currentActiveChartTab);
+      }
+
+      // =========================================================================
+      // Full Paper Analytics Memoization Cache & DOM Reference Cache
+      // =========================================================================
+      let fullAnalyticsCache = {};
+      const fpPillElementsCache = {};
+
+      function formatFpStat(val, elemId) {
+        if (!fpPillElementsCache[elemId]) {
+          fpPillElementsCache[elemId] = document.getElementById(elemId);
+        }
+        const el = fpPillElementsCache[elemId];
+        if (!el) return;
+
+        if (val === null || val === undefined || isNaN(val)) {
+          el.className = "zscore-pill-val empty";
+          el.style.color = "";
+          el.innerText = "-";
+        } else {
+          el.className = "zscore-pill-val";
+          const num = Number(val);
+          if (num >= 75) el.style.color = "#27ae60";      // Distinction (A Grade)
+          else if (num >= 65) el.style.color = "#0984e3"; // Credit (B Grade)
+          else if (num >= 50) el.style.color = "#e67e22"; // Pass (C/S Grade)
+          else el.style.color = "#e84393";                // Review needed
+          el.innerText = num.toFixed(1) + "%";
+        }
+      }
+
+      function renderFullPaperAnalytics(entries, tab) {
+        const titleEl = document.getElementById('fullPanelTitle');
+        const badgeEl = document.getElementById('fullPanelBadge');
+        const footnoteEl = document.getElementById('fullPanelFootnote');
+        const timeLblEl = document.getElementById('fullTimeBoxLbl');
+        const cntLblEl = document.getElementById('fullCntBoxLbl');
+        const timeAllWrap = document.getElementById('fp_pill_time_all');
+        const cntAllWrap = document.getElementById('fp_pill_cnt_all');
+
+        const totalEl = document.getElementById('fpSummaryTotal');
+        const last5AvgEl = document.getElementById('fpSummaryLast5Avg');
+        const overallAvgEl = document.getElementById('fpSummaryOverallAvg');
+
+        if (tab === 'Z-score') {
+          if (titleEl) titleEl.innerText = "🎯 ශ්‍රී ලංකා A/L Composite Z-Score විග්‍රහය";
+          if (badgeEl) badgeEl.innerText = "Benchmark: μ=50, σ=15";
+          if (timeLblEl) timeLblEl.innerText = "📅 කාල පරාස අනුව (Z-Score Avg)";
+          if (cntLblEl) cntLblEl.innerText = "📝 ප්‍රශ්න පත්‍ර ගණන අනුව (Z-Score Avg)";
+          if (footnoteEl) footnoteEl.innerText = "* විෂයයන් 3න්ම (ICT, ET, SFT) සමාන Full Papers සංඛ්‍යාවක් සලකා ත්‍රිත්ව සාමාන්‍යය මඟින් ගණනය කෙරේ.";
+          if (timeAllWrap) timeAllWrap.style.display = 'none';
+          if (cntAllWrap) cntAllWrap.style.display = 'none';
+
+          const allFpCount = (telemetryData && telemetryData.fullPapersHistory) ? telemetryData.fullPapersHistory.length : 0;
+          if (totalEl) totalEl.innerText = `${allFpCount} Full Papers`;
+          if (last5AvgEl) last5AvgEl.innerText = "- (Z-Score)";
+          if (overallAvgEl) overallAvgEl.innerText = "- (Z-Score)";
+
+          if (telemetryData && telemetryData.zScoreAnalytics) {
+            renderZScoreMetrics(telemetryData.zScoreAnalytics);
+          }
+          return;
+        }
+
+        // Subject / All mode
+        if (timeAllWrap) timeAllWrap.style.display = 'flex';
+        if (cntAllWrap) cntAllWrap.style.display = 'flex';
+        if (timeLblEl) timeLblEl.innerText = "📅 කාල පරාස අනුව (Average %)";
+        if (cntLblEl) cntLblEl.innerText = "📝 ප්‍රශ්න පත්‍ර ගණන අනුව (Average %)";
+        if (titleEl) titleEl.innerText = "📊 Full Paper සාමාන්‍ය ලකුණු විග්‍රහය (Analytics)";
+
+        const safeEntries = entries || [];
+        const N = safeEntries.length;
+
+        if (tab === 'All') {
+          const ictC = safeEntries.filter(e => e.subject === 'ICT').length;
+          const etC = safeEntries.filter(e => e.subject === 'ET').length;
+          const sftC = safeEntries.filter(e => e.subject === 'SFT').length;
+          if (badgeEl) badgeEl.innerText = `🌐 සියලු විෂයයන් (All: ${N} Papers)`;
+          if (footnoteEl) footnoteEl.innerText = "* සියලු විෂයයන්හි (ICT, ET, SFT) Full Papers ලකුණු සාමාන්‍යයන් මඟින් ගණනය කෙරේ.";
+          if (totalEl) totalEl.innerText = `${N} Papers (ICT: ${ictC}, ET: ${etC}, SFT: ${sftC})`;
+        } else {
+          const tabBadges = {
+            'ICT': `📘 ICT විෂය සඳහා (${N} Papers)`,
+            'ET': `📙 ET විෂය සඳහා (${N} Papers)`,
+            'SFT': `📗 SFT විෂය සඳහා (${N} Papers)`
+          };
+          if (badgeEl) badgeEl.innerText = tabBadges[tab] || `${tab} (${N} Papers)`;
+          if (footnoteEl) footnoteEl.innerText = N === 0
+            ? `* ${tab} සඳහා තවම ලකුණු සහිත Full Paper එකක් සටහන් කර නොමැත 📝`
+            : `* ${tab} Full Papers ලකුණු සාමාන්‍යයන් මත පදනම්ව ගණනය කෙරේ.`;
+          if (totalEl) totalEl.innerText = `${N} Papers (${tab} පමණි)`;
+        }
+
+        if (N === 0) {
+          if (last5AvgEl) last5AvgEl.innerText = "-";
+          if (overallAvgEl) overallAvgEl.innerText = "-";
+          formatFpStat(null, "z_time_7d");
+          formatFpStat(null, "z_time_14d");
+          formatFpStat(null, "z_time_1m");
+          formatFpStat(null, "z_time_3m");
+          formatFpStat(null, "z_time_all");
+          formatFpStat(null, "z_cnt_3");
+          formatFpStat(null, "z_cnt_7");
+          formatFpStat(null, "z_cnt_10");
+          formatFpStat(null, "z_cnt_20");
+          formatFpStat(null, "z_cnt_50");
+          formatFpStat(null, "z_cnt_all");
+          return;
+        }
+
+        let stats = fullAnalyticsCache[tab];
+        if (!stats) {
+          const targetCounts = [3, 7, 10, 20, 50];
+          const countAverages = { 3: null, 7: null, 10: null, 20: null, 50: null };
+
+          const targetDays = { "7d": 7, "14d": 14, "1m": 30, "3m": 90 };
+          const timeSums = { "7d": 0, "14d": 0, "1m": 0, "3m": 0 };
+          const timeCounts = { "7d": 0, "14d": 0, "1m": 0, "3m": 0 };
+
+          const now = Date.now();
+          let countProcessed = 0;
+          let countSum = 0;
+          let allTimeSum = 0;
+          let allTimeCount = 0;
+
+          for (let i = N - 1; i >= 0; i--) {
+            const item = safeEntries[i];
+            const marks = item.marks;
+            if (marks === null || marks === undefined || isNaN(marks)) continue;
+
+            countProcessed++;
+            countSum += marks;
+
+            for (let j = 0; j < targetCounts.length; j++) {
+              const c = targetCounts[j];
+              if (countProcessed === c) {
+                countAverages[c] = countSum / c;
+              }
+            }
+
+            allTimeSum += marks;
+            allTimeCount++;
+
+            const ts = item.timestamp || (item.exam_date ? new Date(item.exam_date).getTime() : (item.logged_at ? new Date(item.logged_at).getTime() : 0));
+            if (ts > 0) {
+              const diffDays = (now - ts) / 86400000;
+              for (const [key, days] of Object.entries(targetDays)) {
+                if (diffDays <= days) {
+                  timeSums[key] += marks;
+                  timeCounts[key]++;
+                }
+              }
+            }
+          }
+
+          const byCount = {};
+          targetCounts.forEach(c => {
+            byCount[c] = countAverages[c] !== null ? Number(countAverages[c].toFixed(1)) : null;
+          });
+          byCount.all = countProcessed > 0 ? Number((countSum / countProcessed).toFixed(1)) : null;
+
+          const byTime = {};
+          for (const key of Object.keys(targetDays)) {
+            byTime[key] = timeCounts[key] > 0 ? Number((timeSums[key] / timeCounts[key]).toFixed(1)) : null;
+          }
+          byTime.all = allTimeCount > 0 ? Number((allTimeSum / allTimeCount).toFixed(1)) : null;
+
+          stats = { byCount, byTime };
+          fullAnalyticsCache[tab] = stats;
+        }
+
+        const last5Slice = safeEntries.slice(-5);
+        const last5Sum = last5Slice.reduce((acc, v) => acc + (v.marks || 0), 0);
+        const last5Avg = last5Slice.length > 0 ? last5Sum / last5Slice.length : 0;
+        const overallAvg = stats.byCount.all !== null ? stats.byCount.all : 0;
+
+        if (last5AvgEl) last5AvgEl.innerText = `${last5Avg.toFixed(1)}% (${last5Slice.length} Papers)`;
+        if (overallAvgEl) overallAvgEl.innerText = `${overallAvg.toFixed(1)}%`;
+
+        formatFpStat(stats.byTime["7d"], "z_time_7d");
+        formatFpStat(stats.byTime["14d"], "z_time_14d");
+        formatFpStat(stats.byTime["1m"], "z_time_1m");
+        formatFpStat(stats.byTime["3m"], "z_time_3m");
+        formatFpStat(stats.byTime.all, "z_time_all");
+
+        formatFpStat(stats.byCount[3], "z_cnt_3");
+        formatFpStat(stats.byCount[7], "z_cnt_7");
+        formatFpStat(stats.byCount[10], "z_cnt_10");
+        formatFpStat(stats.byCount[20], "z_cnt_20");
+        formatFpStat(stats.byCount[50], "z_cnt_50");
+        formatFpStat(stats.byCount.all, "z_cnt_all");
       }
 
       function renderZScoreMetrics(zAnalytics) {
@@ -3083,8 +3310,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const trend = zAnalytics.trend || [];
 
         function formatZ(val, elemId) {
-          const el = document.getElementById(elemId);
+          if (!fpPillElementsCache[elemId]) {
+            fpPillElementsCache[elemId] = document.getElementById(elemId);
+          }
+          const el = fpPillElementsCache[elemId];
           if (!el) return;
+          el.style.color = "";
           if (val === null || val === undefined || isNaN(val)) {
             el.className = "zscore-pill-val empty";
             el.innerText = "-";
@@ -3159,7 +3390,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           emptyMsg.innerText = currentActiveUnitChartTab === 'All' 
             ? "තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝"
             : `${currentActiveUnitChartTab} සඳහා තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝`;
-          if (totalEl) totalEl.innerText = "0";
+          if (totalEl) totalEl.innerText = `0 Papers (${currentActiveUnitChartTab})`;
           if (last5AvgEl) last5AvgEl.innerText = "-";
           if (overallAvgEl) overallAvgEl.innerText = "-";
           if (zoomIndicator) zoomIndicator.innerText = "No Data";
@@ -3184,7 +3415,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const last5Sum = last5Slice.reduce((acc, v) => acc + v.marks, 0);
         const last5Avg = last5Sum / last5Slice.length;
 
-        if (totalEl) totalEl.innerText = `${totalCount} Papers`;
+        if (totalEl) {
+          if (currentActiveUnitChartTab === 'All') {
+            const ictC = history.filter(h => h.subject === 'ICT').length;
+            const etC = history.filter(h => h.subject === 'ET').length;
+            const sftC = history.filter(h => h.subject === 'SFT').length;
+            totalEl.innerText = `${totalCount} Papers (ICT: ${ictC}, SFT: ${sftC}, ET: ${etC})`;
+          } else {
+            totalEl.innerText = `${totalCount} Papers (${currentActiveUnitChartTab} පමණි)`;
+          }
+        }
         if (last5AvgEl) last5AvgEl.innerText = `${last5Avg.toFixed(1)}% (${last5Slice.length} Papers)`;
         if (overallAvgEl) overallAvgEl.innerText = `${overallAvg.toFixed(1)}%`;
 
@@ -3417,14 +3657,36 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       function renderUnitPaperAnalytics(entries, tab) {
         const badgeEl = document.getElementById('upAnalyticsSubjectBadge');
+        const footnoteEl = document.getElementById('upAnalyticsFootnote');
+        const safeEntries = entries || [];
+        const N = safeEntries.length;
+
         if (badgeEl) {
           const tabTitles = {
-            'All': 'සියලු විෂයයන් (All Subjects)',
-            'ICT': '📘 ICT විෂය සඳහා',
-            'ET': '📙 ET විෂය සඳහා',
-            'SFT': '📗 SFT විෂය සඳහා'
+            'All': `🌐 සියලු විෂයයන් (All: ${N} Papers)`,
+            'ICT': `📘 ICT විෂය සඳහා (${N} Papers)`,
+            'ET': `📙 ET විෂය සඳහා (${N} Papers)`,
+            'SFT': `📗 SFT විෂය සඳහා (${N} Papers)`
           };
-          badgeEl.innerText = tabTitles[tab] || tab;
+          badgeEl.innerText = tabTitles[tab] || `${tab} (${N} Papers)`;
+        }
+
+        if (footnoteEl) {
+          if (tab === 'All') {
+            footnoteEl.innerText = "* සියලු විෂයයන්හි (ICT, ET, SFT) Unit Papers එක්ව සලකා ගණනය කර ඇත.";
+          } else if (N === 0) {
+            footnoteEl.innerText = `* ${tab} සඳහා තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝`;
+          } else {
+            footnoteEl.innerText = `* ${tab} Unit Papers පමණක් සලකා ගණනය කර ඇත.`;
+          }
+        }
+
+        if (N === 0) {
+          [3, 5, 7, 10, 20, 50].forEach(c => formatUpStat(null, "up_cnt_" + c));
+          formatUpStat(null, "up_cnt_all");
+          [3, 5, 7, 14, 30, 60, 90].forEach(d => formatUpStat(null, "up_time_" + d + "d"));
+          formatUpStat(null, "up_time_all");
+          return;
         }
 
         // Method 2: Check in-memory memoization cache first (instant O(1) response on tab switches)
@@ -3441,7 +3703,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const timeSums = { 3: 0, 5: 0, 7: 0, 14: 0, 30: 0, 60: 0, 90: 0 };
           const timeCounts = { 3: 0, 5: 0, 7: 0, 14: 0, 30: 0, 60: 0, 90: 0 };
 
-          const N = entries.length;
           const now = Date.now();
           let countProcessed = 0;
           let countSum = 0;
@@ -3450,7 +3711,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
           // Single backward loop: iterates from newest to oldest paper
           for (let i = N - 1; i >= 0; i--) {
-            const item = entries[i];
+            const item = safeEntries[i];
             const marks = item.marks;
             if (marks === null || marks === undefined || isNaN(marks)) continue;
 
@@ -3465,13 +3726,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
             }
 
+            allTimeSum += marks;
+            allTimeCount++;
+
             // Record time range averages using timestamp
             const ts = item.timestamp || (item.loggedAt ? new Date(item.loggedAt).getTime() : 0);
             if (ts > 0) {
-              const diffDays = (now - ts) / 86400000; // 1000 * 60 * 60 * 24
-              allTimeSum += marks;
-              allTimeCount++;
-
+              const diffDays = (now - ts) / 86400000;
               for (let k = 0; k < targetDays.length; k++) {
                 const d = targetDays[k];
                 if (diffDays <= d) {
