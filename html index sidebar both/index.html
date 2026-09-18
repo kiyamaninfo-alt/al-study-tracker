@@ -299,16 +299,23 @@
       }
       .badge-unit-stat { background: #f0fbfb; border: 1px solid #b2f5ea; }
       .badge-full-stat { background: #f5f3ff; border: 1px solid #ddd6fe; }
-      .action-bar-btns { display: flex; gap: 6px; }
+      .action-bar-btns { display: flex; align-items: center; gap: 6px; }
       .btn-action-pill {
         border: none;
-        padding: 6px 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        height: 32px;
+        padding: 0 12px;
         border-radius: 8px;
-        font-size: 10px;
+        font-size: 10.5px;
         font-weight: 600;
         cursor: pointer;
-        transition: transform 0.15s ease;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
         white-space: nowrap;
+        box-sizing: border-box;
+        line-height: 1;
       }
       .btn-action-pill:hover { transform: scale(1.03); }
       .btn-fullpaper { background: linear-gradient(135deg, #6c5ce7, #8c7ae6); color: white; }
@@ -1924,12 +1931,27 @@
          SETTINGS BUTTON & MODAL
          ========================================================= */
       .btn-settings {
-        background: linear-gradient(135deg, #4b6584, #778ca3) !important;
+        background: linear-gradient(135deg, #8c7ae6, #6c5ce7) !important;
         color: white !important;
+        border: 1px solid rgba(108, 92, 231, 0.25) !important;
+        box-shadow: 0 2px 6px rgba(108, 92, 231, 0.2);
       }
       .btn-settings:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(75, 101, 132, 0.35);
+        transform: scale(1.03);
+        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.35);
+      }
+      body.dark-mode .btn-settings,
+      :root.dark-mode .btn-settings {
+        background: #21262d !important;
+        border: 1px solid #30363d !important;
+        color: #f0f6fc !important;
+        box-shadow: none !important;
+      }
+      body.dark-mode .btn-settings:hover,
+      :root.dark-mode .btn-settings:hover {
+        background: #30363d !important;
+        border-color: #58a6ff !important;
+        color: #58a6ff !important;
       }
       .theme-selector-grid {
         display: grid;
@@ -2992,15 +3014,15 @@
     <!-- 5-Tab Score Progression & Z-Score Card (moved to bottom per v15) -->
     <div class="chart-card">
       <div class="chart-header">
-        <span id="chartCardHeading">📈 Full Paper Score Progression (ICT %)</span>
+        <span id="chartCardHeading">📈 Full Paper Score Progression (All %)</span>
         <span style="font-size: 8.5px; color: #a4b0be;" id="chartZoomIndicator">Adaptive Zoom</span>
       </div>
 
       <div class="chart-tab-bar" id="fullPaperChartTabBar">
-        <button class="chart-tab-btn active" onclick="switchChartTab('ICT')">ICT</button>
+        <button class="chart-tab-btn active" onclick="switchChartTab('All')">All</button>
+        <button class="chart-tab-btn" onclick="switchChartTab('ICT')">ICT</button>
         <button class="chart-tab-btn" onclick="switchChartTab('ET')">ET</button>
         <button class="chart-tab-btn" onclick="switchChartTab('SFT')">SFT</button>
-        <button class="chart-tab-btn" onclick="switchChartTab('All')">All</button>
         <button class="chart-tab-btn" onclick="switchChartTab('Z-score')">Z-score</button>
       </div>
 
@@ -4025,7 +4047,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let telemetryData = null;
       let scoreChartInstance = null;
       let unitChartInstance = null;
-      let currentActiveChartTab = 'ICT';
+      let currentActiveChartTab = 'All';
       let cachedSyllabusList = [];
       let currentSearchResults = [];
       let selectedSubLessonObj = null;
@@ -5103,7 +5125,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       function switchChartTab(tab) {
         currentActiveChartTab = tab;
         const btns = document.querySelectorAll('#fullPaperChartTabBar .chart-tab-btn');
-        const tabOrder = ['ICT', 'ET', 'SFT', 'All', 'Z-score'];
+        const tabOrder = ['All', 'ICT', 'ET', 'SFT', 'Z-score'];
         btns.forEach((b, idx) => {
           if (tabOrder[idx] === tab) b.classList.add('active');
           else b.classList.remove('active');
@@ -6783,6 +6805,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           .filter(p => p.marks !== null && p.marks !== undefined && !isNaN(p.marks))
           .map(p => {
             const syl = sylMapById[p.syllabusId] || sylMapByKey[`${p.subject}||${p.code}`] || {};
+            const loggedDate = p.loggedAt ? p.loggedAt.substring(0, 10) : (p.fullDate || null);
             return {
               id: p.id,
               syllabusId: p.syllabusId || syl.id,
@@ -6792,8 +6815,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitNumber: p.code || syl.sub_lesson_code || '-',
               subUnitName: syl.sub_lesson_title || '-',
               marks: Number(p.marks),
-              date: p.fullDate || (p.loggedAt ? p.loggedAt.substring(0, 10) : '-'),
-              timestamp: p.timestamp || 0
+              date: loggedDate,
+              timestamp: p.timestamp || (loggedDate ? new Date(loggedDate).getTime() : 0)
             };
           });
 
@@ -6824,7 +6847,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
                   <td style="text-align: right;"><span class="marks-pill marks-high">${item.marks}%</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${escapeHtml(item.date)}</td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
             }).join('');
@@ -6857,7 +6880,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
                   <td style="text-align: right;"><span class="marks-pill ${markClass}">${item.marks}%</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${escapeHtml(item.date)}</td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
             }).join('');
@@ -6872,9 +6895,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           })
           .map(s => {
             const tp = tpMap[s.id];
-            const rawDate = (tp && (tp.hw_done_at || tp.lesson_done_at || tp.updated_at)) || s.created_at;
-            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
-            const timestamp = rawDate ? new Date(rawDate).getTime() : 0;
+            const rawDate = tp && tp.lesson_done_at ? tp.lesson_done_at : null;
+            const dateStr = rawDate ? rawDate.substring(0, 10) : null;
             return {
               id: s.id,
               subject: s.subject || 'ICT',
@@ -6883,14 +6905,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
               date: dateStr,
-              timestamp: timestamp,
               sortOrder: Number(s.sort_order) || 0
             };
           })
-          .sort((a, b) => {
-            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp;
-            return a.sortOrder - b.sortOrder;
-          })
+          .sort((a, b) => a.sortOrder - b.sortOrder)
           .slice(0, 5);
 
         const dBody = document.getElementById('oldestLessonPendingBody');
@@ -6910,7 +6928,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 600;">${escapeHtml(item.date)}</td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
             }).join('');
@@ -6928,9 +6946,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           })
           .map(s => {
             const tp = tpMap[s.id];
-            const rawDate = (tp && (tp.hw_done_at || tp.lesson_done_at || tp.updated_at)) || s.created_at;
-            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
-            const timestamp = rawDate ? new Date(rawDate).getTime() : 0;
+            const rawDate = tp && (tp.lesson_done_at || tp.hw_done_at) ? (tp.lesson_done_at || tp.hw_done_at) : null;
+            const dateStr = rawDate ? rawDate.substring(0, 10) : null;
             return {
               id: s.id,
               subject: s.subject || 'ICT',
@@ -6939,14 +6956,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
               date: dateStr,
-              timestamp: timestamp,
               sortOrder: Number(s.sort_order) || 0
             };
           })
-          .sort((a, b) => {
-            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp;
-            return a.sortOrder - b.sortOrder;
-          })
+          .sort((a, b) => a.sortOrder - b.sortOrder)
           .slice(0, 5);
 
         const eBody = document.getElementById('oldestBothPendingBody');
@@ -6966,7 +6979,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center; color: #e17055; font-size: 10px; font-weight: 600;">${escapeHtml(item.date)}</td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
             }).join('');
@@ -7618,7 +7631,8 @@ function openSidebarModal() {
           subject: selectedSubLessonObj.subject,
           sub_lesson_code: selectedSubLessonObj.code,
           paper_no: nextPaperNo,
-          marks: numericMarks
+          marks: numericMarks,
+          logged_at: new Date().toISOString()
         }
       ]);
 
