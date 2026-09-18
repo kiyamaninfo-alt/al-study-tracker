@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <base target="_top">
-    <title>✨ Sinethmi A/L 2028 Mission Control ✨</title>
+    <title>Sinethmi A/L 2028 Mission Control</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -614,10 +614,14 @@
         border: 1px solid rgba(235, 77, 75, 0.28);
         white-space: nowrap;
       }
-      #radarList {
-        max-height: 240px;
-        overflow-y: auto;
-        padding-right: 4px;
+      #radarList,
+      #ebbinghausList {
+        padding-right: 2px;
+      }
+      #cardUrgentRadar .ranking-table-responsive,
+      #cardEbbinghaus .ranking-table-responsive {
+        max-height: 280px !important;
+        overflow-y: auto !important;
       }
       #radarList::-webkit-scrollbar,
       #ebbinghausList::-webkit-scrollbar,
@@ -668,6 +672,24 @@
       .chip-badge.chip-subj {
         font-weight: 700;
         letter-spacing: 0.3px;
+      }
+      .chip-badge.chip-subj.subj-pill-ict,
+      .chip-subj-ict {
+        background: rgba(32, 191, 107, 0.12);
+        color: #20bf6b;
+        border: 1px solid rgba(32, 191, 107, 0.28);
+      }
+      .chip-badge.chip-subj.subj-pill-et,
+      .chip-subj-et {
+        background: rgba(140, 122, 230, 0.12);
+        color: #8c7ae6;
+        border: 1px solid rgba(140, 122, 230, 0.28);
+      }
+      .chip-badge.chip-subj.subj-pill-sft,
+      .chip-subj-sft {
+        background: rgba(9, 132, 227, 0.12);
+        color: #0984e3;
+        border: 1px solid rgba(9, 132, 227, 0.28);
       }
       .chip-badge.chip-unit-no {
         font-weight: 600;
@@ -1422,17 +1444,26 @@
         border-color: #30363d !important;
         box-shadow: none !important;
       }
-      body.dark-mode .chip-subj-ict {
+      body.dark-mode .chip-subj-ict,
+      :root.dark-mode .chip-subj-ict,
+      body.dark-mode .chip-badge.chip-subj.subj-pill-ict,
+      :root.dark-mode .chip-badge.chip-subj.subj-pill-ict {
         background: rgba(32, 191, 107, 0.2) !important;
         border-color: rgba(32, 191, 107, 0.45) !important;
         color: #2ecc71 !important;
       }
-      body.dark-mode .chip-subj-et {
+      body.dark-mode .chip-subj-et,
+      :root.dark-mode .chip-subj-et,
+      body.dark-mode .chip-badge.chip-subj.subj-pill-et,
+      :root.dark-mode .chip-badge.chip-subj.subj-pill-et {
         background: rgba(140, 122, 230, 0.2) !important;
         border-color: rgba(140, 122, 230, 0.45) !important;
         color: #a29bfe !important;
       }
-      body.dark-mode .chip-subj-sft {
+      body.dark-mode .chip-subj-sft,
+      :root.dark-mode .chip-subj-sft,
+      body.dark-mode .chip-badge.chip-subj.subj-pill-sft,
+      :root.dark-mode .chip-badge.chip-subj.subj-pill-sft {
         background: rgba(9, 132, 227, 0.2) !important;
         border-color: rgba(9, 132, 227, 0.45) !important;
         color: #58a6ff !important;
@@ -1740,18 +1771,26 @@
         background: #21262d !important;
       }
       body.dark-mode #lessonConfirmBox {
-        background: rgba(9, 132, 227, 0.12) !important;
+        background: rgba(9, 132, 227, 0.15) !important;
         border-color: #0984e3 !important;
       }
-      body.dark-mode #lessonConfirmBox div {
-        color: #f0f6fc !important;
+      body.dark-mode #lessonConfirmBox .confirm-box-title {
+        color: #58a6ff !important;
+      }
+      body.dark-mode #lessonConfirmBox .confirm-box-msg,
+      body.dark-mode #lessonConfirmBox div:not(.confirm-box-title) {
+        color: #c9d1d9 !important;
       }
       body.dark-mode #hwConfirmBox {
-        background: rgba(230, 126, 34, 0.12) !important;
+        background: rgba(230, 126, 34, 0.15) !important;
         border-color: #e67e22 !important;
       }
-      body.dark-mode #hwConfirmBox div {
-        color: #f0f6fc !important;
+      body.dark-mode #hwConfirmBox .confirm-box-title {
+        color: #fdcb6e !important;
+      }
+      body.dark-mode #hwConfirmBox .confirm-box-msg,
+      body.dark-mode #hwConfirmBox div:not(.confirm-box-title) {
+        color: #c9d1d9 !important;
       }
       body.dark-mode .up-prompt-msg {
         background: #161b22 !important;
@@ -1781,6 +1820,11 @@
       body.dark-mode .unit-bar-bg {
         background: #21262d !important;
       }
+      body.dark-mode #upMarksError,
+      body.dark-mode #upPasswordError,
+      body.dark-mode #fpPasswordError {
+        color: #ff6b6b !important;
+      }
 
       /* Dark mode rules for Breakdown, Log Exam, and Warning Modals */
       body.dark-mode #unitBreakdownModal .modal-header {
@@ -1796,32 +1840,34 @@
         border-bottom: 1px solid #30363d !important;
       }
       body.dark-mode #fullPaperModal .modal-header {
-        background: linear-gradient(135deg, #4834d4, #1a1a2e) !important;
+        background: linear-gradient(135deg, #6c5ce7, #3d2b69) !important;
         border-bottom: 1px solid #30363d !important;
       }
       body.dark-mode #sidebarModal .modal-header {
-        background: linear-gradient(135deg, #d35400, #2c1a0e) !important;
+        background: linear-gradient(135deg, #6c5ce7, #3d2b69) !important;
         border-bottom: 1px solid #30363d !important;
       }
       body.dark-mode .breakdown-card.ict {
-        background: rgba(32, 191, 107, 0.1) !important;
+        background: rgba(32, 191, 107, 0.12) !important;
         border: 1px solid rgba(32, 191, 107, 0.35) !important;
       }
       body.dark-mode .breakdown-card.et {
-        background: rgba(140, 122, 230, 0.1) !important;
+        background: rgba(140, 122, 230, 0.12) !important;
         border: 1px solid rgba(140, 122, 230, 0.35) !important;
       }
       body.dark-mode .breakdown-card.sft {
-        background: rgba(9, 132, 227, 0.1) !important;
+        background: rgba(9, 132, 227, 0.12) !important;
         border: 1px solid rgba(9, 132, 227, 0.35) !important;
       }
       body.dark-mode .breakdown-total-unit {
         background: linear-gradient(135deg, #10ac84, #0984e3) !important;
         border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
       }
       body.dark-mode .breakdown-total-full {
         background: linear-gradient(135deg, #6c5ce7, #4834d4) !important;
         border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
       }
       body.dark-mode .breakdown-sub-label {
         color: #8b949e !important;
@@ -2938,7 +2984,7 @@
 
     <!-- Header -->
     <div class="header-card">
-      <h2 class="title">✨ Sinethmi A/L 2028 Mission Control ✨</h2>
+      <h2 class="title">Sinethmi A/L 2028 Mission Control</h2>
       <div class="quote-box">
         "විශ්වාසයෙන් සහ නොසැලෙන උත්සාහයෙන් පියවරෙන් පියවර ඉදිරියට යන්න. ඔබගේ ජයග්‍රහණය ස්ථිරයි!"
       </div>
@@ -3179,7 +3225,7 @@
       <div class="ranking-subtitle">
         පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ පාඩම්.
       </div>
-      <div class="ranking-table-responsive">
+      <div class="ranking-table-responsive" style="max-height: 280px; overflow-y: auto;">
         <table class="ranking-table">
           <thead>
             <tr>
@@ -3243,7 +3289,7 @@
       </div>
 
       <!-- Table format with Done checkbox -->
-      <div class="ranking-table-responsive">
+      <div class="ranking-table-responsive" style="max-height: 280px; overflow-y: auto;">
         <table class="ranking-table">
           <thead>
             <tr>
@@ -3740,8 +3786,8 @@
 
             <!-- Lesson Confirmation Box -->
             <div id="lessonConfirmBox" style="display:none; background:#e8f4fd; border:1.5px solid #74b9ff; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
-              <div style="font-size:12px; font-weight:700; color:#0984e3; margin-bottom:6px;">📘 Lesson Update Confirmation</div>
-              <div style="font-size:11px; color:#2d3436; margin-bottom:10px; line-height:1.5;">
+              <div class="confirm-box-title" style="font-size:12px; font-weight:700; color:#0984e3; margin-bottom:6px;">📘 Lesson Update Confirmation</div>
+              <div class="confirm-box-msg" style="font-size:11px; color:#2d3436; margin-bottom:10px; line-height:1.5;">
                 Are you Learning this lesson? Please confirm.
               </div>
               <div style="display:flex; gap:8px;">
@@ -3752,8 +3798,8 @@
 
             <!-- HW Confirmation Box -->
             <div id="hwConfirmBox" style="display:none; background:#fff3e0; border:1.5px solid #fdcb6e; border-radius:10px; padding:10px 14px; margin-bottom:8px;">
-              <div style="font-size:12px; font-weight:700; color:#e17055; margin-bottom:6px;">📝 HW / Study Confirmation</div>
-              <div style="font-size:11px; color:#2d3436; margin-bottom:10px; line-height:1.5;">
+              <div class="confirm-box-title" style="font-size:12px; font-weight:700; color:#e17055; margin-bottom:6px;">📝 HW / Study Confirmation</div>
+              <div class="confirm-box-msg" style="font-size:11px; color:#2d3436; margin-bottom:10px; line-height:1.5;">
                 Did you do Homework or studied the subject? Please confirm.
               </div>
               <div style="display:flex; gap:8px;">
@@ -3817,24 +3863,24 @@
     <!-- Unit Papers Breakdown Modal -->
     <div class="modal-overlay" id="unitBreakdownModal" onclick="closeUnitBreakdownModal(event)">
       <div class="modal-window" style="max-width: 380px;" onclick="event.stopPropagation()">
-        <div class="modal-header" style="background: linear-gradient(135deg, #00cec9, #0984e3);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #10ac84, #0984e3);">
           <div class="modal-title">📄 Unit Papers විෂය අනුව විග්‍රහය</div>
           <button class="modal-close-btn" onclick="hideUnitBreakdownModal()">✕</button>
         </div>
         <div class="modal-body" style="padding: 16px;">
           <div class="breakdown-grid">
             <div class="breakdown-card ict">
-              <div class="breakdown-subj-lbl ict">📘 ICT</div>
+              <div class="breakdown-subj-lbl ict">📗 ICT</div>
               <div class="breakdown-val" id="bd_ict_val">0</div>
               <div class="breakdown-sub-label" style="font-size: 8px;">Papers</div>
             </div>
             <div class="breakdown-card et">
-              <div class="breakdown-subj-lbl et">📙 ET</div>
+              <div class="breakdown-subj-lbl et">⚙️ ET</div>
               <div class="breakdown-val" id="bd_et_val">0</div>
               <div class="breakdown-sub-label" style="font-size: 8px;">Papers</div>
             </div>
             <div class="breakdown-card sft">
-              <div class="breakdown-subj-lbl sft">📗 SFT</div>
+              <div class="breakdown-subj-lbl sft">📘 SFT</div>
               <div class="breakdown-val" id="bd_sft_val">0</div>
               <div class="breakdown-sub-label" style="font-size: 8px;">Papers</div>
             </div>
@@ -3861,17 +3907,17 @@
         <div class="modal-body" style="padding: 16px;">
           <div class="breakdown-grid">
             <div class="breakdown-card ict">
-              <div class="breakdown-subj-lbl ict">📘 ICT</div>
+              <div class="breakdown-subj-lbl ict">📗 ICT</div>
               <div class="breakdown-val" id="bd_fp_ict_val">0</div>
               <div class="breakdown-sub-label" style="font-size: 8px;">Full Papers</div>
             </div>
             <div class="breakdown-card et">
-              <div class="breakdown-subj-lbl et">📙 ET</div>
+              <div class="breakdown-subj-lbl et">⚙️ ET</div>
               <div class="breakdown-val" id="bd_fp_et_val">0</div>
               <div class="breakdown-sub-label" style="font-size: 8px;">Full Papers</div>
             </div>
             <div class="breakdown-card sft">
-              <div class="breakdown-subj-lbl sft">📗 SFT</div>
+              <div class="breakdown-subj-lbl sft">📘 SFT</div>
               <div class="breakdown-val" id="bd_fp_sft_val">0</div>
               <div class="breakdown-sub-label" style="font-size: 8px;">Full Papers</div>
             </div>
@@ -4950,11 +4996,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             return `
               <tr>
                 <td style="text-align: center;"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
-                <td><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
-                <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(unitNo)}</td>
-                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</td>
-                <td class="col-sub-no" style="font-weight: 700; color: #e17055;">${escapeHtml(subUnitNo)}</td>
-                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</td>
+                <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
+                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
                 <td style="text-align: right;"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
               </tr>
             `;
@@ -5090,11 +5136,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="--chk-accent:${item.badgeColor};"
                     onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
                 </td>
-                <td><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
-                <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(unitNo)}</td>
-                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</td>
-                <td class="col-sub-no" style="font-weight: 700; color: #8c7ae6;">${escapeHtml(subUnitNo)}</td>
-                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</td>
+                <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #8c7ae6;">${escapeHtml(subUnitNo)}</span></td>
+                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
                 <td style="text-align: right;">
                   <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}" style="white-space: nowrap;">
                     ${item.stageTag}
@@ -5349,15 +5395,20 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       function getUnitPapersBreakdown() {
         if (!telemetryData) return { ict: 0, et: 0, sft: 0, total: 0 };
+
+        // Priority 1: Check pre-computed unitBreakdown
+        if (telemetryData.unitBreakdown && (telemetryData.unitBreakdown.ict > 0 || telemetryData.unitBreakdown.et > 0 || telemetryData.unitBreakdown.sft > 0)) {
+          return telemetryData.unitBreakdown;
+        }
+
         let ict = 0, et = 0, sft = 0;
+        const upList = telemetryData.unitPapersHistory || [];
+        const sylList = telemetryData.syllabusList || cachedCanonicalSyllabus || [];
+        const sylMap = {};
+        sylList.forEach(s => { if (s.id) sylMap[s.id] = s; });
 
         // Method 1: Count directly from unitPapersHistory
-        const upList = telemetryData.unitPapersHistory || [];
         if (upList.length > 0) {
-          const sylMap = {};
-          if (telemetryData.syllabusList) {
-            telemetryData.syllabusList.forEach(s => { if (s.id) sylMap[s.id] = s; });
-          }
           upList.forEach(p => {
             let s = (p.subject || '').toUpperCase().trim();
             if (!s && p.syllabusId && sylMap[p.syllabusId]) {
@@ -5371,16 +5422,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // Method 2: If individual counts are 0, fallback to breakdown
         if (ict === 0 && et === 0 && sft === 0 && telemetryData.breakdown) {
-          ['ICT', 'ET', 'SFT'].forEach(s => {
+          Object.keys(telemetryData.breakdown).forEach(k => {
+            const s = k.toUpperCase().trim();
             let count = 0;
-            (telemetryData.breakdown[s] || []).forEach(u => {
+            (telemetryData.breakdown[k] || []).forEach(u => {
               (u.subLessons || []).forEach(sl => {
                 count += (sl.papersCount || (sl.paperDone ? 1 : 0) || 0);
               });
             });
-            if (s === 'ICT') ict = count;
-            else if (s === 'ET') et = count;
-            else if (s === 'SFT') sft = count;
+            if (s === 'ICT') ict += count;
+            else if (s === 'ET') et += count;
+            else if (s === 'SFT') sft += count;
           });
         }
 
@@ -5400,7 +5452,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           ? telemetryData.totalUnitPapersDone
           : (calculatedTotal || upList.length);
 
-        return { ict, et, sft, total };
+        const res = { ict, et, sft, total };
+        telemetryData.unitBreakdown = res;
+        return res;
       }
 
       function openUnitBreakdownModal() {
@@ -6488,7 +6542,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         document.documentElement.style.setProperty('--font-scale', ratio);
         document.documentElement.style.fontSize = scalePct + '%';
         document.documentElement.style.zoom = ratio;
-        if (document.body) document.body.style.zoom = ratio;
+        if (document.body) document.body.style.zoom = '';
 
         const displayEl = document.getElementById('fontScaleDisplay');
         if (displayEl) displayEl.innerText = scalePct + '%';
@@ -7238,16 +7292,24 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
         }
 
-        // --- Card (D): Oldest Top 5 Pending Lessons (lesson_done !== true) ---
+        // --- Card (D): Oldest Top 5 Pending Lessons (hw_done === false) ---
+        // Shows lesson_done_at date, sorted by oldest lesson_days (descending)
         const pendingLessons = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
-            return !tp || tp.lesson_done !== true;
+            return tp && tp.hw_done !== true && (tp.lesson_done === true || tp.lesson_done_at);
           })
           .map(s => {
             const tp = tpMap[s.id];
             const rawDate = tp && tp.lesson_done_at ? tp.lesson_done_at : null;
-            const dateStr = rawDate ? rawDate.substring(0, 10) : null;
+            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+
+            let days = (tp && tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
+            if (days === 0 && rawDate) {
+              const diffMs = Math.max(0, Date.now() - new Date(rawDate).getTime());
+              days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
+
             return {
               id: s.id,
               subject: s.subject || 'ICT',
@@ -7256,10 +7318,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
               date: dateStr,
+              days: days,
+              timestamp: rawDate ? new Date(rawDate).getTime() : 0,
               sortOrder: Number(s.sort_order) || 0
             };
           })
-          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .sort((a, b) => {
+            if (b.days !== a.days) return b.days - a.days; // Oldest days first
+            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp; // Earlier date first
+            return a.sortOrder - b.sortOrder;
+          })
           .slice(0, 5);
 
         const dBody = document.getElementById('oldestLessonPendingBody');
@@ -7286,19 +7354,25 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
         }
 
-        // --- Card (E): Oldest Top 5 Both Pending & No Paper Done ---
-        const bothPending = syllabusList
+        // --- Card (E): Oldest Top 5 Pending Unit Papers (No Paper Done) ---
+        // Shows hw_done_at date, sorted by oldest paper_days
+        const noPaperList = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
-            const lessonPending = !tp || tp.lesson_done !== true;
-            const hwPending = !tp || tp.hw_done !== true;
             const papers = paperMapBySylId[s.id] || [];
-            return lessonPending && hwPending && papers.length === 0;
+            return tp && tp.hw_done === true && papers.length === 0;
           })
           .map(s => {
             const tp = tpMap[s.id];
-            const rawDate = tp && (tp.lesson_done_at || tp.hw_done_at) ? (tp.lesson_done_at || tp.hw_done_at) : null;
-            const dateStr = rawDate ? rawDate.substring(0, 10) : null;
+            const rawDate = tp && tp.hw_done_at ? tp.hw_done_at : null;
+            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+
+            let pDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
+            if (pDays === 0 && rawDate) {
+              const diffMs = Math.max(0, Date.now() - new Date(rawDate).getTime());
+              pDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
+
             return {
               id: s.id,
               subject: s.subject || 'ICT',
@@ -7307,18 +7381,24 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
               date: dateStr,
+              paperDays: pDays,
+              timestamp: rawDate ? new Date(rawDate).getTime() : 0,
               sortOrder: Number(s.sort_order) || 0
             };
           })
-          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .sort((a, b) => {
+            if (b.paperDays !== a.paperDays) return b.paperDays - a.paperDays; // Oldest paper_days first
+            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp; // Earlier date first
+            return a.sortOrder - b.sortOrder;
+          })
           .slice(0, 5);
 
         const eBody = document.getElementById('oldestBothPendingBody');
         if (eBody) {
-          if (bothPending.length === 0) {
+          if (noPaperList.length === 0) {
             eBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ආරම්භ නොකළ කිසිදු පාඩමක් නොමැත 🌟</td></tr>`;
           } else {
-            eBody.innerHTML = bothPending.map((item, idx) => {
+            eBody.innerHTML = noPaperList.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
               return `
                 <tr>

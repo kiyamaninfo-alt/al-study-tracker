@@ -268,6 +268,18 @@
       :root.dark-mode .badge-ET, body.dark-mode .badge-ET { background: rgba(140, 122, 230, 0.2); color: #a29bfe; border-color: rgba(140, 122, 230, 0.4); }
       :root.dark-mode .badge-SFT, body.dark-mode .badge-SFT { background: rgba(9, 132, 227, 0.2); color: #58a6ff; border-color: rgba(9, 132, 227, 0.4); }
 
+      .subj-text-ICT { color: #20bf6b; }
+      .subj-text-ET { color: #8c7ae6; }
+      .subj-text-SFT { color: #0984e3; }
+      :root.dark-mode .subj-text-ICT, body.dark-mode .subj-text-ICT { color: #2ecc71 !important; }
+      :root.dark-mode .subj-text-ET, body.dark-mode .subj-text-ET { color: #a29bfe !important; }
+      :root.dark-mode .subj-text-SFT, body.dark-mode .subj-text-SFT { color: #58a6ff !important; }
+
+      :root.dark-mode #addPasswordError, body.dark-mode #addPasswordError,
+      :root.dark-mode #editPasswordError, body.dark-mode #editPasswordError {
+        color: #ff6b6b !important;
+      }
+
       .res-title { font-weight: 600; font-size: 11px; line-height: 1.3; }
       :root.dark-mode .res-title, body.dark-mode .res-title { color: #f0f6fc; }
       .res-unit { font-size: 9px; color: var(--text-muted); }
@@ -548,14 +560,14 @@
 
         let html = '';
         filtered.slice(0, 35).forEach(item => {
-          const subjColor = item.subject === 'ICT' ? '#20bf6b' : (item.subject === 'ET' ? '#8c7ae6' : '#0984e3');
+          const subjClass = `subj-text-${item.subject}`;
           html += `
             <div class="search-result-item">
               <div class="res-header">
                 <span class="badge-subj badge-${item.subject}">${item.subject}</span>
-                <span style="font-weight: 700; color: ${subjColor}; font-size: 11px;">උප-ඒකකය ${item.code}</span>
+                <span class="${subjClass}" style="font-weight: 700; font-size: 11px;">උප-ඒකකය ${item.code}</span>
               </div>
-              <div class="res-title"><span style="color: ${subjColor}; font-weight: 700; margin-right: 6px;">${item.code}</span>${item.subLesson}</div>
+              <div class="res-title"><span class="${subjClass}" style="font-weight: 700; margin-right: 6px;">${item.code}</span>${item.subLesson}</div>
               <div class="res-unit">${item.unit}</div>
               <div class="res-actions">
                 <button class="action-btn jump" onclick="jumpToRow('${item.subject}', '${item.code}')">🎯 පනින්න</button>
