@@ -3630,12 +3630,13 @@
               <th class="col-unit-name">Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
-              <th style="text-align: center;">Date</th>
+              <th style="text-align: center; width: 90px;">Lesson Days</th>
+              <th style="text-align: center; width: 85px;">Date</th>
             </tr>
           </thead>
           <tbody id="oldestLessonPendingBody">
             <tr>
-              <td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
+              <td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -3664,12 +3665,13 @@
               <th class="col-unit-name">Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
-              <th style="text-align: center;">Date</th>
+              <th style="text-align: center; width: 90px;">HW Days</th>
+              <th style="text-align: center; width: 85px;">Date</th>
             </tr>
           </thead>
           <tbody id="oldestBothPendingBody">
             <tr>
-              <td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
+              <td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -6070,13 +6072,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const last5Avg = last5Sum / last5Slice.length;
 
         if (totalEl) {
+          const allPapers = (telemetryData && telemetryData.unitPapersHistory) ? telemetryData.unitPapersHistory : [];
           if (currentActiveUnitChartTab === 'All') {
-            const ictC = history.filter(h => h.subject === 'ICT').length;
-            const etC = history.filter(h => h.subject === 'ET').length;
-            const sftC = history.filter(h => h.subject === 'SFT').length;
-            totalEl.innerText = `${totalCount} Papers (ICT: ${ictC}, SFT: ${sftC}, ET: ${etC})`;
+            const ictC = allPapers.filter(h => h.subject === 'ICT').length;
+            const etC = allPapers.filter(h => h.subject === 'ET').length;
+            const sftC = allPapers.filter(h => h.subject === 'SFT').length;
+            totalEl.innerText = `${allPapers.length} Papers (ICT: ${ictC}, SFT: ${sftC}, ET: ${etC})`;
           } else {
-            totalEl.innerText = `${totalCount} Papers (${currentActiveUnitChartTab} පමණි)`;
+            const subjCount = allPapers.filter(h => h.subject === currentActiveUnitChartTab).length;
+            totalEl.innerText = `${subjCount} Papers (${currentActiveUnitChartTab} පමණි)`;
           }
         }
         if (last5AvgEl) last5AvgEl.innerText = `${last5Avg.toFixed(1)}% (${last5Slice.length} Papers)`;
@@ -6329,23 +6333,26 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const safeEntries = entries || [];
         const N = safeEntries.length;
 
+        const allUp = (telemetryData && telemetryData.unitPapersHistory) ? telemetryData.unitPapersHistory : [];
+        const totalPapersForTab = tab === 'All' ? allUp.length : allUp.filter(p => p.subject === tab).length;
+
         if (badgeEl) {
           const tabTitles = {
-            'All': `🌐 සියලු විෂයයන් (All: ${N} Papers)`,
-            'ICT': `📘 ICT විෂය සඳහා (${N} Papers)`,
-            'ET': `📙 ET විෂය සඳහා (${N} Papers)`,
-            'SFT': `📗 SFT විෂය සඳහා (${N} Papers)`
+            'All': `🌐 සියලු විෂයයන් (All: ${totalPapersForTab} Papers)`,
+            'ICT': `📘 ICT විෂය සඳහා (${totalPapersForTab} Papers)`,
+            'ET': `📙 ET විෂය සඳහා (${totalPapersForTab} Papers)`,
+            'SFT': `📗 SFT විෂය සඳහා (${totalPapersForTab} Papers)`
           };
-          badgeEl.innerText = tabTitles[tab] || `${tab} (${N} Papers)`;
+          badgeEl.innerText = tabTitles[tab] || `${tab} (${totalPapersForTab} Papers)`;
         }
 
         if (footnoteEl) {
           if (tab === 'All') {
-            footnoteEl.innerText = "* සියලු විෂයයන්හි (ICT, ET, SFT) Unit Papers එක්ව සලකා ගණනය කර ඇත.";
+            footnoteEl.innerText = "* සියලු විෂයයන්හි (ICT, ET, SFT) Unit Papers එක්ව සලකා ගණනය කර ඇත. (ලකුණු 0 ප්‍රශ්න පත්‍ර ගණනයෙන් බැහැර කර ඇත)";
           } else if (N === 0) {
             footnoteEl.innerText = `* ${tab} සඳහා තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝`;
           } else {
-            footnoteEl.innerText = `* ${tab} Unit Papers පමණක් සලකා ගණනය කර ඇත.`;
+            footnoteEl.innerText = `* ${tab} Unit Papers පමණක් සලකා ගණනය කර ඇත. (ලකුණු 0 ප්‍රශ්න පත්‍ර ගණනයෙන් බැහැර කර ඇත)`;
           }
         }
 
@@ -7261,6 +7268,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // --- Card (C): Lowest 5 Score Unit Papers ---
         const lowestScores = [...enrichedPapers]
+          .filter(item => item.marks > 0)
           .sort((a, b) => {
             if (a.marks !== b.marks) return a.marks - b.marks;
             return b.timestamp - a.timestamp;
@@ -7337,7 +7345,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const dBody = document.getElementById('oldestLessonPendingBody');
         if (dBody) {
           if (pendingLessons.length === 0) {
-            dBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! සියලු පාඩම් ඉගෙන ගෙන අවසන් කර ඇත 🌟</td></tr>`;
+            dBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! සියලු පාඩම් ඉගෙන ගෙන අවසන් කර ඇත 🌟</td></tr>`;
           } else {
             dBody.innerHTML = pendingLessons.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -7351,6 +7359,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
+                  <td style="text-align: center; font-weight: 600; color: #0984e3; font-size: 11px;">${item.days !== undefined && item.days !== null ? item.days : 0} d</td>
                   <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
@@ -7370,6 +7379,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const tp = tpMap[s.id] || {};
             const papers = paperMapBySylId[s.id] || [];
             const pDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
+            const hwDays = (tp && tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : 0;
 
             let rawDate = null;
             if (papers.length === 0 || pDays === 0) {
@@ -7392,6 +7402,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               unitName: s.unit_name || '-',
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
+              hwDays: hwDays,
               date: dateStr,
               paperDays: pDays,
               timestamp: rawDate ? new Date(rawDate).getTime() : 0,
@@ -7412,7 +7423,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const eBody = document.getElementById('oldestBothPendingBody');
         if (eBody) {
           if (noPaperList.length === 0) {
-            eBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ආරම්භ නොකළ කිසිදු පාඩමක් නොමැත 🌟</td></tr>`;
+            eBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ආරම්භ නොකළ කිසිදු පාඩමක් නොමැත 🌟</td></tr>`;
           } else {
             eBody.innerHTML = noPaperList.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -7426,6 +7437,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
+                  <td style="text-align: center; font-weight: 600; color: #e17055; font-size: 11px;">${item.hwDays !== undefined && item.hwDays !== null ? item.hwDays : 0} d</td>
                   <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
@@ -7893,6 +7905,13 @@ function openSidebarModal() {
         document.getElementById('btnConfirmYes').disabled = false;
         document.getElementById('upPrimaryActionRow').style.display = 'grid';
 
+        // Calculate nextPaperNo from existing unitPapersHistory using max paperNo to avoid duplicate key conflicts
+        const matchingPapers = (telemetryData && telemetryData.unitPapersHistory ? telemetryData.unitPapersHistory : [])
+          .filter(p => (p.subject === selected.subject && p.code === selected.code));
+        const maxPaperNo = matchingPapers.reduce((max, p) => Math.max(max, Number(p.paperNo) || 0), 0);
+        const resolvedNextPaperNo = Math.max(maxPaperNo + 1, (selected.nextPaperNo || 1));
+        const resolvedPapersDone = matchingPapers.length || (selected.papersDone || 0);
+
         selectedSubLessonObj = {
           subject: selected.subject,
           unit: selected.unit,
@@ -7900,8 +7919,8 @@ function openSidebarModal() {
           code: selected.code,
           lessonDone: selected.lessonDone,
           hwDone: selected.hwDone,
-          papersDone: selected.papersDone,
-          nextPaperNo: selected.nextPaperNo
+          papersDone: resolvedPapersDone,
+          nextPaperNo: resolvedNextPaperNo
         };
 
         document.getElementById('upSelectedCard').style.display = 'block';
@@ -7910,7 +7929,7 @@ function openSidebarModal() {
         document.getElementById('upSelectedTitle').innerText = selected.code + ' - ' + selected.subLesson;
 
         updateLessonHwButtonUI(selected.lessonDone, selected.hwDone);
-        updatePaperPromptUI(selected.papersDone, selected.nextPaperNo);
+        updatePaperPromptUI(resolvedPapersDone, resolvedNextPaperNo);
       }
 
       function updateLessonHwButtonUI(lessonDone, hwDone) {
@@ -8117,14 +8136,16 @@ function openSidebarModal() {
 
           if (sylErr || !syl) throw (sylErr || new Error('පාඩම හඳුනාගත නොහැකි විය.'));
 
-          const { count: existingCount, error: cntErr } = await supabase
+          // Fetch existing papers to find the true max paper_no and prevent duplicate key violations (uq_unit_paper_entry)
+          const { data: existingPapers, error: cntErr } = await supabase
             .from('unit_papers')
-            .select('*', { count: 'exact', head: true })
+            .select('paper_no')
             .eq('syllabus_id', syl.id);
 
           if (cntErr) throw cntErr;
 
-          const nextPaperNo = (existingCount || 0) + 1;
+          const maxExistingNo = (existingPapers || []).reduce((max, p) => Math.max(max, Number(p.paper_no) || 0), 0);
+          const nextPaperNo = maxExistingNo + 1;
 
           const { error: insErr } = await supabase
             .from('unit_papers')
