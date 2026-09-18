@@ -6027,7 +6027,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const last5AvgEl = document.getElementById('upSummaryLast5Avg');
         const overallAvgEl = document.getElementById('upSummaryOverallAvg');
 
-        const history = (telemetryData.unitPapersHistory || []).filter(h => h.marks !== null && !isNaN(h.marks));
+        const history = (telemetryData.unitPapersHistory || []).filter(h => h.marks !== null && h.marks !== undefined && !isNaN(h.marks) && Number(h.marks) !== 0);
 
         heading.innerText = `📈 Unit Paper Score Progression (${currentActiveUnitChartTab})`;
 
@@ -6381,7 +6381,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           for (let i = N - 1; i >= 0; i--) {
             const item = safeEntries[i];
             const marks = item.marks;
-            if (marks === null || marks === undefined || isNaN(marks)) continue;
+            if (marks === null || marks === undefined || isNaN(marks) || Number(marks) === 0) continue;
 
             countProcessed++;
             countSum += marks;
@@ -7207,7 +7207,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // 4. Enrich unit papers with syllabus metadata
         const enrichedPapers = unitPapers
-          .filter(p => p.marks !== null && p.marks !== undefined && !isNaN(p.marks))
+          .filter(p => p.marks !== null && p.marks !== undefined && !isNaN(p.marks) && Number(p.marks) !== 0)
           .map(p => {
             const syl = sylMapById[p.syllabusId] || sylMapByKey[`${p.subject}||${p.code}`] || {};
             const loggedDate = p.loggedAt ? p.loggedAt.substring(0, 10) : (p.fullDate || null);
@@ -7293,11 +7293,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         // --- Card (D): Oldest Top 5 Pending Lessons (hw_done === false) ---
-        // Shows lesson_done_at date, sorted by oldest lesson_days (descending)
+        // Shows lesson_done_at date, sorted by oldest lesson_days (descending) where hw_done = false
         const pendingLessons = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
-            return tp && tp.hw_done !== true && (tp.lesson_done === true || tp.lesson_done_at);
+            return tp && tp.hw_done !== true;
           })
           .map(s => {
             const tp = tpMap[s.id];
@@ -7325,7 +7325,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           })
           .sort((a, b) => {
             if (b.days !== a.days) return b.days - a.days; // Oldest days first
-            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp; // Earlier date first
+            if (a.timestamp !== b.timestamp) {
+              if (a.timestamp === 0) return 1;
+              if (b.timestamp === 0) return -1;
+              return a.timestamp - b.timestamp; // Earlier date first
+            }
             return a.sortOrder - b.sortOrder;
           })
           .slice(0, 5);
@@ -7354,24 +7358,32 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
         }
 
-        // --- Card (E): Oldest Top 5 Pending Unit Papers (No Paper Done) ---
-        // Shows hw_done_at date, sorted by oldest paper_days
+        // --- Card (E): Oldest Top 5 in paper_days ---
+        // 1. Shows date field "hw_done_at" if there is no paper or 0 paper days "paper_days" accordingly
+        // 1.2 Shows oldest in "paper_days" as top 5
         const noPaperList = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
-            const papers = paperMapBySylId[s.id] || [];
-            return tp && tp.hw_done === true && papers.length === 0;
+            return tp && (tp.hw_done === true || (tp.paper_days !== undefined && tp.paper_days !== null && Number(tp.paper_days) > 0));
           })
           .map(s => {
-            const tp = tpMap[s.id];
-            const rawDate = tp && tp.hw_done_at ? tp.hw_done_at : null;
-            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+            const tp = tpMap[s.id] || {};
+            const papers = paperMapBySylId[s.id] || [];
+            const pDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
 
-            let pDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
-            if (pDays === 0 && rawDate) {
-              const diffMs = Math.max(0, Date.now() - new Date(rawDate).getTime());
-              pDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            let rawDate = null;
+            if (papers.length === 0 || pDays === 0) {
+              rawDate = tp.hw_done_at || null;
+            } else {
+              const latestPaper = [...papers].sort((a, b) => {
+                const timeB = b.timestamp || (b.loggedAt ? new Date(b.loggedAt).getTime() : 0);
+                const timeA = a.timestamp || (a.loggedAt ? new Date(a.loggedAt).getTime() : 0);
+                return timeB - timeA;
+              })[0];
+              rawDate = (latestPaper && (latestPaper.loggedAt || latestPaper.fullDate || latestPaper.date)) || tp.hw_done_at || null;
             }
+
+            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
 
             return {
               id: s.id,
@@ -7388,7 +7400,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           })
           .sort((a, b) => {
             if (b.paperDays !== a.paperDays) return b.paperDays - a.paperDays; // Oldest paper_days first
-            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp; // Earlier date first
+            if (a.timestamp !== b.timestamp) {
+              if (a.timestamp === 0) return 1;
+              if (b.timestamp === 0) return -1;
+              return a.timestamp - b.timestamp; // Earlier date first
+            }
             return a.sortOrder - b.sortOrder;
           })
           .slice(0, 5);
@@ -8182,7 +8198,7 @@ function openSidebarModal() {
       marks: row.marks !== null ? Number(row.marks) : null
     }));
 
-    const validMarks = history.map(h => h.marks).filter(m => m !== null && !isNaN(m));
+    const validMarks = history.map(h => h.marks).filter(m => m !== null && m !== undefined && !isNaN(m) && Number(m) !== 0);
     const calcAvg = (n) => {
       if (validMarks.length === 0) return null;
       const slice = n ? validMarks.slice(-n) : validMarks;
@@ -8238,7 +8254,7 @@ function openSidebarModal() {
         const noMsg = document.getElementById('noUnitChartMsg');
         const zoomLbl = document.getElementById('unitChartZoomLbl');
 
-        const validHistory = (data.history || []).filter(h => h.marks !== null && !isNaN(h.marks));
+        const validHistory = (data.history || []).filter(h => h.marks !== null && h.marks !== undefined && !isNaN(h.marks) && Number(h.marks) !== 0);
 
         if (!validHistory || validHistory.length === 0) {
           canvas.style.display = 'none';
