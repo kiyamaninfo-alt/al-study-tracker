@@ -280,6 +280,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-shrink: 0;
       }
       .action-bar-stat-clickable {
         font-size: 11px;
@@ -299,7 +300,13 @@
       }
       .badge-unit-stat { background: #f0fbfb; border: 1px solid #b2f5ea; }
       .badge-full-stat { background: #f5f3ff; border: 1px solid #ddd6fe; }
-      .action-bar-btns { display: flex; align-items: center; gap: 6px; }
+      .action-bar-btns {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        justify-content: flex-end;
+      }
       .btn-action-pill {
         border: none;
         display: inline-flex;
@@ -307,15 +314,17 @@
         justify-content: center;
         gap: 5px;
         height: 32px;
-        padding: 0 12px;
+        padding: 0 8px;
         border-radius: 8px;
-        font-size: 10.5px;
+        font-size: 10px;
         font-weight: 600;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
         white-space: nowrap;
         box-sizing: border-box;
         line-height: 1;
+        flex: 1 1 0;
+        text-align: center;
       }
       .btn-action-pill:hover { transform: scale(1.03); }
       .btn-fullpaper { background: linear-gradient(135deg, #6c5ce7, #8c7ae6); color: white; }
@@ -3426,6 +3435,14 @@
               <textarea class="form-textarea" id="fpRemarks" rows="2" placeholder="අමාරු වූ කොටස් හෝ සටහන්..."></textarea>
             </div>
 
+            <div class="form-group" style="margin-top: 8px;">
+              <label class="form-label" style="font-weight: 700;">🔒 තහවුරු කිරීමේ මුරපදය (Security Password) *</label>
+              <input type="password" class="form-input" id="fpPasswordInput" placeholder="මුරපදය ඇතුළත් කරන්න (3408)" style="font-size: 11px; padding: 7px 10px; text-align: center; letter-spacing: 2px;" autocomplete="off" required>
+              <div id="fpPasswordError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600; text-align: center;">
+                ⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.
+              </div>
+            </div>
+
             <button type="submit" class="submit-btn" id="fpSubmitBtn">💾 Save Full Paper</button>
           </form>
         </div>
@@ -3525,6 +3542,13 @@
               <div class="confirm-title">⚠️ කරුණාකර තහවුරු කරන්න:</div>
               <div class="confirm-details" id="confirmDetailsTxt">
                 විස්තර පූරණය වෙමින් පවතී...
+              </div>
+              <div class="form-group" style="margin: 8px 0 6px;">
+                <label class="form-label" style="font-size: 10px; color: inherit; font-weight: 700;">🔒 තහවුරු කිරීමේ මුරපදය (Security Password) *</label>
+                <input type="password" class="form-input" id="upPasswordInput" placeholder="මුරපදය ඇතුළත් කරන්න (3408)" style="font-size: 11px; padding: 6px 10px; text-align: center; letter-spacing: 2px;" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();executeConfirmedUnitPaper();}">
+                <div id="upPasswordError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600; text-align: center;">
+                  ⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.
+                </div>
               </div>
               <div class="confirm-btns">
                 <button type="button" class="btn-confirm-yes" id="btnConfirmYes" onclick="executeConfirmedUnitPaper()">
@@ -6675,15 +6699,35 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           msgEl.innerHTML = detail;
         }
 
+        const undoPass = document.getElementById('undoPasswordInput');
+        if (undoPass) undoPass.value = '';
+        const undoErr = document.getElementById('undoPasswordError');
+        if (undoErr) undoErr.style.display = 'none';
+        const okBtn = document.getElementById('undoConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = false;
+          okBtn.innerText = 'ඔව්, Undo කරන්න ↩️';
+        }
+
         const popup = document.getElementById('undoConfirmPopup');
         if (popup) {
           popup.style.display = 'flex';
           focusModal(popup);
+          if (undoPass) setTimeout(() => undoPass.focus(), 60);
         }
       }
 
       function cancelUndoConfirm() {
         pendingUndoItem = null;
+        const undoPass = document.getElementById('undoPasswordInput');
+        if (undoPass) undoPass.value = '';
+        const undoErr = document.getElementById('undoPasswordError');
+        if (undoErr) undoErr.style.display = 'none';
+        const okBtn = document.getElementById('undoConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = false;
+          okBtn.innerText = 'ඔව්, Undo කරන්න ↩️';
+        }
         const popup = document.getElementById('undoConfirmPopup');
         if (popup) popup.style.display = 'none';
       }
@@ -6693,6 +6737,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           cancelUndoConfirm();
           return;
         }
+
+        const passInput = document.getElementById('undoPasswordInput');
+        const passVal = passInput ? passInput.value.trim() : '';
+        const passErr = document.getElementById('undoPasswordError');
+        if (passVal !== '3408') {
+          if (passErr) {
+            passErr.innerText = passVal === '' ? '⚠️ කරුණාකර මුරපදය ඇතුළත් කරන්න!' : '⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.';
+            passErr.style.display = 'block';
+          }
+          if (passInput) passInput.focus();
+          return;
+        }
+        if (passErr) passErr.style.display = 'none';
 
         const item = pendingUndoItem;
         const okBtn = document.getElementById('undoConfirmOkBtn');
@@ -7140,10 +7197,20 @@ function openSidebarModal() {
       // 9. Log Full Paper Form
       function openFullPaperModal() {
         const modal = document.getElementById('fullPaperModal');
+        const passInput = document.getElementById('fpPasswordInput');
+        if (passInput) passInput.value = '';
+        const passErr = document.getElementById('fpPasswordError');
+        if (passErr) passErr.style.display = 'none';
         modal.style.display = 'flex';
         focusModal(modal);
       }
-      function hideFullPaperModal() { document.getElementById('fullPaperModal').style.display = 'none'; }
+      function hideFullPaperModal() {
+        const passInput = document.getElementById('fpPasswordInput');
+        if (passInput) passInput.value = '';
+        const passErr = document.getElementById('fpPasswordError');
+        if (passErr) passErr.style.display = 'none';
+        document.getElementById('fullPaperModal').style.display = 'none';
+      }
       function closeFullPaperModal(event) { if (event.target.id === 'fullPaperModal') hideFullPaperModal(); }
 
       async function submitFullPaper(e) {
@@ -7171,6 +7238,19 @@ function openSidebarModal() {
           return;
         }
 
+        const passInput = document.getElementById('fpPasswordInput');
+        const passVal = passInput ? passInput.value.trim() : '';
+        const passErr = document.getElementById('fpPasswordError');
+        if (passVal !== '3408') {
+          if (passErr) {
+            passErr.innerText = passVal === '' ? '⚠️ කරුණාකර මුරපදය ඇතුළත් කරන්න!' : '⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.';
+            passErr.style.display = 'block';
+          }
+          if (passInput) passInput.focus();
+          return;
+        }
+        if (passErr) passErr.style.display = 'none';
+
         btn.innerText = "සුරැකෙමින් පවතී...";
         btn.disabled = true;
 
@@ -7195,6 +7275,7 @@ function openSidebarModal() {
           document.getElementById('fpMarks').value = '';
           document.getElementById('fpTime').value = '';
           document.getElementById('fpRemarks').value = '';
+          if (passInput) passInput.value = '';
 
           try {
             confetti({
@@ -7351,6 +7432,10 @@ function openSidebarModal() {
         document.getElementById('btnSubmitUnitPaper').disabled = false;
         document.getElementById('btnConfirmYes').disabled = false;
         document.getElementById('upPrimaryActionRow').style.display = 'grid';
+        const upPassInput = document.getElementById('upPasswordInput');
+        if (upPassInput) upPassInput.value = '';
+        const upPassErr = document.getElementById('upPasswordError');
+        if (upPassErr) upPassErr.style.display = 'none';
         setTimeout(() => {
           const inp = document.getElementById('upSearchInput');
           if (inp) inp.focus();
@@ -7358,7 +7443,13 @@ function openSidebarModal() {
         }, 60);
       }
 
-      function hideUnitPaperModal() { document.getElementById('unitPaperModal').style.display = 'none'; }
+      function hideUnitPaperModal() {
+        const upPassInput = document.getElementById('upPasswordInput');
+        if (upPassInput) upPassInput.value = '';
+        const upPassErr = document.getElementById('upPasswordError');
+        if (upPassErr) upPassErr.style.display = 'none';
+        document.getElementById('unitPaperModal').style.display = 'none';
+      }
       function closeUnitPaperModal(event) { if (event.target.id === 'unitPaperModal') hideUnitPaperModal(); }
 
       function handleUnitPaperSearch() {
@@ -7585,58 +7676,81 @@ function openSidebarModal() {
         `;
 
         document.getElementById('confirmDetailsTxt').innerHTML = detailsHtml;
+        const upPassInput = document.getElementById('upPasswordInput');
+        if (upPassInput) upPassInput.value = '';
+        const upPassErr = document.getElementById('upPasswordError');
+        if (upPassErr) upPassErr.style.display = 'none';
         document.getElementById('upConfirmCard').style.display = 'block';
         document.getElementById('btnSubmitUnitPaper').disabled = true;
+        if (upPassInput) setTimeout(() => upPassInput.focus(), 60);
       }
 
       function cancelInlineConfirmation() {
+        const upPassInput = document.getElementById('upPasswordInput');
+        if (upPassInput) upPassInput.value = '';
+        const upPassErr = document.getElementById('upPasswordError');
+        if (upPassErr) upPassErr.style.display = 'none';
         document.getElementById('upConfirmCard').style.display = 'none';
         document.getElementById('btnSubmitUnitPaper').disabled = false;
       }
 
       async function executeConfirmedUnitPaper() {
-  if (!selectedSubLessonObj) return;
+        if (!selectedSubLessonObj) return;
 
-  const btnYes = document.getElementById('btnConfirmYes');
-  btnYes.disabled = true;
-  btnYes.innerText = "සටහන් වෙමින් පවතී...";
-
-  const marksVal = document.getElementById('upMarksInput').value;
-  const numericMarks = parseFloat(marksVal);
-
-  try {
-    const { data: syl, error: sylErr } = await supabase
-      .from('canonical_syllabus')
-      .select('id')
-      .eq('subject', selectedSubLessonObj.subject)
-      .eq('sub_lesson_code', selectedSubLessonObj.code)
-      .single();
-
-    if (sylErr || !syl) throw (sylErr || new Error('පාඩම හඳුනාගත නොහැකි විය.'));
-
-    const { count: existingCount, error: cntErr } = await supabase
-      .from('unit_papers')
-      .select('*', { count: 'exact', head: true })
-      .eq('syllabus_id', syl.id);
-
-    if (cntErr) throw cntErr;
-
-    const nextPaperNo = (existingCount || 0) + 1;
-
-    const { error: insErr } = await supabase
-      .from('unit_papers')
-      .insert([
-        {
-          syllabus_id: syl.id,
-          subject: selectedSubLessonObj.subject,
-          sub_lesson_code: selectedSubLessonObj.code,
-          paper_no: nextPaperNo,
-          marks: numericMarks,
-          logged_at: new Date().toISOString()
+        const passInput = document.getElementById('upPasswordInput');
+        const passVal = passInput ? passInput.value.trim() : '';
+        const passErr = document.getElementById('upPasswordError');
+        if (passVal !== '3408') {
+          if (passErr) {
+            passErr.innerText = passVal === '' ? '⚠️ කරුණාකර මුරපදය ඇතුළත් කරන්න!' : '⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.';
+            passErr.style.display = 'block';
+          }
+          if (passInput) passInput.focus();
+          return;
         }
-      ]);
+        if (passErr) passErr.style.display = 'none';
 
-    if (insErr) throw insErr;
+        const btnYes = document.getElementById('btnConfirmYes');
+        btnYes.disabled = true;
+        btnYes.innerText = "සටහන් වෙමින් පවතී...";
+
+        const marksVal = document.getElementById('upMarksInput').value;
+        const numericMarks = parseFloat(marksVal);
+
+        try {
+          const { data: syl, error: sylErr } = await supabase
+            .from('canonical_syllabus')
+            .select('id')
+            .eq('subject', selectedSubLessonObj.subject)
+            .eq('sub_lesson_code', selectedSubLessonObj.code)
+            .single();
+
+          if (sylErr || !syl) throw (sylErr || new Error('පාඩම හඳුනාගත නොහැකි විය.'));
+
+          const { count: existingCount, error: cntErr } = await supabase
+            .from('unit_papers')
+            .select('*', { count: 'exact', head: true })
+            .eq('syllabus_id', syl.id);
+
+          if (cntErr) throw cntErr;
+
+          const nextPaperNo = (existingCount || 0) + 1;
+
+          const { error: insErr } = await supabase
+            .from('unit_papers')
+            .insert([
+              {
+                syllabus_id: syl.id,
+                subject: selectedSubLessonObj.subject,
+                sub_lesson_code: selectedSubLessonObj.code,
+                paper_no: nextPaperNo,
+                marks: numericMarks,
+                logged_at: new Date().toISOString()
+              }
+            ]);
+
+          if (insErr) throw insErr;
+          if (passInput) passInput.value = '';
 
     await supabase
       .from('tracker_progress')
@@ -7927,6 +8041,13 @@ function openSidebarModal() {
         <div class="alert-popup-icon">↩️</div>
         <div class="alert-popup-title" style="color: #eb4d4b;">ක්‍රියාව Undo කර ඉවත් කිරීම</div>
         <div id="undoConfirmMsg" class="alert-popup-msg" style="background: rgba(235, 77, 75, 0.08); border-radius: 10px; padding: 12px 10px; border: 1px solid rgba(235, 77, 75, 0.25); color: inherit; font-size: 11px; line-height: 1.5;"></div>
+        <div class="form-group" style="margin: 10px 0 4px; text-align: left;">
+          <label class="form-label" style="font-size: 10px; color: inherit; font-weight: 700;">🔒 තහවුරු කිරීමේ මුරපදය (Security Password) *</label>
+          <input type="password" class="form-input" id="undoPasswordInput" placeholder="මුරපදය ඇතුළත් කරන්න (3408)" style="font-size: 11px; padding: 6px 10px; text-align: center; letter-spacing: 2px;" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();executeUndoConfirmed();}">
+          <div id="undoPasswordError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600; text-align: center;">
+            ⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.
+          </div>
+        </div>
         <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 10px; margin-top: 14px;">
           <button id="undoConfirmOkBtn" class="alert-popup-btn" onclick="executeUndoConfirmed()" style="background: linear-gradient(135deg, #eb4d4b, #d63031); color: white; box-shadow: 0 4px 14px rgba(235,77,75,0.3); font-weight: 700;">
             ඔව්, Undo කරන්න ↩️
