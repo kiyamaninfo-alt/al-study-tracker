@@ -8812,7 +8812,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-content">
                 <div class="prio-tag" style="color: #eb4d4b;">#1 අද මොඩල් පේපරයක් කරන්න ඕන </div>
                 <div class="prio-msg"> <strong>${escapeHtml(uSubj)}</strong> (${escapeHtml(uCode)} පාඩමෙන්)</div>
-                <div class="prio-sub">${escapeHtml(uTitle)} <br> අන්තිමට කලේ දවස්<span style = "color : red;"> ${uDays} </span> කලින්</div>
+                <div class="prio-sub">${escapeHtml(uTitle)} <br> අන්තිමට කලේ දවස්<span style = "color : red;"> ${uDays} </span> කට කලින්</div>
               </div>
             </div>
           `;
@@ -8849,7 +8849,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-icon-box">🧠</div>
               <div class="prio-content">
                 <div class="prio-tag" style="color: #6c5ce7;">#2 Spaced Repetition • ${escapeHtml(eSubj)}</div>
-                <div class="prio-msg">Spaced Repetition එක වෙනුවෙන් අද පාඩම් කරන්න ඕන <strong>${escapeHtml(eSubj)}</strong> (${escapeHtml(eCode)} පාඩමෙන්)</div>
+                <div class="prio-msg">අද පාඩම් කරන්න ඕන <strong>${escapeHtml(eSubj)}</strong> (${escapeHtml(eCode)} පාඩමෙන්)</div>
                 <div class="prio-sub">${escapeHtml(eTitle)} • ${escapeHtml(eStage)}</div>
               </div>
             </div>
@@ -8889,7 +8889,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-content">
                 <div class="prio-tag" style="color: ${fpAlertClass};">#3 Full Paper Recency</div>
                 <div class="prio-msg">අන්තිමට ෆුල් පේපර් එකක් කරලා අදට දවස් <span class="prio-num" style="color: ${fpAlertClass};">${fpDaysAgo}</span>ක් වෙනවා</div>
-                <div class="prio-sub">අවසන් පේපරය: ${latestFpDate ? escapeHtml(String(latestFpDate).substring(0, 10)) : '-'} • ක්ලික් කර අලුත් එකක් Log කරන්න</div>
+                <div class="prio-sub">අන්තිම පේපරය කලේ: ${latestFpDate ? escapeHtml(String(latestFpDate).substring(0, 10)) : '-'} </div>
               </div>
             </div>
           `;
@@ -8928,7 +8928,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-content">
                 <div class="prio-tag" style="color: ${upAlertClass};">#4 Unit Paper Recency</div>
                 <div class="prio-msg">අන්තිමට යුනිට් පේපර් එකක් කරල අදට දවස් <span class="prio-num" style="color: ${upAlertClass};">${upDaysAgo}</span>ක් වෙනවා</div>
-                <div class="prio-sub">අවසන් පේපරය: ${latestUpDate ? escapeHtml(String(latestUpDate).substring(0, 10)) : '-'} • ක්ලික් කර අලුත් එකක් Log කරන්න</div>
+                <div class="prio-sub">අන්තිම පේපර් එක කලේ : ${latestUpDate ? escapeHtml(String(latestUpDate).substring(0, 10)) : '-'} </div>
               </div>
             </div>
           `;
@@ -8980,8 +8980,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-icon-box">⚠️</div>
               <div class="prio-content">
                 <div class="prio-tag" style="color: #e67e22;">#5 Untested Lesson • ${escapeHtml(topUntested.subject)}</div>
-                <div class="prio-msg">පාඩම් කරලා තිබුනාට <strong>${escapeHtml(topUntested.subUnitNumber)}</strong> පේපර් කරලා නැහැ</div>
-                <div class="prio-sub">${escapeHtml(topUntested.subUnitName)} • අවසන් කර දින ${topUntested.days}ක් ගතවී ඇත</div>
+                <div class="prio-msg">පාඩම් කරලා තිබුනාට <strong>${escapeHtml(eSubj)}</strong> <strong>${escapeHtml(topUntested.subUnitNumber)}</strong> පේපර් කරලා නැහැ</div>
+                <div class="prio-sub">${escapeHtml(topUntested.subUnitName)} <br> අන්තිමට පාඩම් කලේ දවස්  ${topUntested.days}කට කලින් </div>
               </div>
             </div>
           `;
@@ -9035,7 +9035,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-icon-box">🎯</div>
               <div class="prio-content">
                 <div class="prio-tag" style="color: #0984e3;">#6 Least-Practiced • ${escapeHtml(topLeast.subject)}</div>
-                <div class="prio-msg">අඩුවෙන්ම වැඩ කරලා තියෙන්නේ මේ <strong>${escapeHtml(topLeast.subUnitNumber)}</strong> පාඩමෙන්</div>
+                <div class="prio-msg">අඩුවෙන්ම වැඩ කරලා තියෙන්නේ මේ <strong>${escapeHtml(eSubj)}</strong> <strong>${escapeHtml(topLeast.subUnitNumber)}</strong> පාඩමෙන්</div>
                 <div class="prio-sub">${escapeHtml(topLeast.subUnitName)} • කර ඇත්තේ Papers ${topLeast.paperAttempts}ක් පමණි</div>
               </div>
             </div>
