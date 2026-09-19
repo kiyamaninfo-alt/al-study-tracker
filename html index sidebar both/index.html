@@ -100,22 +100,20 @@
         color: #7f8fa6;
       }
 
-      /* Streak & Timer Dual Grid */
-      .streak-timer-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.3fr;
-        gap: 10px;
-        margin-bottom: 12px;
-      }
+      /* Streak Card */
       .streak-card {
         background: var(--card-bg);
         border-radius: 14px;
-        padding: 10px 14px;
+        padding: 10px 16px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
         border-left: 4px solid #ff7675;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .streak-header {
         font-size: 10px;
@@ -925,6 +923,166 @@
         background: #6c5ce7;
         color: #ffffff;
       }
+
+      /* Ranking Card Dual Tabs */
+      .ranking-tab-group {
+        display: flex;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 8px;
+        padding: 3px;
+        gap: 4px;
+        margin: 6px 0 10px 0;
+      }
+      .ranking-tab-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 600;
+        color: #7f8fa6;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+      .ranking-tab-btn.active {
+        background: #ffffff;
+        color: #2d3436;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Today's Priorities Primary Card */
+      .priority-card {
+        background: var(--card-bg, #ffffff);
+        border-radius: 16px;
+        padding: 16px 18px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+        margin-bottom: 14px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-left: 5px solid #6c5ce7;
+        transition: all 0.2s ease;
+      }
+      .priority-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .priority-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .priority-icon {
+        font-size: 24px;
+      }
+      .priority-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-color, #2d3436);
+      }
+      .priority-subtitle {
+        font-size: 10px;
+        color: #7f8fa6;
+        margin-top: 1px;
+      }
+      .priority-badge {
+        font-size: 9px;
+        font-weight: 700;
+        background: linear-gradient(135deg, rgba(108, 92, 231, 0.12), rgba(140, 122, 230, 0.22));
+        color: #6c5ce7;
+        padding: 4px 10px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .priority-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 10px;
+      }
+      .priority-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        background: #fdfdfd;
+        border: 1px solid #f1f2f6;
+        border-radius: 12px;
+        padding: 10px 12px;
+        transition: all 0.2s ease;
+      }
+      .priority-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+      }
+      .priority-item.item-radar {
+        border-left: 4px solid #e17055;
+        background: rgba(225, 112, 85, 0.03);
+      }
+      .priority-item.item-sr {
+        border-left: 4px solid #8c7ae6;
+        background: rgba(140, 122, 230, 0.03);
+      }
+      .priority-item.item-fp {
+        border-left: 4px solid #6c5ce7;
+        background: rgba(108, 92, 231, 0.03);
+      }
+      .priority-item.item-up {
+        border-left: 4px solid #0984e3;
+        background: rgba(9, 132, 227, 0.03);
+      }
+      .priority-item.item-untested {
+        border-left: 4px solid #d63031;
+        background: rgba(214, 48, 49, 0.03);
+      }
+      .priority-item.item-practice {
+        border-left: 4px solid #f39c12;
+        background: rgba(243, 156, 18, 0.03);
+      }
+      .prio-icon-box {
+        font-size: 18px;
+        line-height: 1;
+        padding-top: 2px;
+      }
+      .prio-content {
+        flex: 1;
+        min-width: 0;
+      }
+      .prio-tag {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #7f8fa6;
+        margin-bottom: 3px;
+      }
+      .prio-msg {
+        font-size: 11.5px;
+        color: #2d3436;
+        font-weight: 600;
+        line-height: 1.45;
+        word-break: break-word;
+      }
+      .prio-msg strong {
+        color: #0984e3;
+      }
+      .prio-msg .prio-num {
+        font-weight: 800;
+        font-size: 12.5px;
+        color: #e17055;
+      }
+      .prio-msg a {
+        color: inherit;
+        text-decoration: underline dotted;
+        transition: color 0.15s ease;
+      }
+      .prio-msg a:hover {
+        color: #6c5ce7;
+      }
       #radarList::-webkit-scrollbar,
       #ebbinghausList::-webkit-scrollbar,
       .ranking-table-responsive::-webkit-scrollbar,
@@ -1685,6 +1843,50 @@
       body.dark-mode .chart-tab-btn.active {
         background: #30363d !important;
         color: #58a6ff !important;
+      }
+      body.dark-mode .ranking-tab-group {
+        background: #0d1117 !important;
+        border: 1px solid #30363d !important;
+      }
+      body.dark-mode .ranking-tab-btn {
+        color: #8b949e !important;
+      }
+      body.dark-mode .ranking-tab-btn.active {
+        background: #30363d !important;
+        color: #58a6ff !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+      }
+      body.dark-mode .priority-card {
+        background: #161b22 !important;
+        border-color: #30363d !important;
+        border-left-color: #8c7ae6 !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
+      }
+      body.dark-mode .priority-title {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .priority-subtitle {
+        color: #8b949e !important;
+      }
+      body.dark-mode .priority-badge {
+        background: rgba(140, 122, 230, 0.25) !important;
+        color: #a29bfe !important;
+      }
+      body.dark-mode .priority-item {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+      }
+      body.dark-mode .prio-msg {
+        color: #c9d1d9 !important;
+      }
+      body.dark-mode .prio-tag {
+        color: #8b949e !important;
+      }
+      body.dark-mode .prio-msg strong {
+        color: #58a6ff !important;
+      }
+      body.dark-mode .prio-msg .prio-num {
+        color: #ff7675 !important;
       }
       body.dark-mode .prog-tab-btn {
         color: rgba(255, 255, 255, 0.7) !important;
@@ -3361,95 +3563,88 @@
       </div>
     </div>
 
-    <!-- Dual Row: Study Streak + Focus Timer -->
-    <div class="streak-timer-grid">
-      <div class="streak-card">
-        <div class="streak-header">අඛණ්ඩ අධ්‍යයන දින (Streak)</div>
-        <div class="streak-val">
-          <span>🔥</span> <span id="streakDaysTxt">0 Days Streak</span>
-        </div>
-        <div class="streak-tag pending" id="streakStatusTag">අද දින තවම පාඩම් කර නැත ⏳</div>
-      </div>
-
-      <div class="timer-card">
-        <div class="timer-left">
-          <div class="timer-label">⏱️ Focus Study Session</div>
-          <div class="timer-clock" id="timerDisplay">45:00</div>
-          <div class="timer-presets">
-            <button class="preset-btn" onclick="setTimerMinutes(25, event)">25m</button>
-            <button class="preset-btn active" id="preset45" onclick="setTimerMinutes(45, event)">45m</button>
-            <button class="preset-btn" onclick="setTimerMinutes(60, event)">60m</button>
+    <!-- Today's Priorities Primary Card (අද මුලින්ම කළ යුතු දේවල්) -->
+    <div class="priority-card" id="cardTodaysPriorities">
+      <div class="priority-header">
+        <div class="priority-title-wrap">
+          <span class="priority-icon">🎯</span>
+          <div>
+            <div class="priority-title">අද මුලින්ම කළ යුතු දේවල් (Today's Priorities)</div>
+            <div class="priority-subtitle">දෛනික ඉලක්ක සහ අවධානය යොමු කළ යුතු ප්‍රධාන කරුණු 6</div>
           </div>
         </div>
-        <div class="timer-controls">
-          <button class="ctrl-btn primary" id="timerStartBtn" onclick="toggleTimer()">▶️</button>
-          <button class="ctrl-btn" onclick="resetTimer()">🔄</button>
+        <span class="priority-badge">Daily Action Plan</span>
+      </div>
+
+      <div class="priority-grid" id="todaysPrioritiesGrid">
+        <!-- 1. Urgent Model Paper Target -->
+        <div class="priority-item item-radar" id="prioItem1">
+          <div class="prio-icon-box">⚡</div>
+          <div class="prio-content">
+            <div class="prio-tag">Model Paper Priority</div>
+            <div class="prio-msg" id="prioMsg1">ගණනය වෙමින්... ⏳</div>
+          </div>
+        </div>
+
+        <!-- 2. Spaced Repetition Review Target -->
+        <div class="priority-item item-sr" id="prioItem2">
+          <div class="prio-icon-box">🧠</div>
+          <div class="prio-content">
+            <div class="prio-tag">Spaced Repetition</div>
+            <div class="prio-msg" id="prioMsg2">ගණනය වෙමින්... ⏳</div>
+          </div>
+        </div>
+
+        <!-- 3. Full Paper Recency Counter -->
+        <div class="priority-item item-fp" id="prioItem3">
+          <div class="prio-icon-box">🎓</div>
+          <div class="prio-content">
+            <div class="prio-tag">Full Paper Recency</div>
+            <div class="prio-msg" id="prioMsg3">ගණනය වෙමින්... ⏳</div>
+          </div>
+        </div>
+
+        <!-- 4. Unit Paper Recency Counter -->
+        <div class="priority-item item-up" id="prioItem4">
+          <div class="prio-icon-box">📄</div>
+          <div class="prio-content">
+            <div class="prio-tag">Unit Paper Recency</div>
+            <div class="prio-msg" id="prioMsg4">ගණනය වෙමින්... ⏳</div>
+          </div>
+        </div>
+
+        <!-- 5. Untested Completed Lessons Alert -->
+        <div class="priority-item item-untested" id="prioItem5">
+          <div class="prio-icon-box">⚠️</div>
+          <div class="prio-content">
+            <div class="prio-tag">Untested Lesson Alert</div>
+            <div class="prio-msg" id="prioMsg5">ගණනය වෙමින්... ⏳</div>
+          </div>
+        </div>
+
+        <!-- 6. Least-Practiced Sub-Unit Detector -->
+        <div class="priority-item item-practice" id="prioItem6">
+          <div class="prio-icon-box">📉</div>
+          <div class="prio-content">
+            <div class="prio-tag">Practice Gap Detector</div>
+            <div class="prio-msg" id="prioMsg6">ගණනය වෙමින්... ⏳</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Unified Progress Card -->
-    <div class="level-card">
-      <div class="progress-tab-nav">
-        <button class="prog-tab-btn active" id="tabBtnOverall" onclick="switchProgressTab('overall')">🏆 Level Progress</button>
-        <button class="prog-tab-btn" id="tabBtnWeekly" onclick="switchProgressTab('weekly')">⚡ Weekly Sprint</button>
-      </div>
-
-      <!-- Tab 1: Overall Level Progress View -->
-      <div id="progViewOverall">
-        <div class="level-top">
-          <span class="level-badge-tag" id="tierTag">Tier 1 • Novice</span>
-          <span style="font-size: 11px; font-weight: 600;" id="totalPapersDoneHeader">0 Papers Completed</span>
-        </div>
-        <div class="level-name" id="currentLevelTitle">Level 1: Code Novice I</div>
-        <div class="level-subtxt" id="levelGoalTxt">ඊළඟ මට්ටමට තව Papers 15ක් ඉතිරියි</div>
-
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="levelBar"></div>
-        </div>
-        <div class="progress-footer">
-          <span id="levelStepRatio">0 / 15 Papers</span>
-          <span id="levelPct">0% Completed</span>
-        </div>
-      </div>
-
-      <!-- Tab 2: Weekly Sprint Quota View -->
-      <div id="progViewWeekly" style="display: none;">
-        <div class="level-top">
-          <span class="level-badge-tag" id="quotaMomentumTag">In Progress ⏳</span>
-          <span style="font-size: 10px; opacity: 0.9;" id="quotaWeekStart">Sprint Target</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 4px 0 6px 0;">
-          <div style="font-size: 14px; font-weight: 700;">සතිපතා ප්‍රගතිය: <span id="quotaOverallScore" style="color: #55efc4;">0%</span></div>
-          <span style="font-size: 9px; opacity: 0.85;">සඳුදා - ඉරිදා කෝටා</span>
-        </div>
-
-        <div class="weekly-meter-grid">
-          <div class="weekly-meter-card">
-            <div class="wm-title">📄 Unit Papers</div>
-            <div class="wm-ratio" id="q_unit_txt">0 / 10</div>
-            <div class="progress-bar-bg" style="height: 6px; margin: 2px 0 0 0;">
-              <div class="progress-bar-fill" id="q_unit_bar" style="background: #55efc4;"></div>
-            </div>
-          </div>
-
-          <div class="weekly-meter-card">
-            <div class="wm-title">🎓 Full Papers</div>
-            <div class="wm-ratio" id="q_full_txt">0 / 1</div>
-            <div class="progress-bar-bg" style="height: 6px; margin: 2px 0 0 0;">
-              <div class="progress-bar-fill" id="q_full_bar" style="background: #ffeaa7;"></div>
-            </div>
-          </div>
-
-          <div class="weekly-meter-card">
-            <div class="wm-title">📘 Lessons</div>
-            <div class="wm-ratio" id="q_lesson_txt">0 / 3</div>
-            <div class="progress-bar-bg" style="height: 6px; margin: 2px 0 0 0;">
-              <div class="progress-bar-fill" id="q_lesson_bar" style="background: #81ecec;"></div>
-            </div>
+    <!-- Study Streak Card (Focus Timer Removed) -->
+    <div class="streak-card">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 22px;">🔥</span>
+        <div>
+          <div class="streak-header">අඛණ්ඩ අධ්‍යයන දින (Streak)</div>
+          <div class="streak-val" style="margin-top: 1px;">
+            <span id="streakDaysTxt" style="font-size: 15px; font-weight: 800;">0 Days Streak</span>
           </div>
         </div>
       </div>
+      <div class="streak-tag pending" id="streakStatusTag">අද දින තවම පාඩම් කර නැත ⏳</div>
     </div>
 
     <!-- Dual Clickable Action Bar -->
@@ -3474,15 +3669,6 @@
         <button class="btn-action-pill btn-fullpaper" onclick="openFullPaperModal()">+ 📝 Log Full Paper</button>
         <button class="btn-action-pill btn-settings" onclick="openSettingsModal()">⚙️ Settings</button>
       </div>
-    </div>
-
-    <!-- Milestone Showcase -->
-    <div class="badge-showcase">
-      <div class="badge-header">
-        <span>🏆 Prestige Milestones (කීර්තිනාම පුවරුව)</span>
-        <span style="font-size: 9px; color: #7f8fa6;" id="prestigeRatio">0 / 10 Badges</span>
-      </div>
-      <div class="badge-row" id="badgeRow"></div>
     </div>
 
     <!-- Circular Progress Rings Grid -->
@@ -3924,9 +4110,20 @@
       <div class="ranking-subtitle" id="cardBSub">
         විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5.
       </div>
+
+      <!-- Tab Controls for Card B -->
+      <div class="ranking-tab-group" id="topHighestTabBar" onclick="event.stopPropagation()">
+        <button type="button" class="ranking-tab-btn active" id="btnTopHighestSubUnit" onclick="switchTopHighestTab('subunit', event)">
+          <span>📑 Sub-Unit Breakdown</span>
+        </button>
+        <button type="button" class="ranking-tab-btn" id="btnTopHighestUnit" onclick="switchTopHighestTab('unit', event)">
+          <span>📚 Unit-Wise Average</span>
+        </button>
+      </div>
+
       <div class="ranking-table-responsive">
         <table class="ranking-table">
-          <thead>
+          <thead id="topHighestHead">
             <tr>
               <th style="width: 50px; text-align: center;">Rank</th>
               <th>Subject</th>
@@ -3962,9 +4159,20 @@
       <div class="ranking-subtitle" id="cardCSub">
         නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 5.
       </div>
+
+      <!-- Tab Controls for Card C -->
+      <div class="ranking-tab-group" id="lowestScoreTabBar" onclick="event.stopPropagation()">
+        <button type="button" class="ranking-tab-btn active" id="btnLowestScoreSubUnit" onclick="switchLowestScoreTab('subunit', event)">
+          <span>📑 Sub-Unit Breakdown</span>
+        </button>
+        <button type="button" class="ranking-tab-btn" id="btnLowestScoreUnit" onclick="switchLowestScoreTab('unit', event)">
+          <span>📚 Unit-Wise Average</span>
+        </button>
+      </div>
+
       <div class="ranking-table-responsive">
         <table class="ranking-table">
-          <thead>
+          <thead id="lowestScoreHead">
             <tr>
               <th style="width: 50px; text-align: center;">Rank</th>
               <th>Subject</th>
@@ -4600,9 +4808,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let isTimerRunning = false;
 
       function updateTimerDisplay() {
+        const el = document.getElementById('timerDisplay');
+        if (!el) return;
         const mins = Math.floor(timerRemaining / 60);
         const secs = timerRemaining % 60;
-        document.getElementById('timerDisplay').innerText = 
+        el.innerText = 
           `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
       }
 
@@ -4621,6 +4831,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       function toggleTimer() {
         const btn = document.getElementById('timerStartBtn');
+        if (!btn) return;
         if (isTimerRunning) {
           clearInterval(timerInterval);
           isTimerRunning = false;
@@ -4781,7 +4992,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // Full lists for Top 10 Modals & Top 5 Card Views
       let globalUrgentRadarFullList = [];
       let globalTopHighestFullList = [];
+      let globalTopHighestUnitList = [];
       let globalLowestScoresFullList = [];
+      let globalLowestScoresUnitList = [];
+      let currentTopHighestTab = 'subunit'; // 'subunit' | 'unit'
+      let currentLowestScoreTab = 'subunit'; // 'subunit' | 'unit'
       let globalPendingLessonsFullList = [];
       let globalPendingTestPapersFullList = [];
       let currentFsCardType = null;
@@ -5374,39 +5589,46 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         document.getElementById('unitPapersCount').innerText = unitPapers;
         document.getElementById('fullPapersCount').innerText = fullPapers;
 
-        const stepSize = 15;
-        const currentLevel = Math.floor(totalEffectivePapers / stepSize) + 1;
-        const papersInCurrentLevel = totalEffectivePapers % stepSize;
-        const remainingToNext = stepSize - papersInCurrentLevel;
-        const levelPct = Math.round((papersInCurrentLevel / stepSize) * 100);
+        const tierTag = document.getElementById('tierTag');
+        if (tierTag) {
+          const stepSize = 15;
+          const currentLevel = Math.floor(totalEffectivePapers / stepSize) + 1;
+          const papersInCurrentLevel = totalEffectivePapers % stepSize;
+          const remainingToNext = stepSize - papersInCurrentLevel;
+          const levelPct = Math.round((papersInCurrentLevel / stepSize) * 100);
 
-        const tierIndex = Math.min(9, Math.floor((currentLevel - 1) / 10));
-        const currentTier = prestigeTiers[tierIndex];
-        const subLevelInTier = ((currentLevel - 1) % 10) + 1;
+          const tierIndex = Math.min(9, Math.floor((currentLevel - 1) / 10));
+          const currentTier = prestigeTiers[tierIndex];
+          const subLevelInTier = ((currentLevel - 1) % 10) + 1;
 
-        document.getElementById('tierTag').innerText = `Tier ${tierIndex + 1} • ${currentTier.name}`;
-        document.getElementById('currentLevelTitle').innerText = `Level ${currentLevel}: ${currentTier.name} ${subLevelInTier}`;
-        document.getElementById('levelGoalTxt').innerText = `ඊළඟ මට්ටමට (Level ${currentLevel + 1}) තව Papers ${remainingToNext}ක් ඉතිරියි`;
+          tierTag.innerText = `Tier ${tierIndex + 1} • ${currentTier.name}`;
+          if (document.getElementById('currentLevelTitle')) document.getElementById('currentLevelTitle').innerText = `Level ${currentLevel}: ${currentTier.name} ${subLevelInTier}`;
+          if (document.getElementById('levelGoalTxt')) document.getElementById('levelGoalTxt').innerText = `ඊළඟ මට්ටමට (Level ${currentLevel + 1}) තව Papers ${remainingToNext}ක් ඉතිරියි`;
 
-        document.getElementById('levelBar').style.width = levelPct + "%";
-        document.getElementById('levelStepRatio').innerText = `${papersInCurrentLevel} / ${stepSize} Papers`;
-        document.getElementById('levelPct').innerText = `${levelPct}% Completed`;
+          if (document.getElementById('levelBar')) document.getElementById('levelBar').style.width = levelPct + "%";
+          if (document.getElementById('levelStepRatio')) document.getElementById('levelStepRatio').innerText = `${papersInCurrentLevel} / ${stepSize} Papers`;
+          if (document.getElementById('levelPct')) document.getElementById('levelPct').innerText = `${levelPct}% Completed`;
+        }
 
         const badgeContainer = document.getElementById('badgeRow');
-        badgeContainer.innerHTML = '';
-        let unlockedCount = 0;
+        if (badgeContainer) {
+          const stepSize = 15;
+          const currentLevel = Math.floor(totalEffectivePapers / stepSize) + 1;
+          badgeContainer.innerHTML = '';
+          let unlockedCount = 0;
 
-        prestigeTiers.forEach(tier => {
-          const isUnlocked = currentLevel >= tier.lvl;
-          if (isUnlocked) unlockedCount++;
-          badgeContainer.innerHTML += `
-            <div class="badge-pill ${isUnlocked ? 'unlocked' : ''}">
-              <div class="badge-icon">${isUnlocked ? tier.icon : '🔒'}</div>
-              <div class="badge-lbl">Lvl ${tier.lvl}</div>
-            </div>
-          `;
-        });
-        document.getElementById('prestigeRatio').innerText = `${unlockedCount} / 10 Badges Unlocked`;
+          prestigeTiers.forEach(tier => {
+            const isUnlocked = currentLevel >= tier.lvl;
+            if (isUnlocked) unlockedCount++;
+            badgeContainer.innerHTML += `
+              <div class="badge-pill ${isUnlocked ? 'unlocked' : ''}">
+                <div class="badge-icon">${isUnlocked ? tier.icon : '🔒'}</div>
+                <div class="badge-lbl">Lvl ${tier.lvl}</div>
+              </div>
+            `;
+          });
+          if (document.getElementById('prestigeRatio')) document.getElementById('prestigeRatio').innerText = `${unlockedCount} / 10 Badges Unlocked`;
+        }
 
         renderWeeklyQuota(data.weeklyQuota);
 
@@ -5469,6 +5691,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // v16: Multi-Cycle Ebbinghaus initialisation
         initEbbinghausCycles(data);
+
+        // Render Today's Priorities Card
+        if (typeof renderTodaysPriorities === 'function') {
+          renderTodaysPriorities(data);
+        }
 
         if (typeof updateCardRowSpace === 'function') {
           setTimeout(updateCardRowSpace, 50);
@@ -5795,26 +6022,36 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const tgt = q.targets || {};
         const pct = q.percentages || {};
 
-        document.getElementById('quotaWeekStart').innerText = `Sprint: ${q.startOfWeekDate || 'This Week'}`;
-        document.getElementById('quotaOverallScore').innerText = `${pct.overall || 0}%`;
+        const weekStartEl = document.getElementById('quotaWeekStart');
+        if (weekStartEl) weekStartEl.innerText = `Sprint: ${q.startOfWeekDate || 'This Week'}`;
+        const scoreEl = document.getElementById('quotaOverallScore');
+        if (scoreEl) scoreEl.innerText = `${pct.overall || 0}%`;
 
         const tag = document.getElementById('quotaMomentumTag');
-        if (pct.overall >= 75) {
-          tag.innerText = "On Fire! 🔥";
-        } else if (pct.overall >= 40) {
-          tag.innerText = "Good Pace ⚡";
-        } else {
-          tag.innerText = "In Progress ⏳";
+        if (tag) {
+          if (pct.overall >= 75) {
+            tag.innerText = "On Fire! 🔥";
+          } else if (pct.overall >= 40) {
+            tag.innerText = "Good Pace ⚡";
+          } else {
+            tag.innerText = "In Progress ⏳";
+          }
         }
 
-        document.getElementById('q_unit_txt').innerText = `${act.unitPapers || 0} / ${tgt.unitPapers || 10}`;
-        document.getElementById('q_unit_bar').style.width = `${pct.unit || 0}%`;
+        const qUnitTxt = document.getElementById('q_unit_txt');
+        if (qUnitTxt) qUnitTxt.innerText = `${act.unitPapers || 0} / ${tgt.unitPapers || 10}`;
+        const qUnitBar = document.getElementById('q_unit_bar');
+        if (qUnitBar) qUnitBar.style.width = `${pct.unit || 0}%`;
 
-        document.getElementById('q_full_txt').innerText = `${act.fullPapers || 0} / ${tgt.fullPapers || 1}`;
-        document.getElementById('q_full_bar').style.width = `${pct.full || 0}%`;
+        const qFullTxt = document.getElementById('q_full_txt');
+        if (qFullTxt) qFullTxt.innerText = `${act.fullPapers || 0} / ${tgt.fullPapers || 1}`;
+        const qFullBar = document.getElementById('q_full_bar');
+        if (qFullBar) qFullBar.style.width = `${pct.full || 0}%`;
 
-        document.getElementById('q_lesson_txt').innerText = `${act.lessons || 0} / ${tgt.lessons || 3}`;
-        document.getElementById('q_lesson_bar').style.width = `${pct.lesson || 0}%`;
+        const qLessonTxt = document.getElementById('q_lesson_txt');
+        if (qLessonTxt) qLessonTxt.innerText = `${act.lessons || 0} / ${tgt.lessons || 3}`;
+        const qLessonBar = document.getElementById('q_lesson_bar');
+        if (qLessonBar) qLessonBar.style.width = `${pct.lesson || 0}%`;
       }
 
       function renderVelocityMetrics(v) {
@@ -7565,91 +7802,214 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         } else if (cardType === 'topHighest') {
           titleEl.innerHTML = '🏆 වැඩිම ලකුණු සහිත Unit Papers';
-          badgeEl.innerText = 'Top 10 High';
-          badgeEl.style.background = 'rgba(39, 174, 96, 0.25)';
-          badgeEl.style.color = '#ffffff';
           headerEl.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-          subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 10.';
 
-          theadEl.innerHTML = `
-            <tr>
-              <th style="width: 60px; text-align: center;">Rank</th>
-              <th>Subject</th>
-              <th class="col-unit-no">Unit No</th>
-              <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Marks</th>
-              <th style="text-align: center;">Date</th>
-            </tr>
+          extraEl.style.display = 'block';
+          extraEl.innerHTML = `
+            <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
+              <button type="button" class="ranking-tab-btn ${currentTopHighestTab === 'subunit' ? 'active' : ''}" onclick="switchTopHighestTab('subunit', event)">
+                <span>📑 Sub-Unit Breakdown</span>
+              </button>
+              <button type="button" class="ranking-tab-btn ${currentTopHighestTab === 'unit' ? 'active' : ''}" onclick="switchTopHighestTab('unit', event)">
+                <span>📚 Unit-Wise Average</span>
+              </button>
+            </div>
           `;
 
-          const items = (globalTopHighestFullList || []).slice(0, 10);
-          if (items.length === 0) {
-            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+          if (currentTopHighestTab === 'unit') {
+            badgeEl.innerText = 'Top 10 Units';
+            badgeEl.style.background = 'rgba(39, 174, 96, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම සාමාන්‍ය ලකුණු (Mean Score) සහිත ප්‍රධාන Units 10.';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th style="width: 60px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name" colspan="2">Unit Name</th>
+                <th style="text-align: center;">Sub-Units Tested</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Latest Date</th>
+              </tr>
+            `;
+
+            const items = (globalTopHighestUnitList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+            } else {
+              const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const rankLabel = rankLabels[idx] || `${idx + 1}th`;
+                const rankClass = idx === 0 ? 'rank-badge-1' : (idx === 1 ? 'rank-badge-2' : (idx === 2 ? 'rank-badge-3' : 'rank-badge-def'));
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="text-align: center; font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} papers)</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
           } else {
-            const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
-            tbodyEl.innerHTML = items.map((item, idx) => {
-              const rankLabel = rankLabels[idx] || `${idx + 1}th`;
-              const rankClass = idx === 0 ? 'rank-badge-1' : (idx === 1 ? 'rank-badge-2' : (idx === 2 ? 'rank-badge-3' : 'rank-badge-def'));
-              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
-              return `
-                <tr>
-                  <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                  <td style="text-align: right;"><span class="marks-pill marks-high">${item.marks}%</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.date ? escapeHtml(item.date) : '-'}</td>
-                </tr>
-              `;
-            }).join('');
+            badgeEl.innerText = 'Top 10 High';
+            badgeEl.style.background = 'rgba(39, 174, 96, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Sub-Unit Papers 10 (Zero-mark excluded).';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th style="width: 60px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th>Sub Unit</th>
+                <th>Sub Unit Name</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Date</th>
+              </tr>
+            `;
+
+            const items = (globalTopHighestFullList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+            } else {
+              const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const rankLabel = rankLabels[idx] || `${idx + 1}th`;
+                const rankClass = idx === 0 ? 'rank-badge-1' : (idx === 1 ? 'rank-badge-2' : (idx === 2 ? 'rank-badge-3' : 'rank-badge-def'));
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
+                    <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} papers)</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
           }
 
         } else if (cardType === 'lowestScore') {
           titleEl.innerHTML = '⚠️ අඩුම ලකුණු සහිත Unit Papers';
-          badgeEl.innerText = 'Top 10 Lowest';
-          badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
-          badgeEl.style.color = '#ffffff';
           headerEl.style.background = 'linear-gradient(135deg, #e17055, #d63031)';
-          subEl.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 10.';
 
-          theadEl.innerHTML = `
-            <tr>
-              <th style="width: 60px; text-align: center;">Rank</th>
-              <th>Subject</th>
-              <th class="col-unit-no">Unit No</th>
-              <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Marks</th>
-              <th style="text-align: center;">Date</th>
-            </tr>
+          extraEl.style.display = 'block';
+          extraEl.innerHTML = `
+            <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
+              <button type="button" class="ranking-tab-btn ${currentLowestScoreTab === 'subunit' ? 'active' : ''}" onclick="switchLowestScoreTab('subunit', event)">
+                <span>📑 Sub-Unit Breakdown</span>
+              </button>
+              <button type="button" class="ranking-tab-btn ${currentLowestScoreTab === 'unit' ? 'active' : ''}" onclick="switchLowestScoreTab('unit', event)">
+                <span>📚 Unit-Wise Average</span>
+              </button>
+            </div>
           `;
 
-          const items = (globalLowestScoresFullList || []).slice(0, 10);
-          if (items.length === 0) {
-            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+          if (currentLowestScoreTab === 'unit') {
+            badgeEl.innerText = 'Least 10 Units';
+            badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            subEl.innerText = 'නැවත සමාලෝචනය අවශ්‍ය අවම සාමාන්‍ය ලකුණු (Mean Score) සහිත ප්‍රධාන Units 10.';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th style="width: 60px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name" colspan="2">Unit Name</th>
+                <th style="text-align: center;">Sub-Units Tested</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Latest Date</th>
+              </tr>
+            `;
+
+            const items = (globalLowestScoresUnitList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+            } else {
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const rankLabel = `#${idx + 1} ⚠️`;
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="text-align: center; font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
           } else {
-            tbodyEl.innerHTML = items.map((item, idx) => {
-              const rankLabel = `#${idx + 1} ⚠️`;
-              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
-              const markClass = item.marks < 65 ? 'marks-low' : (item.marks < 75 ? 'marks-mid' : 'marks-high');
-              return `
-                <tr>
-                  <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                  <td style="text-align: right;"><span class="marks-pill ${markClass}">${item.marks}%</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.date ? escapeHtml(item.date) : '-'}</td>
-                </tr>
-              `;
-            }).join('');
+            badgeEl.innerText = 'Top 10 Lowest';
+            badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            subEl.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Sub-Unit Papers 10.';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th style="width: 60px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th>Sub Unit</th>
+                <th>Sub Unit Name</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Date</th>
+              </tr>
+            `;
+
+            const items = (globalLowestScoresFullList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+            } else {
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const rankLabel = `#${idx + 1} ⚠️`;
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
+                    <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
           }
 
         } else if (cardType === 'currentlyTeaching') {
@@ -8369,6 +8729,595 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       }
 
       // =========================================================================
+      // TODAY'S PRIORITIES CONTROLLER (අද මුලින්ම කළ යුතු දේවල්)
+      // Displays up to 6 actionable priority items:
+      // 1. Urgent Model Paper Target (Top entry from Urgent Radar)
+      // 2. Spaced Repetition Review Target (Next scheduled from Spaced Repetition Cycles)
+      // 3. Full Paper Recency Counter (Elapsed calendar days since last Full Paper)
+      // 4. Unit Paper Recency Counter (Elapsed calendar days since last Unit Paper)
+      // 5. Untested Completed Lessons Alert (lesson_done === true and 0 paper attempts)
+      // 6. Least-Practiced Sub-Unit Detector (Lowest paper count among lesson_done && hw_done)
+      // =========================================================================
+      function renderTodaysPriorities(data) {
+        const grid = document.getElementById('todaysPrioritiesGrid');
+        if (!grid) return;
+        if (!data) return;
+
+        const syllabusList = data.syllabusList || cachedCanonicalSyllabus || [];
+        const tpList = data.tpList || [];
+        const upHistory = data.unitPapersHistory || [];
+        const fpHistory = data.fullPapersHistory || [];
+
+        // Build tracker progress map and paper count maps
+        const tpMap = {};
+        tpList.forEach(tp => {
+          if (tp.syllabus_id) tpMap[tp.syllabus_id] = tp;
+        });
+
+        const sylMapById = {};
+        const sylMapByKey = {};
+        syllabusList.forEach(s => {
+          if (s.id) sylMapById[s.id] = s;
+          const k = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+          sylMapByKey[k] = s;
+        });
+
+        const paperAttemptsBySylId = {};
+        const paperAttemptsBySubjCode = {};
+        upHistory.forEach(p => {
+          if (p.syllabusId) {
+            paperAttemptsBySylId[p.syllabusId] = (paperAttemptsBySylId[p.syllabusId] || 0) + 1;
+          }
+          const k = `${(p.subject || '').toUpperCase().trim()}||${(p.code || '').trim()}`;
+          paperAttemptsBySubjCode[k] = (paperAttemptsBySubjCode[k] || 0) + 1;
+        });
+
+        // Helper to get elapsed calendar days from midnight
+        function getCalendarDaysAgo(dateVal) {
+          if (!dateVal) return null;
+          const target = new Date(dateVal);
+          if (isNaN(target.getTime())) return null;
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const comp = new Date(target);
+          comp.setHours(0, 0, 0, 0);
+          const diffMs = today.getTime() - comp.getTime();
+          return Math.max(0, Math.floor(diffMs / 86400000));
+        }
+
+        // --- 1. Urgent Model Paper Target ---
+        const urgentItems = (globalUrgentRadarFullList && globalUrgentRadarFullList.length > 0)
+          ? globalUrgentRadarFullList
+          : (data.radar || []);
+        const topUrgent = urgentItems[0] || null;
+
+        let item1Html = '';
+        if (topUrgent) {
+          const uSubj = topUrgent.subject || 'ICT';
+          const uCode = topUrgent.code || topUrgent.subUnitNumber || '-';
+          let uTitle = (topUrgent.title || topUrgent.subLesson || '').trim();
+          if (uCode && uTitle.startsWith(uCode)) {
+            uTitle = uTitle.substring(uCode.length).trim().replace(/^[-:–.]\s*/, '');
+          }
+          const uDays = topUrgent.colH !== undefined ? topUrgent.colH : 0;
+          item1Html = `
+            <div class="priority-item item-radar" onclick="openDataCardFullscreen('urgentRadar', event)" title="Urgent Radar විවෘත කරන්න">
+              <div class="prio-icon-box">⚡</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #eb4d4b;">#1 Urgent Model Paper • ${escapeHtml(uSubj)}</div>
+                <div class="prio-msg">අද පේපරයක් කරන්න ඕන <strong>${escapeHtml(uSubj)}</strong> (${escapeHtml(uCode)} පාඩමෙන්)</div>
+                <div class="prio-sub">${escapeHtml(uTitle)} • HW අවසන් කර දින ${uDays}ක් ගතවී ඇත</div>
+              </div>
+            </div>
+          `;
+        } else {
+          item1Html = `
+            <div class="priority-item item-radar" style="opacity: 0.9;" onclick="openDataCardFullscreen('urgentRadar', event)">
+              <div class="prio-icon-box">✅</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #27ae60;">Urgent Radar</div>
+                <div class="prio-msg" style="color: #27ae60;">නියමයි! වහාම කළ යුතු Urgent Model Papers නොමැත 🌟</div>
+                <div class="prio-sub">සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // --- 2. Spaced Repetition Review Target ---
+        const ebbCycleItems = (data.ebbCycleData && data.ebbCycleData[currentEbbCycle || 1])
+          ? data.ebbCycleData[currentEbbCycle || 1]
+          : (data.ebbinghaus || []);
+        const topEbb = ebbCycleItems[0] || null;
+
+        let item2Html = '';
+        if (topEbb) {
+          const eSubj = topEbb.subject || 'ICT';
+          const eCode = topEbb.code || topEbb.subUnitNumber || '-';
+          let eTitle = (topEbb.title || topEbb.subLesson || '').trim();
+          if (eCode && eTitle.startsWith(eCode)) {
+            eTitle = eTitle.substring(eCode.length).trim().replace(/^[-:–.]\s*/, '');
+          }
+          const eStage = topEbb.stageTag || (topEbb.stageBucket ? `Stage ${topEbb.stageBucket}` : 'Review');
+          item2Html = `
+            <div class="priority-item item-sr" onclick="openDataCardFullscreen('ebbinghaus', event)" title="Spaced Repetition විවෘත කරන්න">
+              <div class="prio-icon-box">🧠</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #6c5ce7;">#2 Spaced Repetition • ${escapeHtml(eSubj)}</div>
+                <div class="prio-msg">Spaced Repetition එක වෙනුවෙන් අද පාඩම් කරන්න ඕන <strong>${escapeHtml(eSubj)}</strong> (${escapeHtml(eCode)} පාඩමෙන්)</div>
+                <div class="prio-sub">${escapeHtml(eTitle)} • ${escapeHtml(eStage)}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          item2Html = `
+            <div class="priority-item item-sr" style="opacity: 0.9;" onclick="openDataCardFullscreen('ebbinghaus', event)">
+              <div class="prio-icon-box">🧠</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #6c5ce7;">Spaced Repetition</div>
+                <div class="prio-msg" style="color: #27ae60;">නියමයි! අද දිනට Spaced Repetition සමාලෝචන නොමැත 🌟</div>
+                <div class="prio-sub">සියලු පාඩම් නියමිත කාල පරාසයන් තුළ රඳවා ඇත</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // --- 3. Full Paper Recency Counter ---
+        let latestFpDate = null;
+        let latestFpTs = 0;
+        fpHistory.forEach(fp => {
+          const raw = fp.fullDate || fp.exam_date || fp.logged_at || fp.date;
+          const ts = fp.timestamp || (raw ? new Date(raw).getTime() : 0);
+          if (ts > latestFpTs) {
+            latestFpTs = ts;
+            latestFpDate = raw;
+          }
+        });
+        const fpDaysAgo = latestFpTs > 0 ? getCalendarDaysAgo(latestFpTs) : null;
+
+        let item3Html = '';
+        if (fpDaysAgo !== null) {
+          const fpAlertClass = fpDaysAgo >= 14 ? '#eb4d4b' : (fpDaysAgo >= 7 ? '#e67e22' : '#0984e3');
+          item3Html = `
+            <div class="priority-item item-fp" onclick="openFullPaperModal()" title="Full Paper එකක් Log කරන්න">
+              <div class="prio-icon-box">📝</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: ${fpAlertClass};">#3 Full Paper Recency</div>
+                <div class="prio-msg">අන්තිමට ෆුල් පේපර් එකක් කරලා අදට දවස් <span class="prio-num" style="color: ${fpAlertClass};">${fpDaysAgo}</span>ක් වෙනවා</div>
+                <div class="prio-sub">අවසන් පේපරය: ${latestFpDate ? escapeHtml(String(latestFpDate).substring(0, 10)) : '-'} • ක්ලික් කර අලුත් එකක් Log කරන්න</div>
+              </div>
+            </div>
+          `;
+        } else {
+          item3Html = `
+            <div class="priority-item item-fp" onclick="openFullPaperModal()" title="පළමු Full Paper එක Log කරන්න">
+              <div class="prio-icon-box">📝</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #e67e22;">#3 Full Paper Recency</div>
+                <div class="prio-msg">තවම Full Paper එකක් සටහන් කර නොමැත</div>
+                <div class="prio-sub">විභාග පෙරහුරුව සඳහා පළමු Full Paper එක අදම ආරම්භ කරන්න 🚀</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // --- 4. Unit Paper Recency Counter ---
+        let latestUpDate = null;
+        let latestUpTs = 0;
+        upHistory.forEach(up => {
+          const raw = up.loggedAt || up.fullDate || up.date;
+          const ts = up.timestamp || (raw ? new Date(raw).getTime() : 0);
+          if (ts > latestUpTs) {
+            latestUpTs = ts;
+            latestUpDate = raw;
+          }
+        });
+        const upDaysAgo = latestUpTs > 0 ? getCalendarDaysAgo(latestUpTs) : null;
+
+        let item4Html = '';
+        if (upDaysAgo !== null) {
+          const upAlertClass = upDaysAgo >= 7 ? '#eb4d4b' : (upDaysAgo >= 3 ? '#e67e22' : '#27ae60');
+          item4Html = `
+            <div class="priority-item item-up" onclick="openUnitPaperModal()" title="Unit Paper එකක් Log කරන්න">
+              <div class="prio-icon-box">📑</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: ${upAlertClass};">#4 Unit Paper Recency</div>
+                <div class="prio-msg">අන්තිමට යුනිට් පේපර් එකක් කරල අදට දවස් <span class="prio-num" style="color: ${upAlertClass};">${upDaysAgo}</span>ක් වෙනවා</div>
+                <div class="prio-sub">අවසන් පේපරය: ${latestUpDate ? escapeHtml(String(latestUpDate).substring(0, 10)) : '-'} • ක්ලික් කර අලුත් එකක් Log කරන්න</div>
+              </div>
+            </div>
+          `;
+        } else {
+          item4Html = `
+            <div class="priority-item item-up" onclick="openUnitPaperModal()" title="පළමු Unit Paper එක Log කරන්න">
+              <div class="prio-icon-box">📑</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #e67e22;">#4 Unit Paper Recency</div>
+                <div class="prio-msg">තවම Unit Paper එකක් සටහන් කර නොමැත</div>
+                <div class="prio-sub">ඔබගේ පළමු Unit Paper එක අදම සටහන් කරන්න 📝</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // --- 5. Untested Completed Lessons Alert ---
+        // Sub-units where lesson_done === true but paper attempts count === 0
+        const untestedCompleted = syllabusList
+          .filter(s => {
+            const tp = tpMap[s.id];
+            if (!tp || tp.lesson_done !== true) return false;
+            const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+            const attempts = paperAttemptsBySylId[s.id] || paperAttemptsBySubjCode[sylKey] || 0;
+            return attempts === 0;
+          })
+          .map(s => {
+            const tp = tpMap[s.id] || {};
+            const days = (tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
+            return {
+              syllabusId: s.id,
+              subject: s.subject || 'ICT',
+              subUnitNumber: s.sub_lesson_code || '-',
+              subUnitName: s.sub_lesson_title || '-',
+              days: days,
+              sortOrder: Number(s.sort_order) || 0
+            };
+          })
+          .sort((a, b) => {
+            if (b.days !== a.days) return b.days - a.days;
+            return a.sortOrder - b.sortOrder;
+          });
+
+        const topUntested = untestedCompleted[0] || null;
+        let item5Html = '';
+        if (topUntested) {
+          item5Html = `
+            <div class="priority-item item-untested" onclick="openDrilldownModal('${escapeHtml(topUntested.subject)}', '${escapeHtml(topUntested.subUnitNumber)}')" title="Drilldown විවෘත කරන්න">
+              <div class="prio-icon-box">⚠️</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #e67e22;">#5 Untested Lesson • ${escapeHtml(topUntested.subject)}</div>
+                <div class="prio-msg">පාඩම් කරලා තිබුනාට <strong>${escapeHtml(topUntested.subUnitNumber)}</strong> පේපර් කරලා නැහැ</div>
+                <div class="prio-sub">${escapeHtml(topUntested.subUnitName)} • අවසන් කර දින ${topUntested.days}ක් ගතවී ඇත</div>
+              </div>
+            </div>
+          `;
+        } else {
+          item5Html = `
+            <div class="priority-item item-untested" style="opacity: 0.9;">
+              <div class="prio-icon-box">🌟</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #27ae60;">Untested Lessons</div>
+                <div class="prio-msg" style="color: #27ae60;">නියමයි! පාඩම් කළ සියලු කොටස් සඳහා පේපර් කර ඇත 🌟</div>
+                <div class="prio-sub">ප්‍රශ්න පත්‍ර නොකළ අවසන් වූ පාඩම් නොමැත</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // --- 6. Least-Practiced Sub-Unit Detector ---
+        // Lowest paper count among those where both lesson_done === true and hw_done === true
+        const practicedCandidates = syllabusList
+          .filter(s => {
+            const tp = tpMap[s.id];
+            if (!tp || tp.lesson_done !== true || tp.hw_done !== true) return false;
+            return true;
+          })
+          .map(s => {
+            const tp = tpMap[s.id] || {};
+            const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+            const attempts = paperAttemptsBySylId[s.id] || paperAttemptsBySubjCode[sylKey] || 0;
+            const days = (tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : (tp.lesson_days || 0);
+            return {
+              syllabusId: s.id,
+              subject: s.subject || 'ICT',
+              subUnitNumber: s.sub_lesson_code || '-',
+              subUnitName: s.sub_lesson_title || '-',
+              paperAttempts: attempts,
+              days: days,
+              sortOrder: Number(s.sort_order) || 0
+            };
+          })
+          .sort((a, b) => {
+            if (a.paperAttempts !== b.paperAttempts) return a.paperAttempts - b.paperAttempts;
+            if (b.days !== a.days) return b.days - a.days;
+            return a.sortOrder - b.sortOrder;
+          });
+
+        const topLeast = practicedCandidates[0] || null;
+        let item6Html = '';
+        if (topLeast) {
+          item6Html = `
+            <div class="priority-item item-practice" onclick="openDrilldownModal('${escapeHtml(topLeast.subject)}', '${escapeHtml(topLeast.subUnitNumber)}')" title="Drilldown විවෘත කරන්න">
+              <div class="prio-icon-box">🎯</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #0984e3;">#6 Least-Practiced • ${escapeHtml(topLeast.subject)}</div>
+                <div class="prio-msg">අඩුවෙන්ම වැඩ කරලා තියෙන්නේ මේ <strong>${escapeHtml(topLeast.subUnitNumber)}</strong> පාඩමෙන්</div>
+                <div class="prio-sub">${escapeHtml(topLeast.subUnitName)} • කර ඇත්තේ Papers ${topLeast.paperAttempts}ක් පමණි</div>
+              </div>
+            </div>
+          `;
+        } else {
+          item6Html = `
+            <div class="priority-item item-practice" style="opacity: 0.9;">
+              <div class="prio-icon-box">🎯</div>
+              <div class="prio-content">
+                <div class="prio-tag" style="color: #0984e3;">Practice Radar</div>
+                <div class="prio-msg" style="color: #27ae60;">සියලු සම්පූර්ණ පාඩම් ප්‍රමාණවත් ලෙස ප්‍රගුණ කර ඇත 🌟</div>
+                <div class="prio-sub">ප්‍රගුණ කිරීම අවශ්‍ය පාඩම් නොමැත</div>
+              </div>
+            </div>
+          `;
+        }
+
+        grid.innerHTML = item1Html + item2Html + item3Html + item4Html + item5Html + item6Html;
+      }
+
+      // =========================================================================
+      // TAB CONTROLLERS FOR RANKING CARDS B & C
+      // =========================================================================
+      function switchTopHighestTab(tab, event) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        currentTopHighestTab = tab;
+
+        const subBtn = document.getElementById('btnTopHighestSubUnit');
+        const unitBtn = document.getElementById('btnTopHighestUnit');
+        if (subBtn && unitBtn) {
+          if (tab === 'unit') {
+            subBtn.classList.remove('active');
+            unitBtn.classList.add('active');
+          } else {
+            subBtn.classList.add('active');
+            unitBtn.classList.remove('active');
+          }
+        }
+
+        renderTopHighestCard();
+
+        if (currentFsCardType === 'topHighest' && typeof openDataCardFullscreen === 'function') {
+          openDataCardFullscreen('topHighest');
+        }
+      }
+
+      function switchLowestScoreTab(tab, event) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        currentLowestScoreTab = tab;
+
+        const subBtn = document.getElementById('btnLowestScoreSubUnit');
+        const unitBtn = document.getElementById('btnLowestScoreUnit');
+        if (subBtn && unitBtn) {
+          if (tab === 'unit') {
+            subBtn.classList.remove('active');
+            unitBtn.classList.add('active');
+          } else {
+            subBtn.classList.add('active');
+            unitBtn.classList.remove('active');
+          }
+        }
+
+        renderLowestScoreCard();
+
+        if (currentFsCardType === 'lowestScore' && typeof openDataCardFullscreen === 'function') {
+          openDataCardFullscreen('lowestScore');
+        }
+      }
+
+      function renderTopHighestCard() {
+        const bBody = document.getElementById('topHighestUnitPapersBody');
+        const bHead = document.getElementById('topHighestHead');
+        const bBadge = document.getElementById('cardBBadge');
+        const bSub = document.getElementById('cardBSub');
+
+        if (currentTopHighestTab === 'unit') {
+          if (bBadge) {
+            bBadge.innerText = 'Top Units';
+            bBadge.style.background = 'rgba(39, 174, 96, 0.15)';
+            bBadge.style.color = '#27ae60';
+          }
+          if (bSub) {
+            bSub.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම සාමාන්‍ය ලකුණු (Mean Score) සහිත ප්‍රධාන Units.';
+          }
+          if (bHead) {
+            bHead.innerHTML = `
+              <tr>
+                <th style="width: 50px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name" colspan="2">Unit Name</th>
+                <th style="text-align: center;">Sub-Units</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Date</th>
+              </tr>
+            `;
+          }
+          if (bBody) {
+            const top5 = (globalTopHighestUnitList || []).slice(0, 5);
+            if (top5.length === 0) {
+              bBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+            } else {
+              const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th'];
+              bBody.innerHTML = top5.map((item, idx) => {
+                const rankLabel = rankLabels[idx] || `${idx + 1}th`;
+                const rankClass = idx === 0 ? 'rank-badge-1' : (idx === 1 ? 'rank-badge-2' : (idx === 2 ? 'rank-badge-3' : 'rank-badge-def'));
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="text-align: center; font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
+          }
+        } else {
+          if (bBadge) {
+            bBadge.innerText = 'Top 5 High';
+            bBadge.style.background = 'rgba(39, 174, 96, 0.12)';
+            bBadge.style.color = '#27ae60';
+          }
+          if (bSub) {
+            bSub.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Sub-Unit Papers 5 (Zero-mark excluded).';
+          }
+          if (bHead) {
+            bHead.innerHTML = `
+              <tr>
+                <th style="width: 50px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th>Sub Unit</th>
+                <th>Sub Unit Name</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Date</th>
+              </tr>
+            `;
+          }
+          if (bBody) {
+            const top5 = (globalTopHighestFullList || []).slice(0, 5);
+            if (top5.length === 0) {
+              bBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+            } else {
+              const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th'];
+              bBody.innerHTML = top5.map((item, idx) => {
+                const rankLabel = rankLabels[idx] || `${idx + 1}th`;
+                const rankClass = idx === 0 ? 'rank-badge-1' : (idx === 1 ? 'rank-badge-2' : (idx === 2 ? 'rank-badge-3' : 'rank-badge-def'));
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
+                    <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
+          }
+        }
+      }
+
+      function renderLowestScoreCard() {
+        const cBody = document.getElementById('lowestScoreUnitPapersBody');
+        const cHead = document.getElementById('lowestScoreHead');
+        const cBadge = document.getElementById('cardCBadge');
+        const cSub = document.getElementById('cardCSub');
+
+        if (currentLowestScoreTab === 'unit') {
+          if (cBadge) {
+            cBadge.innerText = 'Least Units';
+            cBadge.style.background = 'rgba(235, 77, 75, 0.15)';
+            cBadge.style.color = '#eb4d4b';
+          }
+          if (cSub) {
+            cSub.innerText = 'නැවත සමාලෝචනය අවශ්‍ය අවම සාමාන්‍ය ලකුණු (Mean Score) සහිත ප්‍රධාන Units.';
+          }
+          if (cHead) {
+            cHead.innerHTML = `
+              <tr>
+                <th style="width: 50px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name" colspan="2">Unit Name</th>
+                <th style="text-align: center;">Sub-Units</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Date</th>
+              </tr>
+            `;
+          }
+          if (cBody) {
+            const least5 = (globalLowestScoresUnitList || []).slice(0, 5);
+            if (least5.length === 0) {
+              cBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+            } else {
+              cBody.innerHTML = least5.map((item, idx) => {
+                const rankLabel = `#${idx + 1} ⚠️`;
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="text-align: center; font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
+          }
+        } else {
+          if (cBadge) {
+            cBadge.innerText = 'Least 5';
+            cBadge.style.background = 'rgba(235, 77, 75, 0.12)';
+            cBadge.style.color = '#eb4d4b';
+          }
+          if (cSub) {
+            cSub.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Sub-Unit Papers 5.';
+          }
+          if (cHead) {
+            cHead.innerHTML = `
+              <tr>
+                <th style="width: 50px; text-align: center;">Rank</th>
+                <th>Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th>Sub Unit</th>
+                <th>Sub Unit Name</th>
+                <th style="text-align: right;">Avg Marks</th>
+                <th style="text-align: center;">Date</th>
+              </tr>
+            `;
+          }
+          if (cBody) {
+            const least5 = (globalLowestScoresFullList || []).slice(0, 5);
+            if (least5.length === 0) {
+              cBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+            } else {
+              cBody.innerHTML = least5.map((item, idx) => {
+                const rankLabel = `#${idx + 1} ⚠️`;
+                const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+                const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
+                return `
+                  <tr>
+                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                    <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                    <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
+                    <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                    <td style="text-align: right;">
+                      <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
+                      <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
+                    </td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                  </tr>
+                `;
+              }).join('');
+            }
+          }
+        }
+      }
+
+      // =========================================================================
       // ANALYTICS RANKING CARDS CONTROLLER (Cards B, C, D, E)
       // =========================================================================
       function renderAnalyticsRankingCards(data) {
@@ -8393,104 +9342,118 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (tp.syllabus_id) tpMap[tp.syllabus_id] = tp;
         });
 
-        // 3. Build unit papers map by syllabus ID
-        const paperMapBySylId = {};
-        unitPapers.forEach(p => {
-          const syl = sylMapById[p.syllabusId] || sylMapByKey[`${p.subject}||${p.code}`];
-          const sId = p.syllabusId || (syl ? syl.id : null);
-          if (sId) {
-            if (!paperMapBySylId[sId]) paperMapBySylId[sId] = [];
-            paperMapBySylId[sId].push(p);
-          }
-        });
+        // 3. ZERO-MARK EXCLUSION FOR CARDS B & C ONLY:
+        // Strictly filter out and exclude all records where score === 0 (or marks === 0).
+        // Only valid attempts where score > 0 must be counted in both score summation and attempt count denominator.
+        const validUnitPapers = unitPapers.filter(p => p.marks !== null && p.marks !== undefined && !isNaN(p.marks) && Number(p.marks) > 0);
 
-        // 4. Enrich unit papers with syllabus metadata
-        const enrichedPapers = unitPapers
-          .filter(p => p.marks !== null && p.marks !== undefined && !isNaN(p.marks) && Number(p.marks) !== 0)
-          .map(p => {
-            const syl = sylMapById[p.syllabusId] || sylMapByKey[`${p.subject}||${p.code}`] || {};
-            const loggedDate = p.loggedAt ? p.loggedAt.substring(0, 10) : (p.fullDate || null);
-            return {
-              id: p.id,
+        // 4. Sub-Unit Breakdown Aggregation (Mean score per sub-unit)
+        const subUnitMap = {};
+        validUnitPapers.forEach(p => {
+          const syl = sylMapById[p.syllabusId] || sylMapByKey[`${(p.subject || '').toUpperCase().trim()}||${(p.code || '').trim()}`] || {};
+          const sId = p.syllabusId || syl.id || `${p.subject || 'ICT'}||${p.code || '-'}`;
+          const loggedDate = p.loggedAt ? p.loggedAt.substring(0, 10) : (p.fullDate || null);
+          const ts = p.timestamp || (loggedDate ? new Date(loggedDate).getTime() : 0);
+
+          if (!subUnitMap[sId]) {
+            subUnitMap[sId] = {
+              id: sId,
               syllabusId: p.syllabusId || syl.id,
               subject: p.subject || syl.subject || 'ICT',
               unitNumber: (syl.unit_number !== undefined && syl.unit_number !== null) ? `Unit ${syl.unit_number}` : '-',
               unitName: syl.unit_name || '-',
               subUnitNumber: p.code || syl.sub_lesson_code || '-',
               subUnitName: syl.sub_lesson_title || '-',
-              marks: Number(p.marks),
-              date: loggedDate,
-              timestamp: p.timestamp || (loggedDate ? new Date(loggedDate).getTime() : 0)
+              totalMarks: 0,
+              attemptsCount: 0,
+              latestDate: loggedDate,
+              latestTimestamp: ts
             };
-          });
-
-        // --- Card (B): Top 5 Highest Score Unit Papers ---
-        globalTopHighestFullList = [...enrichedPapers]
-          .sort((a, b) => {
-            if (b.marks !== a.marks) return b.marks - a.marks;
-            return b.timestamp - a.timestamp;
-          });
-        const topHighest = globalTopHighestFullList.slice(0, 5);
-
-        const bBody = document.getElementById('topHighestUnitPapersBody');
-        if (bBody) {
-          if (topHighest.length === 0) {
-            bBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
-          } else {
-            bBody.innerHTML = topHighest.map((item, idx) => {
-              const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th'];
-              const rankLabel = rankLabels[idx] || `${idx + 1}th`;
-              const rankClass = idx === 0 ? 'rank-badge-1' : (idx === 1 ? 'rank-badge-2' : (idx === 2 ? 'rank-badge-3' : 'rank-badge-def'));
-              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
-              return `
-                <tr>
-                  <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                  <td style="text-align: right;"><span class="marks-pill marks-high">${item.marks}%</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.date ? escapeHtml(item.date) : '-'}</td>
-                </tr>
-              `;
-            }).join('');
           }
-        }
 
-        // --- Card (C): Lowest 5 Score Unit Papers ---
-        globalLowestScoresFullList = [...enrichedPapers]
-          .filter(item => item.marks > 0)
-          .sort((a, b) => {
-            if (a.marks !== b.marks) return a.marks - b.marks;
-            return b.timestamp - a.timestamp;
-          });
-        const lowestScores = globalLowestScoresFullList.slice(0, 5);
+          const m = Number(p.marks);
+          subUnitMap[sId].totalMarks += m;
+          subUnitMap[sId].attemptsCount += 1;
 
-        const cBody = document.getElementById('lowestScoreUnitPapersBody');
-        if (cBody) {
-          if (lowestScores.length === 0) {
-            cBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
-          } else {
-            cBody.innerHTML = lowestScores.map((item, idx) => {
-              const rankLabel = `#${idx + 1} ⚠️`;
-              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
-              const markClass = item.marks < 65 ? 'marks-low' : (item.marks < 75 ? 'marks-mid' : 'marks-high');
-              return `
-                <tr>
-                  <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                  <td style="text-align: right;"><span class="marks-pill ${markClass}">${item.marks}%</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.date ? escapeHtml(item.date) : '-'}</td>
-                </tr>
-              `;
-            }).join('');
+          if (ts > subUnitMap[sId].latestTimestamp) {
+            subUnitMap[sId].latestTimestamp = ts;
+            subUnitMap[sId].latestDate = loggedDate;
           }
-        }
+        });
+
+        const subUnitRankings = Object.values(subUnitMap)
+          .filter(item => item.attemptsCount > 0)
+          .map(item => ({
+            ...item,
+            avgMarks: Math.round((item.totalMarks / item.attemptsCount) * 10) / 10
+          }));
+
+        // 5. Main Unit-Wise Average Aggregation (Mean score across all valid attempts within the unit)
+        const unitMap = {};
+        validUnitPapers.forEach(p => {
+          const syl = sylMapById[p.syllabusId] || sylMapByKey[`${(p.subject || '').toUpperCase().trim()}||${(p.code || '').trim()}`] || {};
+          const subject = p.subject || syl.subject || 'ICT';
+          const unitNumber = (syl.unit_number !== undefined && syl.unit_number !== null) ? `Unit ${syl.unit_number}` : (p.unitNumber || '-');
+          const unitKey = `${subject.toUpperCase().trim()}||${unitNumber}`;
+          const loggedDate = p.loggedAt ? p.loggedAt.substring(0, 10) : (p.fullDate || null);
+          const ts = p.timestamp || (loggedDate ? new Date(loggedDate).getTime() : 0);
+
+          if (!unitMap[unitKey]) {
+            unitMap[unitKey] = {
+              subject: subject,
+              unitNumber: unitNumber,
+              unitName: syl.unit_name || '-',
+              totalMarks: 0,
+              attemptsCount: 0,
+              testedSubUnitsSet: new Set(),
+              latestDate: loggedDate,
+              latestTimestamp: ts
+            };
+          }
+
+          const m = Number(p.marks);
+          unitMap[unitKey].totalMarks += m;
+          unitMap[unitKey].attemptsCount += 1;
+          const subCode = p.code || syl.sub_lesson_code || syl.id;
+          if (subCode) unitMap[unitKey].testedSubUnitsSet.add(subCode);
+
+          if (ts > unitMap[unitKey].latestTimestamp) {
+            unitMap[unitKey].latestTimestamp = ts;
+            unitMap[unitKey].latestDate = loggedDate;
+          }
+        });
+
+        const unitRankings = Object.values(unitMap)
+          .filter(item => item.attemptsCount > 0)
+          .map(item => ({
+            ...item,
+            testedSubUnitsCount: item.testedSubUnitsSet.size,
+            avgMarks: Math.round((item.totalMarks / item.attemptsCount) * 10) / 10
+          }));
+
+        // 6. Populate Card B & Card C Full Lists and Render
+        globalTopHighestFullList = [...subUnitRankings].sort((a, b) => {
+          if (b.avgMarks !== a.avgMarks) return b.avgMarks - a.avgMarks;
+          return b.latestTimestamp - a.latestTimestamp;
+        });
+
+        globalTopHighestUnitList = [...unitRankings].sort((a, b) => {
+          if (b.avgMarks !== a.avgMarks) return b.avgMarks - a.avgMarks;
+          return b.latestTimestamp - a.latestTimestamp;
+        });
+
+        globalLowestScoresFullList = [...subUnitRankings].sort((a, b) => {
+          if (a.avgMarks !== b.avgMarks) return a.avgMarks - b.avgMarks;
+          return b.latestTimestamp - a.latestTimestamp;
+        });
+
+        globalLowestScoresUnitList = [...unitRankings].sort((a, b) => {
+          if (a.avgMarks !== b.avgMarks) return a.avgMarks - b.avgMarks;
+          return b.latestTimestamp - a.latestTimestamp;
+        });
+
+        renderTopHighestCard();
+        renderLowestScoreCard();
 
         // --- Card (D): Currently Teaching Lessons (lesson_done === true, hw_done === false, paper_days === 0) ---
         // Shows lesson_done_at date, sorted by oldest lesson_days (descending) where hw_done = false
