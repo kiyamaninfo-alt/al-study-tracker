@@ -4944,6 +4944,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const btnWeekly = document.getElementById('tabBtnWeekly');
         const viewOverall = document.getElementById('progViewOverall');
         const viewWeekly = document.getElementById('progViewWeekly');
+        if (!btnOverall || !btnWeekly || !viewOverall || !viewWeekly) return;
 
         if (tab === 'overall') {
           btnOverall.classList.add('active');
@@ -5585,9 +5586,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const fullPapers = data.totalFullPapersDone || 0;
         const totalEffectivePapers = unitPapers + (fullPapers * 5);
 
-        document.getElementById('totalPapersDoneHeader').innerText = `${unitPapers} Unit + ${fullPapers} Full Papers Done`;
-        document.getElementById('unitPapersCount').innerText = unitPapers;
-        document.getElementById('fullPapersCount').innerText = fullPapers;
+        const totalPapersHeader = document.getElementById('totalPapersDoneHeader');
+        if (totalPapersHeader) {
+          totalPapersHeader.innerText = `${unitPapers} Unit + ${fullPapers} Full Papers Done`;
+        }
+        const unitPapersCount = document.getElementById('unitPapersCount');
+        if (unitPapersCount) unitPapersCount.innerText = unitPapers;
+        const fullPapersCount = document.getElementById('fullPapersCount');
+        if (fullPapersCount) fullPapersCount.innerText = fullPapers;
 
         const tierTag = document.getElementById('tierTag');
         if (tierTag) {
