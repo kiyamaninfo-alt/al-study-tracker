@@ -4236,7 +4236,7 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⏳</span>
-          <span id="cardETitle">⏳ ⏳ උගන්නලා ‌, පාඩම් කරලා තියන නමුත් පේපර් නොකරපු පාඩම් </span>
+          <span id="cardETitle">⏳ ⏳ ⏳ උගන්නලා , පාඩම් කරලා තියන නමුත් පේපර් නොකරපු පාඩම්</span>
         </div>
         <div style="display: flex; align-items: center; gap: 6px;">
           <span class="ranking-badge" id="cardEBadge" style="background: rgba(225, 112, 85, 0.12); color: #e17055;">පේපර් කළ යුතු</span>
@@ -5383,18 +5383,23 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }));
 
           // Format unit papers history directly from unit_papers table
-          const unitPapersHistory = upRawList.map(r => ({
-            id: r.id,
-            syllabusId: r.syllabus_id,
-            subject: (r.subject || '').toUpperCase().trim(),
-            code: r.sub_lesson_code || '',
-            paperNo: r.paper_no || 1,
-            marks: (r.marks !== null && r.marks !== undefined && !isNaN(r.marks)) ? Number(r.marks) : null,
-            loggedAt: r.logged_at,
-            date: r.logged_at ? r.logged_at.substring(5, 10) : '',
-            fullDate: r.logged_at ? r.logged_at.substring(0, 10) : '',
-            timestamp: r.logged_at ? new Date(r.logged_at).getTime() : 0
-          }));
+          const unitPapersHistory = upRawList.map(r => {
+            const rawUpdated = r.updated_at || r.last_updated || r.logged_at || null;
+            return {
+              id: r.id,
+              syllabusId: r.syllabus_id,
+              subject: (r.subject || '').toUpperCase().trim(),
+              code: r.sub_lesson_code || '',
+              paperNo: (r.paper_no !== null && r.paper_no !== undefined) ? Number(r.paper_no) : null,
+              marks: (r.marks !== null && r.marks !== undefined && !isNaN(r.marks)) ? Number(r.marks) : null,
+              loggedAt: r.logged_at,
+              updated_at: rawUpdated,
+              last_updated: rawUpdated,
+              date: r.logged_at ? r.logged_at.substring(5, 10) : '',
+              fullDate: r.logged_at ? r.logged_at.substring(0, 10) : '',
+              timestamp: rawUpdated ? new Date(rawUpdated).getTime() : 0
+            };
+          });
 
           // Compute Z-score analytics
           const zScoreAnalytics = computeALZScoreMetrics(fullPapersHistory);
@@ -8015,7 +8020,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : (item.date ? escapeHtml(item.date) : '-')}</td>
                   </tr>
                 `;
               }).join('');
@@ -8067,7 +8072,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
 
         } else if (cardType === 'pendingTestPapers') {
-          titleEl.innerHTML = '⏳ ⏳ ටෙස්ට් පේපර් කරන්න තියෙන පාඩම්';
+          titleEl.innerHTML = '⏳ ⏳ ⏳ උගන්නලා , පාඩම් කරලා තියන නමුත් පේපර් නොකරපු පාඩම්';
           badgeEl.innerText = 'Top 10 පේපර් කළ යුතු';
           badgeEl.style.background = 'rgba(225, 112, 85, 0.25)';
           badgeEl.style.color = '#ffffff';
@@ -9348,8 +9353,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // 2. Build tracker progress map
         const tpMap = {};
+        const tpMapByKey = {};
         tpList.forEach(tp => {
           if (tp.syllabus_id) tpMap[tp.syllabus_id] = tp;
+          const k = `${(tp.subject || '').toUpperCase().trim()}||${(tp.sub_lesson_code || '').trim()}`;
+          tpMapByKey[k] = tp;
         });
 
         // 3. ZERO-MARK EXCLUSION FOR CARDS B & C ONLY:
@@ -9362,8 +9370,22 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         validUnitPapers.forEach(p => {
           const syl = sylMapById[p.syllabusId] || sylMapByKey[`${(p.subject || '').toUpperCase().trim()}||${(p.code || '').trim()}`] || {};
           const sId = p.syllabusId || syl.id || `${p.subject || 'ICT'}||${p.code || '-'}`;
-          const loggedDate = p.loggedAt ? p.loggedAt.substring(0, 10) : (p.fullDate || null);
-          const ts = p.timestamp || (loggedDate ? new Date(loggedDate).getTime() : 0);
+          const sylKey = `${(p.subject || syl.subject || '').toUpperCase().trim()}||${(p.code || syl.sub_lesson_code || '').trim()}`;
+          const tp = (syl.id && tpMap[syl.id]) || (p.syllabusId && tpMap[p.syllabusId]) || tpMapByKey[sylKey] || {};
+
+          // Bind directly to last updated date (last_updated / updated_at timestamp)
+          const pUpdatedRaw = p.updated_at || p.last_updated || p.loggedAt || p.fullDate || null;
+          const tpUpdatedRaw = tp.updated_at || tp.last_updated || null;
+          const pUpdatedTs = pUpdatedRaw ? new Date(pUpdatedRaw).getTime() : 0;
+          const tpUpdatedTs = tpUpdatedRaw ? new Date(tpUpdatedRaw).getTime() : 0;
+
+          let lastUpdatedRaw = pUpdatedRaw;
+          let lastUpdatedTs = pUpdatedTs;
+          if (tpUpdatedTs > pUpdatedTs) {
+            lastUpdatedRaw = tpUpdatedRaw;
+            lastUpdatedTs = tpUpdatedTs;
+          }
+          const updatedDateStr = lastUpdatedRaw ? String(lastUpdatedRaw).substring(0, 10) : '-';
 
           if (!subUnitMap[sId]) {
             subUnitMap[sId] = {
@@ -9376,8 +9398,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitName: syl.sub_lesson_title || '-',
               totalMarks: 0,
               attemptsCount: 0,
-              latestDate: loggedDate,
-              latestTimestamp: ts
+              date: updatedDateStr,
+              latestDate: updatedDateStr,
+              latestTimestamp: lastUpdatedTs
             };
           }
 
@@ -9385,9 +9408,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           subUnitMap[sId].totalMarks += m;
           subUnitMap[sId].attemptsCount += 1;
 
-          if (ts > subUnitMap[sId].latestTimestamp) {
-            subUnitMap[sId].latestTimestamp = ts;
-            subUnitMap[sId].latestDate = loggedDate;
+          if (lastUpdatedTs > subUnitMap[sId].latestTimestamp) {
+            subUnitMap[sId].latestTimestamp = lastUpdatedTs;
+            subUnitMap[sId].latestDate = updatedDateStr;
+            subUnitMap[sId].date = updatedDateStr;
           }
         });
 
@@ -9405,8 +9429,22 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const subject = p.subject || syl.subject || 'ICT';
           const unitNumber = (syl.unit_number !== undefined && syl.unit_number !== null) ? `Unit ${syl.unit_number}` : (p.unitNumber || '-');
           const unitKey = `${subject.toUpperCase().trim()}||${unitNumber}`;
-          const loggedDate = p.loggedAt ? p.loggedAt.substring(0, 10) : (p.fullDate || null);
-          const ts = p.timestamp || (loggedDate ? new Date(loggedDate).getTime() : 0);
+          const sylKey = `${(p.subject || syl.subject || '').toUpperCase().trim()}||${(p.code || syl.sub_lesson_code || '').trim()}`;
+          const tp = (syl.id && tpMap[syl.id]) || (p.syllabusId && tpMap[p.syllabusId]) || tpMapByKey[sylKey] || {};
+
+          // Bind directly to last updated date (last_updated / updated_at timestamp)
+          const pUpdatedRaw = p.updated_at || p.last_updated || p.loggedAt || p.fullDate || null;
+          const tpUpdatedRaw = tp.updated_at || tp.last_updated || null;
+          const pUpdatedTs = pUpdatedRaw ? new Date(pUpdatedRaw).getTime() : 0;
+          const tpUpdatedTs = tpUpdatedRaw ? new Date(tpUpdatedRaw).getTime() : 0;
+
+          let lastUpdatedRaw = pUpdatedRaw;
+          let lastUpdatedTs = pUpdatedTs;
+          if (tpUpdatedTs > pUpdatedTs) {
+            lastUpdatedRaw = tpUpdatedRaw;
+            lastUpdatedTs = tpUpdatedTs;
+          }
+          const updatedDateStr = lastUpdatedRaw ? String(lastUpdatedRaw).substring(0, 10) : '-';
 
           if (!unitMap[unitKey]) {
             unitMap[unitKey] = {
@@ -9416,8 +9454,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               totalMarks: 0,
               attemptsCount: 0,
               testedSubUnitsSet: new Set(),
-              latestDate: loggedDate,
-              latestTimestamp: ts
+              date: updatedDateStr,
+              latestDate: updatedDateStr,
+              latestTimestamp: lastUpdatedTs
             };
           }
 
@@ -9427,9 +9466,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const subCode = p.code || syl.sub_lesson_code || syl.id;
           if (subCode) unitMap[unitKey].testedSubUnitsSet.add(subCode);
 
-          if (ts > unitMap[unitKey].latestTimestamp) {
-            unitMap[unitKey].latestTimestamp = ts;
-            unitMap[unitKey].latestDate = loggedDate;
+          if (lastUpdatedTs > unitMap[unitKey].latestTimestamp) {
+            unitMap[unitKey].latestTimestamp = lastUpdatedTs;
+            unitMap[unitKey].latestDate = updatedDateStr;
+            unitMap[unitKey].date = updatedDateStr;
           }
         });
 
@@ -9465,11 +9505,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         renderTopHighestCard();
         renderLowestScoreCard();
 
-        // --- Card (D): Currently Teaching Lessons (lesson_done === true, hw_done === false, paper_days === 0) ---
-        // Shows lesson_done_at date, sorted by oldest lesson_days (descending) where hw_done = false
+        // --- Card (D): Currently Teaching Lessons (lesson_done === true, hw_done === false) ---
+        // Shows last_updated / updated_at timestamp, sorted by oldest lesson_days (descending) where hw_done = false
         globalPendingLessonsFullList = syllabusList
           .filter(s => {
-            const tp = tpMap[s.id];
+            const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+            const tp = tpMap[s.id] || tpMapByKey[sylKey];
             if (!tp) return false;
             const isLessonDone = tp.lesson_done === true;
             const isHwDone = tp.hw_done === true;
@@ -9477,13 +9518,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             return isLessonDone && !isHwDone && pDays === 0;
           })
           .map(s => {
-            const tp = tpMap[s.id] || {};
-            const rawDate = tp.lesson_done_at ? tp.lesson_done_at : null;
-            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+            const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+            const tp = tpMap[s.id] || tpMapByKey[sylKey] || {};
+
+            // Bind directly to last updated date (last_updated / updated_at timestamp)
+            const rawUpdated = tp.updated_at || tp.last_updated || tp.lesson_done_at || null;
+            const dateStr = rawUpdated ? String(rawUpdated).substring(0, 10) : '-';
+            const ts = rawUpdated ? new Date(rawUpdated).getTime() : 0;
 
             let days = (tp && tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
-            if (days === 0 && rawDate) {
-              const diffMs = Math.max(0, Date.now() - new Date(rawDate).getTime());
+            if (days === 0 && rawUpdated) {
+              const diffMs = Math.max(0, Date.now() - new Date(rawUpdated).getTime());
               days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
             }
 
@@ -9495,18 +9540,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
               date: dateStr,
+              latestDate: dateStr,
               days: days,
-              timestamp: rawDate ? new Date(rawDate).getTime() : 0,
+              timestamp: ts,
               sortOrder: Number(s.sort_order) || 0
             };
           })
           .sort((a, b) => {
             if (b.days !== a.days) return b.days - a.days; // Oldest days first
-            if (a.timestamp !== b.timestamp) {
-              if (a.timestamp === 0) return 1;
-              if (b.timestamp === 0) return -1;
-              return a.timestamp - b.timestamp; // Earlier date first
-            }
+            if (b.timestamp !== a.timestamp) return b.timestamp - a.timestamp; // Earlier/latest timestamp
             return a.sortOrder - b.sortOrder;
           });
         const pendingLessons = globalPendingLessonsFullList.slice(0, 5);
@@ -9536,29 +9578,73 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
         }
 
-        // --- Card (E): Pending Test Papers (lesson_done === true, hw_done === true, paper_days === 0) ---
+        // --- Card (E): Pending Test Papers (උගන්නලා , පාඩම් කරලා තියන නමුත් පේපර් නොකරපු පාඩම්) ---
+        // Requirement: Item is shown ONLY if ALL 4 of the following conditions evaluate to true (AND logic):
+        // 1. lesson_done === true
+        // 2. hw_done === true
+        // 3. hw_days === 0
+        // 4. In unit_paper table: paper_no === 0 or null or no data
+        const unitPapersBySylId = {};
+        const unitPapersBySylKey = {};
+        unitPapers.forEach(p => {
+          if (p.syllabusId) {
+            if (!unitPapersBySylId[p.syllabusId]) unitPapersBySylId[p.syllabusId] = [];
+            unitPapersBySylId[p.syllabusId].push(p);
+          }
+          const k = `${(p.subject || '').toUpperCase().trim()}||${(p.code || '').trim()}`;
+          if (!unitPapersBySylKey[k]) unitPapersBySylKey[k] = [];
+          unitPapersBySylKey[k].push(p);
+        });
+
         globalPendingTestPapersFullList = syllabusList
           .filter(s => {
-            const tp = tpMap[s.id];
+            const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+            const tp = tpMap[s.id] || tpMapByKey[sylKey];
             if (!tp) return false;
-            const isLessonDone = tp.lesson_done === true;
-            const isHwDone = tp.hw_done === true;
-            const pDays = (tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
-            return isLessonDone && isHwDone && pDays === 0;
+
+            // Condition 1: lesson_done === true
+            const cond1 = tp.lesson_done === true;
+
+            // Condition 2: hw_done === true
+            const cond2 = tp.hw_done === true;
+
+            // Condition 3: hw_days === 0
+            const hwDaysNum = (tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : null;
+            const cond3 = hwDaysNum === 0;
+
+            // Condition 4: In unit_paper table: paper_no === 0 or null or no data
+            const papersForSubUnit = [
+              ...(unitPapersBySylId[s.id] || []),
+              ...(unitPapersBySylKey[sylKey] || [])
+            ];
+            const seenIds = new Set();
+            const uniquePapers = [];
+            papersForSubUnit.forEach(p => {
+              const pId = p.id || `${p.subject}||${p.code}||${p.paperNo}`;
+              if (!seenIds.has(pId)) {
+                seenIds.add(pId);
+                uniquePapers.push(p);
+              }
+            });
+
+            // No data -> true
+            // If papers exist -> all must have paper_no === 0, null, or undefined (strictly no paper_no > 0)
+            const cond4 = uniquePapers.length === 0 || uniquePapers.every(p => {
+              const pNo = p.paperNo !== undefined ? p.paperNo : p.paper_no;
+              return pNo === 0 || pNo === null || pNo === undefined || Number(pNo) === 0;
+            });
+
+            return cond1 && cond2 && cond3 && cond4;
           })
           .map(s => {
-            const tp = tpMap[s.id] || {};
-            const rawDate = tp.hw_done_at || tp.lesson_done_at || null;
-            const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+            const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
+            const tp = tpMap[s.id] || tpMapByKey[sylKey] || {};
 
-            let days = (tp && tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
-            if (days === 0 && (tp.hw_days !== undefined && tp.hw_days !== null)) {
-              days = Number(tp.hw_days);
-            }
-            if (days === 0 && rawDate) {
-              const diffMs = Math.max(0, Date.now() - new Date(rawDate).getTime());
-              days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-            }
+            // Bind directly to last updated date (last_updated / updated_at timestamp)
+            const rawUpdated = tp.updated_at || tp.last_updated || tp.hw_done_at || tp.lesson_done_at || null;
+            const dateStr = rawUpdated ? String(rawUpdated).substring(0, 10) : '-';
+            const ts = rawUpdated ? new Date(rawUpdated).getTime() : 0;
+            const days = (tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : 0;
 
             return {
               id: s.id,
@@ -9569,17 +9655,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitName: s.sub_lesson_title || '-',
               days: days,
               date: dateStr,
-              timestamp: rawDate ? new Date(rawDate).getTime() : 0,
+              latestDate: dateStr,
+              timestamp: ts,
               sortOrder: Number(s.sort_order) || 0
             };
           })
           .sort((a, b) => {
-            if (b.days !== a.days) return b.days - a.days; // Oldest days first
-            if (a.timestamp !== b.timestamp) {
-              if (a.timestamp === 0) return 1;
-              if (b.timestamp === 0) return -1;
-              return a.timestamp - b.timestamp; // Earlier date first
-            }
+            if (b.timestamp !== a.timestamp) return b.timestamp - a.timestamp; // Most recently updated first
             return a.sortOrder - b.sortOrder;
           });
         const pendingTestPapers = globalPendingTestPapersFullList.slice(0, 5);
