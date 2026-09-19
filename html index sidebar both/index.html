@@ -523,6 +523,89 @@
         color: #a4b0be;
         font-style: italic;
       }
+      .chart-fullscreen-btn {
+        background: rgba(108, 92, 231, 0.1);
+        color: #6c5ce7;
+        border: 1px solid rgba(108, 92, 231, 0.25);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: inherit;
+      }
+      .chart-fullscreen-btn:hover {
+        background: #6c5ce7;
+        color: #ffffff;
+      }
+      body.dark-mode .chart-fullscreen-btn,
+      :root.dark-mode .chart-fullscreen-btn {
+        background: rgba(162, 155, 254, 0.15);
+        color: #a29bfe;
+        border-color: rgba(162, 155, 254, 0.3);
+      }
+      body.dark-mode .chart-fullscreen-btn:hover,
+      :root.dark-mode .chart-fullscreen-btn:hover {
+        background: #6c5ce7;
+        color: #ffffff;
+      }
+      .chart-card.fullscreen-chart-mode {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        z-index: 99999 !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 18px 24px !important;
+        box-sizing: border-box !important;
+        background: #ffffff !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        box-shadow: none !important;
+      }
+      body.dark-mode .chart-card.fullscreen-chart-mode,
+      :root.dark-mode .chart-card.fullscreen-chart-mode {
+        background: #0d1117 !important;
+        border-color: #30363d !important;
+      }
+      .chart-card.fullscreen-chart-mode .chart-header {
+        font-size: 15px !important;
+        margin-bottom: 12px !important;
+      }
+      .chart-card.fullscreen-chart-mode .chart-tab-bar {
+        padding: 4px !important;
+        margin-bottom: 12px !important;
+      }
+      .chart-card.fullscreen-chart-mode .chart-tab-btn {
+        font-size: 12px !important;
+        padding: 8px 0 !important;
+      }
+      .chart-card.fullscreen-chart-mode .chart-container {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        height: calc(100vh - 230px) !important;
+        min-height: 380px !important;
+      }
+      .chart-card.fullscreen-chart-mode .chart-fullscreen-btn {
+        background: #eb4d4b;
+        color: #ffffff;
+        border-color: #eb4d4b;
+        font-size: 11px;
+        padding: 5px 12px;
+        box-shadow: 0 2px 8px rgba(235, 77, 75, 0.35);
+      }
+      .chart-card.fullscreen-chart-mode .chart-fullscreen-btn:hover {
+        background: #d63031;
+        border-color: #d63031;
+      }
 
       /* Z-Score Analytics Panel */
       .zscore-panel {
@@ -3313,10 +3396,13 @@
 
 
     <!-- 5-Tab Score Progression & Z-Score Card (moved to bottom per v15) -->
-    <div class="chart-card">
+    <div class="chart-card" id="fullPaperChartCard">
       <div class="chart-header">
         <span id="chartCardHeading">📈 Full Paper Score Progression (All %)</span>
-        <span style="font-size: 8.5px; color: #a4b0be;" id="chartZoomIndicator">Adaptive Zoom</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 8.5px; color: #a4b0be;" id="chartZoomIndicator">Adaptive Zoom</span>
+          <button type="button" class="chart-fullscreen-btn" id="btnFullPaperFs" onclick="toggleChartFullscreen('fullPaperChartCard')" title="Full Screen (සම්පූර්ණ තිරය)">⛶ Fullscreen</button>
+        </div>
       </div>
 
       <div class="chart-tab-bar" id="fullPaperChartTabBar">
@@ -3327,7 +3413,7 @@
         <button class="chart-tab-btn" onclick="switchChartTab('Z-score')">Z-score</button>
       </div>
 
-      <div class="chart-container">
+      <div class="chart-container" onclick="openChartFullscreenIfNormal('fullPaperChartCard')" style="cursor: pointer;" title="Click to view full screen (සම්පූර්ණ තිරය සඳහා ක්ලික් කරන්න)">
         <canvas id="scoreChart" style="display: none;"></canvas>
         <div id="noChartMsg" class="chart-empty-msg">තවම ලකුණු සහිත Full Paper එකක් සටහන් කර නොමැත 📝</div>
       </div>
@@ -3422,7 +3508,10 @@
     <div class="chart-card" id="unitPaperChartCard" style="margin-top: 14px;">
       <div class="chart-header">
         <span id="unitChartCardHeading">📈 Unit Paper Score Progression (All)</span>
-        <span style="font-size: 8.5px; color: #a4b0be;" id="unitChartZoomIndicator">Adaptive Zoom</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 8.5px; color: #a4b0be;" id="unitChartZoomIndicator">Adaptive Zoom</span>
+          <button type="button" class="chart-fullscreen-btn" id="btnUnitPaperFs" onclick="toggleChartFullscreen('unitPaperChartCard')" title="Full Screen (සම්පූර්ණ තිරය)">⛶ Fullscreen</button>
+        </div>
       </div>
 
       <div class="chart-tab-bar" id="unitChartTabBar">
@@ -3432,7 +3521,7 @@
         <button class="chart-tab-btn" onclick="switchUnitChartTab('SFT')">SFT</button>
       </div>
 
-      <div class="chart-container">
+      <div class="chart-container" onclick="openChartFullscreenIfNormal('unitPaperChartCard')" style="cursor: pointer;" title="Click to view full screen (සම්පූර්ණ තිරය සඳහා ක්ලික් කරන්න)">
         <canvas id="unitScoreChart" style="display: none;"></canvas>
         <div id="noUnitChartMsg" class="chart-empty-msg">තවම ලකුණු සහිත Unit Paper එකක් සටහන් කර නොමැත 📝</div>
       </div>
@@ -3543,9 +3632,9 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">🏆</span>
-          <span id="cardBTitle">🏆 වැඩිම ලකුණු සහිත Unit Papers (Top 5 Highest Score Unit Papers)</span>
+          <span id="cardBTitle">🏆 වැඩිම ලකුණු සහිත Unit Papers</span>
         </div>
-        <span class="ranking-badge" style="background: rgba(39, 174, 96, 0.12); color: #27ae60;">Top 5 High</span>
+        <span class="ranking-badge" id="cardBBadge" style="background: rgba(39, 174, 96, 0.12); color: #27ae60;">Top 5 High</span>
       </div>
       <div class="ranking-subtitle" id="cardBSub">
         විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5.
@@ -3578,9 +3667,9 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⚠️</span>
-          <span id="cardCTitle">📉 අඩුම ලකුණු සහිත Unit Papers (Lowest 5 Score Unit Papers)</span>
+          <span id="cardCTitle">📉 අඩුම ලකුණු සහිත Unit Papers</span>
         </div>
-        <span class="ranking-badge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Least 5</span>
+        <span class="ranking-badge" id="cardCBadge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Least 5</span>
       </div>
       <div class="ranking-subtitle" id="cardCSub">
         නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 5.
@@ -3608,17 +3697,17 @@
       </div>
     </div>
 
-    <!-- Card (D): Oldest Top 5 Pending Lessons -->
+    <!-- Card (D): Currently Teaching Lessons (දැනට උගන්වන පාඩම්) -->
     <div class="ranking-card" id="cardOldestLessonPending">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">📘</span>
-          <span id="cardDTitle">📘 ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් (Oldest 5 Pending Lessons)</span>
+          <span id="cardDTitle">📘 📘 දැනට උගන්වන පාඩම්</span>
         </div>
-        <span class="ranking-badge" style="background: rgba(9, 132, 227, 0.12); color: #0984e3;">Oldest Pending</span>
+        <span class="ranking-badge" id="cardDBadge" style="background: rgba(9, 132, 227, 0.12); color: #0984e3;">දැනට උගන්වන</span>
       </div>
       <div class="ranking-subtitle" id="cardDSub">
-        විෂය නිර්දේශයේ තවමත් ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් 5 (Oldest Activity).
+        ඉගෙනීම ආරම්භ කර ඇති නමුත් තවමත් ගෙදර වැඩ සහ පේපර් අවසන් නොවූ පාඩම්.
       </div>
       <div class="ranking-table-responsive">
         <table class="ranking-table">
@@ -3643,17 +3732,17 @@
       </div>
     </div>
 
-    <!-- Card (E): Oldest Top 5 Both Pending & No Unit Paper Done -->
+    <!-- Card (E): Pending Test Papers (ටෙස්ට් පේපර් කරන්න තියෙන පාඩම්) -->
     <div class="ranking-card" id="cardOldestBothPendingNoPaper">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⏳</span>
-          <span id="cardETitle">⏳ සම්පූර්ණයෙන්ම ආරම්භ නොකළ මුල්ම පාඩම් (Both Lesson &amp; HW Pending + No Paper)</span>
+          <span id="cardETitle">⏳ ⏳ ටෙස්ට් පේපර් කරන්න තියෙන පාඩම්</span>
         </div>
-        <span class="ranking-badge" style="background: rgba(225, 112, 85, 0.12); color: #e17055;">Unstarted Top 5</span>
+        <span class="ranking-badge" id="cardEBadge" style="background: rgba(225, 112, 85, 0.12); color: #e17055;">පේපර් කළ යුතු</span>
       </div>
       <div class="ranking-subtitle" id="cardESub">
-        📘 ඉගෙනීමත් 📝 පාඩම් කිරීමත් තවම සිදු නොවූ සහ කිසිදු Unit Paper එකක් නොකළ මුල්ම පාඩම් 5.
+        පාඩම සහ ගෙදර වැඩ (HW) අවසන් වූ, ප්‍රශ්න පත්‍ර කළ යුතු පාඩම්.
       </div>
       <div class="ranking-table-responsive">
         <table class="ranking-table">
@@ -3665,7 +3754,7 @@
               <th class="col-unit-name">Unit Name</th>
               <th>Sub Unit</th>
               <th>Sub Unit Name</th>
-              <th style="text-align: center; width: 90px;">HW Days</th>
+              <th style="text-align: center; width: 90px;">Lesson Days</th>
               <th style="text-align: center; width: 85px;">Date</th>
             </tr>
           </thead>
@@ -4815,20 +4904,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             total: unitPapersHistory.length
           };
 
-          // Calculate Urgent Radar (lessons where hw_done === true and no unit paper has been logged yet)
-          const paperSyllabusIds = new Set(unitPapersHistory.map(p => p.syllabusId).filter(Boolean));
+          // Calculate Urgent Radar (display top five of "paper_days" highest number)
           const urgentRadarItems = [];
           const tpMapById = {};
           tpList.forEach(t => { if (t.syllabus_id) tpMapById[t.syllabus_id] = t; });
           syllabusList.forEach(s => {
             const tp = tpMapById[s.id];
-            if (tp && tp.hw_done === true && !paperSyllabusIds.has(s.id)) {
-              let days = Number(tp.hw_days) || 0;
-              if (tp.hw_done_at) {
-                const diffMs = Math.max(0, Date.now() - new Date(tp.hw_done_at).getTime());
-                const calcDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                if (calcDays > 0) days = calcDays;
-              }
+            const paperDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
+            if (paperDays > 0) {
               urgentRadarItems.push({
                 subject: s.subject,
                 unitNumber: (s.unit_number !== undefined && s.unit_number !== null) ? s.unit_number : '',
@@ -4836,13 +4919,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 code: s.sub_lesson_code || '',
                 title: s.sub_lesson_title || '',
                 subLesson: ((s.sub_lesson_code || '') + ' ' + (s.sub_lesson_title || '')).trim(),
-                colH: days,
-                syllabusId: s.id
+                colH: paperDays,
+                syllabusId: s.id,
+                sortOrder: Number(s.sort_order) || 0
               });
             }
           });
-          urgentRadarItems.sort((a, b) => b.colH - a.colH);
-          rpcData.radar = urgentRadarItems;
+          urgentRadarItems.sort((a, b) => {
+            if (b.colH !== a.colH) return b.colH - a.colH;
+            return a.sortOrder - b.sortOrder;
+          });
+          rpcData.radar = urgentRadarItems.slice(0, 5);
 
           // Update weekly quota actual full papers count
           if (rpcData.weeklyQuota) {
@@ -6621,14 +6708,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           pdfLabel: '📄 Save Data as PDF (දත්ත PDF ලෙස සුරැකීම):',
           pdfDesc: 'සම්පූර්ණ ප්‍රගති දත්ත, ලකුණු සටහන් සහ ප්‍රස්ථාර A4 මුද්‍රණයට ගැළපෙන පරිදි PDF ගොනුවක් ලෙස සුරකින්න.',
           pdfBtn: '📥 Save Data as PDF (A4 වාර්තාව)',
-          topUnitTitle: '🏆 වැඩිම ලකුණු සහිත Unit Papers (Top 5 Highest Score Unit Papers)',
+          topUnitTitle: '🏆 වැඩිම ලකුණු සහිත Unit Papers',
           topUnitSub: 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5.',
-          lowUnitTitle: '📉 අඩුම ලකුණු සහිත Unit Papers (Lowest 5 Score Unit Papers)',
+          topUnitBadge: 'ඉහළම 5',
+          lowUnitTitle: '📉 අඩුම ලකුණු සහිත Unit Papers',
           lowUnitSub: 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 5.',
-          oldestLessonTitle: '📘 ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් (Oldest 5 Pending Lessons)',
-          oldestLessonSub: 'විෂය නිර්දේශයේ තවමත් ඉගෙන ගැනීමට නියමිත මුල්ම පාඩම් 5 (Oldest Activity).',
-          oldestBothTitle: '⏳ සම්පූර්ණයෙන්ම ආරම්භ නොකළ මුල්ම පාඩම් (Both Lesson & HW Pending + No Paper)',
-          oldestBothSub: '📘 ඉගෙනීමත් 📝 පාඩම් කිරීමත් තවම සිදු නොවූ සහ කිසිදු Unit Paper එකක් නොකළ මුල්ම පාඩම් 5.'
+          lowUnitBadge: 'අවම 5',
+          oldestLessonTitle: '📘 📘 දැනට උගන්වන පාඩම්',
+          oldestLessonSub: 'ඉගෙනීම ආරම්භ කර ඇති නමුත් තවමත් ගෙදර වැඩ සහ පේපර් අවසන් නොවූ පාඩම්.',
+          oldestLessonBadge: 'දැනට උගන්වන',
+          oldestBothTitle: '⏳ ⏳ ටෙස්ට් පේපර් කරන්න තියෙන පාඩම්',
+          oldestBothSub: 'පාඩම සහ ගෙදර වැඩ (HW) අවසන් වූ, ප්‍රශ්න පත්‍ර කළ යුතු පාඩම්.',
+          oldestBothBadge: 'පේපර් කළ යුතු'
         },
         en: {
           settingsTabGeneral: 'Settings',
@@ -6641,12 +6732,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           pdfBtn: '📥 Save Data as PDF (A4 Report)',
           topUnitTitle: '🏆 Top 5 Highest Score Unit Papers',
           topUnitSub: 'Top 5 highest scoring unit papers across all subjects.',
+          topUnitBadge: 'Top 5 High',
           lowUnitTitle: '📉 Lowest 5 Score Unit Papers',
           lowUnitSub: 'Top 5 unit papers requiring review and additional practice.',
-          oldestLessonTitle: '📘 Oldest 5 Pending Lessons',
-          oldestLessonSub: 'Oldest 5 uncompleted lessons in the syllabus (Lesson Pending).',
-          oldestBothTitle: '⏳ Oldest 5 Unstarted Lessons (Both Lesson & HW Pending + No Paper)',
-          oldestBothSub: 'Oldest 5 lessons with neither lesson nor homework completed and no paper done.'
+          lowUnitBadge: 'Least 5',
+          oldestLessonTitle: '📘 Ongoing Lessons',
+          oldestLessonSub: 'Lessons currently being taught with pending homework and test papers.',
+          oldestLessonBadge: 'Ongoing',
+          oldestBothTitle: '⏳ Lessons Pending Test Papers',
+          oldestBothSub: 'Lessons with lesson and homework completed, waiting for test papers.',
+          oldestBothBadge: 'Papers Pending'
         }
       };
 
@@ -6672,23 +6767,31 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         const cardBTitle = document.getElementById('cardBTitle');
         const cardBSub = document.getElementById('cardBSub');
+        const cardBBadge = document.getElementById('cardBBadge');
         if (cardBTitle && dict.topUnitTitle) cardBTitle.innerText = dict.topUnitTitle;
         if (cardBSub && dict.topUnitSub) cardBSub.innerText = dict.topUnitSub;
+        if (cardBBadge && dict.topUnitBadge) cardBBadge.innerText = dict.topUnitBadge;
 
         const cardCTitle = document.getElementById('cardCTitle');
         const cardCSub = document.getElementById('cardCSub');
+        const cardCBadge = document.getElementById('cardCBadge');
         if (cardCTitle && dict.lowUnitTitle) cardCTitle.innerText = dict.lowUnitTitle;
         if (cardCSub && dict.lowUnitSub) cardCSub.innerText = dict.lowUnitSub;
+        if (cardCBadge && dict.lowUnitBadge) cardCBadge.innerText = dict.lowUnitBadge;
 
         const cardDTitle = document.getElementById('cardDTitle');
         const cardDSub = document.getElementById('cardDSub');
+        const cardDBadge = document.getElementById('cardDBadge');
         if (cardDTitle && dict.oldestLessonTitle) cardDTitle.innerText = dict.oldestLessonTitle;
         if (cardDSub && dict.oldestLessonSub) cardDSub.innerText = dict.oldestLessonSub;
+        if (cardDBadge && dict.oldestLessonBadge) cardDBadge.innerText = dict.oldestLessonBadge;
 
         const cardETitle = document.getElementById('cardETitle');
         const cardESub = document.getElementById('cardESub');
+        const cardEBadge = document.getElementById('cardEBadge');
         if (cardETitle && dict.oldestBothTitle) cardETitle.innerText = dict.oldestBothTitle;
         if (cardESub && dict.oldestBothSub) cardESub.innerText = dict.oldestBothSub;
+        if (cardEBadge && dict.oldestBothBadge) cardEBadge.innerText = dict.oldestBothBadge;
       }
 
       function setLanguage(lang) {
@@ -6699,6 +6802,53 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         applyLanguage(lang);
       }
       applyLanguage(currentLang);
+
+      // --- Chart Fullscreen Controller ---
+      function toggleChartFullscreen(cardId) {
+        const card = document.getElementById(cardId);
+        if (!card) return;
+        const isFs = card.classList.toggle('fullscreen-chart-mode');
+        const btn = card.querySelector('.chart-fullscreen-btn');
+        if (isFs) {
+          if (btn) btn.innerHTML = '✕ Exit Fullscreen';
+          document.body.style.overflow = 'hidden';
+          document.querySelectorAll('.chart-card.fullscreen-chart-mode').forEach(other => {
+            if (other !== card) {
+              other.classList.remove('fullscreen-chart-mode');
+              const otherBtn = other.querySelector('.chart-fullscreen-btn');
+              if (otherBtn) otherBtn.innerHTML = '⛶ Fullscreen';
+            }
+          });
+        } else {
+          if (btn) btn.innerHTML = '⛶ Fullscreen';
+          document.body.style.overflow = '';
+        }
+
+        setTimeout(() => {
+          if (cardId === 'fullPaperChartCard' && scoreChartInstance) {
+            scoreChartInstance.resize();
+          } else if (cardId === 'unitPaperChartCard' && unitScoreChartInstance) {
+            unitScoreChartInstance.resize();
+          }
+        }, 50);
+      }
+
+      function openChartFullscreenIfNormal(cardId) {
+        const card = document.getElementById(cardId);
+        if (!card) return;
+        if (!card.classList.contains('fullscreen-chart-mode')) {
+          toggleChartFullscreen(cardId);
+        }
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+          const fsCard = document.querySelector('.chart-card.fullscreen-chart-mode');
+          if (fsCard) {
+            toggleChartFullscreen(fsCard.id);
+          }
+        }
+      });
 
       function openSettingsModal() {
         updateThemeButtonsUI(currentThemeMode);
@@ -7300,16 +7450,20 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
         }
 
-        // --- Card (D): Oldest Top 5 Pending Lessons (hw_done === false) ---
+        // --- Card (D): Currently Teaching Lessons (lesson_done === true, hw_done === false, paper_days === 0) ---
         // Shows lesson_done_at date, sorted by oldest lesson_days (descending) where hw_done = false
         const pendingLessons = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
-            return tp && tp.hw_done !== true;
+            if (!tp) return false;
+            const isLessonDone = tp.lesson_done === true;
+            const isHwDone = tp.hw_done === true;
+            const pDays = (tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
+            return isLessonDone && !isHwDone && pDays === 0;
           })
           .map(s => {
-            const tp = tpMap[s.id];
-            const rawDate = tp && tp.lesson_done_at ? tp.lesson_done_at : null;
+            const tp = tpMap[s.id] || {};
+            const rawDate = tp.lesson_done_at ? tp.lesson_done_at : null;
             const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
 
             let days = (tp && tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
@@ -7345,7 +7499,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const dBody = document.getElementById('oldestLessonPendingBody');
         if (dBody) {
           if (pendingLessons.length === 0) {
-            dBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! සියලු පාඩම් ඉගෙන ගෙන අවසන් කර ඇත 🌟</td></tr>`;
+            dBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>`;
           } else {
             dBody.innerHTML = pendingLessons.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -7359,7 +7513,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center; font-weight: 600; color: #0984e3; font-size: 11px;">${item.days !== undefined && item.days !== null ? item.days : 0} d</td>
+                  <td style="text-align: center;"><span class="marks-pill marks-mid">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
                   <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
@@ -7367,33 +7521,29 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
         }
 
-        // --- Card (E): Oldest Top 5 in paper_days ---
-        // 1. Shows date field "hw_done_at" if there is no paper or 0 paper days "paper_days" accordingly
-        // 1.2 Shows oldest in "paper_days" as top 5
-        const noPaperList = syllabusList
+        // --- Card (E): Pending Test Papers (lesson_done === true, hw_done === true, paper_days === 0) ---
+        const pendingTestPapers = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
-            return tp && (tp.hw_done === true || (tp.paper_days !== undefined && tp.paper_days !== null && Number(tp.paper_days) > 0));
+            if (!tp) return false;
+            const isLessonDone = tp.lesson_done === true;
+            const isHwDone = tp.hw_done === true;
+            const pDays = (tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
+            return isLessonDone && isHwDone && pDays === 0;
           })
           .map(s => {
             const tp = tpMap[s.id] || {};
-            const papers = paperMapBySylId[s.id] || [];
-            const pDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
-            const hwDays = (tp && tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : 0;
-
-            let rawDate = null;
-            if (papers.length === 0 || pDays === 0) {
-              rawDate = tp.hw_done_at || null;
-            } else {
-              const latestPaper = [...papers].sort((a, b) => {
-                const timeB = b.timestamp || (b.loggedAt ? new Date(b.loggedAt).getTime() : 0);
-                const timeA = a.timestamp || (a.loggedAt ? new Date(a.loggedAt).getTime() : 0);
-                return timeB - timeA;
-              })[0];
-              rawDate = (latestPaper && (latestPaper.loggedAt || latestPaper.fullDate || latestPaper.date)) || tp.hw_done_at || null;
-            }
-
+            const rawDate = tp.hw_done_at || tp.lesson_done_at || null;
             const dateStr = rawDate ? rawDate.substring(0, 10) : '-';
+
+            let days = (tp && tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
+            if (days === 0 && (tp.hw_days !== undefined && tp.hw_days !== null)) {
+              days = Number(tp.hw_days);
+            }
+            if (days === 0 && rawDate) {
+              const diffMs = Math.max(0, Date.now() - new Date(rawDate).getTime());
+              days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
 
             return {
               id: s.id,
@@ -7402,15 +7552,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               unitName: s.unit_name || '-',
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
-              hwDays: hwDays,
+              days: days,
               date: dateStr,
-              paperDays: pDays,
               timestamp: rawDate ? new Date(rawDate).getTime() : 0,
               sortOrder: Number(s.sort_order) || 0
             };
           })
           .sort((a, b) => {
-            if (b.paperDays !== a.paperDays) return b.paperDays - a.paperDays; // Oldest paper_days first
+            if (b.days !== a.days) return b.days - a.days; // Oldest days first
             if (a.timestamp !== b.timestamp) {
               if (a.timestamp === 0) return 1;
               if (b.timestamp === 0) return -1;
@@ -7422,10 +7571,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         const eBody = document.getElementById('oldestBothPendingBody');
         if (eBody) {
-          if (noPaperList.length === 0) {
-            eBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ආරම්භ නොකළ කිසිදු පාඩමක් නොමැත 🌟</td></tr>`;
+          if (pendingTestPapers.length === 0) {
+            eBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ටෙස්ට් පේපර් කිරීමට ඉතිරි පාඩම් නොමැත 🌟</td></tr>`;
           } else {
-            eBody.innerHTML = noPaperList.map((item, idx) => {
+            eBody.innerHTML = pendingTestPapers.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
               return `
                 <tr>
@@ -7437,7 +7586,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center; font-weight: 600; color: #e17055; font-size: 11px;">${item.hwDays !== undefined && item.hwDays !== null ? item.hwDays : 0} d</td>
+                  <td style="text-align: center;"><span class="marks-pill marks-low">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
                   <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
                 </tr>
               `;
