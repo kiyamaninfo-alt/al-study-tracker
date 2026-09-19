@@ -2177,6 +2177,9 @@
         color: #f0f6fc !important;
       }
       body.dark-mode .ranking-table td a {
+        color: inherit;
+      }
+      body.dark-mode .ranking-table td a:hover {
         color: #58a6ff !important;
       }
       body.dark-mode .ring-bg {
@@ -3054,12 +3057,13 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        padding: 8px 10px;
+        padding: 8px 6px;
         border-bottom: 1px solid #edf2f7;
         text-align: left;
         position: sticky;
         top: 0;
         z-index: 2;
+        box-sizing: border-box;
       }
       body.dark-mode .ranking-table th,
       :root.dark-mode .ranking-table th {
@@ -3068,10 +3072,11 @@
         border-bottom-color: #30363d;
       }
       .ranking-table td {
-        padding: 8px 10px;
+        padding: 7px 6px;
         border-bottom: 1px solid #f8f9fa;
         vertical-align: middle;
         color: #2d3436;
+        box-sizing: border-box;
       }
       body.dark-mode .ranking-table td,
       :root.dark-mode .ranking-table td {
@@ -3082,6 +3087,89 @@
       :root.dark-mode .ranking-table-responsive {
         border-color: #30363d;
       }
+
+      /* Unified Column Widths & Alignments across ALL cards */
+      .ranking-table th.col-rank,
+      .ranking-table td.col-rank {
+        width: 54px;
+        min-width: 54px;
+        max-width: 54px;
+        text-align: center;
+      }
+      .ranking-table th.col-subj,
+      .ranking-table td.col-subj {
+        width: 64px;
+        min-width: 64px;
+        max-width: 64px;
+        text-align: center;
+      }
+      .ranking-table th.col-unit-no,
+      .ranking-table td.col-unit-no {
+        width: 72px;
+        min-width: 72px;
+        max-width: 72px;
+        text-align: center;
+      }
+      .ranking-table th.col-unit-name,
+      .ranking-table td.col-unit-name {
+        width: 170px;
+        min-width: 130px;
+        max-width: 200px;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .ranking-table th.col-sub-no,
+      .ranking-table td.col-sub-no {
+        width: 64px;
+        min-width: 64px;
+        max-width: 64px;
+        text-align: center;
+      }
+      .ranking-table th.col-sub-name,
+      .ranking-table td.col-sub-name {
+        min-width: 150px;
+        max-width: 260px;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .ranking-table th.col-metric,
+      .ranking-table td.col-metric {
+        width: 96px;
+        min-width: 96px;
+        max-width: 96px;
+        text-align: center;
+      }
+      .ranking-table th.col-date,
+      .ranking-table td.col-date {
+        width: 86px;
+        min-width: 86px;
+        max-width: 86px;
+        text-align: center;
+      }
+      .ranking-table th.col-metric-wide,
+      .ranking-table td.col-metric-wide {
+        width: 182px;
+        min-width: 182px;
+        max-width: 182px;
+        text-align: center;
+      }
+      .ranking-table th.col-unit-name-wide,
+      .ranking-table td.col-unit-name-wide {
+        width: 234px;
+        min-width: 194px;
+        max-width: 264px;
+      }
+      .ranking-table th.col-sub-count,
+      .ranking-table td.col-sub-count {
+        min-width: 150px;
+        max-width: 260px;
+        text-align: center;
+      }
+
       .btn-scale-step {
         transition: all 0.15s ease;
       }
@@ -3101,45 +3189,64 @@
         border-color: #8c7ae6 !important;
       }
       .rank-pill {
-        display: inline-block;
-        padding: 2px 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 7px;
         border-radius: 6px;
-        font-size: 9px;
+        font-size: 9.5px;
         font-weight: 700;
         text-align: center;
+        line-height: 1.35;
+        white-space: nowrap;
+        box-sizing: border-box;
       }
       .rank-badge-1 { background: #ffeaa7; color: #d35400; }
       .rank-badge-2 { background: #dfe6e9; color: #2d3436; }
       .rank-badge-3 { background: #fad390; color: #e67e22; }
       .rank-badge-def { background: #f1f2f6; color: #7f8fa6; }
-      .rank-badge-warn { background: #ff7675; color: white; }
+      .rank-badge-warn { background: rgba(235, 77, 75, 0.15); color: #eb4d4b; border: 1px solid rgba(235, 77, 75, 0.28); }
+      .rank-badge-teaching { background: rgba(9, 132, 227, 0.15); color: #0984e3; border: 1px solid rgba(9, 132, 227, 0.28); }
+      .rank-badge-pending { background: rgba(225, 112, 85, 0.15); color: #e17055; border: 1px solid rgba(225, 112, 85, 0.28); }
+
       body.dark-mode .rank-badge-1 { background: rgba(241, 196, 15, 0.25); color: #f1c40f; }
       body.dark-mode .rank-badge-2 { background: rgba(189, 195, 199, 0.25); color: #ecf0f1; }
       body.dark-mode .rank-badge-3 { background: rgba(230, 126, 34, 0.25); color: #e67e22; }
       body.dark-mode .rank-badge-def { background: rgba(127, 143, 166, 0.2); color: #8b949e; }
-      body.dark-mode .rank-badge-warn { background: rgba(235, 77, 75, 0.3); color: #ff7675; }
+      body.dark-mode .rank-badge-warn { background: rgba(235, 77, 75, 0.25); color: #ff7675; border-color: rgba(235, 77, 75, 0.4); }
+      body.dark-mode .rank-badge-teaching { background: rgba(9, 132, 227, 0.25); color: #58a6ff; border-color: rgba(9, 132, 227, 0.4); }
+      body.dark-mode .rank-badge-pending { background: rgba(225, 112, 85, 0.25); color: #ff7675; border-color: rgba(225, 112, 85, 0.4); }
 
       .subj-pill {
-        display: inline-block;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 9.5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 7px;
+        border-radius: 6px;
+        font-size: 10px;
         font-weight: 700;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
+        line-height: 1.35;
+        box-sizing: border-box;
+        min-width: 44px;
+        white-space: nowrap;
       }
-      .subj-pill-ict { background: rgba(32, 191, 107, 0.12); color: #20bf6b; }
-      .subj-pill-et { background: rgba(140, 122, 230, 0.12); color: #8c7ae6; }
-      .subj-pill-sft { background: rgba(9, 132, 227, 0.12); color: #0984e3; }
-      body.dark-mode .subj-pill-ict { background: rgba(32, 191, 107, 0.25); color: #2ecc71; }
-      body.dark-mode .subj-pill-et { background: rgba(140, 122, 230, 0.25); color: #a29bfe; }
-      body.dark-mode .subj-pill-sft { background: rgba(9, 132, 227, 0.25); color: #58a6ff; }
+      .subj-pill-ict { background: rgba(32, 191, 107, 0.12); color: #20bf6b; border: 1px solid rgba(32, 191, 107, 0.28); }
+      .subj-pill-et { background: rgba(140, 122, 230, 0.12); color: #8c7ae6; border: 1px solid rgba(140, 122, 230, 0.28); }
+      .subj-pill-sft { background: rgba(9, 132, 227, 0.12); color: #0984e3; border: 1px solid rgba(9, 132, 227, 0.28); }
+      body.dark-mode .subj-pill-ict { background: rgba(32, 191, 107, 0.25); color: #2ecc71; border-color: rgba(32, 191, 107, 0.4); }
+      body.dark-mode .subj-pill-et { background: rgba(140, 122, 230, 0.25); color: #a29bfe; border-color: rgba(140, 122, 230, 0.4); }
+      body.dark-mode .subj-pill-sft { background: rgba(9, 132, 227, 0.25); color: #58a6ff; border-color: rgba(9, 132, 227, 0.4); }
 
       .marks-pill {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         padding: 2px 8px;
         border-radius: 12px;
         font-weight: 700;
-        font-size: 10.5px;
+        font-size: 10px;
+        white-space: nowrap;
       }
       .marks-high { background: rgba(39, 174, 96, 0.12); color: #27ae60; }
       .marks-mid { background: rgba(9, 132, 227, 0.12); color: #0984e3; }
@@ -3155,6 +3262,55 @@
       body.dark-mode .col-sub-no,
       :root.dark-mode .col-sub-no {
         color: #58a6ff;
+      }
+
+      /* Clean unified typography for table cells */
+      .unit-name-txt {
+        font-weight: 500;
+        color: #4a5568;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 100%;
+        vertical-align: middle;
+      }
+      body.dark-mode .unit-name-txt {
+        color: #c9d1d9;
+      }
+      .sub-unit-link {
+        color: inherit !important;
+        text-decoration: none !important;
+        cursor: pointer;
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+        border-bottom: 1px dotted rgba(127, 143, 166, 0.35);
+        transition: all 0.15s ease;
+      }
+      .sub-unit-link:hover {
+        color: #0984e3 !important;
+        border-bottom-color: #0984e3 !important;
+      }
+      body.dark-mode .sub-unit-link {
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .sub-unit-link:hover {
+        color: #58a6ff !important;
+        border-bottom-color: #58a6ff !important;
+      }
+      .date-cell-txt {
+        color: #7f8fa6;
+        font-size: 10px;
+        font-weight: 500;
+        white-space: nowrap;
+        display: inline-block;
+      }
+      body.dark-mode .date-cell-txt {
+        color: #8b949e;
       }
 
       .btn-pending-action {
@@ -3769,13 +3925,13 @@
         <table class="ranking-table">
           <thead>
             <tr>
-              <th style="width: 45px; text-align: center;">Priority</th>
-              <th>Subject</th>
+              <th class="col-rank">Priority</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Days Elapsed</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric-wide">Days Elapsed</th>
             </tr>
           </thead>
           <tbody id="radarList">
@@ -3836,13 +3992,13 @@
         <table class="ranking-table">
           <thead>
             <tr>
-              <th style="width: 45px; text-align: center;">Done</th>
-              <th>Subject</th>
+              <th class="col-rank">Done</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Stage &amp; Days</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric-wide">Stage &amp; Days</th>
             </tr>
           </thead>
           <tbody id="ebbinghausList">
@@ -4125,14 +4281,14 @@
         <table class="ranking-table">
           <thead id="topHighestHead">
             <tr>
-              <th style="width: 50px; text-align: center;">Rank</th>
-              <th>Subject</th>
+              <th class="col-rank">Rank</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Marks</th>
-              <th style="text-align: center;">Date</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric">Avg Marks</th>
+              <th class="col-date">Date</th>
             </tr>
           </thead>
           <tbody id="topHighestUnitPapersBody">
@@ -4174,14 +4330,14 @@
         <table class="ranking-table">
           <thead id="lowestScoreHead">
             <tr>
-              <th style="width: 50px; text-align: center;">Rank</th>
-              <th>Subject</th>
+              <th class="col-rank">Rank</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Marks</th>
-              <th style="text-align: center;">Date</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric">Avg Marks</th>
+              <th class="col-date">Date</th>
             </tr>
           </thead>
           <tbody id="lowestScoreUnitPapersBody">
@@ -4212,14 +4368,14 @@
         <table class="ranking-table">
           <thead>
             <tr>
-              <th style="width: 35px; text-align: center;">#</th>
-              <th>Subject</th>
+              <th class="col-rank">Rank</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: center; width: 90px;">Lesson Days</th>
-              <th style="text-align: center; width: 85px;">Date</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric">Lesson Days</th>
+              <th class="col-date">Date</th>
             </tr>
           </thead>
           <tbody id="oldestLessonPendingBody">
@@ -4250,14 +4406,14 @@
         <table class="ranking-table">
           <thead>
             <tr>
-              <th style="width: 35px; text-align: center;">#</th>
-              <th>Subject</th>
+              <th class="col-rank">Rank</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: center; width: 90px;">Lesson Days</th>
-              <th style="text-align: center; width: 85px;">Date</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric">Paper Days</th>
+              <th class="col-date">Date</th>
             </tr>
           </thead>
           <tbody id="oldestBothPendingBody">
@@ -5678,13 +5834,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             }
             return `
               <tr>
-                <td style="text-align: center;"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
-                <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-rank"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
+                <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
                 <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
                 <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
-                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
-                <td style="text-align: right;"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                <td class="col-sub-name">
+                  <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                </td>
+                <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
               </tr>
             `;
           }).join('');
@@ -5824,16 +5982,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             return `
               <tr id="ebbItem_${idx}" data-syllabus-id="${item.syllabusId || ''}" data-code="${escapeHtml(item.code || '')}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}">
-                <td style="text-align: center;">
+                <td class="col-rank">
                   <input type="checkbox" class="ebb-tick" id="ebbChk_${idx}" style="--chk-accent:${item.badgeColor};"
                     onchange="handleEbbTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
                 </td>
-                <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
                 <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
                 <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #8c7ae6;">${escapeHtml(subUnitNo)}</span></td>
-                <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
-                <td style="text-align: right;">
+                <td class="col-sub-name">
+                  <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                </td>
+                <td class="col-metric-wide">
                   <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}" style="white-space: nowrap;">
                     ${item.stageTag}
                   </span>
@@ -7755,13 +7915,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
           theadEl.innerHTML = `
             <tr>
-              <th style="width: 55px; text-align: center;">Priority</th>
-              <th>Subject</th>
+              <th class="col-rank">Priority</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Days Elapsed</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric-wide">Days Elapsed</th>
             </tr>
           `;
 
@@ -7781,13 +7941,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
               return `
                 <tr>
-                  <td style="text-align: center;"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
-                  <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
-                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
-                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
-                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
-                  <td style="text-align: right;"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                  <td class="col-rank"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
+                  <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                  <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                  <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
+                  <td class="col-sub-name" title="${escapeHtml(cleanTitle)}">
+                    <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                  </td>
+                  <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
                 </tr>
               `;
             }).join('');
@@ -7803,13 +7965,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
           theadEl.innerHTML = `
             <tr>
-              <th style="width: 50px; text-align: center;">Done</th>
-              <th>Subject</th>
+              <th class="col-rank">Done</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: right;">Stage &amp; Days</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric-wide">Stage &amp; Days</th>
             </tr>
           `;
 
@@ -7839,19 +8001,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             theadEl.innerHTML = `
               <tr>
-                <th style="width: 60px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
-                <th class="col-unit-name" colspan="2">Unit Name</th>
-                <th style="text-align: center;">Sub-Units Tested</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Latest Date</th>
+                <th class="col-unit-name col-unit-name-wide">Unit Name</th>
+                <th class="col-sub-count">Sub-Units Tested</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Latest Date</th>
               </tr>
             `;
 
             const items = (globalTopHighestUnitList || []).slice(0, 10);
             if (items.length === 0) {
-              tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+              tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
             } else {
               const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
               tbodyEl.innerHTML = items.map((item, idx) => {
@@ -7861,16 +8023,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="text-align: center; font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name col-unit-name-wide" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-count" style="font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} papers)</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -7883,14 +8045,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             theadEl.innerHTML = `
               <tr>
-                <th style="width: 60px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th>Sub Unit</th>
-                <th>Sub Unit Name</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Date</th>
+                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-name">Sub Unit Name</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Date</th>
               </tr>
             `;
 
@@ -7906,17 +8068,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                    <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-code" style="color: #27ae60;">${escapeHtml(item.subUnitNumber)}</span></td>
+                    <td class="col-sub-name" title="${escapeHtml(item.subUnitName)}">
+                      <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                    </td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} papers)</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : (item.date ? escapeHtml(item.date) : '-')}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -7947,19 +8111,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             theadEl.innerHTML = `
               <tr>
-                <th style="width: 60px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
-                <th class="col-unit-name" colspan="2">Unit Name</th>
-                <th style="text-align: center;">Sub-Units Tested</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Latest Date</th>
+                <th class="col-unit-name col-unit-name-wide">Unit Name</th>
+                <th class="col-sub-count">Sub-Units Tested</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Latest Date</th>
               </tr>
             `;
 
             const items = (globalLowestScoresUnitList || []).slice(0, 10);
             if (items.length === 0) {
-              tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+              tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
             } else {
               tbodyEl.innerHTML = items.map((item, idx) => {
                 const rankLabel = `#${idx + 1} ⚠️`;
@@ -7967,16 +8131,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="text-align: center; font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name col-unit-name-wide" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-count" style="font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -7989,14 +8153,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             theadEl.innerHTML = `
               <tr>
-                <th style="width: 60px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th>Sub Unit</th>
-                <th>Sub Unit Name</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Date</th>
+                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-name">Sub Unit Name</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Date</th>
               </tr>
             `;
 
@@ -8010,17 +8174,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                    <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-code" style="color: #e17055;">${escapeHtml(item.subUnitNumber)}</span></td>
+                    <td class="col-sub-name" title="${escapeHtml(item.subUnitName)}">
+                      <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                    </td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.latestDate ? escapeHtml(item.latestDate) : (item.date ? escapeHtml(item.date) : '-')}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : (item.date ? escapeHtml(item.date) : '-')}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -8037,14 +8203,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
           theadEl.innerHTML = `
             <tr>
-              <th style="width: 45px; text-align: center;">#</th>
-              <th>Subject</th>
+              <th class="col-rank">Rank</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: center; width: 100px;">Lesson Days</th>
-              <th style="text-align: center; width: 95px;">Date</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric">Lesson Days</th>
+              <th class="col-date">Date</th>
             </tr>
           `;
 
@@ -8056,16 +8222,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
               return `
                 <tr>
-                  <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
-                    <a href="javascript:void(0)" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                  <td class="col-rank"><span class="rank-pill rank-badge-teaching">#${idx + 1} 📘</span></td>
+                  <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                  <td class="col-unit-name" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-code" style="color: #0984e3;">${escapeHtml(item.subUnitNumber)}</span></td>
+                  <td class="col-sub-name" title="${escapeHtml(item.subUnitName)}">
+                    <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center;"><span class="marks-pill marks-mid">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                  <td class="col-metric"><span class="marks-pill marks-mid">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
             }).join('');
@@ -8081,14 +8247,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
           theadEl.innerHTML = `
             <tr>
-              <th style="width: 45px; text-align: center;">#</th>
-              <th>Subject</th>
+              <th class="col-rank">Rank</th>
+              <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th>Sub Unit</th>
-              <th>Sub Unit Name</th>
-              <th style="text-align: center; width: 100px;">Lesson Days</th>
-              <th style="text-align: center; width: 95px;">Date</th>
+              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-metric">Paper Days</th>
+              <th class="col-date">Date</th>
             </tr>
           `;
 
@@ -8100,16 +8266,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
               return `
                 <tr>
-                  <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
-                    <a href="javascript:void(0)" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                  <td class="col-rank"><span class="rank-pill rank-badge-pending">#${idx + 1} ⏳</span></td>
+                  <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                  <td class="col-unit-name" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-code" style="color: #e17055;">${escapeHtml(item.subUnitNumber)}</span></td>
+                  <td class="col-sub-name" title="${escapeHtml(item.subUnitName)}">
+                    <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center;"><span class="marks-pill marks-low">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                  <td class="col-metric"><span class="marks-pill marks-low">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
             }).join('');
@@ -8179,16 +8345,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const stageClass = `ebb-stage-${item.stageBucket || 1}`;
             return `
               <tr id="ebbModalItem_${idx}" data-syllabus-id="${item.syllabusId || ''}" data-code="${escapeHtml(item.code || '')}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}">
-                <td style="text-align: center;">
+                <td class="col-rank">
                   <input type="checkbox" class="ebb-tick" id="ebbModalChk_${idx}" style="--chk-accent:${item.badgeColor};"
                     onchange="handleEbbModalTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
                 </td>
-                <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
-                <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
-                <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #8c7ae6;">${escapeHtml(subUnitNo)}</span></td>
-                <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
-                <td style="text-align: right;">
+                <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
+                <td class="col-sub-no"><span class="chip-code" style="color: #8c7ae6;">${escapeHtml(subUnitNo)}</span></td>
+                <td class="col-sub-name" title="${escapeHtml(cleanTitle)}">
+                  <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                </td>
+                <td class="col-metric-wide">
                   <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}" style="white-space: nowrap;">
                     ${item.stageTag}
                   </span>
@@ -9132,13 +9300,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (bHead) {
             bHead.innerHTML = `
               <tr>
-                <th style="width: 50px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
-                <th class="col-unit-name" colspan="2">Unit Name</th>
-                <th style="text-align: center;">Sub-Units</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Date</th>
+                <th class="col-unit-name col-unit-name-wide" colspan="2">Unit Name</th>
+                <th class="col-sub-count">Sub-Units</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Date</th>
               </tr>
             `;
           }
@@ -9155,16 +9323,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="text-align: center; font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name col-unit-name-wide" colspan="2"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-count" style="font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -9182,14 +9350,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (bHead) {
             bHead.innerHTML = `
               <tr>
-                <th style="width: 50px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th>Sub Unit</th>
-                <th>Sub Unit Name</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Date</th>
+                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-name">Sub Unit Name</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Date</th>
               </tr>
             `;
           }
@@ -9206,17 +9374,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks >= 75 ? 'marks-high' : (item.avgMarks >= 65 ? 'marks-mid' : 'marks-low');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                    <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #27ae60;">${escapeHtml(item.subUnitNumber)}</span></td>
+                    <td class="col-sub-name">
+                      <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${escapeHtml(item.subUnitNumber)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                    </td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -9243,13 +9413,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (cHead) {
             cHead.innerHTML = `
               <tr>
-                <th style="width: 50px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
-                <th class="col-unit-name" colspan="2">Unit Name</th>
-                <th style="text-align: center;">Sub-Units</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Date</th>
+                <th class="col-unit-name col-unit-name-wide" colspan="2">Unit Name</th>
+                <th class="col-sub-count">Sub-Units</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Date</th>
               </tr>
             `;
           }
@@ -9264,16 +9434,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" colspan="2" style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="text-align: center; font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name col-unit-name-wide" colspan="2"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-count" style="font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -9291,14 +9461,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (cHead) {
             cHead.innerHTML = `
               <tr>
-                <th style="width: 50px; text-align: center;">Rank</th>
-                <th>Subject</th>
+                <th class="col-rank">Rank</th>
+                <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th>Sub Unit</th>
-                <th>Sub Unit Name</th>
-                <th style="text-align: right;">Avg Marks</th>
-                <th style="text-align: center;">Date</th>
+                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-name">Sub Unit Name</th>
+                <th class="col-metric">Avg Marks</th>
+                <th class="col-date">Date</th>
               </tr>
             `;
           }
@@ -9313,17 +9483,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 const markClass = item.avgMarks < 65 ? 'marks-low' : (item.avgMarks < 75 ? 'marks-mid' : 'marks-high');
                 return `
                   <tr>
-                    <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
-                    <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                    <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                    <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                    <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                    <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
-                    <td style="text-align: right;">
+                    <td class="col-rank"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                    <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                    <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                    <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(item.subUnitNumber)}</span></td>
+                    <td class="col-sub-name">
+                      <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${escapeHtml(item.subUnitNumber)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                    </td>
+                    <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
                     </td>
-                    <td style="text-align: center; color: #7f8fa6; font-size: 10px;">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</td>
+                    <td class="col-date"><span class="date-cell-txt">${item.latestDate ? escapeHtml(item.latestDate) : '-'}</span></td>
                   </tr>
                 `;
               }).join('');
@@ -9562,16 +9734,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
               return `
                 <tr>
-                  <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
-                    <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                  <td class="col-rank"><span class="rank-pill rank-badge-teaching">#${idx + 1} 📘</span></td>
+                  <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                  <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #0984e3;">${escapeHtml(item.subUnitNumber)}</span></td>
+                  <td class="col-sub-name">
+                    <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${escapeHtml(item.subUnitNumber)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center;"><span class="marks-pill marks-mid">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                  <td class="col-metric"><span class="marks-pill marks-mid">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
             }).join('');
@@ -9675,16 +9847,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
               return `
                 <tr>
-                  <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
-                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
-                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
-                  <td class="col-unit-name" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
-                  <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
-                  <td class="col-sub-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
-                    <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                  <td class="col-rank"><span class="rank-pill rank-badge-pending">#${idx + 1} ⏳</span></td>
+                  <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
+                  <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(item.subUnitNumber)}</span></td>
+                  <td class="col-sub-name">
+                    <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${escapeHtml(item.subUnitNumber)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
-                  <td style="text-align: center;"><span class="marks-pill marks-low">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
-                  <td style="text-align: center; color: #7f8fa6; font-size: 10px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                  <td class="col-metric"><span class="marks-pill marks-low">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
             }).join('');
