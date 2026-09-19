@@ -8854,7 +8854,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-content">
                 <div class="prio-tag" style="color: #6c5ce7;">#2 Spaced Repetition • ${escapeHtml(eSubj)}</div>
                 <div class="prio-msg">අද පාඩම් කරන්න ඕන <strong>${escapeHtml(eSubj)}</strong> (${escapeHtml(eCode)} පාඩමෙන්)</div>
-                <div class="prio-sub">${escapeHtml(eTitle)} • ${escapeHtml(eStage)}</div>
+                <div class="prio-sub">${escapeHtml(eTitle)} <br> ${escapeHtml(eStage)}</div>
               </div>
             </div>
           `;
@@ -8984,8 +8984,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-icon-box">⚠️</div>
               <div class="prio-content">
                 <div class="prio-tag" style="color: #e67e22;">#5 Untested Lesson • ${escapeHtml(topUntested.subject)}</div>
-                <div class="prio-msg">පාඩම් කරලා තිබුනාට <strong>${escapeHtml(topUntested.subject)}</strong> <strong>${escapeHtml(topUntested.subUnitNumber)}</strong> පේපර් කරලා නැහැ</div>
-                <div class="prio-sub">${escapeHtml(topUntested.subUnitName)} <br> අන්තිමට පාඩම් කලේ දවස්  ${topUntested.days}කට කලින් </div>
+                <div class="prio-msg">දැනට උගන්වන මීළගට පාඩම් කල යුතු පාඩම <strong>${escapeHtml(topUntested.subject)}</strong> <strong>${escapeHtml(topUntested.subUnitNumber)}</strong> </div>
+                <div class="prio-sub">${escapeHtml(topUntested.subUnitName)} </div>
               </div>
             </div>
           `;
