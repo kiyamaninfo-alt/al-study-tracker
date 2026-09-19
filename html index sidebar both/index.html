@@ -651,6 +651,136 @@
         border-color: #30363d;
       }
 
+      /* Custom Isolated HTML Chart Legend */
+      .chart-custom-legend {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px 10px;
+        padding: 4px 8px 8px;
+        width: 100%;
+        box-sizing: border-box;
+        user-select: none;
+        z-index: 5;
+      }
+      .chart-legend-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 36px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: #ffffff;
+        border: 1.5px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        color: #2d3436;
+        cursor: pointer;
+        transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        outline: none;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .chart-legend-btn:hover {
+        background: #f8f9fa;
+        border-color: rgba(108, 92, 231, 0.4);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.09);
+        transform: translateY(-1px);
+      }
+      .chart-legend-btn:active {
+        transform: scale(0.96) translateY(0);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+      .chart-legend-btn.legend-item-hidden {
+        opacity: 0.42;
+        background: rgba(0, 0, 0, 0.02);
+        border-color: rgba(0, 0, 0, 0.06);
+        box-shadow: none;
+      }
+      .chart-legend-btn.legend-item-hidden:hover {
+        opacity: 0.65;
+        background: rgba(0, 0, 0, 0.04);
+        border-color: rgba(0, 0, 0, 0.12);
+      }
+      .chart-legend-btn.legend-item-hidden .legend-btn-text {
+        text-decoration: line-through;
+        color: #a4b0be;
+      }
+      .chart-legend-btn.legend-item-hidden .legend-indicator-dot,
+      .chart-legend-btn.legend-item-hidden .legend-indicator-line {
+        filter: grayscale(100%);
+        opacity: 0.4;
+      }
+      body.dark-mode .chart-legend-btn,
+      :root.dark-mode .chart-legend-btn {
+        background: #161b22;
+        border-color: #30363d;
+        color: #c9d1d9;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+      body.dark-mode .chart-legend-btn:hover,
+      :root.dark-mode .chart-legend-btn:hover {
+        background: #21262d;
+        border-color: #58a6ff;
+        color: #ffffff;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+      }
+      body.dark-mode .chart-legend-btn.legend-item-hidden,
+      :root.dark-mode .chart-legend-btn.legend-item-hidden {
+        opacity: 0.38;
+        background: rgba(22, 27, 34, 0.5);
+        border-color: rgba(48, 54, 61, 0.5);
+      }
+      body.dark-mode .chart-legend-btn.legend-item-hidden:hover,
+      :root.dark-mode .chart-legend-btn.legend-item-hidden:hover {
+        opacity: 0.6;
+        background: #161b22;
+        border-color: #484f58;
+      }
+      body.dark-mode .chart-legend-btn.legend-item-hidden .legend-btn-text,
+      :root.dark-mode .chart-legend-btn.legend-item-hidden .legend-btn-text {
+        color: #8b949e;
+      }
+      .legend-indicator-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.8);
+      }
+      body.dark-mode .legend-indicator-dot,
+      :root.dark-mode .legend-indicator-dot {
+        box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.6);
+      }
+      .legend-indicator-line {
+        width: 18px;
+        height: 0;
+        display: inline-block;
+        flex-shrink: 0;
+      }
+      .legend-indicator-line.dashed {
+        border-top: 2.5px dashed;
+      }
+      .legend-indicator-line.dotted {
+        border-top: 2.5px dotted;
+      }
+      .chart-card.fullscreen-chart-mode .chart-custom-legend {
+        padding: 6px 12px 8px !important;
+        gap: 10px 14px !important;
+        flex-shrink: 0 !important;
+      }
+      .chart-card.fullscreen-chart-mode .chart-legend-btn {
+        min-height: 38px !important;
+        padding: 7px 16px !important;
+        font-size: 12px !important;
+        border-width: 1.5px !important;
+      }
+
       /* Z-Score Analytics Panel */
       .zscore-panel {
         margin-top: 10px;
@@ -3509,6 +3639,9 @@
         <button class="chart-tab-btn" onclick="switchChartTab('Z-score')">Z-score</button>
       </div>
 
+      <!-- Custom HTML Legend for Full Paper Progression -->
+      <div class="chart-custom-legend" id="fullPaperCustomLegend"></div>
+
       <div class="chart-container" onclick="openChartFullscreenIfNormal('fullPaperChartCard')" style="cursor: pointer;" title="Click to view full screen (සම්පූර්ණ තිරය සඳහා ක්ලික් කරන්න)">
         <canvas id="scoreChart" style="display: none;"></canvas>
         <div id="noChartMsg" class="chart-empty-msg">තවම ලකුණු සහිත Full Paper එකක් සටහන් කර නොමැත 📝</div>
@@ -3617,6 +3750,9 @@
         <button class="chart-tab-btn" onclick="switchUnitChartTab('ET')">ET</button>
         <button class="chart-tab-btn" onclick="switchUnitChartTab('SFT')">SFT</button>
       </div>
+
+      <!-- Custom HTML Legend for Unit Paper Progression -->
+      <div class="chart-custom-legend" id="unitPaperCustomLegend"></div>
 
       <div class="chart-container" onclick="openChartFullscreenIfNormal('unitPaperChartCard')" style="cursor: pointer;" title="Click to view full screen (සම්පූර්ණ තිරය සඳහා ක්ලික් කරන්න)">
         <canvas id="unitScoreChart" style="display: none;"></canvas>
@@ -5767,6 +5903,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               scoreChartInstance.destroy();
               scoreChartInstance = null;
             }
+            renderCustomLegend('fullPaper', []);
             renderFullPaperAnalytics(null, 'Z-score');
             return;
           }
@@ -5835,6 +5972,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
             }
           });
+          renderCustomLegend('fullPaper', []);
           renderFullPaperAnalytics(null, 'Z-score');
           return;
         }
@@ -5857,6 +5995,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             scoreChartInstance.destroy();
             scoreChartInstance = null;
           }
+          renderCustomLegend('fullPaper', []);
           renderFullPaperAnalytics([], currentActiveChartTab);
           return;
         }
@@ -5882,6 +6021,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (currentActiveChartTab === 'All') {
           datasets = [
             {
+              key: 'ict',
+              lineStyle: 'solid',
               label: 'ICT',
               data: relevantEntries.map(e => e.subject === 'ICT' ? e.marks : null),
               borderColor: '#20bf6b',
@@ -5894,6 +6035,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               spanGaps: true
             },
             {
+              key: 'et',
+              lineStyle: 'solid',
               label: 'ET',
               data: relevantEntries.map(e => e.subject === 'ET' ? e.marks : null),
               borderColor: isDark ? '#a29bfe' : '#8c7ae6',
@@ -5906,6 +6049,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               spanGaps: true
             },
             {
+              key: 'sft',
+              lineStyle: 'solid',
               label: 'SFT',
               data: relevantEntries.map(e => e.subject === 'SFT' ? e.marks : null),
               borderColor: isDark ? '#58a6ff' : '#0984e3',
@@ -5921,6 +6066,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         } else {
           const datasetColor = currentActiveChartTab === 'ICT' ? '#20bf6b' : (currentActiveChartTab === 'ET' ? (isDark ? '#a29bfe' : '#8c7ae6') : (isDark ? '#58a6ff' : '#0984e3'));
           datasets = [{
+            key: 'subjectMarks',
+            lineStyle: 'solid',
             label: `${currentActiveChartTab} Marks`,
             data: marks,
             borderColor: datasetColor,
@@ -5938,6 +6085,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         // Add 75% target benchmark line
         const benchmarkLine = new Array(labels.length).fill(75);
         datasets.push({
+          key: 'benchmark',
+          lineStyle: 'dashed',
           label: '🎯 ඉලක්කය (75% A Grade)',
           data: benchmarkLine,
           borderColor: '#e74c3c',
@@ -5959,35 +6108,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: {
-                display: true,
-                position: 'top',
-                labels: {
-                  boxWidth: 10,
-                  font: { size: 9.5, family: 'Poppins', weight: '500' },
-                  color: chartTextColor
-                },
-                onClick: function(e, legendItem, legend) {
-                  const chart = legend.chart;
-                  let targetIndex = -1;
-                  if (chart.data && chart.data.datasets) {
-                    targetIndex = chart.data.datasets.findIndex(d => d && d.label === legendItem.text);
-                  }
-                  if (targetIndex === -1 && typeof legendItem.datasetIndex === 'number') {
-                    targetIndex = legendItem.datasetIndex;
-                  }
-                  if (targetIndex !== -1) {
-                    const isVisible = chart.isDatasetVisible(targetIndex);
-                    if (isVisible) {
-                      chart.hide(targetIndex);
-                      legendItem.hidden = true;
-                    } else {
-                      chart.show(targetIndex);
-                      legendItem.hidden = false;
-                    }
-                  }
-                }
-              },
+              legend: { display: false },
               tooltip: {
                 callbacks: {
                   label: function(c) {
@@ -6033,6 +6154,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             }
           }
         });
+
+        // Render responsive custom HTML legend pills
+        renderCustomLegend('fullPaper', datasets);
 
         // Trigger multi-window analytics update for the active Full Paper tab
         renderFullPaperAnalytics(relevantEntries, currentActiveChartTab);
@@ -6325,6 +6449,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             unitScoreChartInstance.destroy();
             unitScoreChartInstance = null;
           }
+          renderCustomLegend('unitPaper', []);
           renderUnitPaperAnalytics([], currentActiveUnitChartTab);
           return;
         }
@@ -6393,6 +6518,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
           datasets = [
             {
+              key: 'ict',
+              lineStyle: 'solid',
               label: 'ICT',
               data: ictData,
               borderColor: '#20bf6b',
@@ -6407,6 +6534,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               spanGaps: true
             },
             {
+              key: 'et',
+              lineStyle: 'solid',
               label: 'ET',
               data: etData,
               borderColor: isDark ? '#a29bfe' : '#8c7ae6',
@@ -6421,6 +6550,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               spanGaps: true
             },
             {
+              key: 'sft',
+              lineStyle: 'solid',
               label: 'SFT',
               data: sftData,
               borderColor: isDark ? '#58a6ff' : '#0984e3',
@@ -6435,6 +6566,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               spanGaps: true
             },
             {
+              key: 'last5Avg',
+              lineStyle: 'dashed',
               label: `📊 පසුගිය Papers 5 සාමාන්‍යය (${last5Avg.toFixed(1)}%)`,
               data: last5LineData,
               borderColor: '#f39c12',
@@ -6444,6 +6577,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               fill: false
             },
             {
+              key: 'movingTrend',
+              lineStyle: 'dotted',
               label: `📈 5-Paper Moving Trend`,
               data: rolling5Data,
               borderColor: isDark ? '#a29bfe' : '#8c7ae6',
@@ -6459,6 +6594,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const datasetColor = currentActiveUnitChartTab === 'ICT' ? '#20bf6b' : (currentActiveUnitChartTab === 'ET' ? (isDark ? '#a29bfe' : '#8c7ae6') : (isDark ? '#58a6ff' : '#0984e3'));
           datasets = [
             {
+              key: 'subjectMarks',
+              lineStyle: 'solid',
               label: `${currentActiveUnitChartTab} Marks`,
               data: relevantEntries.map(e => e.marks),
               borderColor: datasetColor,
@@ -6473,6 +6610,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               fill: true
             },
             {
+              key: 'last5Avg',
+              lineStyle: 'dashed',
               label: `📊 පසුගිය Papers 5 සාමාන්‍යය (${last5Avg.toFixed(1)}%)`,
               data: last5LineData,
               borderColor: '#f39c12',
@@ -6482,6 +6621,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               fill: false
             },
             {
+              key: 'movingTrend',
+              lineStyle: 'dotted',
               label: `📈 5-Paper Moving Trend`,
               data: rolling5Data,
               borderColor: isDark ? '#a29bfe' : '#8c7ae6',
@@ -6507,35 +6648,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: {
-                display: true,
-                position: 'top',
-                labels: {
-                  boxWidth: 10,
-                  font: { size: 9.5, family: 'Poppins', weight: '500' },
-                  color: chartTextColor
-                },
-                onClick: function(e, legendItem, legend) {
-                  const chart = legend.chart;
-                  let targetIndex = -1;
-                  if (chart.data && chart.data.datasets) {
-                    targetIndex = chart.data.datasets.findIndex(d => d && d.label === legendItem.text);
-                  }
-                  if (targetIndex === -1 && typeof legendItem.datasetIndex === 'number') {
-                    targetIndex = legendItem.datasetIndex;
-                  }
-                  if (targetIndex !== -1) {
-                    const isVisible = chart.isDatasetVisible(targetIndex);
-                    if (isVisible) {
-                      chart.hide(targetIndex);
-                      legendItem.hidden = true;
-                    } else {
-                      chart.show(targetIndex);
-                      legendItem.hidden = false;
-                    }
-                  }
-                }
-              },
+              legend: { display: false },
               tooltip: {
                 callbacks: {
                   label: function(c) {
@@ -6585,6 +6698,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             }
           }
         });
+
+        // Render responsive custom HTML legend pills
+        renderCustomLegend('unitPaper', datasets);
 
         // Trigger multi-window analytics update for the active view
         renderUnitPaperAnalytics(relevantEntries, currentActiveUnitChartTab);
@@ -7079,6 +7195,97 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       };
       if (typeof Chart !== 'undefined') {
         Chart.register(chartDataLabelsPlugin);
+      }
+
+      // =========================================================================
+      // Isolated Responsive HTML Custom Chart Legend System
+      // =========================================================================
+      function renderCustomLegend(chartType, datasets) {
+        const containerId = chartType === 'fullPaper' ? 'fullPaperCustomLegend' : 'unitPaperCustomLegend';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        if (!datasets || datasets.length === 0) {
+          container.innerHTML = '';
+          container.style.display = 'none';
+          return;
+        }
+
+        container.style.display = 'flex';
+        const chart = chartType === 'fullPaper' ? scoreChartInstance : unitScoreChartInstance;
+
+        let html = '';
+        datasets.forEach((ds, index) => {
+          if (!ds || !ds.label) return;
+
+          let isVisible = true;
+          if (chart && typeof chart.isDatasetVisible === 'function') {
+            isVisible = chart.isDatasetVisible(index);
+          }
+
+          let indicatorHtml = '';
+          const color = ds.borderColor || '#6c5ce7';
+          if (ds.lineStyle === 'dashed') {
+            indicatorHtml = `<span class="legend-indicator-line dashed" style="border-top-color: ${color};"></span>`;
+          } else if (ds.lineStyle === 'dotted') {
+            indicatorHtml = `<span class="legend-indicator-line dotted" style="border-top-color: ${color};"></span>`;
+          } else {
+            indicatorHtml = `<span class="legend-indicator-dot" style="background-color: ${color};"></span>`;
+          }
+
+          const hiddenClass = !isVisible ? ' legend-item-hidden' : '';
+          const ariaPressed = isVisible ? 'true' : 'false';
+
+          html += `
+            <button type="button" 
+                    class="chart-legend-btn${hiddenClass}" 
+                    data-chart="${chartType}"
+                    data-key="${ds.key || ''}" 
+                    aria-pressed="${ariaPressed}"
+                    onclick="toggleCustomLegendDataset('${chartType}', '${ds.key || ''}', event)"
+                    title="ක්ලික් කරන්න: ${ds.label} පෙන්වන්න/සඟවන්න">
+              ${indicatorHtml}
+              <span class="legend-btn-text">${ds.label}</span>
+            </button>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      function toggleCustomLegendDataset(chartType, key, event) {
+        if (event) {
+          if (typeof event.stopPropagation === 'function') event.stopPropagation();
+          if (typeof event.preventDefault === 'function') event.preventDefault();
+        }
+
+        const chart = chartType === 'fullPaper' ? scoreChartInstance : unitScoreChartInstance;
+        const containerId = chartType === 'fullPaper' ? 'fullPaperCustomLegend' : 'unitPaperCustomLegend';
+
+        if (!chart || !chart.data || !chart.data.datasets) return;
+
+        const dsIndex = chart.data.datasets.findIndex(d => d && d.key === key);
+        if (dsIndex === -1) return;
+
+        const isCurrentlyVisible = chart.isDatasetVisible(dsIndex);
+        const nextVisibility = !isCurrentlyVisible;
+        chart.setDatasetVisibility(dsIndex, nextVisibility);
+        chart.update();
+
+        // Update button UI
+        const container = document.getElementById(containerId);
+        if (container) {
+          const btn = container.querySelector(`button[data-key="${key}"]`);
+          if (btn) {
+            if (nextVisibility) {
+              btn.classList.remove('legend-item-hidden');
+              btn.setAttribute('aria-pressed', 'true');
+            } else {
+              btn.classList.add('legend-item-hidden');
+              btn.setAttribute('aria-pressed', 'false');
+            }
+          }
+        }
       }
 
       // =========================================================================
