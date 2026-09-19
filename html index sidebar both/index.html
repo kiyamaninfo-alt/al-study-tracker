@@ -563,12 +563,12 @@
         z-index: 99999 !important;
         border-radius: 0 !important;
         margin: 0 !important;
-        padding: 18px 24px !important;
+        padding: 10px 16px !important;
         box-sizing: border-box !important;
         background: #ffffff !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow-y: auto !important;
+        overflow: hidden !important;
         box-shadow: none !important;
       }
       body.dark-mode .chart-card.fullscreen-chart-mode,
@@ -577,22 +577,32 @@
         border-color: #30363d !important;
       }
       .chart-card.fullscreen-chart-mode .chart-header {
-        font-size: 15px !important;
-        margin-bottom: 12px !important;
+        font-size: 13.5px !important;
+        margin-bottom: 8px !important;
+        flex-shrink: 0 !important;
       }
       .chart-card.fullscreen-chart-mode .chart-tab-bar {
-        padding: 4px !important;
-        margin-bottom: 12px !important;
+        padding: 3px !important;
+        margin-bottom: 8px !important;
+        flex-shrink: 0 !important;
       }
       .chart-card.fullscreen-chart-mode .chart-tab-btn {
-        font-size: 12px !important;
-        padding: 8px 0 !important;
+        font-size: 11px !important;
+        padding: 6px 0 !important;
       }
       .chart-card.fullscreen-chart-mode .chart-container {
-        flex: 1 1 auto !important;
+        flex: 1 1 0 !important;
         width: 100% !important;
-        height: calc(100vh - 230px) !important;
-        min-height: 380px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        position: relative !important;
+      }
+      .chart-card.fullscreen-chart-mode #fullPaperSummaryBar,
+      .chart-card.fullscreen-chart-mode #unitPaperSummaryBar,
+      .chart-card.fullscreen-chart-mode #fullPaperAnalyticsPanel,
+      .chart-card.fullscreen-chart-mode #upAnalyticsPanel,
+      .chart-card.fullscreen-chart-mode .zscore-panel {
+        display: none !important;
       }
       .chart-card.fullscreen-chart-mode .chart-fullscreen-btn {
         background: #eb4d4b;
@@ -605,6 +615,40 @@
       .chart-card.fullscreen-chart-mode .chart-fullscreen-btn:hover {
         background: #d63031;
         border-color: #d63031;
+      }
+      .chart-data-toggle-btn {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        background: rgba(108, 92, 231, 0.1);
+        border: 1px solid rgba(108, 92, 231, 0.3);
+        color: #6c5ce7;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 4px 9px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .chart-card.fullscreen-chart-mode .chart-data-toggle-btn {
+        display: inline-flex !important;
+      }
+      .chart-data-toggle-btn.btn-inactive {
+        background: #f1f2f6;
+        color: #7f8fa6;
+        border-color: #dcdde1;
+      }
+      body.dark-mode .chart-data-toggle-btn,
+      :root.dark-mode .chart-data-toggle-btn {
+        background: rgba(162, 155, 254, 0.15);
+        color: #a29bfe;
+        border-color: rgba(162, 155, 254, 0.35);
+      }
+      body.dark-mode .chart-data-toggle-btn.btn-inactive,
+      :root.dark-mode .chart-data-toggle-btn.btn-inactive {
+        background: #21262d;
+        color: #8b949e;
+        border-color: #30363d;
       }
 
       /* Z-Score Analytics Panel */
@@ -701,10 +745,55 @@
       #ebbinghausList {
         padding-right: 2px;
       }
-      #cardUrgentRadar .ranking-table-responsive,
-      #cardEbbinghaus .ranking-table-responsive {
-        max-height: 280px !important;
+      .ranking-card {
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .ranking-card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      }
+      body.dark-mode .ranking-card:hover,
+      :root.dark-mode .ranking-card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+      .ranking-card .ranking-table-responsive {
+        max-height: none !important;
+        overflow-y: visible !important;
+        overflow-x: auto !important;
+      }
+      #dataCardFullscreenModal .ranking-table-responsive {
+        max-height: calc(88vh - 120px) !important;
         overflow-y: auto !important;
+      }
+      .card-fs-btn {
+        background: rgba(108, 92, 231, 0.1);
+        border: 1px solid rgba(108, 92, 231, 0.3);
+        color: #6c5ce7;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+      .card-fs-btn:hover {
+        background: #6c5ce7;
+        color: #ffffff;
+      }
+      body.dark-mode .card-fs-btn,
+      :root.dark-mode .card-fs-btn {
+        background: rgba(162, 155, 254, 0.15);
+        border-color: rgba(162, 155, 254, 0.35);
+        color: #a29bfe;
+      }
+      body.dark-mode .card-fs-btn:hover,
+      :root.dark-mode .card-fs-btn:hover {
+        background: #6c5ce7;
+        color: #ffffff;
       }
       #radarList::-webkit-scrollbar,
       #ebbinghausList::-webkit-scrollbar,
@@ -3297,18 +3386,21 @@
     </div>
 
     <!-- Urgent Review Radar -->
-    <div class="ranking-card radar-card" id="cardUrgentRadar">
+    <div class="ranking-card radar-card" id="cardUrgentRadar" onclick="handleCardClick('urgentRadar', event)">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⚡</span>
           <span>⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)</span>
         </div>
-        <span class="ranking-badge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Urgent Radar</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="ranking-badge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Urgent Radar</span>
+          <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('urgentRadar', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
+        </div>
       </div>
       <div class="ranking-subtitle">
         පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ පාඩම්.
       </div>
-      <div class="ranking-table-responsive" style="max-height: 280px; overflow-y: auto;">
+      <div class="ranking-table-responsive">
         <table class="ranking-table">
           <thead>
             <tr>
@@ -3337,13 +3429,16 @@
     </div>
 
     <!-- Hermann Ebbinghaus Forgetting Curve Card — v16 Multi-Cycle -->
-    <div class="ranking-card ebbinghaus-card" id="cardEbbinghaus">
+    <div class="ranking-card ebbinghaus-card" id="cardEbbinghaus" onclick="handleCardClick('ebbinghaus', event)">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">🧠</span>
           <span>🧠 හර්මන් එබින්ගවුස්ගේ "අමතකවීමේ වක්‍රය" — Spaced Repetition Cycles</span>
         </div>
-        <span class="ranking-badge" style="background: rgba(140, 122, 230, 0.12); color: #8c7ae6;">Cycles</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="ranking-badge" style="background: rgba(140, 122, 230, 0.12); color: #8c7ae6;">Cycles</span>
+          <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('ebbinghaus', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
+        </div>
       </div>
       <div class="ranking-subtitle">
         දිගුකාලීන මතකය (Long-term Memory) තහවුරු කරගැනීම සඳහා නියමිත කාල පරාසයන්හිදී නැවත පුනරීක්ෂණය කරන්න.
@@ -3372,7 +3467,7 @@
       </div>
 
       <!-- Table format with Done checkbox -->
-      <div class="ranking-table-responsive" style="max-height: 280px; overflow-y: auto;">
+      <div class="ranking-table-responsive">
         <table class="ranking-table">
           <thead>
             <tr>
@@ -3401,6 +3496,7 @@
         <span id="chartCardHeading">📈 Full Paper Score Progression (All %)</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 8.5px; color: #a4b0be;" id="chartZoomIndicator">Adaptive Zoom</span>
+          <button type="button" class="chart-data-toggle-btn" id="btnFullPaperDataLabels" onclick="toggleChartDataLabels(event)" title="Toggle Data Values (ලකුණු අගයන් පෙන්වන්න/සඟවන්න)">🏷️ Values: ON</button>
           <button type="button" class="chart-fullscreen-btn" id="btnFullPaperFs" onclick="toggleChartFullscreen('fullPaperChartCard')" title="Full Screen (සම්පූර්ණ තිරය)">⛶ Fullscreen</button>
         </div>
       </div>
@@ -3510,6 +3606,7 @@
         <span id="unitChartCardHeading">📈 Unit Paper Score Progression (All)</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 8.5px; color: #a4b0be;" id="unitChartZoomIndicator">Adaptive Zoom</span>
+          <button type="button" class="chart-data-toggle-btn" id="btnUnitPaperDataLabels" onclick="toggleChartDataLabels(event)" title="Toggle Data Values (ලකුණු අගයන් පෙන්වන්න/සඟවන්න)">🏷️ Values: ON</button>
           <button type="button" class="chart-fullscreen-btn" id="btnUnitPaperFs" onclick="toggleChartFullscreen('unitPaperChartCard')" title="Full Screen (සම්පූර්ණ තිරය)">⛶ Fullscreen</button>
         </div>
       </div>
@@ -3628,13 +3725,16 @@
     </div>
 
     <!-- Card (B): Top 5 Highest Score Unit Papers -->
-    <div class="ranking-card" id="cardTopHighestUnitPapers">
+    <div class="ranking-card" id="cardTopHighestUnitPapers" onclick="handleCardClick('topHighest', event)">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">🏆</span>
           <span id="cardBTitle">🏆 වැඩිම ලකුණු සහිත Unit Papers</span>
         </div>
-        <span class="ranking-badge" id="cardBBadge" style="background: rgba(39, 174, 96, 0.12); color: #27ae60;">Top 5 High</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="ranking-badge" id="cardBBadge" style="background: rgba(39, 174, 96, 0.12); color: #27ae60;">Top 5 High</span>
+          <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('topHighest', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
+        </div>
       </div>
       <div class="ranking-subtitle" id="cardBSub">
         විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5.
@@ -3663,13 +3763,16 @@
     </div>
 
     <!-- Card (C): Lowest 5 Score Unit Papers -->
-    <div class="ranking-card" id="cardLowestScoreUnitPapers">
+    <div class="ranking-card" id="cardLowestScoreUnitPapers" onclick="handleCardClick('lowestScore', event)">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⚠️</span>
           <span id="cardCTitle">📉 අඩුම ලකුණු සහිත Unit Papers</span>
         </div>
-        <span class="ranking-badge" id="cardCBadge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Least 5</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="ranking-badge" id="cardCBadge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Least 5</span>
+          <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('lowestScore', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
+        </div>
       </div>
       <div class="ranking-subtitle" id="cardCSub">
         නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 5.
@@ -3698,13 +3801,16 @@
     </div>
 
     <!-- Card (D): Currently Teaching Lessons (දැනට උගන්වන පාඩම්) -->
-    <div class="ranking-card" id="cardOldestLessonPending">
+    <div class="ranking-card" id="cardOldestLessonPending" onclick="handleCardClick('currentlyTeaching', event)">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">📘</span>
           <span id="cardDTitle">📘 📘 දැනට උගන්වන පාඩම්</span>
         </div>
-        <span class="ranking-badge" id="cardDBadge" style="background: rgba(9, 132, 227, 0.12); color: #0984e3;">දැනට උගන්වන</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="ranking-badge" id="cardDBadge" style="background: rgba(9, 132, 227, 0.12); color: #0984e3;">දැනට උගන්වන</span>
+          <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('currentlyTeaching', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
+        </div>
       </div>
       <div class="ranking-subtitle" id="cardDSub">
         ඉගෙනීම ආරම්භ කර ඇති නමුත් තවමත් ගෙදර වැඩ සහ පේපර් අවසන් නොවූ පාඩම්.
@@ -3733,13 +3839,16 @@
     </div>
 
     <!-- Card (E): Pending Test Papers (උගන්නලා ‌, පාඩම් කරලා තියන නමුත් පේපර් නොකරපු පාඩම් ) -->
-    <div class="ranking-card" id="cardOldestBothPendingNoPaper">
+    <div class="ranking-card" id="cardOldestBothPendingNoPaper" onclick="handleCardClick('pendingTestPapers', event)">
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⏳</span>
           <span id="cardETitle">⏳ ⏳ උගන්නලා ‌, පාඩම් කරලා තියන නමුත් පේපර් නොකරපු පාඩම් </span>
         </div>
-        <span class="ranking-badge" id="cardEBadge" style="background: rgba(225, 112, 85, 0.12); color: #e17055;">පේපර් කළ යුතු</span>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="ranking-badge" id="cardEBadge" style="background: rgba(225, 112, 85, 0.12); color: #e17055;">පේපර් කළ යුතු</span>
+          <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('pendingTestPapers', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
+        </div>
       </div>
       <div class="ranking-subtitle" id="cardESub">
         පාඩම සහ ගෙදර වැඩ (HW) අවසන් වූ, ප්‍රශ්න පත්‍ර කළ යුතු පාඩම්.
@@ -4067,6 +4176,31 @@
           <div style="position: relative; width: 100%; height: 140px;">
             <canvas id="unitChartCanvas" style="display: none;"></canvas>
             <div id="noUnitChartMsg" class="chart-empty-msg">මෙම ඒකකය සඳහා තවම ලකුණු සහිත Unit Paper එකක් ලොග් කර නැත 📝</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 10 Data Card Full-Screen Modal -->
+    <div class="modal-overlay" id="dataCardFullscreenModal" onclick="closeDataCardFullscreen(event)">
+      <div class="modal-window" style="max-width: 95vw; width: 1100px; max-height: 92vh; height: auto;" onclick="event.stopPropagation()">
+        <div class="modal-header" id="dataCardFsHeader" style="background: linear-gradient(135deg, #2d3436, #636e72);">
+          <div class="modal-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span id="dataCardFsTitle">Card Title</span>
+            <span class="ranking-badge" id="dataCardFsBadge" style="background: rgba(255, 255, 255, 0.25); color: #ffffff; margin-left: 6px; font-weight: 700;">Top 10</span>
+          </div>
+          <button class="modal-close-btn" onclick="closeDataCardFullscreen()" title="Close (වසන්න)">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; max-height: calc(92vh - 65px);">
+          <div id="dataCardFsSubtitle" style="font-size: 11px; color: #636e72; margin-bottom: 12px; line-height: 1.4;">
+            Subtitle
+          </div>
+          <div id="dataCardFsExtraControls" style="display: none; margin-bottom: 12px;"></div>
+          <div class="ranking-table-responsive" style="max-height: none; overflow-x: auto; border: 1px solid #dfe6e9;">
+            <table class="ranking-table">
+              <thead id="dataCardFsThead"></thead>
+              <tbody id="dataCardFsTbody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -4458,6 +4592,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let cachedSyllabusList = [];
       let currentSearchResults = [];
       let selectedSubLessonObj = null;
+
+      // Full lists for Top 10 Modals & Top 5 Card Views
+      let globalUrgentRadarFullList = [];
+      let globalTopHighestFullList = [];
+      let globalLowestScoresFullList = [];
+      let globalPendingLessonsFullList = [];
+      let globalPendingTestPapersFullList = [];
+      let currentFsCardType = null;
+      let showChartDataLabels = true;
 
       window.onload = function() {
  const today = new Date().toISOString().split('T')[0];
@@ -4929,7 +5072,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             if (b.colH !== a.colH) return b.colH - a.colH;
             return a.sortOrder - b.sortOrder;
           });
+          globalUrgentRadarFullList = urgentRadarItems;
           rpcData.radar = urgentRadarItems.slice(0, 5);
+          if (currentFsCardType === 'urgentRadar' && typeof openDataCardFullscreen === 'function') {
+            openDataCardFullscreen('urgentRadar');
+          }
 
           // Update weekly quota actual full papers count
           if (rpcData.weeklyQuota) {
@@ -5190,8 +5337,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           return it.stageBucket === currentEbbFilter;
         });
 
-        // Scrollable list showing all filtered items
-        const displayItems = filtered;
+        // Non-scrollable list restricted to displaying the Top 5 items only in dashboard view
+        const displayItems = filtered.slice(0, 5);
 
         if (descEl) {
           const totalCount = filtered.length;
@@ -5252,6 +5399,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         if (typeof updateCardRowSpace === 'function') {
           setTimeout(updateCardRowSpace, 30);
+        }
+        if (currentFsCardType === 'ebbinghaus' && typeof renderEbbinghausModalContent === 'function') {
+          renderEbbinghausModalContent();
         }
       }
 
@@ -5816,6 +5966,26 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   boxWidth: 10,
                   font: { size: 9.5, family: 'Poppins', weight: '500' },
                   color: chartTextColor
+                },
+                onClick: function(e, legendItem, legend) {
+                  const chart = legend.chart;
+                  let targetIndex = -1;
+                  if (chart.data && chart.data.datasets) {
+                    targetIndex = chart.data.datasets.findIndex(d => d && d.label === legendItem.text);
+                  }
+                  if (targetIndex === -1 && typeof legendItem.datasetIndex === 'number') {
+                    targetIndex = legendItem.datasetIndex;
+                  }
+                  if (targetIndex !== -1) {
+                    const isVisible = chart.isDatasetVisible(targetIndex);
+                    if (isVisible) {
+                      chart.hide(targetIndex);
+                      legendItem.hidden = true;
+                    } else {
+                      chart.show(targetIndex);
+                      legendItem.hidden = false;
+                    }
+                  }
                 }
               },
               tooltip: {
@@ -5843,7 +6013,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 grid: { color: chartGridColor }
               },
               x: {
-                ticks: { color: chartMutedColor, font: { size: 8.5 } },
+                ticks: {
+                  color: chartMutedColor,
+                  font: { size: window.innerWidth < 640 ? 7.5 : 8.5 },
+                  maxRotation: window.innerWidth < 640 ? 0 : 45,
+                  minRotation: 0,
+                  autoSkip: true,
+                  maxTicksLimit: window.innerWidth < 640 ? 8 : 25,
+                  callback: function(val) {
+                    const rawLabel = this.getLabelForValue(val) || '';
+                    if (window.innerWidth < 640) {
+                      return rawLabel.replace(/\s*\([^)]*\)/g, '').trim();
+                    }
+                    return rawLabel;
+                  }
+                },
                 grid: { display: false }
               }
             }
@@ -6257,8 +6441,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               borderWidth: 2,
               borderDash: [6, 6],
               pointRadius: 0,
-              fill: false,
-              order: 0
+              fill: false
             },
             {
               label: `📈 5-Paper Moving Trend`,
@@ -6269,8 +6452,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               pointRadius: 3,
               pointBackgroundColor: isDark ? '#a29bfe' : '#8c7ae6',
               tension: 0.3,
-              fill: false,
-              order: 1
+              fill: false
             }
           ];
         } else {
@@ -6297,8 +6479,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               borderWidth: 2,
               borderDash: [6, 6],
               pointRadius: 0,
-              fill: false,
-              order: 0
+              fill: false
             },
             {
               label: `📈 5-Paper Moving Trend`,
@@ -6309,8 +6490,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               pointRadius: 3,
               pointBackgroundColor: isDark ? '#a29bfe' : '#8c7ae6',
               tension: 0.3,
-              fill: false,
-              order: 1
+              fill: false
             }
           ];
         }
@@ -6334,6 +6514,26 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   boxWidth: 10,
                   font: { size: 9.5, family: 'Poppins', weight: '500' },
                   color: chartTextColor
+                },
+                onClick: function(e, legendItem, legend) {
+                  const chart = legend.chart;
+                  let targetIndex = -1;
+                  if (chart.data && chart.data.datasets) {
+                    targetIndex = chart.data.datasets.findIndex(d => d && d.label === legendItem.text);
+                  }
+                  if (targetIndex === -1 && typeof legendItem.datasetIndex === 'number') {
+                    targetIndex = legendItem.datasetIndex;
+                  }
+                  if (targetIndex !== -1) {
+                    const isVisible = chart.isDatasetVisible(targetIndex);
+                    if (isVisible) {
+                      chart.hide(targetIndex);
+                      legendItem.hidden = true;
+                    } else {
+                      chart.show(targetIndex);
+                      legendItem.hidden = false;
+                    }
+                  }
                 }
               },
               tooltip: {
@@ -6367,7 +6567,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               x: {
                 ticks: {
                   color: chartMutedColor,
-                  font: { size: 8.5 }
+                  font: { size: window.innerWidth < 640 ? 7.5 : 8.5 },
+                  maxRotation: window.innerWidth < 640 ? 0 : 45,
+                  minRotation: 0,
+                  autoSkip: true,
+                  maxTicksLimit: window.innerWidth < 640 ? 8 : 25,
+                  callback: function(val) {
+                    const rawLabel = this.getLabelForValue(val) || '';
+                    if (window.innerWidth < 640) {
+                      return rawLabel.replace(/\s*\([^)]*\)/g, '').trim();
+                    }
+                    return rawLabel;
+                  }
                 },
                 grid: { display: false }
               }
@@ -6803,7 +7014,120 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       }
       applyLanguage(currentLang);
 
+      // =========================================================================
+      // Chart Data Labels Inline Plugin & Visibility Toggle
+      // =========================================================================
+      function toggleChartDataLabels(e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+        showChartDataLabels = !showChartDataLabels;
+        const btns = [document.getElementById('btnFullPaperDataLabels'), document.getElementById('btnUnitPaperDataLabels')];
+        btns.forEach(b => {
+          if (!b) return;
+          if (showChartDataLabels) {
+            b.innerHTML = '🏷️ Values: ON';
+            b.classList.remove('btn-inactive');
+          } else {
+            b.innerHTML = '🏷️ Values: OFF';
+            b.classList.add('btn-inactive');
+          }
+        });
+        if (scoreChartInstance) scoreChartInstance.update('none');
+        if (unitScoreChartInstance) unitScoreChartInstance.update('none');
+      }
+
+      const chartDataLabelsPlugin = {
+        id: 'chartDataLabelsPlugin',
+        afterDatasetsDraw(chart) {
+          if (!showChartDataLabels) return;
+          const isFs = !!document.querySelector('.chart-card.fullscreen-chart-mode');
+          if (!isFs) return; // Keep normal dashboard clean; display when in full screen
+
+          const { ctx } = chart;
+          ctx.save();
+          const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+
+          chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            if (!meta || meta.hidden) return;
+            if (dataset.label && (dataset.label.includes('ඉලක්කය') || dataset.label.includes('Moving') || dataset.label.includes('සාමාන්‍යය'))) {
+              return;
+            }
+
+            ctx.font = 'bold 9px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+
+            meta.data.forEach((element, index) => {
+              const val = dataset.data[index];
+              if (val === null || val === undefined || isNaN(val)) return;
+
+              const pos = element.tooltipPosition();
+              let displayVal = typeof val === 'number' ? (Number.isInteger(val) ? `${val}%` : `${val.toFixed(1)}%`) : `${val}`;
+              if (dataset.label === 'Composite Z-Score') {
+                displayVal = (val > 0 ? '+' : '') + Number(val).toFixed(2);
+              }
+
+              ctx.fillStyle = isDark ? '#f0f6fc' : '#2d3436';
+              ctx.strokeStyle = isDark ? '#0d1117' : '#ffffff';
+              ctx.lineWidth = 2.5;
+              ctx.strokeText(displayVal, pos.x, pos.y - 5);
+              ctx.fillText(displayVal, pos.x, pos.y - 5);
+            });
+          });
+          ctx.restore();
+        }
+      };
+      if (typeof Chart !== 'undefined') {
+        Chart.register(chartDataLabelsPlugin);
+      }
+
+      // =========================================================================
+      // Mobile Landscape Orientation Lock & Release
+      // =========================================================================
+      async function requestLandscapeOrientation() {
+        try {
+          if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+            try {
+              await document.documentElement.requestFullscreen();
+            } catch (fsErr) {}
+          }
+          if (screen.orientation && typeof screen.orientation.lock === 'function') {
+            await screen.orientation.lock('landscape');
+          }
+        } catch (err) {
+          console.debug('Orientation lock notice:', err);
+        }
+      }
+
+      function releaseLandscapeOrientation() {
+        try {
+          if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+            screen.orientation.unlock();
+          }
+          if (document.fullscreenElement && document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          }
+        } catch (err) {
+          console.debug('Orientation unlock notice:', err);
+        }
+      }
+
       // --- Chart Fullscreen Controller ---
+      function refreshFullscreenCharts(cardId) {
+        const doRefresh = () => {
+          if (cardId === 'fullPaperChartCard' && scoreChartInstance) {
+            scoreChartInstance.resize();
+            scoreChartInstance.update('none');
+          } else if (cardId === 'unitPaperChartCard' && unitScoreChartInstance) {
+            unitScoreChartInstance.resize();
+            unitScoreChartInstance.update('none');
+          }
+        };
+        doRefresh();
+        setTimeout(doRefresh, 60);
+        setTimeout(doRefresh, 250);
+      }
+
       function toggleChartFullscreen(cardId) {
         const card = document.getElementById(cardId);
         if (!card) return;
@@ -6819,18 +7143,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               if (otherBtn) otherBtn.innerHTML = '⛶ Fullscreen';
             }
           });
+          const isMobile = window.innerWidth <= 1024 || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+          if (isMobile) {
+            requestLandscapeOrientation();
+          }
         } else {
           if (btn) btn.innerHTML = '⛶ Fullscreen';
           document.body.style.overflow = '';
+          releaseLandscapeOrientation();
         }
 
-        setTimeout(() => {
-          if (cardId === 'fullPaperChartCard' && scoreChartInstance) {
-            scoreChartInstance.resize();
-          } else if (cardId === 'unitPaperChartCard' && unitScoreChartInstance) {
-            unitScoreChartInstance.resize();
-          }
-        }, 50);
+        refreshFullscreenCharts(cardId);
       }
 
       function openChartFullscreenIfNormal(cardId) {
@@ -6841,11 +7164,430 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
       }
 
+      window.addEventListener('orientationchange', () => {
+        const fsCard = document.querySelector('.chart-card.fullscreen-chart-mode');
+        if (fsCard) refreshFullscreenCharts(fsCard.id);
+      });
+      window.addEventListener('resize', () => {
+        const fsCard = document.querySelector('.chart-card.fullscreen-chart-mode');
+        if (fsCard) refreshFullscreenCharts(fsCard.id);
+      });
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+          const fsCard = document.querySelector('.chart-card.fullscreen-chart-mode');
+          if (fsCard) {
+            toggleChartFullscreen(fsCard.id);
+          }
+        }
+      });
+
+      // =========================================================================
+      // Full-Screen Top 10 Modals Controller for Data Cards
+      // =========================================================================
+      function handleCardClick(type, event) {
+        if (event && event.target && event.target.closest('button, input, a, select, .ebb-filter-btn, .ebb-cycle-tab, .ebb-tick')) {
+          return;
+        }
+        openDataCardFullscreen(type, event);
+      }
+
+      function openDataCardFullscreen(cardType, event) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        currentFsCardType = cardType;
+        const modal = document.getElementById('dataCardFullscreenModal');
+        const titleEl = document.getElementById('dataCardFsTitle');
+        const badgeEl = document.getElementById('dataCardFsBadge');
+        const subEl = document.getElementById('dataCardFsSubtitle');
+        const extraEl = document.getElementById('dataCardFsExtraControls');
+        const theadEl = document.getElementById('dataCardFsThead');
+        const tbodyEl = document.getElementById('dataCardFsTbody');
+        const headerEl = document.getElementById('dataCardFsHeader');
+
+        if (!modal || !titleEl || !theadEl || !tbodyEl) return;
+
+        extraEl.style.display = 'none';
+        extraEl.innerHTML = '';
+
+        if (cardType === 'urgentRadar') {
+          titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)';
+          badgeEl.innerText = 'Top 10 Urgent Radar';
+          badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
+          badgeEl.style.color = '#ffffff';
+          headerEl.style.background = 'linear-gradient(135deg, #eb4d4b, #d63031)';
+          subEl.innerText = 'පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ මුල්ම පාඩම් 10.';
+
+          theadEl.innerHTML = `
+            <tr>
+              <th style="width: 55px; text-align: center;">Priority</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: right;">Days Elapsed</th>
+            </tr>
+          `;
+
+          const items = (globalUrgentRadarFullList || []).slice(0, 10);
+          if (items.length === 0) {
+            tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 16px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
+          } else {
+            tbodyEl.innerHTML = items.map((item, idx) => {
+              const subj = item.subject || 'ICT';
+              const subjClass = `subj-pill-${subj.toLowerCase()}`;
+              const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+              const unitName = item.unitName || '-';
+              const subUnitNo = item.code || '-';
+              let cleanTitle = (item.title || item.subLesson || '-').trim();
+              if (item.code && cleanTitle.startsWith(item.code)) {
+                cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+              }
+              return `
+                <tr>
+                  <td style="text-align: center;"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
+                  <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
+                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
+                  <td style="text-align: right;"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                </tr>
+              `;
+            }).join('');
+          }
+
+        } else if (cardType === 'ebbinghaus') {
+          titleEl.innerHTML = '🧠 හර්මන් එබින්ගවුස්ගේ "අමතකවීමේ වක්‍රය" — Spaced Repetition Cycles';
+          badgeEl.innerText = `Top 10 • Cycle ${currentEbbCycle}`;
+          badgeEl.style.background = 'rgba(140, 122, 230, 0.35)';
+          badgeEl.style.color = '#ffffff';
+          headerEl.style.background = 'linear-gradient(135deg, #6c5ce7, #8c7ae6)';
+          subEl.innerText = 'දිගුකාලීන මතකය (Long-term Memory) තහවුරු කරගැනීම සඳහා නියමිත කාල පරාසයන්හිදී නැවත පුනරීක්ෂණය කරන්න (Top 10).';
+
+          theadEl.innerHTML = `
+            <tr>
+              <th style="width: 50px; text-align: center;">Done</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: right;">Stage &amp; Days</th>
+            </tr>
+          `;
+
+          renderEbbinghausModalContent();
+
+        } else if (cardType === 'topHighest') {
+          titleEl.innerHTML = '🏆 වැඩිම ලකුණු සහිත Unit Papers';
+          badgeEl.innerText = 'Top 10 High';
+          badgeEl.style.background = 'rgba(39, 174, 96, 0.25)';
+          badgeEl.style.color = '#ffffff';
+          headerEl.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+          subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 10.';
+
+          theadEl.innerHTML = `
+            <tr>
+              <th style="width: 60px; text-align: center;">Rank</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: right;">Marks</th>
+              <th style="text-align: center;">Date</th>
+            </tr>
+          `;
+
+          const items = (globalTopHighestFullList || []).slice(0, 10);
+          if (items.length === 0) {
+            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+          } else {
+            const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+            tbodyEl.innerHTML = items.map((item, idx) => {
+              const rankLabel = rankLabels[idx] || `${idx + 1}th`;
+              const rankClass = idx === 0 ? 'rank-badge-1' : (idx === 1 ? 'rank-badge-2' : (idx === 2 ? 'rank-badge-3' : 'rank-badge-def'));
+              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+              return `
+                <tr>
+                  <td style="text-align: center;"><span class="rank-pill ${rankClass}">${rankLabel}</span></td>
+                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
+                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                  <td style="text-align: right;"><span class="marks-pill marks-high">${item.marks}%</span></td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                </tr>
+              `;
+            }).join('');
+          }
+
+        } else if (cardType === 'lowestScore') {
+          titleEl.innerHTML = '⚠️ අඩුම ලකුණු සහිත Unit Papers';
+          badgeEl.innerText = 'Top 10 Lowest';
+          badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
+          badgeEl.style.color = '#ffffff';
+          headerEl.style.background = 'linear-gradient(135deg, #e17055, #d63031)';
+          subEl.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම ලකුණු ලැබූ Unit Papers 10.';
+
+          theadEl.innerHTML = `
+            <tr>
+              <th style="width: 60px; text-align: center;">Rank</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: right;">Marks</th>
+              <th style="text-align: center;">Date</th>
+            </tr>
+          `;
+
+          const items = (globalLowestScoresFullList || []).slice(0, 10);
+          if (items.length === 0) {
+            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 16px;">තවම ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+          } else {
+            tbodyEl.innerHTML = items.map((item, idx) => {
+              const rankLabel = `#${idx + 1} ⚠️`;
+              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+              const markClass = item.marks < 65 ? 'marks-low' : (item.marks < 75 ? 'marks-mid' : 'marks-high');
+              return `
+                <tr>
+                  <td style="text-align: center;"><span class="rank-pill rank-badge-warn">${rankLabel}</span></td>
+                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
+                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">${escapeHtml(item.subUnitName)}</td>
+                  <td style="text-align: right;"><span class="marks-pill ${markClass}">${item.marks}%</span></td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                </tr>
+              `;
+            }).join('');
+          }
+
+        } else if (cardType === 'currentlyTeaching') {
+          titleEl.innerHTML = '📘 📘 දැනට උගන්වන පාඩම්';
+          badgeEl.innerText = 'Top 10 දැනට උගන්වන';
+          badgeEl.style.background = 'rgba(9, 132, 227, 0.25)';
+          badgeEl.style.color = '#ffffff';
+          headerEl.style.background = 'linear-gradient(135deg, #0984e3, #74b9ff)';
+          subEl.innerText = 'ඉගෙනීම ආරම්භ කර ඇති නමුත් තවමත් ගෙදර වැඩ සහ පේපර් අවසන් නොවූ මුල්ම පාඩම් 10.';
+
+          theadEl.innerHTML = `
+            <tr>
+              <th style="width: 45px; text-align: center;">#</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: center; width: 100px;">Lesson Days</th>
+              <th style="text-align: center; width: 95px;">Date</th>
+            </tr>
+          `;
+
+          const items = (globalPendingLessonsFullList || []).slice(0, 10);
+          if (items.length === 0) {
+            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>';
+          } else {
+            tbodyEl.innerHTML = items.map((item, idx) => {
+              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+              return `
+                <tr>
+                  <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
+                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td style="font-weight: 700; color: #0984e3;">${escapeHtml(item.subUnitNumber)}</td>
+                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
+                    <a href="javascript:void(0)" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                  </td>
+                  <td style="text-align: center;"><span class="marks-pill marks-mid">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                </tr>
+              `;
+            }).join('');
+          }
+
+        } else if (cardType === 'pendingTestPapers') {
+          titleEl.innerHTML = '⏳ ⏳ ටෙස්ට් පේපර් කරන්න තියෙන පාඩම්';
+          badgeEl.innerText = 'Top 10 පේපර් කළ යුතු';
+          badgeEl.style.background = 'rgba(225, 112, 85, 0.25)';
+          badgeEl.style.color = '#ffffff';
+          headerEl.style.background = 'linear-gradient(135deg, #e17055, #d63031)';
+          subEl.innerText = 'පාඩම සහ ගෙදර වැඩ (HW) අවසන් වූ, ප්‍රශ්න පත්‍ර කළ යුතු මුල්ම පාඩම් 10.';
+
+          theadEl.innerHTML = `
+            <tr>
+              <th style="width: 45px; text-align: center;">#</th>
+              <th>Subject</th>
+              <th class="col-unit-no">Unit No</th>
+              <th class="col-unit-name">Unit Name</th>
+              <th>Sub Unit</th>
+              <th>Sub Unit Name</th>
+              <th style="text-align: center; width: 100px;">Lesson Days</th>
+              <th style="text-align: center; width: 95px;">Date</th>
+            </tr>
+          `;
+
+          const items = (globalPendingTestPapersFullList || []).slice(0, 10);
+          if (items.length === 0) {
+            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! ටෙස්ට් පේපර් කිරීමට ඉතිරි පාඩම් නොමැත 🌟</td></tr>';
+          } else {
+            tbodyEl.innerHTML = items.map((item, idx) => {
+              const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
+              return `
+                <tr>
+                  <td style="text-align: center; color: #7f8fa6; font-weight: 600;">${idx + 1}</td>
+                  <td><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
+                  <td class="col-unit-no" style="color: #7f8fa6; font-weight: 600;">${escapeHtml(item.unitNumber)}</td>
+                  <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</td>
+                  <td style="font-weight: 700; color: #e17055;">${escapeHtml(item.subUnitNumber)}</td>
+                  <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(item.subUnitName)}">
+                    <a href="javascript:void(0)" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" style="color: inherit; text-decoration: underline dotted;" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
+                  </td>
+                  <td style="text-align: center;"><span class="marks-pill marks-low">${item.days !== undefined && item.days !== null ? item.days : 0} d</span></td>
+                  <td style="text-align: center; color: #7f8fa6; font-size: 10.5px; font-weight: 500;">${item.date ? escapeHtml(item.date) : '-'}</td>
+                </tr>
+              `;
+            }).join('');
+          }
+        }
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+
+      function renderEbbinghausModalContent() {
+        const extraEl = document.getElementById('dataCardFsExtraControls');
+        const tbodyEl = document.getElementById('dataCardFsTbody');
+        const badgeEl = document.getElementById('dataCardFsBadge');
+        if (!extraEl || !tbodyEl) return;
+
+        extraEl.style.display = 'block';
+        badgeEl.innerText = `Top 10 • Cycle ${currentEbbCycle}`;
+
+        const maxC = Math.max(2, Object.keys(ebbCycleData).length);
+        let tabsHtml = '<div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">';
+        for (let c = 1; c <= maxC; c++) {
+          const list = ebbCycleData[c] || [];
+          const count = list.length;
+          const isActive = (c === currentEbbCycle);
+          tabsHtml += `
+            <button class="ebb-cycle-tab ${isActive ? 'active' : ''}" onclick="switchEbbCycleModal(${c})" style="
+              padding: 4px 10px; border-radius: 16px; font-size: 9.5px; font-weight: 700; cursor: pointer;
+              border: 1.5px solid ${isActive ? '#6c5ce7' : '#dfe6e9'};
+              background: ${isActive ? 'linear-gradient(135deg, #6c5ce7, #8c7ae6)' : '#ffffff'};
+              color: ${isActive ? '#ffffff' : '#636e72'};
+            ">
+              🔄 Cycle ${c} <span style="font-size: 8px; opacity: 0.85;">(${count})</span>
+            </button>
+          `;
+        }
+        tabsHtml += '</div>';
+
+        let filtersHtml = `
+          <div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom: 6px;">
+            <span style="font-size:8.5px; color:#8c7ae6; font-weight:600; margin-right:2px;">👇 Filter:</span>
+            <button onclick="filterEbbModal(0)" style="background:#636e72; color:white; font-size:8.5px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer; opacity: ${currentEbbFilter === 0 ? '1' : '0.55'};">📋 සියල්ල</button>
+            <button onclick="filterEbbModal(1)" style="background:#e74c3c; color:white; font-size:8.5px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer; opacity: ${currentEbbFilter === 1 ? '1' : '0.55'};">⚡ දිනය 1</button>
+            <button onclick="filterEbbModal(3)" style="background:#f39c12; color:white; font-size:8.5px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer; opacity: ${currentEbbFilter === 3 ? '1' : '0.55'};">📝 දිනය 3</button>
+            <button onclick="filterEbbModal(7)" style="background:#e67e22; color:white; font-size:8.5px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer; opacity: ${currentEbbFilter === 7 ? '1' : '0.55'};">🔁 දිනය 7</button>
+            <button onclick="filterEbbModal(21)" style="background:#8c7ae6; color:white; font-size:8.5px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer; opacity: ${currentEbbFilter === 21 ? '1' : '0.55'};">🧠 දිනය 21</button>
+            <button onclick="filterEbbModal(45)" style="background:#27ae60; color:white; font-size:8.5px; font-weight:700; padding:3px 7px; border-radius:4px; border:none; cursor:pointer; opacity: ${currentEbbFilter === 45 ? '1' : '0.55'};">♾️ දිනය 45+</button>
+          </div>
+        `;
+        extraEl.innerHTML = tabsHtml + filtersHtml;
+
+        const items = ebbCycleData[currentEbbCycle] || [];
+        const filtered = currentEbbFilter === 0 ? items : items.filter(it => it.stageBucket === currentEbbFilter);
+        const displayItems = filtered.slice(0, 10);
+
+        if (displayItems.length > 0) {
+          tbodyEl.innerHTML = displayItems.map((item, idx) => {
+            const subj = item.subject || 'ICT';
+            const subjClass = `subj-pill-${subj.toLowerCase()}`;
+            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+            const unitName = item.unitName || '-';
+            const subUnitNo = item.code || '-';
+            let cleanTitle = (item.title || item.subLesson || '-').trim();
+            if (item.code && cleanTitle.startsWith(item.code)) {
+              cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+            }
+            const stageClass = `ebb-stage-${item.stageBucket || 1}`;
+            return `
+              <tr id="ebbModalItem_${idx}" data-syllabus-id="${item.syllabusId || ''}" data-code="${escapeHtml(item.code || '')}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}">
+                <td style="text-align: center;">
+                  <input type="checkbox" class="ebb-tick" id="ebbModalChk_${idx}" style="--chk-accent:${item.badgeColor};"
+                    onchange="handleEbbModalTick(${idx}, this)" title="ඉගෙනීම සම්පූර්ණ කළ බව සලකුණු කරන්න">
+                </td>
+                <td><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                <td class="col-unit-name" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-unit-name" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #8c7ae6;">${escapeHtml(subUnitNo)}</span></td>
+                <td class="col-sub-name" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><span class="chip-badge chip-title" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</span></td>
+                <td style="text-align: right;">
+                  <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}" style="white-space: nowrap;">
+                    ${item.stageTag}
+                  </span>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 14px;">තෝරාගත් දිනය සඳහා පාඩම් නොමැත.</td></tr>';
+        }
+      }
+
+      function switchEbbCycleModal(c) {
+        switchEbbCycle(c);
+        renderEbbinghausModalContent();
+      }
+
+      function filterEbbModal(s) {
+        filterEbbinghaus(s);
+        renderEbbinghausModalContent();
+      }
+
+      function handleEbbModalTick(idx, chk) {
+        const itemEl = document.getElementById('ebbModalItem_' + idx);
+        if (!itemEl) return;
+        chk.checked = false;
+        const subject = itemEl.getAttribute('data-subject') || '';
+        const subLesson = decodeURIComponent(itemEl.getAttribute('data-sublesson') || '');
+        const stage = parseInt(itemEl.getAttribute('data-stage'), 10) || 1;
+        const cycle = parseInt(itemEl.getAttribute('data-cycle'), 10) || currentEbbCycle || 1;
+        const syllabusId = itemEl.getAttribute('data-syllabus-id') || '';
+        const code = itemEl.getAttribute('data-code') || '';
+
+        const items = ebbCycleData[cycle] || [];
+        const matched = items.find(it => it.subject === subject && (it.subLesson === subLesson || it.code === code));
+        showEbbConfirmModal(subject, subLesson, stage, cycle, syllabusId, code, matched);
+      }
+
+      function closeDataCardFullscreen(event) {
+        if (event && event.target && event.target.id !== 'dataCardFullscreenModal' && !event.target.classList.contains('modal-close-btn')) {
+          return;
+        }
+        const modal = document.getElementById('dataCardFullscreenModal');
+        if (modal) modal.style.display = 'none';
+        currentFsCardType = null;
+        if (!document.querySelector('.chart-card.fullscreen-chart-mode')) {
+          document.body.style.overflow = '';
+        }
+      }
+
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' || e.key === 'Esc') {
           const fsCard = document.querySelector('.chart-card.fullscreen-chart-mode');
           if (fsCard) {
             toggleChartFullscreen(fsCard.id);
+          }
+          const cardModal = document.getElementById('dataCardFullscreenModal');
+          if (cardModal && cardModal.style.display === 'flex') {
+            closeDataCardFullscreen();
           }
         }
       });
@@ -7383,12 +8125,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           });
 
         // --- Card (B): Top 5 Highest Score Unit Papers ---
-        const topHighest = [...enrichedPapers]
+        globalTopHighestFullList = [...enrichedPapers]
           .sort((a, b) => {
             if (b.marks !== a.marks) return b.marks - a.marks;
             return b.timestamp - a.timestamp;
-          })
-          .slice(0, 5);
+          });
+        const topHighest = globalTopHighestFullList.slice(0, 5);
 
         const bBody = document.getElementById('topHighestUnitPapersBody');
         if (bBody) {
@@ -7417,13 +8159,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         // --- Card (C): Lowest 5 Score Unit Papers ---
-        const lowestScores = [...enrichedPapers]
+        globalLowestScoresFullList = [...enrichedPapers]
           .filter(item => item.marks > 0)
           .sort((a, b) => {
             if (a.marks !== b.marks) return a.marks - b.marks;
             return b.timestamp - a.timestamp;
-          })
-          .slice(0, 5);
+          });
+        const lowestScores = globalLowestScoresFullList.slice(0, 5);
 
         const cBody = document.getElementById('lowestScoreUnitPapersBody');
         if (cBody) {
@@ -7452,7 +8194,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // --- Card (D): Currently Teaching Lessons (lesson_done === true, hw_done === false, paper_days === 0) ---
         // Shows lesson_done_at date, sorted by oldest lesson_days (descending) where hw_done = false
-        const pendingLessons = syllabusList
+        globalPendingLessonsFullList = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
             if (!tp) return false;
@@ -7493,8 +8235,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               return a.timestamp - b.timestamp; // Earlier date first
             }
             return a.sortOrder - b.sortOrder;
-          })
-          .slice(0, 5);
+          });
+        const pendingLessons = globalPendingLessonsFullList.slice(0, 5);
 
         const dBody = document.getElementById('oldestLessonPendingBody');
         if (dBody) {
@@ -7522,7 +8264,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         // --- Card (E): Pending Test Papers (lesson_done === true, hw_done === true, paper_days === 0) ---
-        const pendingTestPapers = syllabusList
+        globalPendingTestPapersFullList = syllabusList
           .filter(s => {
             const tp = tpMap[s.id];
             if (!tp) return false;
@@ -7566,8 +8308,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               return a.timestamp - b.timestamp; // Earlier date first
             }
             return a.sortOrder - b.sortOrder;
-          })
-          .slice(0, 5);
+          });
+        const pendingTestPapers = globalPendingTestPapersFullList.slice(0, 5);
 
         const eBody = document.getElementById('oldestBothPendingBody');
         if (eBody) {
@@ -7596,6 +8338,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         if (typeof updateCardRowSpace === 'function') {
           setTimeout(updateCardRowSpace, 30);
+        }
+
+        if (currentFsCardType && ['topHighest', 'lowestScore', 'currentlyTeaching', 'pendingTestPapers'].includes(currentFsCardType) && typeof openDataCardFullscreen === 'function') {
+          openDataCardFullscreen(currentFsCardType);
         }
       }
 
