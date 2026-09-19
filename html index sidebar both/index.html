@@ -5700,7 +5700,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // Render Today's Priorities Card
         if (typeof renderTodaysPriorities === 'function') {
-          renderTodaysPriorities(data);
+          try {
+            renderTodaysPriorities(data);
+          } catch (prioErr) {
+            console.error('Error in renderTodaysPriorities:', prioErr);
+          }
         }
 
         if (typeof updateCardRowSpace === 'function') {
@@ -8792,10 +8796,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         // --- 1. Urgent Model Paper Target ---
-        const urgentItems = (globalUrgentRadarFullList && globalUrgentRadarFullList.length > 0)
-          ? globalUrgentRadarFullList
-          : (data.radar || []);
-        const topUrgent = urgentItems[0] || null;
+        const urgentItems = (data && Array.isArray(data.radar))
+          ? data.radar
+          : ((globalUrgentRadarFullList && globalUrgentRadarFullList.length > 0) ? globalUrgentRadarFullList : []);
+        const topUrgent = (urgentItems && urgentItems.length > 0) ? urgentItems[0] : null;
 
         let item1Html = '';
         if (topUrgent) {
@@ -8980,7 +8984,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-icon-box">⚠️</div>
               <div class="prio-content">
                 <div class="prio-tag" style="color: #e67e22;">#5 Untested Lesson • ${escapeHtml(topUntested.subject)}</div>
-                <div class="prio-msg">පාඩම් කරලා තිබුනාට <strong>${escapeHtml(eSubj)}</strong> <strong>${escapeHtml(topUntested.subUnitNumber)}</strong> පේපර් කරලා නැහැ</div>
+                <div class="prio-msg">පාඩම් කරලා තිබුනාට <strong>${escapeHtml(topUntested.subject)}</strong> <strong>${escapeHtml(topUntested.subUnitNumber)}</strong> පේපර් කරලා නැහැ</div>
                 <div class="prio-sub">${escapeHtml(topUntested.subUnitName)} <br> අන්තිමට පාඩම් කලේ දවස්  ${topUntested.days}කට කලින් </div>
               </div>
             </div>
@@ -9035,7 +9039,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <div class="prio-icon-box">🎯</div>
               <div class="prio-content">
                 <div class="prio-tag" style="color: #0984e3;">#6 Least-Practiced • ${escapeHtml(topLeast.subject)}</div>
-                <div class="prio-msg">අඩුවෙන්ම වැඩ කරලා තියෙන්නේ මේ <strong>${escapeHtml(eSubj)}</strong> <strong>${escapeHtml(topLeast.subUnitNumber)}</strong> පාඩමෙන්</div>
+                <div class="prio-msg">අඩුවෙන්ම වැඩ කරලා තියෙන්නේ මේ <strong>${escapeHtml(topLeast.subject)}</strong> <strong>${escapeHtml(topLeast.subUnitNumber)}</strong> පාඩමෙන්</div>
                 <div class="prio-sub">${escapeHtml(topLeast.subUnitName)} • කර ඇත්තේ Papers ${topLeast.paperAttempts}ක් පමණි</div>
               </div>
             </div>
