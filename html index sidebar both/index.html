@@ -1370,6 +1370,35 @@
       .state-badge.done-lesson { background: #e8f0fe; color: #1976d2; }
       .state-badge.done-hw { background: #feefe3; color: #d35400; }
       .state-badge.done-paper { background: #e6f4ea; color: #2e7d32; }
+      .state-badge.clickable-badge {
+        cursor: pointer;
+        border: 1px solid transparent;
+        font-family: inherit;
+        font-size: 8px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 5px;
+        line-height: normal;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+        user-select: none;
+      }
+      .state-badge.clickable-badge:hover {
+        transform: translateY(-1px);
+        filter: brightness(0.92);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      .state-badge.clickable-badge:active {
+        transform: translateY(0);
+      }
+      @media (max-width: 600px) {
+        .state-badge.clickable-badge {
+          padding: 4px 7px;
+          font-size: 9px;
+        }
+      }
 
       /* Forms & Input */
       .form-group { margin-bottom: 10px; }
@@ -2279,6 +2308,26 @@
         color: #f0f6fc !important;
       }
       body.dark-mode #ebbConfirmPopup button[onclick*="cancelEbbConfirm"], :root.dark-mode #ebbConfirmPopup button[onclick*="cancelEbbConfirm"] {
+        background: #21262d !important;
+        color: #8b949e !important;
+        border: 1px solid #30363d !important;
+      }
+      body.dark-mode .state-badge.clickable-badge:hover {
+        filter: brightness(1.25);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      }
+      body.dark-mode #subLessonConfirmPopup > div, :root.dark-mode #subLessonConfirmPopup > div {
+        background: #161b22 !important;
+        border: 1px solid #30363d !important;
+        color: #f0f6fc !important;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6) !important;
+      }
+      body.dark-mode #subLessonConfirmPopup #subLessonConfirmMsg, :root.dark-mode #subLessonConfirmPopup #subLessonConfirmMsg {
+        background: #21262d !important;
+        border-color: #30363d !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode #subLessonConfirmPopup button[onclick*="cancelSubLessonConfirm"], :root.dark-mode #subLessonConfirmPopup button[onclick*="cancelSubLessonConfirm"] {
         background: #21262d !important;
         color: #8b949e !important;
         border: 1px solid #30363d !important;
@@ -5163,6 +5212,35 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           rpcData.syllabusList = syllabusList;
           rpcData.tpList = tpList;
 
+          // Enrich breakdown items with canonical syllabus IDs
+          if (rpcData.breakdown && syllabusList && syllabusList.length > 0) {
+            const sylSubjKeyMap = {};
+            syllabusList.forEach(s => {
+              const subj = (s.subject || '').toUpperCase().trim();
+              const code = (s.sub_lesson_code || '').trim();
+              if (subj && code) sylSubjKeyMap[`${subj}||${code}`] = s;
+            });
+            ['ICT', 'ET', 'SFT'].forEach(subj => {
+              const uList = rpcData.breakdown[subj] || [];
+              const subjSyllabus = syllabusList.filter(s => (s.subject || '').toUpperCase().trim() === subj);
+              uList.forEach(u => {
+                (u.subLessons || []).forEach(sl => {
+                  const codeMatch = sl.title.match(/^(\d+(\.\d+)+)/);
+                  const code = codeMatch ? codeMatch[1] : null;
+                  let matched = code ? sylSubjKeyMap[`${subj}||${code}`] : null;
+                  if (!matched) {
+                    matched = subjSyllabus.find(s => s.sub_lesson_title && (sl.title.includes(s.sub_lesson_title) || s.sub_lesson_title.includes(sl.title)));
+                  }
+                  if (matched) {
+                    sl.syllabusId = matched.id;
+                    sl.code = matched.sub_lesson_code;
+                    sl.cleanTitle = matched.sub_lesson_title;
+                  }
+                });
+              });
+            });
+          }
+
           // Compute accurate unit breakdown by subject
           const sylMapForBd = {};
           syllabusList.forEach(s => { if (s.id) sylMapForBd[s.id] = s; });
@@ -7788,6 +7866,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' || e.key === 'Esc') {
+          const subPopup = document.getElementById('subLessonConfirmPopup');
+          if (subPopup && subPopup.style.display === 'flex') {
+            cancelSubLessonConfirm();
+            return;
+          }
+          const undoPopup = document.getElementById('undoConfirmPopup');
+          if (undoPopup && undoPopup.style.display === 'flex') {
+            cancelUndoConfirm();
+            return;
+          }
+          const ebbPopup = document.getElementById('ebbConfirmPopup');
+          if (ebbPopup && ebbPopup.style.display === 'flex') {
+            cancelEbbConfirm();
+            return;
+          }
           const fsCard = document.querySelector('.chart-card.fullscreen-chart-mode');
           if (fsCard) {
             toggleChartFullscreen(fsCard.id);
@@ -8798,7 +8891,7 @@ function openSidebarModal() {
         }
       }
       // 10. Drilldown Tree Modal
-      function openDrilldownModal(subject, targetCode) {
+      function openDrilldownModal(subject, targetCode, autoExpandUnitIdx) {
         if (!telemetryData || !telemetryData.breakdown || !telemetryData.breakdown[subject]) return;
 
         const modal = document.getElementById('drillModal');
@@ -8837,6 +8930,15 @@ function openSidebarModal() {
         let html = '';
         let targetUnitIdx = -1;
 
+        // Syllabus lookup map for resolving syllabusId fallback
+        const sylList = (telemetryData && telemetryData.syllabusList) ? telemetryData.syllabusList : (cachedCanonicalSyllabus || []);
+        const sylSubjList = sylList.filter(s => (s.subject || '').toUpperCase().trim() === subject.toUpperCase().trim());
+        const sylByKey = {};
+        sylSubjList.forEach(s => {
+          const code = (s.sub_lesson_code || '').trim();
+          if (code) sylByKey[code] = s;
+        });
+
         units.forEach((u, idx) => {
           const safeUnitName = encodeURIComponent(u.unitName);
           let subListHtml = '';
@@ -8857,12 +8959,40 @@ function openSidebarModal() {
                   : `id="jumpTargetItem" style="background: #f1f2f6; border-left: 3px solid ${subjColor};"`)
               : '';
 
+            // Resolve syllabus item & id
+            let sylId = sl.syllabusId;
+            if (!sylId) {
+              const codeMatch = sl.title.match(/^(\d+(\.\d+)+)/);
+              const subCode = codeMatch ? codeMatch[1] : null;
+              let matched = subCode ? sylByKey[subCode] : null;
+              if (!matched) {
+                matched = sylSubjList.find(s => s.sub_lesson_title && (sl.title.includes(s.sub_lesson_title) || s.sub_lesson_title.includes(sl.title)));
+              }
+              if (matched) {
+                sylId = matched.id;
+                sl.syllabusId = matched.id;
+              }
+            }
+
+            const safeSlTitle = encodeURIComponent(sl.title);
+            const safeSylId = sylId || '';
+            const lessonDone = sl.lessonDone === true;
+            const hwDone = sl.hwDone === true;
+
             subListHtml += `
               <div class="sub-item" ${jumpStyle}>
                 <div class="sub-title-txt">${sl.title}</div>
                 <div class="badge-group">
-                  <span class="state-badge ${sl.lessonDone ? 'done-lesson' : ''}">📘 Lesson</span>
-                  <span class="state-badge ${sl.hwDone ? 'done-hw' : ''}">📝 HW</span>
+                  <button type="button" class="state-badge clickable-badge ${lessonDone ? 'done-lesson' : ''}" 
+                    onclick="promptSubLessonToggle('${subject}', '${safeSylId}', '${safeSlTitle}', 'LESSON', ${lessonDone}, ${idx})"
+                    title="${lessonDone ? 'Lesson තත්වය ඉවත් කරන්න (Undo)' : 'Lesson සම්පූර්ණයි ලෙස සටහන් කරන්න'}">
+                    📘 Lesson
+                  </button>
+                  <button type="button" class="state-badge clickable-badge ${hwDone ? 'done-hw' : ''}" 
+                    onclick="promptSubLessonToggle('${subject}', '${safeSylId}', '${safeSlTitle}', 'HW', ${hwDone}, ${idx})"
+                    title="${hwDone ? 'HW තත්වය ඉවත් කරන්න (Undo)' : 'HW සම්පූර්ණයි ලෙස සටහන් කරන්න'}">
+                    📝 HW
+                  </button>
                   <span class="state-badge ${sl.papersCount > 0 ? 'done-paper' : ''}">📄 Papers: ${sl.papersCount}</span>
                 </div>
               </div>
@@ -8895,7 +9025,15 @@ function openSidebarModal() {
         modal.style.display = 'flex';
         focusModal(modal);
 
-        if (targetUnitIdx >= 0) {
+        if (autoExpandUnitIdx !== undefined && autoExpandUnitIdx !== null) {
+          const expandList = Array.isArray(autoExpandUnitIdx) ? autoExpandUnitIdx : [autoExpandUnitIdx];
+          expandList.forEach(uIdx => {
+            const sublist = document.getElementById(`sublist-${uIdx}`);
+            const arrow = document.getElementById(`arrow-${uIdx}`);
+            if (sublist) sublist.style.display = 'block';
+            if (arrow) arrow.innerText = '▲';
+          });
+        } else if (targetUnitIdx >= 0) {
           toggleUnit(targetUnitIdx);
           setTimeout(() => {
             const el = document.getElementById('jumpTargetItem');
@@ -8918,6 +9056,265 @@ function openSidebarModal() {
 
       function hideDrillModal() { document.getElementById('drillModal').style.display = 'none'; }
       function closeDrilldownModal(event) { if (event.target.id === 'drillModal') hideDrillModal(); }
+
+      // =========================================================================
+      // SUB-LESSON STATUS (LESSON & HW) TOGGLE WITH PASSWORD CONFIRMATION
+      // =========================================================================
+      let pendingSubLessonAction = null;
+
+      function promptSubLessonToggle(subject, syllabusId, encodedTitle, type, currentDone, unitIdx) {
+        const title = decodeURIComponent(encodedTitle);
+        pendingSubLessonAction = {
+          subject: subject,
+          syllabusId: syllabusId,
+          title: title,
+          type: type,
+          currentDone: currentDone === true,
+          unitIdx: unitIdx
+        };
+
+        const popup = document.getElementById('subLessonConfirmPopup');
+        const card = document.getElementById('subLessonConfirmCard');
+        const icon = document.getElementById('subLessonConfirmIcon');
+        const titleEl = document.getElementById('subLessonConfirmTitle');
+        const msgEl = document.getElementById('subLessonConfirmMsg');
+        const okBtn = document.getElementById('subLessonConfirmOkBtn');
+        const passInp = document.getElementById('subLessonPasswordInput');
+        const passErr = document.getElementById('subLessonPasswordError');
+
+        if (passInp) passInp.value = '';
+        if (passErr) passErr.style.display = 'none';
+
+        const isLesson = type === 'LESSON';
+        const typeName = isLesson ? 'Lesson' : 'HW';
+        const isUndoing = currentDone === true;
+
+        if (icon) {
+          icon.innerText = isUndoing ? '↩️' : (isLesson ? '📘' : '📝');
+        }
+
+        if (card) {
+          if (isUndoing) {
+            card.style.borderTop = '5px solid #eb4d4b';
+          } else if (isLesson) {
+            card.style.borderTop = '5px solid #1976d2';
+          } else {
+            card.style.borderTop = '5px solid #d35400';
+          }
+        }
+
+        if (titleEl) {
+          if (isUndoing) {
+            titleEl.innerHTML = `${isLesson ? '📘' : '📝'} ${typeName} — Pending තත්වයට වෙනස් කිරීම (Undo)`;
+            titleEl.style.color = '#eb4d4b';
+          } else {
+            titleEl.innerHTML = `${isLesson ? '📘' : '📝'} ${typeName} — සම්පූර්ණ කිරීම තහවුරු කරන්න`;
+            titleEl.style.color = isLesson ? '#1976d2' : '#d35400';
+          }
+        }
+
+        if (msgEl) {
+          const actionPrompt = isUndoing
+            ? `මෙම පාඩමේ <strong>${typeName}</strong> තත්වය <strong>'Pending'</strong> (සම්පූර්ණ නොකළ) ලෙස නැවත වෙනස් කිරීමට ඔබට අවශ්‍යද?`
+            : `මෙම පාඩමේ <strong>${typeName}</strong> ඔබ සාර්ථකව අවසන් කළ බව (Done) සටහන් කිරීමට ඔබට අවශ්‍යද?`;
+
+          msgEl.innerHTML = `
+            <div style="font-weight: 700; font-size: 11.5px; margin-bottom: 6px; color: inherit;">
+              [${escapeHtml(subject)}] ${escapeHtml(title)}
+            </div>
+            <div style="font-size: 11px; line-height: 1.5; color: inherit; opacity: 0.9;">
+              ${actionPrompt}
+            </div>
+          `;
+        }
+
+        if (okBtn) {
+          okBtn.disabled = false;
+          if (isUndoing) {
+            okBtn.innerHTML = 'ඔව්, Undo කරන්න ↩️';
+            okBtn.style.background = 'linear-gradient(135deg, #eb4d4b, #d63031)';
+            okBtn.style.boxShadow = '0 4px 14px rgba(235,77,75,0.3)';
+          } else {
+            okBtn.innerHTML = 'ඔව්, සම්පූර්ණයි ✅';
+            if (isLesson) {
+              okBtn.style.background = 'linear-gradient(135deg, #1976d2, #0984e3)';
+              okBtn.style.boxShadow = '0 4px 14px rgba(25,118,210,0.3)';
+            } else {
+              okBtn.style.background = 'linear-gradient(135deg, #e67e22, #d35400)';
+              okBtn.style.boxShadow = '0 4px 14px rgba(211,84,0,0.3)';
+            }
+          }
+        }
+
+        if (popup) {
+          popup.style.display = 'flex';
+          focusModal(popup);
+        }
+        if (passInp) setTimeout(() => passInp.focus(), 60);
+      }
+
+      function cancelSubLessonConfirm() {
+        pendingSubLessonAction = null;
+        const passInp = document.getElementById('subLessonPasswordInput');
+        if (passInp) passInp.value = '';
+        const passErr = document.getElementById('subLessonPasswordError');
+        if (passErr) passErr.style.display = 'none';
+        const okBtn = document.getElementById('subLessonConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = false;
+          okBtn.innerText = 'ඔව්, සම්පූර්ණයි ✅';
+        }
+        const popup = document.getElementById('subLessonConfirmPopup');
+        if (popup) popup.style.display = 'none';
+      }
+
+      function closeSubLessonConfirm(event) {
+        if (event && event.target && event.target.id === 'subLessonConfirmPopup') {
+          cancelSubLessonConfirm();
+        }
+      }
+
+      async function executeSubLessonConfirmed() {
+        if (!pendingSubLessonAction) {
+          cancelSubLessonConfirm();
+          return;
+        }
+
+        const passInput = document.getElementById('subLessonPasswordInput');
+        const passVal = passInput ? passInput.value.trim() : '';
+        const passErr = document.getElementById('subLessonPasswordError');
+        if (passVal !== '3408') {
+          if (passErr) {
+            passErr.innerText = passVal === '' ? '⚠️ කරුණාකර මුරපදය ඇතුළත් කරන්න!' : '⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.';
+            passErr.style.display = 'block';
+          }
+          if (passInput) passInput.focus();
+          return;
+        }
+        if (passErr) passErr.style.display = 'none';
+
+        const action = pendingSubLessonAction;
+        const okBtn = document.getElementById('subLessonConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = true;
+          okBtn.innerText = 'සටහන් වෙමින්... ⏳';
+        }
+
+        try {
+          let sylId = action.syllabusId;
+          const subj = (action.subject || '').toUpperCase().trim();
+          const title = action.title || '';
+
+          if (!sylId) {
+            const sylList = (telemetryData && telemetryData.syllabusList) ? telemetryData.syllabusList : (cachedCanonicalSyllabus || []);
+            const codeMatch = title.match(/^(\d+(\.\d+)+)/);
+            const subCode = codeMatch ? codeMatch[1] : null;
+            let found = null;
+            if (subCode) {
+              found = sylList.find(s => (s.subject || '').toUpperCase().trim() === subj && (s.sub_lesson_code || '').trim() === subCode);
+            }
+            if (!found) {
+              found = sylList.find(s => (s.subject || '').toUpperCase().trim() === subj && s.sub_lesson_title && (title.includes(s.sub_lesson_title) || s.sub_lesson_title.includes(title)));
+            }
+            if (found) sylId = found.id;
+          }
+
+          if (!sylId) {
+            const codeMatch = title.match(/^(\d+(\.\d+)+)/);
+            const subCode = codeMatch ? codeMatch[1] : null;
+            let q = supabase.from('canonical_syllabus').select('id').eq('subject', subj);
+            if (subCode) {
+              q = q.eq('sub_lesson_code', subCode);
+            }
+            const { data: dbSyl, error: dbSylErr } = await q.limit(1);
+            if (dbSylErr || !dbSyl || dbSyl.length === 0) {
+              throw new Error('පාඩම හඳුනාගත නොහැකි විය.');
+            }
+            sylId = dbSyl[0].id;
+          }
+
+          const nowIso = new Date().toISOString();
+          const newVal = !action.currentDone;
+          const updatePayload = {};
+
+          if (action.type === 'LESSON') {
+            updatePayload.lesson_done = newVal;
+            updatePayload.lesson_done_at = newVal ? nowIso : null;
+            updatePayload.lesson_days = 0;
+            updatePayload.updated_at = nowIso;
+          } else {
+            updatePayload.hw_done = newVal;
+            updatePayload.hw_done_at = newVal ? nowIso : null;
+            updatePayload.hw_days = 0;
+            updatePayload.updated_at = nowIso;
+          }
+
+          const { data: updatedRows, error: updateErr } = await supabase
+            .from('tracker_progress')
+            .update(updatePayload)
+            .eq('syllabus_id', sylId)
+            .select();
+
+          if (updateErr) throw updateErr;
+
+          if (!updatedRows || updatedRows.length === 0) {
+            const insertPayload = {
+              syllabus_id: sylId,
+              subject: subj,
+              ...updatePayload
+            };
+            const { error: insErr } = await supabase.from('tracker_progress').insert([insertPayload]);
+            if (insErr) throw insErr;
+          }
+
+          if (newVal && typeof confetti === 'function') {
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+          }
+
+          const actionTypeLabel = action.type === 'LESSON' ? 'Lesson' : 'HW';
+          const successMsg = newVal 
+            ? `[${subj}] ${title} ${actionTypeLabel} තත්වය සාර්ථකව සටහන් විය! ✅`
+            : `[${subj}] ${title} ${actionTypeLabel} තත්වය Pending ලෙස වෙනස් විය! ↩️`;
+          showHtmlAlert(successMsg, false);
+
+          const currentSubj = action.subject;
+          const activeUnitIdx = action.unitIdx;
+
+          // Capture which units are currently expanded and scroll position
+          const expandedUnits = [];
+          document.querySelectorAll('#modalBody .sub-list').forEach(list => {
+            if (list.style.display === 'block') {
+              const m = list.id.match(/^sublist-(\d+)$/);
+              if (m) expandedUnits.push(parseInt(m[1], 10));
+            }
+          });
+          if (activeUnitIdx !== undefined && activeUnitIdx !== null && !expandedUnits.includes(activeUnitIdx)) {
+            expandedUnits.push(activeUnitIdx);
+          }
+          const prevScrollTop = document.getElementById('modalBody') ? document.getElementById('modalBody').scrollTop : 0;
+
+          cancelSubLessonConfirm();
+
+          // Refresh dashboard telemetry
+          await refreshTelemetry();
+
+          // Re-open and re-render the drilldown modal if it was open
+          const drillModal = document.getElementById('drillModal');
+          if (drillModal && drillModal.style.display === 'flex') {
+            openDrilldownModal(currentSubj, null, expandedUnits);
+            if (document.getElementById('modalBody')) {
+              document.getElementById('modalBody').scrollTop = prevScrollTop;
+            }
+          }
+        } catch (err) {
+          console.error('executeSubLessonConfirmed error:', err);
+          showHtmlAlert('දෝෂයකි: ' + (err.message || 'සටහන් කිරීම අසාර්ථක විය'), true);
+          if (okBtn) {
+            okBtn.disabled = false;
+            okBtn.innerText = action.currentDone ? 'ඔව්, Undo කරන්න ↩️' : 'ඔව්, සම්පූර්ණයි ✅';
+          }
+        }
+      }
 
       // 11. Instant Search & Unit Paper Logging
       function openUnitPaperModal() {
@@ -9573,6 +9970,30 @@ function openSidebarModal() {
             ඔව්, Undo කරන්න ↩️
           </button>
           <button type="button" onclick="cancelUndoConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
+            අවලංගු කරන්න ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-Lesson Status (Lesson & HW) Confirmation Popup -->
+    <div id="subLessonConfirmPopup" class="modal-overlay-alert" style="z-index: 100002;" onclick="closeSubLessonConfirm(event)">
+      <div class="alert-popup-card" id="subLessonConfirmCard" style="border-top: 5px solid #20bf6b; max-width: 390px;" onclick="event.stopPropagation()">
+        <div class="alert-popup-icon" id="subLessonConfirmIcon">📘</div>
+        <div class="alert-popup-title" id="subLessonConfirmTitle" style="color: #2d3436;">පාඩම තහවුරු කිරීම</div>
+        <div id="subLessonConfirmMsg" class="alert-popup-msg" style="background: #f8f9fa; border-radius: 10px; padding: 12px 10px; border: 1px solid #dfe6e9; color: inherit; font-size: 11px; line-height: 1.5; text-align: left;"></div>
+        <div class="form-group" style="margin: 10px 0 4px; text-align: left;">
+          <label class="form-label" style="font-size: 10px; color: inherit; font-weight: 700;">🔒 තහවුරු කිරීමේ මුරපදය (Security Password) *</label>
+          <input type="password" class="form-input" id="subLessonPasswordInput" placeholder="මුරපදය ඇතුළත් කරන්න..." style="font-size: 11px; padding: 6px 10px; text-align: center; letter-spacing: 2px;" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();executeSubLessonConfirmed();}">
+          <div id="subLessonPasswordError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600; text-align: center;">
+            ⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 10px; margin-top: 14px;">
+          <button id="subLessonConfirmOkBtn" class="alert-popup-btn" onclick="executeSubLessonConfirmed()" style="background: linear-gradient(135deg, #20bf6b, #10ac84); color: white; box-shadow: 0 4px 14px rgba(32,191,107,0.3); font-weight: 700;">
+            ඔව්, සම්පූර්ණයි ✅
+          </button>
+          <button type="button" onclick="cancelSubLessonConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
             අවලංගු කරන්න ✕
           </button>
         </div>
