@@ -5490,6 +5490,115 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         return { trend: zTrend, byCount: byCount, byTime: byTime };
       }
 
+      // ── UNIFIED MULTI-SOURCE ACTIVITY STREAK ENGINE ─────────────
+      function getLocalDateString(val) {
+        if (!val && val !== 0) return null;
+        if (typeof val === 'string') {
+          const trimmed = val.trim();
+          if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+            return trimmed;
+          }
+        }
+        const d = (val instanceof Date) ? val : new Date(val);
+        if (isNaN(d.getTime())) return null;
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function calculateUnifiedStudyStreak(unitPapers, fullPapers, srLogs, refDate = new Date()) {
+        const activeDates = new Set();
+
+        // 1. Unit Paper Activity:
+        // A new or updated paper_no recorded in the unit paper table/attempts.
+        // Rule: paper_no must be valid (> 0).
+        // 0-Score exclusion: if marks is present, strictly exclude attempts where marks <= 0.
+        (unitPapers || []).forEach(row => {
+          if (!row) return;
+          const paperNo = (row.paper_no !== undefined && row.paper_no !== null)
+            ? Number(row.paper_no)
+            : ((row.paperNo !== undefined && row.paperNo !== null) ? Number(row.paperNo) : null);
+          if (paperNo === null || isNaN(paperNo) || paperNo <= 0) return;
+
+          const rawMarks = (row.marks !== undefined) ? row.marks : null;
+          if (rawMarks !== null && rawMarks !== undefined && String(rawMarks).trim() !== '') {
+            const numMarks = Number(rawMarks);
+            if (!isNaN(numMarks) && numMarks <= 0) return; // 0-score exclusion
+          }
+
+          const rawDate = row.updated_at || row.last_updated || row.logged_at || row.loggedAt || row.date || null;
+          const dateStr = getLocalDateString(rawDate);
+          if (dateStr) activeDates.add(dateStr);
+        });
+
+        // 2. Full Paper Activity:
+        // A marks entry logged/updated in full_papers.
+        // Rule: Must have valid numeric marks entry.
+        // 0-Score exclusion: marks must be a valid positive score (> 0).
+        (fullPapers || []).forEach(row => {
+          if (!row) return;
+          const rawMarks = (row.marks !== undefined) ? row.marks : null;
+          if (rawMarks === null || rawMarks === undefined || String(rawMarks).trim() === '') return;
+          const numMarks = Number(rawMarks);
+          if (isNaN(numMarks) || numMarks <= 0) return; // 0-score exclusion
+
+          const rawDate = row.exam_date || row.examDate || row.updated_at || row.last_updated || row.logged_at || row.loggedAt || row.fullDate || null;
+          const dateStr = getLocalDateString(rawDate);
+          if (dateStr) activeDates.add(dateStr);
+        });
+
+        // 3. Spaced Repetition Activity:
+        // A completed_at timestamp logged/updated in the space_repetition sheet/table.
+        // Rule: Must have valid completed_at (or updated_at / logged_at) timestamp.
+        (srLogs || []).forEach(row => {
+          if (!row) return;
+          const rawDate = row.completed_at || row.completedAt || row.updated_at || row.last_updated || row.logged_at || row.loggedAt || null;
+          if (!rawDate) return;
+          const dateStr = getLocalDateString(rawDate);
+          if (dateStr) activeDates.add(dateStr);
+        });
+
+        const todayStr = getLocalDateString(refDate);
+        const yesterday = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate() - 1);
+        const yesterdayStr = getLocalDateString(yesterday);
+
+        const workedToday = activeDates.has(todayStr);
+
+        let streak = 0;
+        let checkDate = null;
+
+        if (workedToday) {
+          // If an activity exists for Today, streak includes today.
+          checkDate = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate());
+        } else if (activeDates.has(yesterdayStr)) {
+          // If no activity exists for Today yet, but an activity exists for Yesterday,
+          // do not reset the streak—keep the streak alive pending today's action.
+          checkDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+        }
+
+        if (checkDate) {
+          while (true) {
+            const dStr = getLocalDateString(checkDate);
+            if (activeDates.has(dStr)) {
+              streak++;
+              checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+              break;
+            }
+          }
+        }
+
+        return {
+          streak: streak,
+          workedToday: workedToday,
+          activeDates: Array.from(activeDates).sort()
+        };
+      }
+
+      window.calculateUnifiedStudyStreak = calculateUnifiedStudyStreak;
+      window.getLocalDateString = getLocalDateString;
+
       async function refreshTelemetry() {
         try {
           unitAnalyticsCache = {};
@@ -5566,6 +5675,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           // Compute Spaced Repetition cycles accurately
           const ebbResult = calculateEbbinghausCycles(syllabusList, tpList, srLogs);
 
+          // Compute Unified Multi-Source Activity Streak across unit_papers, full_papers, and spaced_repetition_log
+          const streakResult = calculateUnifiedStudyStreak(upRawList, fpRawList, srLogs);
+
           if (!rpcData) {
             rpcData = {
               breakdown: {},
@@ -5578,6 +5690,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
 
           // Merge computed analytics into telemetryData
+          rpcData.streak = streakResult.streak;
+          rpcData.workedToday = streakResult.workedToday;
+          rpcData.activeDates = streakResult.activeDates;
           rpcData.velocityMetrics = velocityMetrics;
           rpcData.ebbinghaus = ebbResult.topEbbinghaus;
           rpcData.ebbCycleData = ebbResult.ebbCycleData;
@@ -5733,14 +5848,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         const streak = data.streak || 0;
-        document.getElementById('streakDaysTxt').innerText = `${streak} Days Streak`;
+        const streakDaysEl = document.getElementById('streakDaysTxt');
+        if (streakDaysEl) streakDaysEl.innerText = `${streak} Days Streak`;
         const streakTag = document.getElementById('streakStatusTag');
-        if (data.workedToday) {
-          streakTag.className = "streak-tag done";
-          streakTag.innerText = "අද දින සම්පූර්ණයි ✅";
-        } else {
-          streakTag.className = "streak-tag pending";
-          streakTag.innerText = "අද දින තවම පාඩම් කර නැත ⏳";
+        if (streakTag) {
+          if (data.workedToday) {
+            streakTag.className = "streak-tag done";
+            streakTag.innerText = "අද දින සම්පූර්ණයි ✅";
+          } else {
+            streakTag.className = "streak-tag pending";
+            streakTag.innerText = "අද දින තවම පාඩම් කර නැත ⏳";
+          }
         }
 
         const unitPapers = data.totalUnitPapersDone || 0;
