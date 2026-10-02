@@ -44,6 +44,9 @@ function run() {
     console.log(`Pushing branch "${branch}" to GitHub...`);
     const remoteUrl = `https://${token}@github.com/kiyamaninfo-alt/al-study-tracker.git`;
     execSync(`git push ${remoteUrl} ${branch}`, { stdio: 'pipe' });
+    try {
+      execSync('git fetch origin', { stdio: 'pipe' });
+    } catch (_) {}
     console.log(`Successfully pushed to origin/${branch}!`);
   } catch (err) {
     // Sanitize any token leaks from error message
