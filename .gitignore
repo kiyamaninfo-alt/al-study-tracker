@@ -1,0 +1,19 @@
+# Environment variables and sensitive secrets
+.env
+.env.*
+*.env
+!.env.example
+
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Temporary & logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
