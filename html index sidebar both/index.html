@@ -5324,7 +5324,13 @@
 const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
 var supabase = (window.supabase && typeof window.supabase.createClient === 'function')
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false
+      }
+    })
   : window.supabase;
       // 1. Live Countdown
       const targetExamDate = new Date('2028-08-04T08:30:00+05:30').getTime();
@@ -5553,7 +5559,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let showChartDataLabels = true;
       let cachedPrintedPapersMap = {};
 
+      let isDashboardInitialized = false;
       function initDashboard() {
+        if (isDashboardInitialized) return;
+        isDashboardInitialized = true;
         const today = new Date().toISOString().split('T')[0];
         const fpDate = document.getElementById('fpDate');
         if (fpDate) fpDate.value = today;
@@ -5588,9 +5597,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let currentSettingsTab = 'general';
       let currentActivityFilter = 'ALL';
       let pendingUndoItem = null;
+      let realtimeChannel = null;
 
       function setupRealtimeSubscriptions() {
-        supabase
+        if (realtimeChannel) return;
+        realtimeChannel = supabase
           .channel('al-tracker-realtime')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'tracker_progress' }, () => refreshTelemetry())
           .on('postgres_changes', { event: '*', schema: 'public', table: 'unit_papers' }, () => refreshTelemetry())
