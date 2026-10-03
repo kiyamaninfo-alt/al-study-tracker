@@ -6,6 +6,9 @@
     <title>Sinethmi A/L 2028 Mission Control</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -420,6 +423,12 @@
         margin-bottom: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         border-left: 4px solid #00cec9;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .velocity-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       }
       .velocity-header {
         font-size: 11.5px;
@@ -454,6 +463,17 @@
         padding: 8px;
         text-align: center;
         box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .velocity-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .submit-type-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        border-color: #0984e3 !important;
       }
       .velocity-subj-title { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
       .velocity-subj-title.ict { color: #20bf6b; }
@@ -3902,9 +3922,7 @@
 
       <div class="action-bar-btns">
         <button class="btn-action-pill" style="background: linear-gradient(135deg, #fdcb6e, #e17055); color: white;" onclick="openSidebarModal()">📚 Syllabus Manager</button>
-        <button class="btn-action-pill btn-unitpaper" onclick="openUnitPaperModal()">+ 📄 Log Unit Paper</button>
-        <button class="btn-action-pill btn-fullunitpaper" onclick="openFullUnitPaperModal()" style="background: linear-gradient(135deg, #0984e3, #6c5ce7); color: white;">+ 📑 Log Full Unit Paper</button>
-        <button class="btn-action-pill btn-fullpaper" onclick="openFullPaperModal()">+ 📝 Log Full Paper</button>
+        <button class="btn-action-pill btn-submit-marks" onclick="openSubmitMarksSelectorModal()" style="background: linear-gradient(135deg, #0984e3, #6c5ce7); color: white; font-weight: 700; box-shadow: 0 3px 10px rgba(9, 132, 227, 0.35);">+ 📝 Submit Marks</button>
         <button class="btn-action-pill btn-settings" onclick="openSettingsModal()">⚙️ Settings</button>
       </div>
     </div>
@@ -3952,7 +3970,7 @@
     </div>
 
     <!-- Syllabus Velocity & Finish Forecaster -->
-    <div class="velocity-card">
+    <div class="velocity-card" id="cardVelocityRadar" onclick="openDrilldownModal('ICT')" style="cursor: pointer;" title="🔍 විෂය ඒකක සහ ප්‍රගතිය විවෘත කරන්න (Click to open Drilldown)">
       <div class="velocity-header">
         <span>🚀 Syllabus Velocity & Projected Finish Radar</span>
         <span style="font-size: 8.5px; color: #7f8fa6;" id="veloWeeksLeft">0 Weeks to A/L 2028</span>
@@ -3965,21 +3983,21 @@
       </div>
 
       <div class="velocity-grid">
-        <div class="velocity-box">
+        <div class="velocity-box" onclick="event.stopPropagation(); openDrilldownModal('ICT')" style="cursor: pointer;" title="🔍 ICT ඒකක විවෘත කරන්න">
           <div class="velocity-subj-title ict">📗 ICT</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_ict_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_ict_rate">0</strong>/wk (අවශ්‍ය: <span id="v_ict_req">0</span>)</div>
           <div class="velocity-date-badge alert" id="v_ict_badge">-</div>
         </div>
 
-        <div class="velocity-box">
+        <div class="velocity-box" onclick="event.stopPropagation(); openDrilldownModal('ET')" style="cursor: pointer;" title="🔍 ET ඒකක විවෘත කරන්න">
           <div class="velocity-subj-title et">⚙️ ET</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_et_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_et_rate">0</strong>/wk (අවශ්‍ය: <span id="v_et_req">0</span>)</div>
           <div class="velocity-date-badge alert" id="v_et_badge">-</div>
         </div>
 
-        <div class="velocity-box">
+        <div class="velocity-box" onclick="event.stopPropagation(); openDrilldownModal('SFT')" style="cursor: pointer;" title="🔍 SFT ඒකක විවෘත කරන්න">
           <div class="velocity-subj-title sft">📘 SFT</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_sft_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_sft_rate">0</strong>/wk (අවශ්‍ය: <span id="v_sft_req">0</span>)</div>
@@ -3993,26 +4011,34 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⚡</span>
-          <span>⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)</span>
+          <span id="urgentRadarCardTitle">⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)</span>
         </div>
         <div style="display: flex; align-items: center; gap: 6px;">
-          <span class="ranking-badge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Urgent Radar</span>
+          <span class="ranking-badge" id="urgentRadarCardBadge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Urgent Radar</span>
           <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('urgentRadar', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
         </div>
       </div>
-      <div class="ranking-subtitle">
+      <div class="ranking-subtitle" id="urgentRadarCardSubtitle">
         පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ පාඩම්.
+      </div>
+      <div class="ranking-tab-group" style="margin: 0 0 10px 0;" onclick="event.stopPropagation()">
+        <button type="button" class="ranking-tab-btn active" id="btnUrgentTabSubunit" onclick="switchUrgentRadarTab('subunit', event)">
+          <span>📑 Sub-Unit Radar</span>
+        </button>
+        <button type="button" class="ranking-tab-btn" id="btnUrgentTabFullunit" onclick="switchUrgentRadarTab('fullunit', event)">
+          <span>📚 Full Unit Radar</span>
+        </button>
       </div>
       <div class="ranking-table-responsive">
         <table class="ranking-table">
           <thead>
-            <tr>
+            <tr id="urgentRadarHeadRow">
               <th class="col-rank">Done</th>
               <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
-              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-sub-no" id="urgentColSubHeader">Sub Unit</th>
+              <th class="col-sub-name" id="urgentColSubNameHeader">Sub Unit Name</th>
               <th class="col-metric-wide">Days Elapsed</th>
             </tr>
           </thead>
@@ -4479,10 +4505,10 @@
       <!-- Tab Controls for Card B -->
       <div class="ranking-tab-group" id="topHighestTabBar" onclick="event.stopPropagation()">
         <button type="button" class="ranking-tab-btn active" id="btnTopHighestSubUnit" onclick="switchTopHighestTab('subunit', event)">
-          <span>📑 Sub-Unit Breakdown</span>
+          <span>📑 Unit Breakdown</span>
         </button>
         <button type="button" class="ranking-tab-btn" id="btnTopHighestUnit" onclick="switchTopHighestTab('unit', event)">
-          <span>📚 Unit-Wise Average</span>
+          <span>📚 Main Unit-Wise Average</span>
         </button>
       </div>
 
@@ -4494,7 +4520,7 @@
               <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-no">Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Avg Marks</th>
               <th class="col-date">Date</th>
@@ -4528,10 +4554,10 @@
       <!-- Tab Controls for Card C -->
       <div class="ranking-tab-group" id="lowestScoreTabBar" onclick="event.stopPropagation()">
         <button type="button" class="ranking-tab-btn active" id="btnLowestScoreSubUnit" onclick="switchLowestScoreTab('subunit', event)">
-          <span>📑 Sub-Unit Breakdown</span>
+          <span>📑 Unit Breakdown</span>
         </button>
         <button type="button" class="ranking-tab-btn" id="btnLowestScoreUnit" onclick="switchLowestScoreTab('unit', event)">
-          <span>📚 Unit-Wise Average</span>
+          <span>📚 Main Unit-Wise Average</span>
         </button>
       </div>
 
@@ -4543,7 +4569,7 @@
               <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-no">Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Avg Marks</th>
               <th class="col-date">Date</th>
@@ -4584,12 +4610,14 @@
               <th class="col-sub-no">Sub Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Lesson Days</th>
+              <th class="col-print" style="text-align: center;">Print</th>
+              <th class="col-print-days" style="text-align: center;">Print Days</th>
               <th class="col-date">Date</th>
             </tr>
           </thead>
           <tbody id="oldestLessonPendingBody">
             <tr>
-              <td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
+              <td colspan="10" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -4820,6 +4848,54 @@
       </div>
     </div>
 
+    <!-- Submit Marks Type Selector Modal (Req 5) -->
+    <div class="modal-overlay" id="submitMarksSelectorModal" onclick="closeSubmitMarksSelectorModal(event)">
+      <div class="modal-window" style="max-width: 490px; border-radius: 16px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.35);" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0984e3, #6c5ce7); padding: 14px 20px;">
+          <div class="modal-title" style="font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span>📝 Submit Marks — ප්‍රශ්න පත්‍ර තෝරාගැනීම</span>
+          </div>
+          <button class="modal-close-btn" onclick="hideSubmitMarksSelectorModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 18px 20px;">
+          <p style="font-size: 12px; color: var(--text-secondary, #636e72); margin-bottom: 16px; text-align: center;">
+            ඔබ ලකුණු ඇතුළත් කිරීමට බලාපොරොත්තු වන ප්‍රශ්න පත්‍ර වර්ගය තෝරන්න:
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Option 1: Sub Unit Paper Marks -->
+            <button type="button" class="submit-type-btn" onclick="selectSubmitMarksType('subunit')" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(0, 206, 201, 0.45); background: var(--card-bg, #ffffff); cursor: pointer; text-align: left; transition: all 0.2s ease;">
+              <span style="font-size: 26px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(0, 206, 201, 0.12); border-radius: 10px;">📄</span>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #00b894; margin-bottom: 2px;">1. Sub Unit Paper Marks</div>
+                <div style="font-size: 11px; color: var(--text-secondary, #636e72);">එක් එක් උප-පාඩම් සඳහා කරන ලද ප්‍රශ්න පත්‍ර ලකුණු සටහන් කරන්න</div>
+              </div>
+              <span style="font-size: 16px; color: #00b894; font-weight: 700;">➔</span>
+            </button>
+
+            <!-- Option 2: Main Unit Paper Marks -->
+            <button type="button" class="submit-type-btn" onclick="selectSubmitMarksType('fullunit')" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(9, 132, 227, 0.45); background: var(--card-bg, #ffffff); cursor: pointer; text-align: left; transition: all 0.2s ease;">
+              <span style="font-size: 26px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(9, 132, 227, 0.12); border-radius: 10px;">📑</span>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #0984e3; margin-bottom: 2px;">2. Main Unit Paper Marks</div>
+                <div style="font-size: 11px; color: var(--text-secondary, #636e72);">ප්‍රධාන සම්පූර්ණ ඒකකය සඳහා කරන ලද Full Unit Paper ලකුණු සටහන් කරන්න</div>
+              </div>
+              <span style="font-size: 16px; color: #0984e3; font-weight: 700;">➔</span>
+            </button>
+
+            <!-- Option 3: Full Paper Marks -->
+            <button type="button" class="submit-type-btn" onclick="selectSubmitMarksType('fullpaper')" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(108, 92, 231, 0.45); background: var(--card-bg, #ffffff); cursor: pointer; text-align: left; transition: all 0.2s ease;">
+              <span style="font-size: 26px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(108, 92, 231, 0.12); border-radius: 10px;">🎓</span>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #6c5ce7; margin-bottom: 2px;">3. Full Paper Marks</div>
+                <div style="font-size: 11px; color: var(--text-secondary, #636e72);">සම්පූර්ණ A/L ආදර්ශ හෝ පසුගිය ප්‍රශ්න පත්‍ර (Model/Past) ලකුණු සටහන් කරන්න</div>
+              </div>
+              <span style="font-size: 16px; color: #6c5ce7; font-weight: 700;">➔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Log Full Unit Exam Paper Modal -->
     <div class="modal-overlay" id="fullUnitPaperModal" onclick="closeFullUnitPaperModal(event)">
       <div class="modal-window" style="max-width: 440px;" onclick="event.stopPropagation()">
@@ -4848,7 +4924,7 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">ප්‍රශ්න පත්‍ර අංකය (Paper No) *</label>
-                <input type="number" class="form-input" id="fupPaperNo" min="1" max="99" value="1" required>
+                <input type="number" class="form-input" id="fupPaperNo" min="1" max="99" value="1" readonly style="background-color: var(--input-disabled-bg, #f1f2f6); cursor: not-allowed; opacity: 0.85;" title="ස්වයංක්‍රීයව අනුපිළිවෙලින් නියම කෙරේ (Auto-assigned)" required>
               </div>
               <div class="form-group">
                 <label class="form-label">දිනය (Date) *</label>
@@ -4860,6 +4936,7 @@
               <div class="form-group">
                 <label class="form-label">ලකුණු % (Marks) *</label>
                 <input type="number" class="form-input" id="fupMarks" placeholder="උදා: 85" min="0" max="100" required>
+                <div id="fupMarksError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600;">⚠️ කරුණාකර වලංගු ලකුණු (0 - 100) ඇතුළත් කරන්න!</div>
               </div>
               <div class="form-group">
                 <label class="form-label">ගතවූ කාලය (Time - Optional)</label>
@@ -4880,7 +4957,7 @@
               </div>
             </div>
 
-            <button type="submit" class="submit-btn" id="fupSubmitBtn" style="background: linear-gradient(135deg, #0984e3, #6c5ce7);">💾 Save Full Unit Paper</button>
+            <button type="submit" class="submit-btn" id="fupSubmitBtn" style="background: linear-gradient(135deg, #0984e3, #6c5ce7);">💾 Save 1st full unit paper Marks</button>
           </form>
         </div>
       </div>
@@ -5462,6 +5539,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       // Full lists for Top 10 Modals & Top 5 Card Views
       let globalUrgentRadarFullList = [];
+      let globalUrgentRadarFullUnitList = [];
+      let currentUrgentRadarTab = 'subunit'; // 'subunit' | 'fullunit'
       let globalTopHighestFullList = [];
       let globalTopHighestUnitList = [];
       let globalLowestScoresFullList = [];
@@ -5472,11 +5551,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let globalPendingTestPapersFullList = [];
       let currentFsCardType = null;
       let showChartDataLabels = true;
+      let cachedPrintedPapersMap = {};
 
       function initDashboard() {
         const today = new Date().toISOString().split('T')[0];
         const fpDate = document.getElementById('fpDate');
         if (fpDate) fpDate.value = today;
+        try {
+          const localSaved = localStorage.getItem('al_study_tracker_printed_papers');
+          if (localSaved) {
+            const parsed = JSON.parse(localSaved);
+            if (parsed && typeof parsed === 'object') {
+              cachedPrintedPapersMap = parsed;
+            }
+          }
+        } catch(e) {}
         refreshTelemetry();
         setupRealtimeSubscriptions();
       }
@@ -5957,8 +6046,39 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const fpRawList = (fpRes.status === 'fulfilled' && fpRes.value.data) ? fpRes.value.data : [];
           const upRawList = (upRes && upRes.status === 'fulfilled' && upRes.value.data) ? upRes.value.data : [];
 
-          // Format full papers history directly from full_papers table (valid numeric marks only)
-          const validFpRawList = fpRawList.filter(r => r.marks !== null && r.marks !== undefined && !isNaN(r.marks));
+          // Extract printed papers config map directly from full_papers table (Database persistence - Req 3)
+          let printConfigRow = fpRawList.find(r => r.time_taken === 'APP_CONFIG_PRINTED_PAPERS');
+          if (!printConfigRow) {
+            try {
+              const { data: directCfg } = await supabase
+                .from('full_papers')
+                .select('remarks')
+                .eq('time_taken', 'APP_CONFIG_PRINTED_PAPERS')
+                .limit(1);
+              if (directCfg && directCfg[0]) {
+                printConfigRow = directCfg[0];
+              }
+            } catch(e) {
+              console.error('Fallback fetch for print config row error:', e);
+            }
+          }
+
+          if (printConfigRow && printConfigRow.remarks) {
+            try {
+              const parsed = JSON.parse(printConfigRow.remarks);
+              if (parsed && typeof parsed === 'object') {
+                cachedPrintedPapersMap = parsed;
+                try {
+                  localStorage.setItem('al_study_tracker_printed_papers', JSON.stringify(parsed));
+                } catch(e) {}
+              }
+            } catch(e) {
+              console.error('Error parsing printed papers map from database:', e);
+            }
+          }
+
+          // Format full papers history directly from full_papers table (valid numeric marks only, exclude config row)
+          const validFpRawList = fpRawList.filter(r => r.time_taken !== 'APP_CONFIG_PRINTED_PAPERS' && r.marks !== null && r.marks !== undefined && !isNaN(r.marks));
           const fullPapersHistory = validFpRawList.map(r => ({
             id: r.id,
             date: r.exam_date ? r.exam_date.substring(5) : (r.logged_at ? r.logged_at.substring(5, 10) : ''),
@@ -6085,7 +6205,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             total: unitPapersHistory.length
           };
 
-          // Calculate Urgent Radar (display top five of "paper_days" highest number)
+          // 1. Calculate Urgent Radar (Sub-Units): display top lessons with paper_days > 0
           const urgentRadarItems = [];
           const tpMapById = {};
           tpList.forEach(t => { if (t.syllabus_id) tpMapById[t.syllabus_id] = t; });
@@ -6094,6 +6214,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const paperDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
             if (paperDays > 0) {
               urgentRadarItems.push({
+                isFullUnit: false,
                 subject: s.subject,
                 unitNumber: (s.unit_number !== undefined && s.unit_number !== null) ? s.unit_number : '',
                 unitName: s.unit_name || '',
@@ -6112,6 +6233,100 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           });
           globalUrgentRadarFullList = urgentRadarItems;
           rpcData.radar = urgentRadarItems.slice(0, 5);
+
+          // 2. Calculate Full Unit Urgent Radar (Req 1):
+          // List all full units in all subjects where tests for all sub-units have been completed (at least 1 sub-unit paper done)
+          // Out of those, show oldest which have not done main unit papers yet
+          const unitsMap = new Map();
+          syllabusList.forEach(s => {
+            const subj = (s.subject || '').toUpperCase().trim();
+            const uNum = (s.unit_number !== undefined && s.unit_number !== null) ? Number(s.unit_number) : null;
+            if (!subj || uNum === null) return;
+            const k = `${subj}||${uNum}`;
+            if (!unitsMap.has(k)) {
+              unitsMap.set(k, {
+                subject: subj,
+                unitNumber: uNum,
+                unitName: s.unit_name || `Unit ${uNum}`,
+                subLessons: [],
+                firstSyllabusId: s.id,
+                sortOrder: s.sort_order || (uNum * 1000)
+              });
+            }
+            unitsMap.get(k).subLessons.push(s);
+          });
+
+          const fullUnitUrgentItems = [];
+          unitsMap.forEach((unit) => {
+            let allSubUnitsHavePaper = true;
+            let latestSubUnitPaperTime = 0;
+            let latestSubUnitPaperDate = null;
+
+            for (const sub of unit.subLessons) {
+              const subPapers = subUnitPapersHistory.filter(p => {
+                const matchSyl = p.syllabusId && p.syllabusId === sub.id;
+                const matchCode = (p.subject || '').toUpperCase().trim() === unit.subject &&
+                                  p.code && sub.sub_lesson_code &&
+                                  String(p.code).trim() === String(sub.sub_lesson_code).trim();
+                return (matchSyl || matchCode) && (p.marks !== null && p.marks !== undefined);
+              });
+
+              if (subPapers.length === 0) {
+                allSubUnitsHavePaper = false;
+                break;
+              }
+
+              for (const sp of subPapers) {
+                const d = sp.loggedAt ? new Date(sp.loggedAt).getTime() : (sp.timestamp || 0);
+                if (d > latestSubUnitPaperTime) {
+                  latestSubUnitPaperTime = d;
+                  latestSubUnitPaperDate = sp.loggedAt || sp.fullDate || null;
+                }
+              }
+            }
+
+            if (!allSubUnitsHavePaper) return;
+
+            // Check if main unit paper done
+            const hasMainUnitPaper = fullUnitPapersHistory.some(p => {
+              const pSubj = (p.subject || '').toUpperCase().trim();
+              if (pSubj !== unit.subject) return false;
+              const m = String(p.code || '').match(/\d+/);
+              const pUnitNum = m ? parseInt(m[0], 10) : null;
+              return pUnitNum === unit.unitNumber && (p.marks !== null && p.marks !== undefined);
+            });
+
+            if (hasMainUnitPaper) return;
+
+            const now = new Date().getTime();
+            const daysElapsed = latestSubUnitPaperTime > 0 
+              ? Math.max(0, Math.floor((now - latestSubUnitPaperTime) / (1000 * 60 * 60 * 24)))
+              : 0;
+
+            fullUnitUrgentItems.push({
+              isFullUnit: true,
+              subject: unit.subject,
+              unitNumber: unit.unitNumber,
+              unitName: unit.unitName,
+              code: `Unit ${unit.unitNumber}`,
+              title: unit.unitName,
+              subLesson: `${unit.subLessons.length}/${unit.subLessons.length} Sub-Units Tested`,
+              subLessonsCount: unit.subLessons.length,
+              colH: daysElapsed,
+              latestDate: latestSubUnitPaperDate ? String(latestSubUnitPaperDate).substring(0, 10) : '-',
+              sortOrder: unit.sortOrder,
+              syllabusId: unit.firstSyllabusId
+            });
+          });
+
+          fullUnitUrgentItems.sort((a, b) => {
+            if (b.colH !== a.colH) return b.colH - a.colH;
+            return a.sortOrder - b.sortOrder;
+          });
+
+          globalUrgentRadarFullUnitList = fullUnitUrgentItems;
+          rpcData.fullUnitRadar = fullUnitUrgentItems.slice(0, 5);
+
           if (currentFsCardType === 'urgentRadar' && typeof openDataCardFullscreen === 'function') {
             openDataCardFullscreen('urgentRadar');
           }
@@ -6149,6 +6364,124 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const radar = document.getElementById('radarList');
           if (radar) {
             radar.innerHTML = '<tr><td colspan="7" style="font-size: 10px; color: #d63031; text-align: center; padding: 10px;">දත්ත ලබාගැනීම අසාර්ථක විය: ' + (err.message || '') + '</td></tr>';
+          }
+        }
+      }
+
+      function switchUrgentRadarTab(tab, event) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        currentUrgentRadarTab = tab;
+        const btnSub = document.getElementById('btnUrgentTabSubunit');
+        const btnFull = document.getElementById('btnUrgentTabFullunit');
+        if (btnSub) btnSub.classList.toggle('active', tab === 'subunit');
+        if (btnFull) btnFull.classList.toggle('active', tab === 'fullunit');
+
+        renderUrgentRadarCard();
+
+        if (currentFsCardType === 'urgentRadar' && typeof openDataCardFullscreen === 'function') {
+          openDataCardFullscreen('urgentRadar');
+        }
+      }
+
+      function renderUrgentRadarCard() {
+        const radarDiv = document.getElementById('radarList');
+        const titleEl = document.getElementById('urgentRadarCardTitle');
+        const badgeEl = document.getElementById('urgentRadarCardBadge');
+        const subEl = document.getElementById('urgentRadarCardSubtitle');
+        const colSubH = document.getElementById('urgentColSubHeader');
+        const colSubNameH = document.getElementById('urgentColSubNameHeader');
+
+        const btnSub = document.getElementById('btnUrgentTabSubunit');
+        const btnFull = document.getElementById('btnUrgentTabFullunit');
+        if (btnSub) btnSub.classList.toggle('active', currentUrgentRadarTab === 'subunit');
+        if (btnFull) btnFull.classList.toggle('active', currentUrgentRadarTab === 'fullunit');
+
+        if (!radarDiv) return;
+
+        if (currentUrgentRadarTab === 'fullunit') {
+          if (titleEl) titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Full Unit Radar)';
+          if (badgeEl) {
+            badgeEl.innerText = 'Full Unit Radar';
+            badgeEl.style.background = 'rgba(9, 132, 227, 0.15)';
+            badgeEl.style.color = '#0984e3';
+          }
+          if (subEl) subEl.innerText = 'සියලු උප-පාඩම් වල Papers අවසන් නමුත් තවමත් Main Unit Paper එකක් නොකළ ප්‍රධාන ඒකක.';
+          if (colSubH) colSubH.innerText = 'Sub Units';
+          if (colSubNameH) colSubNameH.innerText = 'Status';
+
+          const items = (globalUrgentRadarFullUnitList || []).slice(0, 5);
+          if (items.length > 0) {
+            radarDiv.innerHTML = items.map((item, idx) => {
+              const subj = item.subject || 'ICT';
+              const subjClass = `subj-pill-${subj.toLowerCase()}`;
+              const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+              const unitName = item.unitName || '-';
+              return `
+                <tr>
+                  <td class="col-rank">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                      <input type="checkbox" class="ebb-tick radar-tick" id="radarChk_${idx}" style="--chk-accent:#0984e3;" onchange="handleUrgentRadarTick(${idx}, this, false, true)" title="Full Unit Paper 1 ලොග් කරන්න">
+                      <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px; background: rgba(9, 132, 227, 0.15); color: #0984e3;">#${idx + 1} ⚡</span>
+                    </div>
+                  </td>
+                  <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
+                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                  <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #0984e3;">${item.subLessonsCount} Units</span></td>
+                  <td class="col-sub-name">
+                    <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">සියලු Sub-Units අවසන් ✅</a>
+                  </td>
+                  <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            radarDiv.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 14px; font-weight: 600;">නියමයි! සුදුසුකම් ලත් සියලු ඒකක සඳහා Full Unit Paper 1 සම්පූර්ණ කර ඇත 🌟</td></tr>';
+          }
+        } else {
+          if (titleEl) titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)';
+          if (badgeEl) {
+            badgeEl.innerText = 'Urgent Radar';
+            badgeEl.style.background = 'rgba(235, 77, 75, 0.12)';
+            badgeEl.style.color = '#eb4d4b';
+          }
+          if (subEl) subEl.innerText = 'පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ පාඩම්.';
+          if (colSubH) colSubH.innerText = 'Sub Unit';
+          if (colSubNameH) colSubNameH.innerText = 'Sub Unit Name';
+
+          const items = (globalUrgentRadarFullList || []).slice(0, 5);
+          if (items.length > 0) {
+            radarDiv.innerHTML = items.map((item, idx) => {
+              const subj = item.subject || 'ICT';
+              const subjClass = `subj-pill-${subj.toLowerCase()}`;
+              const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+              const unitName = item.unitName || '-';
+              const subUnitNo = item.code || '-';
+              let cleanTitle = (item.title || item.subLesson || '-').trim();
+              if (item.code && cleanTitle.startsWith(item.code)) {
+                cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+              }
+              return `
+                <tr>
+                  <td class="col-rank">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                      <input type="checkbox" class="ebb-tick radar-tick" id="radarChk_${idx}" style="--chk-accent:#eb4d4b;" onchange="handleUrgentRadarTick(${idx}, this, false, false)" title="Paper 1 අවසන් බව සලකුණු කරන්න">
+                      <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px;">#${idx + 1} ⚡</span>
+                    </div>
+                  </td>
+                  <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
+                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                  <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
+                  <td class="col-sub-name">
+                    <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                  </td>
+                  <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            radarDiv.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 14px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
           }
         }
       }
@@ -6273,40 +6606,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         renderFullUnitPaperChart();
         renderAnalyticsRankingCards(data);
 
-        const radarDiv = document.getElementById('radarList');
-        if (data.radar && data.radar.length > 0) {
-          radarDiv.innerHTML = data.radar.map((item, idx) => {
-            const subj = item.subject || 'ICT';
-            const subjClass = `subj-pill-${subj.toLowerCase()}`;
-            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
-            const unitName = item.unitName || '-';
-            const subUnitNo = item.code || '-';
-            let cleanTitle = (item.title || item.subLesson || '-').trim();
-            if (item.code && cleanTitle.startsWith(item.code)) {
-              cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
-            }
-            return `
-              <tr>
-                <td class="col-rank">
-                  <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                    <input type="checkbox" class="ebb-tick radar-tick" id="radarChk_${idx}" style="--chk-accent:#eb4d4b;" onchange="handleUrgentRadarTick(${idx}, this)" title="Paper 1 අවසන් බව සලකුණු කරන්න">
-                    <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px;">#${idx + 1} ⚡</span>
-                  </div>
-                </td>
-                <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
-                <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
-                <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
-                <td class="col-sub-name">
-                  <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
-                </td>
-                <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
-              </tr>
-            `;
-          }).join('');
-        } else {
-          radarDiv.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 14px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
-        }
+        renderUrgentRadarCard();
 
         const balanceBox = document.getElementById('balanceAlertBox');
         if (data.balanceAlert) {
@@ -8853,58 +9153,121 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         extraEl.innerHTML = '';
 
         if (cardType === 'urgentRadar') {
-          titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)';
-          badgeEl.innerText = 'Top 10 Urgent Radar';
-          badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
-          badgeEl.style.color = '#ffffff';
-          headerEl.style.background = 'linear-gradient(135deg, #eb4d4b, #d63031)';
-          subEl.innerText = 'පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ මුල්ම පාඩම් 10.';
-
-          theadEl.innerHTML = `
-            <tr>
-              <th class="col-rank">Done</th>
-              <th class="col-subj">Subject</th>
-              <th class="col-unit-no">Unit No</th>
-              <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
-              <th class="col-sub-name">Sub Unit Name</th>
-              <th class="col-metric-wide">Days Elapsed</th>
-            </tr>
+          extraEl.style.display = 'block';
+          extraEl.innerHTML = `
+            <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
+              <button type="button" class="ranking-tab-btn ${currentUrgentRadarTab === 'subunit' ? 'active' : ''}" onclick="switchUrgentRadarTab('subunit', event)">
+                <span>📑 Sub-Unit Radar</span>
+              </button>
+              <button type="button" class="ranking-tab-btn ${currentUrgentRadarTab === 'fullunit' ? 'active' : ''}" onclick="switchUrgentRadarTab('fullunit', event)">
+                <span>📚 Full Unit Radar</span>
+              </button>
+            </div>
           `;
 
-          const items = (globalUrgentRadarFullList || []).slice(0, 10);
-          if (items.length === 0) {
-            tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 16px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
+          if (currentUrgentRadarTab === 'fullunit') {
+            titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Full Unit Radar)';
+            badgeEl.innerText = 'Top 10 Full Unit Radar';
+            badgeEl.style.background = 'rgba(9, 132, 227, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            headerEl.style.background = 'linear-gradient(135deg, #0984e3, #2980b9)';
+            subEl.innerText = 'සියලු උප-පාඩම් වල Papers අවසන් නමුත් තවමත් Main Unit Paper එකක් නොකළ ප්‍රධාන ඒකක (Top 10).';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th class="col-rank">Done</th>
+                <th class="col-subj">Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th class="col-sub-no">Sub Units</th>
+                <th class="col-sub-name">Status</th>
+                <th class="col-metric-wide">Days Elapsed</th>
+              </tr>
+            `;
+
+            const items = (globalUrgentRadarFullUnitList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 16px; font-weight: 600;">නියමයි! සුදුසුකම් ලත් සියලු ඒකක සඳහා Full Unit Paper 1 සම්පූර්ණ කර ඇත 🌟</td></tr>';
+            } else {
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const subj = item.subject || 'ICT';
+                const subjClass = `subj-pill-${subj.toLowerCase()}`;
+                const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+                const unitName = item.unitName || '-';
+                return `
+                  <tr>
+                    <td class="col-rank">
+                      <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <input type="checkbox" class="ebb-tick radar-tick" id="radarFsChk_${idx}" style="--chk-accent:#0984e3;" onchange="handleUrgentRadarTick(${idx}, this, true, true)" title="Full Unit Paper 1 ලොග් කරන්න">
+                        <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px; background: rgba(9, 132, 227, 0.15); color: #0984e3;">#${idx + 1} ⚡</span>
+                      </div>
+                    </td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                    <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-code" style="color: #0984e3;">${item.subLessonsCount} Units</span></td>
+                    <td class="col-sub-name">
+                      <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}')" title="Drilldown විවෘත කරන්න">සියලු Sub-Units අවසන් ✅</a>
+                    </td>
+                    <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                  </tr>
+                `;
+              }).join('');
+            }
           } else {
-            tbodyEl.innerHTML = items.map((item, idx) => {
-              const subj = item.subject || 'ICT';
-              const subjClass = `subj-pill-${subj.toLowerCase()}`;
-              const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
-              const unitName = item.unitName || '-';
-              const subUnitNo = item.code || '-';
-              let cleanTitle = (item.title || item.subLesson || '-').trim();
-              if (item.code && cleanTitle.startsWith(item.code)) {
-                cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
-              }
-              return `
-                <tr>
-                  <td class="col-rank">
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                      <input type="checkbox" class="ebb-tick radar-tick" id="radarFsChk_${idx}" style="--chk-accent:#eb4d4b;" onchange="handleUrgentRadarTick(${idx}, this, true)" title="Paper 1 අවසන් බව සලකුණු කරන්න">
-                      <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px;">#${idx + 1} ⚡</span>
-                    </div>
-                  </td>
-                  <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
-                  <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                  <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
-                  <td class="col-sub-no"><span class="chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
-                  <td class="col-sub-name" title="${escapeHtml(cleanTitle)}">
-                    <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
-                  </td>
-                  <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
-                </tr>
-              `;
-            }).join('');
+            titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)';
+            badgeEl.innerText = 'Top 10 Urgent Radar';
+            badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            headerEl.style.background = 'linear-gradient(135deg, #eb4d4b, #d63031)';
+            subEl.innerText = 'පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ මුල්ම පාඩම් 10.';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th class="col-rank">Done</th>
+                <th class="col-subj">Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-name">Sub Unit Name</th>
+                <th class="col-metric-wide">Days Elapsed</th>
+              </tr>
+            `;
+
+            const items = (globalUrgentRadarFullList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 16px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
+            } else {
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const subj = item.subject || 'ICT';
+                const subjClass = `subj-pill-${subj.toLowerCase()}`;
+                const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+                const unitName = item.unitName || '-';
+                const subUnitNo = item.code || '-';
+                let cleanTitle = (item.title || item.subLesson || '-').trim();
+                if (item.code && cleanTitle.startsWith(item.code)) {
+                  cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+                }
+                return `
+                  <tr>
+                    <td class="col-rank">
+                      <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <input type="checkbox" class="ebb-tick radar-tick" id="radarFsChk_${idx}" style="--chk-accent:#eb4d4b;" onchange="handleUrgentRadarTick(${idx}, this, true, false)" title="Paper 1 අවසන් බව සලකුණු කරන්න">
+                        <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px;">#${idx + 1} ⚡</span>
+                      </div>
+                    </td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                    <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
+                    <td class="col-sub-name" title="${escapeHtml(cleanTitle)}">
+                      <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                    </td>
+                    <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                  </tr>
+                `;
+              }).join('');
+            }
           }
 
         } else if (cardType === 'ebbinghaus') {
@@ -8937,10 +9300,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           extraEl.innerHTML = `
             <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
               <button type="button" class="ranking-tab-btn ${currentTopHighestTab === 'subunit' ? 'active' : ''}" onclick="switchTopHighestTab('subunit', event)">
-                <span>📑 Sub-Unit Breakdown</span>
+                <span>📑 Unit Breakdown</span>
               </button>
               <button type="button" class="ranking-tab-btn ${currentTopHighestTab === 'unit' ? 'active' : ''}" onclick="switchTopHighestTab('unit', event)">
-                <span>📚 Unit-Wise Average</span>
+                <span>📚 Main Unit-Wise Average</span>
               </button>
             </div>
           `;
@@ -8957,7 +9320,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide">Unit Name</th>
-                <th class="col-sub-count">Sub-Units Tested</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Latest Date</th>
               </tr>
@@ -8965,7 +9327,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             const items = (globalTopHighestUnitList || []).slice(0, 10);
             if (items.length === 0) {
-              tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+              tbodyEl.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
             } else {
               const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
               tbodyEl.innerHTML = items.map((item, idx) => {
@@ -8979,7 +9341,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} papers)</small>
@@ -8993,7 +9354,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             badgeEl.innerText = 'Top 10 High';
             badgeEl.style.background = 'rgba(39, 174, 96, 0.25)';
             badgeEl.style.color = '#ffffff';
-            subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Sub-Unit Papers 10 (Zero-mark excluded).';
+            subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 10 (Zero-mark excluded).';
 
             theadEl.innerHTML = `
               <tr>
@@ -9001,7 +9362,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -9047,10 +9408,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           extraEl.innerHTML = `
             <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
               <button type="button" class="ranking-tab-btn ${currentLowestScoreTab === 'subunit' ? 'active' : ''}" onclick="switchLowestScoreTab('subunit', event)">
-                <span>📑 Sub-Unit Breakdown</span>
+                <span>📑 Unit Breakdown</span>
               </button>
               <button type="button" class="ranking-tab-btn ${currentLowestScoreTab === 'unit' ? 'active' : ''}" onclick="switchLowestScoreTab('unit', event)">
-                <span>📚 Unit-Wise Average</span>
+                <span>📚 Main Unit-Wise Average</span>
               </button>
             </div>
           `;
@@ -9067,7 +9428,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide">Unit Name</th>
-                <th class="col-sub-count">Sub-Units Tested</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Latest Date</th>
               </tr>
@@ -9075,7 +9435,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             const items = (globalLowestScoresUnitList || []).slice(0, 10);
             if (items.length === 0) {
-              tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+              tbodyEl.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
             } else {
               tbodyEl.innerHTML = items.map((item, idx) => {
                 const rankLabel = `#${idx + 1} ⚠️`;
@@ -9087,7 +9447,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
@@ -9101,7 +9460,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             badgeEl.innerText = 'Top 10 Lowest';
             badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
             badgeEl.style.color = '#ffffff';
-            subEl.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Sub-Unit Papers 10.';
+            subEl.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Unit Papers 10.';
 
             theadEl.innerHTML = `
               <tr>
@@ -9109,7 +9468,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -9162,13 +9521,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <th class="col-sub-no">Sub Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Lesson Days</th>
+              <th class="col-print" style="text-align: center;">Print</th>
+              <th class="col-print-days" style="text-align: center;">Print Days</th>
               <th class="col-date">Date</th>
             </tr>
           `;
 
           const items = (globalPendingLessonsFullList || []).slice(0, 10);
           if (items.length === 0) {
-            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>';
+            tbodyEl.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>';
           } else {
             tbodyEl.innerHTML = items.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -9183,6 +9544,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td class="col-metric"><span class="marks-pill marks-mid">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-print" style="text-align: center;">
+                    <button type="button" class="print-tick-btn ${item.isPrinted ? 'is-printed' : ''}" onclick="openPrintPaperConfirm('${item.id}', '${escapeHtml(item.subject)}', '${escapeHtml(item.subUnitNumber)}', ${item.isPrinted ? 'true' : 'false'}, event)" title="${item.isPrinted ? 'මුද්‍රණය කර ඇත (Printed). මුරපදය මගින් වෙනස් කිරීමට ක්ලික් කරන්න.' : 'ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව සටහන් කරන්න'}">
+                      <span class="print-checkbox-box">${item.isPrinted ? '✓' : ''}</span>
+                      <span>${item.isPrinted ? 'Printed' : 'Print'}</span>
+                    </button>
+                  </td>
+                  <td class="col-print-days" style="text-align: center;">
+                    ${item.isPrinted 
+                      ? `<span class="marks-pill marks-printed" title="මුද්‍රණය කළ දිනය: ${item.printedAt ? escapeHtml(item.printedAt.substring(0, 10)) : '-'}">දින ${item.printedDays !== null ? item.printedDays : 0}ක්</span>` 
+                      : `<span style="color: #a4b0be; font-size: 11px;">-</span>`}
+                  </td>
                   <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
@@ -10269,7 +10641,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide" colspan="2">Unit Name</th>
-                <th class="col-sub-count">Sub-Units</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
               </tr>
@@ -10278,7 +10649,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (bBody) {
             const top5 = (globalTopHighestUnitList || []).slice(0, 5);
             if (top5.length === 0) {
-              bBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+              bBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
             } else {
               const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th'];
               bBody.innerHTML = top5.map((item, idx) => {
@@ -10292,7 +10663,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" colspan="2"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
@@ -10310,7 +10680,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             bBadge.style.color = '#27ae60';
           }
           if (bSub) {
-            bSub.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Sub-Unit Papers 5 (Zero-mark excluded).';
+            bSub.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5 (Zero-mark excluded).';
           }
           if (bHead) {
             bHead.innerHTML = `
@@ -10319,7 +10689,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -10376,13 +10746,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             cSub.innerText = 'නැවත සමාලෝචනය අවශ්‍ය අවම සාමාන්‍ය ලකුණු (Mean Score) සහිත ප්‍රධාන Units.';
           }
           if (cHead) {
+            bHead = null; // no-op safeguard
             cHead.innerHTML = `
               <tr>
                 <th class="col-rank">Rank</th>
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide" colspan="2">Unit Name</th>
-                <th class="col-sub-count">Sub-Units</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
               </tr>
@@ -10391,7 +10761,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (cBody) {
             const least5 = (globalLowestScoresUnitList || []).slice(0, 5);
             if (least5.length === 0) {
-              cBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+              cBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
             } else {
               cBody.innerHTML = least5.map((item, idx) => {
                 const rankLabel = `#${idx + 1} ⚠️`;
@@ -10403,7 +10773,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" colspan="2"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
@@ -10421,7 +10790,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             cBadge.style.color = '#eb4d4b';
           }
           if (cSub) {
-            cSub.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Sub-Unit Papers 5.';
+            cSub.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Unit Papers 5.';
           }
           if (cHead) {
             cHead.innerHTML = `
@@ -10430,7 +10799,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -10478,28 +10847,112 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let lastDashboardData = null;
 
       function getPrintedPapersStorage() {
-        try {
-          const raw = localStorage.getItem('al_study_tracker_printed_papers');
-          return raw ? JSON.parse(raw) : {};
-        } catch (e) {
-          console.error('Error reading printed papers from localStorage:', e);
-          return {};
+        if (cachedPrintedPapersMap && typeof cachedPrintedPapersMap === 'object' && Object.keys(cachedPrintedPapersMap).length > 0) {
+          return cachedPrintedPapersMap;
         }
+        try {
+          const localRaw = localStorage.getItem('al_study_tracker_printed_papers');
+          if (localRaw) {
+            const parsed = JSON.parse(localRaw);
+            if (parsed && typeof parsed === 'object') {
+              if (!cachedPrintedPapersMap || Object.keys(cachedPrintedPapersMap).length === 0) {
+                cachedPrintedPapersMap = parsed;
+              }
+              return parsed;
+            }
+          }
+        } catch(e) {}
+        return (cachedPrintedPapersMap && typeof cachedPrintedPapersMap === 'object') ? cachedPrintedPapersMap : {};
       }
 
-      function setPrintedPapersStorage(map) {
+      async function setPrintedPapersStorage(map) {
+        cachedPrintedPapersMap = map || {};
+        const jsonStr = JSON.stringify(cachedPrintedPapersMap);
+        const nowIso = new Date().toISOString();
+
+        // 1. Instant local mirror to localStorage
         try {
-          localStorage.setItem('al_study_tracker_printed_papers', JSON.stringify(map));
+          localStorage.setItem('al_study_tracker_printed_papers', jsonStr);
+        } catch(e) {}
+
+        // 2. Primary database update to full_papers table
+        try {
+          const { data: updateRes, error: updateErr } = await supabase
+            .from('full_papers')
+            .update({
+              remarks: jsonStr,
+              logged_at: nowIso
+            })
+            .eq('time_taken', 'APP_CONFIG_PRINTED_PAPERS')
+            .select('id');
+
+          if (updateErr || !updateRes || updateRes.length === 0) {
+            // Row might not exist, insert it
+            await supabase
+              .from('full_papers')
+              .insert([{
+                subject: 'ICT',
+                marks: 0,
+                exam_date: nowIso.substring(0, 10),
+                time_taken: 'APP_CONFIG_PRINTED_PAPERS',
+                remarks: jsonStr,
+                logged_at: nowIso
+              }]);
+          }
         } catch (e) {
-          console.error('Error writing printed papers to localStorage:', e);
+          console.error('Error persisting printed papers map to Supabase database:', e);
         }
+
+        // 3. Fallback direct REST API PATCH with keepalive to guarantee background transmission
+        try {
+          fetch(SUPABASE_URL + '/rest/v1/full_papers?time_taken=eq.APP_CONFIG_PRINTED_PAPERS', {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({
+              remarks: jsonStr,
+              logged_at: nowIso
+            }),
+            keepalive: true
+          }).catch(() => {});
+        } catch(e) {}
       }
 
       function isPaperPrinted(syllabusId, subject, subUnitNumber) {
         const map = getPrintedPapersStorage();
+        if (!map || typeof map !== 'object') return null;
+
+        // 1. Direct syllabusId key match
         if (syllabusId && map[syllabusId]) return map[syllabusId];
-        const k = `${(subject || '').toUpperCase().trim()}||${(subUnitNumber || '').trim()}`;
-        if (map[k]) return map[k];
+
+        // 2. Normalized subject + subUnitNumber key match
+        const cleanSubj = (subject || '').toUpperCase().trim();
+        const cleanCode = (subUnitNumber || '').trim();
+        if (cleanSubj && cleanCode) {
+          const k1 = `${cleanSubj}||${cleanCode}`;
+          if (map[k1]) return map[k1];
+          const k2 = `${(subject || '').trim()}||${cleanCode}`;
+          if (map[k2]) return map[k2];
+          const k3 = `${cleanSubj.toLowerCase()}||${cleanCode}`;
+          if (map[k3]) return map[k3];
+        }
+
+        // 3. Fallback search through values in map
+        for (const k in map) {
+          const rec = map[k];
+          if (rec && typeof rec === 'object') {
+            if (syllabusId && rec.syllabus_id === syllabusId) return rec;
+            if (cleanSubj && cleanCode &&
+                (rec.subject || '').toUpperCase().trim() === cleanSubj &&
+                String(rec.sub_lesson_code || '').trim() === cleanCode) {
+              return rec;
+            }
+          }
+        }
         return null;
       }
 
@@ -10536,6 +10989,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         if (okBtn) {
+          okBtn.disabled = false;
           okBtn.innerText = isCurrentlyPrinted ? 'ඉවත් කරන්න ✕' : 'තහවුරු කරන්න ✅';
         }
 
@@ -10584,10 +11038,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         if (passErr) passErr.style.display = 'none';
 
+        const okBtn = document.getElementById('printPaperConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = true;
+          okBtn.innerText = 'සටහන් වෙමින් පවතී...';
+        }
+
         const { syllabusId, subject, subUnitNumber, isCurrentlyPrinted } = pendingPrintPaperConfirm;
         const map = getPrintedPapersStorage();
-        const key = syllabusId || `${(subject || '').toUpperCase().trim()}||${(subUnitNumber || '').trim()}`;
-        const altKey = `${(subject || '').toUpperCase().trim()}||${(subUnitNumber || '').trim()}`;
+        const cleanSubj = (subject || '').toUpperCase().trim();
+        const cleanCode = (subUnitNumber || '').trim();
+        const key = syllabusId || `${cleanSubj}||${cleanCode}`;
+        const altKey = `${cleanSubj}||${cleanCode}`;
 
         const newPrintedState = !isCurrentlyPrinted;
         const nowIso = new Date().toISOString();
@@ -10596,18 +11058,34 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const record = {
             printed: true,
             printed_at: nowIso,
-            syllabus_id: syllabusId,
-            subject: subject,
-            sub_lesson_code: subUnitNumber
+            syllabus_id: syllabusId || null,
+            subject: cleanSubj,
+            sub_lesson_code: cleanCode
           };
-          map[key] = record;
-          if (syllabusId && altKey !== key) map[altKey] = record;
+          if (syllabusId) map[syllabusId] = record;
+          if (cleanSubj && cleanCode) map[altKey] = record;
         } else {
-          delete map[key];
-          if (altKey) delete map[altKey];
+          if (syllabusId) delete map[syllabusId];
+          if (cleanSubj && cleanCode) {
+            delete map[altKey];
+            delete map[`${(subject || '').trim()}||${cleanCode}`];
+            delete map[`${cleanSubj.toLowerCase()}||${cleanCode}`];
+          }
+          // Clean any matching record in map
+          for (const k in map) {
+            const rec = map[k];
+            if (rec && typeof rec === 'object') {
+              if (syllabusId && rec.syllabus_id === syllabusId) delete map[k];
+              else if (cleanSubj && cleanCode &&
+                       (rec.subject || '').toUpperCase().trim() === cleanSubj &&
+                       String(rec.sub_lesson_code || '').trim() === cleanCode) {
+                delete map[k];
+              }
+            }
+          }
         }
 
-        setPrintedPapersStorage(map);
+        await setPrintedPapersStorage(map);
         cancelPrintPaperConfirm();
 
         showHtmlAlert(
@@ -10619,8 +11097,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         if (typeof lastDashboardData !== 'undefined' && lastDashboardData) {
           renderAnalyticsRankingCards(lastDashboardData);
-        } else if (typeof refreshTelemetry === 'function') {
-          await refreshTelemetry();
+        }
+        if (typeof refreshTelemetry === 'function') {
+          refreshTelemetry().catch(console.error);
         }
       }
 
@@ -10666,19 +11145,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const sylKey = `${(p.subject || syl.subject || '').toUpperCase().trim()}||${(p.code || syl.sub_lesson_code || '').trim()}`;
           const tp = (syl.id && tpMap[syl.id]) || (p.syllabusId && tpMap[p.syllabusId]) || tpMapByKey[sylKey] || {};
 
-          // Bind directly to last updated date (last_updated / updated_at timestamp)
-          const pUpdatedRaw = p.updated_at || p.last_updated || p.loggedAt || p.fullDate || null;
-          const tpUpdatedRaw = tp.updated_at || tp.last_updated || null;
-          const pUpdatedTs = pUpdatedRaw ? new Date(pUpdatedRaw).getTime() : 0;
-          const tpUpdatedTs = tpUpdatedRaw ? new Date(tpUpdatedRaw).getTime() : 0;
-
-          let lastUpdatedRaw = pUpdatedRaw;
-          let lastUpdatedTs = pUpdatedTs;
-          if (tpUpdatedTs > pUpdatedTs) {
-            lastUpdatedRaw = tpUpdatedRaw;
-            lastUpdatedTs = tpUpdatedTs;
-          }
-          const updatedDateStr = lastUpdatedRaw ? String(lastUpdatedRaw).substring(0, 10) : '-';
+          // 2.4 Latest date from unit_papers table in logged_at column
+          const pLoggedRaw = p.loggedAt || p.logged_at || null;
+          const pLoggedTs = pLoggedRaw ? new Date(pLoggedRaw).getTime() : 0;
+          const pLoggedDateStr = pLoggedRaw ? String(pLoggedRaw).substring(0, 10) : '-';
 
           if (!subUnitMap[sId]) {
             subUnitMap[sId] = {
@@ -10691,9 +11161,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitName: syl.sub_lesson_title || '-',
               totalMarks: 0,
               attemptsCount: 0,
-              date: updatedDateStr,
-              latestDate: updatedDateStr,
-              latestTimestamp: lastUpdatedTs
+              date: pLoggedDateStr,
+              latestDate: pLoggedDateStr,
+              latestTimestamp: pLoggedTs
             };
           }
 
@@ -10701,10 +11171,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           subUnitMap[sId].totalMarks += m;
           subUnitMap[sId].attemptsCount += 1;
 
-          if (lastUpdatedTs > subUnitMap[sId].latestTimestamp) {
-            subUnitMap[sId].latestTimestamp = lastUpdatedTs;
-            subUnitMap[sId].latestDate = updatedDateStr;
-            subUnitMap[sId].date = updatedDateStr;
+          if (pLoggedTs > subUnitMap[sId].latestTimestamp) {
+            subUnitMap[sId].latestTimestamp = pLoggedTs;
+            subUnitMap[sId].latestDate = pLoggedDateStr;
+            subUnitMap[sId].date = pLoggedDateStr;
           }
         });
 
@@ -10729,19 +11199,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const sylKey = `${(p.subject || syl.subject || '').toUpperCase().trim()}||${(p.code || syl.sub_lesson_code || '').trim()}`;
           const tp = (syl.id && tpMap[syl.id]) || (p.syllabusId && tpMap[p.syllabusId]) || tpMapByKey[sylKey] || {};
 
-          // Bind directly to last updated date (last_updated / updated_at timestamp)
-          const pUpdatedRaw = p.updated_at || p.last_updated || p.loggedAt || p.fullDate || null;
-          const tpUpdatedRaw = tp.updated_at || tp.last_updated || null;
-          const pUpdatedTs = pUpdatedRaw ? new Date(pUpdatedRaw).getTime() : 0;
-          const tpUpdatedTs = tpUpdatedRaw ? new Date(tpUpdatedRaw).getTime() : 0;
-
-          let lastUpdatedRaw = pUpdatedRaw;
-          let lastUpdatedTs = pUpdatedTs;
-          if (tpUpdatedTs > pUpdatedTs) {
-            lastUpdatedRaw = tpUpdatedRaw;
-            lastUpdatedTs = tpUpdatedTs;
-          }
-          const updatedDateStr = lastUpdatedRaw ? String(lastUpdatedRaw).substring(0, 10) : '-';
+          // 2.4 Latest date from unit_papers table in logged_at column
+          const pLoggedRaw = p.loggedAt || p.logged_at || null;
+          const pLoggedTs = pLoggedRaw ? new Date(pLoggedRaw).getTime() : 0;
+          const pLoggedDateStr = pLoggedRaw ? String(pLoggedRaw).substring(0, 10) : '-';
 
           if (!unitMap[unitKey]) {
             let uName = syl.unit_name || '-';
@@ -10756,9 +11217,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               totalMarks: 0,
               attemptsCount: 0,
               testedSubUnitsSet: new Set(),
-              date: updatedDateStr,
-              latestDate: updatedDateStr,
-              latestTimestamp: lastUpdatedTs
+              date: pLoggedDateStr,
+              latestDate: pLoggedDateStr,
+              latestTimestamp: pLoggedTs
             };
           }
 
@@ -10768,10 +11229,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const subCode = p.code || syl.sub_lesson_code || syl.id;
           if (subCode) unitMap[unitKey].testedSubUnitsSet.add(subCode);
 
-          if (lastUpdatedTs > unitMap[unitKey].latestTimestamp) {
-            unitMap[unitKey].latestTimestamp = lastUpdatedTs;
-            unitMap[unitKey].latestDate = updatedDateStr;
-            unitMap[unitKey].date = updatedDateStr;
+          if (pLoggedTs > unitMap[unitKey].latestTimestamp) {
+            unitMap[unitKey].latestTimestamp = pLoggedTs;
+            unitMap[unitKey].latestDate = pLoggedDateStr;
+            unitMap[unitKey].date = pLoggedDateStr;
           }
         });
 
@@ -10823,15 +11284,29 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
             const tp = tpMap[s.id] || tpMapByKey[sylKey] || {};
 
-            // Bind directly to last updated date (last_updated / updated_at timestamp)
-            const rawUpdated = tp.updated_at || tp.last_updated || tp.lesson_done_at || null;
-            const dateStr = rawUpdated ? String(rawUpdated).substring(0, 10) : '-';
-            const ts = rawUpdated ? new Date(rawUpdated).getTime() : 0;
+            // Date logic: show the date as lesson_done_at
+            const lessonDoneDateStr = tp.lesson_done_at ? String(tp.lesson_done_at).substring(0, 10) : '-';
+            const rawUpdated = tp.lesson_done_at || tp.updated_at || tp.last_updated || null;
+            const ts = tp.lesson_done_at ? new Date(tp.lesson_done_at).getTime() : (rawUpdated ? new Date(rawUpdated).getTime() : 0);
 
             let days = (tp && tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
             if (days === 0 && rawUpdated) {
               const diffMs = Math.max(0, Date.now() - new Date(rawUpdated).getTime());
               days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
+
+            // Printed status & calculation of days since printed date
+            const printInfo = isPaperPrinted(s.id, s.subject, s.sub_lesson_code);
+            const isPrinted = !!(printInfo && printInfo.printed);
+            const printedAt = (printInfo && printInfo.printed_at) ? printInfo.printed_at : null;
+            let printedDays = null;
+            if (isPrinted && printedAt) {
+              const pDate = new Date(printedAt);
+              if (!isNaN(pDate.getTime())) {
+                const now = new Date();
+                const diffMs = Math.max(0, now.getTime() - pDate.getTime());
+                printedDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+              }
             }
 
             return {
@@ -10841,9 +11316,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               unitName: s.unit_name || '-',
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
-              date: dateStr,
-              latestDate: dateStr,
+              date: lessonDoneDateStr,
+              latestDate: lessonDoneDateStr,
               days: days,
+              isPrinted: isPrinted,
+              printedAt: printedAt,
+              printedDays: printedDays,
               timestamp: ts,
               sortOrder: Number(s.sort_order) || 0
             };
@@ -10858,7 +11336,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const dBody = document.getElementById('oldestLessonPendingBody');
         if (dBody) {
           if (pendingLessons.length === 0) {
-            dBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>`;
+            dBody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>`;
           } else {
             dBody.innerHTML = pendingLessons.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -10873,6 +11351,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${escapeHtml(item.subUnitNumber)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td class="col-metric"><span class="marks-pill marks-mid">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-print" style="text-align: center;">
+                    <button type="button" class="print-tick-btn ${item.isPrinted ? 'is-printed' : ''}" onclick="openPrintPaperConfirm('${item.id}', '${escapeHtml(item.subject)}', '${escapeHtml(item.subUnitNumber)}', ${item.isPrinted ? 'true' : 'false'}, event)" title="${item.isPrinted ? 'මුද්‍රණය කර ඇත (Printed). මුරපදය මගින් වෙනස් කිරීමට ක්ලික් කරන්න.' : 'ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව සටහන් කරන්න'}">
+                      <span class="print-checkbox-box">${item.isPrinted ? '✓' : ''}</span>
+                      <span>${item.isPrinted ? 'Printed' : 'Print'}</span>
+                    </button>
+                  </td>
+                  <td class="col-print-days" style="text-align: center;">
+                    ${item.isPrinted 
+                      ? `<span class="marks-pill marks-printed" title="මුද්‍රණය කළ දිනය: ${item.printedAt ? escapeHtml(item.printedAt.substring(0, 10)) : '-'}">දින ${item.printedDays !== null ? item.printedDays : 0}ක්</span>` 
+                      : `<span style="color: #a4b0be; font-size: 11px;">-</span>`}
+                  </td>
                   <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
@@ -10943,9 +11432,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const hwDoneDateStr = tp.hw_done_at ? String(tp.hw_done_at).substring(0, 10) : '-';
             const rawUpdated = tp.hw_done_at || tp.updated_at || tp.last_updated || tp.lesson_done_at || null;
             const ts = tp.hw_done_at ? new Date(tp.hw_done_at).getTime() : (rawUpdated ? new Date(rawUpdated).getTime() : 0);
-            const days = (tp.paper_days !== undefined && tp.paper_days !== null)
+            let days = (tp.paper_days !== undefined && tp.paper_days !== null && Number(tp.paper_days) > 0)
               ? Number(tp.paper_days)
-              : ((tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : (tp.lesson_days || 0));
+              : ((tp.hw_days !== undefined && tp.hw_days !== null && Number(tp.hw_days) > 0) ? Number(tp.hw_days) : (Number(tp.lesson_days) || 0));
+            if (days === 0 && rawUpdated) {
+              const diffMs = Math.max(0, Date.now() - new Date(rawUpdated).getTime());
+              days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
 
             // Printed status & calculation of days since printed date
             const printInfo = isPaperPrinted(s.id, s.subject, s.sub_lesson_code);
@@ -10979,7 +11472,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             };
           })
           .sort((a, b) => {
-            if (b.timestamp !== a.timestamp) return b.timestamp - a.timestamp; // Most recently updated first
+            if (b.days !== a.days) return b.days - a.days; // Paper days oldest first
+            if (b.timestamp !== a.timestamp) return b.timestamp - a.timestamp;
             return a.sortOrder - b.sortOrder;
           });
         const pendingTestPapers = globalPendingTestPapersFullList.slice(0, 5);
@@ -12259,9 +12753,51 @@ function openSidebarModal() {
       }
 
       // =========================================================================
+      // Submit Marks Selector Modal Controllers (Consolidated Entry Point)
+      // =========================================================================
+      function openSubmitMarksSelectorModal() {
+        const modal = document.getElementById('submitMarksSelectorModal');
+        if (modal) {
+          modal.style.display = 'flex';
+          focusModal(modal);
+        }
+      }
+
+      function hideSubmitMarksSelectorModal() {
+        const modal = document.getElementById('submitMarksSelectorModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function closeSubmitMarksSelectorModal(event) {
+        if (event && event.target && event.target.id === 'submitMarksSelectorModal') {
+          hideSubmitMarksSelectorModal();
+        }
+      }
+
+      function selectSubmitMarksType(type) {
+        hideSubmitMarksSelectorModal();
+        if (type === 'subunit') {
+          openUnitPaperModal();
+        } else if (type === 'fullunit' || type === 'mainunit') {
+          openFullUnitPaperModal();
+        } else if (type === 'fullpaper') {
+          openFullPaperModal();
+        }
+      }
+
+      function getOrdinalNumberText(n) {
+        const num = parseInt(n, 10) || 1;
+        const j = num % 10, k = num % 100;
+        if (j === 1 && k !== 11) return `${num}st`;
+        if (j === 2 && k !== 12) return `${num}nd`;
+        if (j === 3 && k !== 13) return `${num}rd`;
+        return `${num}th`;
+      }
+
+      // =========================================================================
       // Full Unit Paper Modal & Breakdown Controllers
       // =========================================================================
-      function openFullUnitPaperModal() {
+      function openFullUnitPaperModal(preselectedSubject, preselectedUnit) {
         const modal = document.getElementById('fullUnitPaperModal');
         if (!modal) return;
         modal.style.display = 'flex';
@@ -12271,7 +12807,13 @@ function openSidebarModal() {
         if (dateInput && !dateInput.value) dateInput.value = today;
 
         const marksInput = document.getElementById('fupMarks');
-        if (marksInput) marksInput.value = '';
+        if (marksInput) {
+          marksInput.value = '';
+          marksInput.style.borderColor = '';
+        }
+        const marksErr = document.getElementById('fupMarksError');
+        if (marksErr) marksErr.style.display = 'none';
+
         const timeInput = document.getElementById('fupTime');
         if (timeInput) timeInput.value = '';
         const remarksInput = document.getElementById('fupRemarks');
@@ -12280,13 +12822,13 @@ function openSidebarModal() {
         if (passInput) passInput.value = '';
         const passErr = document.getElementById('fupPasswordError');
         if (passErr) passErr.style.display = 'none';
-        const submitBtn = document.getElementById('fupSubmitBtn');
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerText = '💾 Save Full Unit Paper';
+
+        if (preselectedSubject) {
+          const subjSelect = document.getElementById('fupSubject');
+          if (subjSelect) subjSelect.value = preselectedSubject;
         }
 
-        populateFullUnitDropdown();
+        populateFullUnitDropdown(preselectedUnit);
         focusModal(modal);
       }
 
@@ -12301,7 +12843,7 @@ function openSidebarModal() {
         }
       }
 
-      function populateFullUnitDropdown() {
+      function populateFullUnitDropdown(preselectedUnit) {
         const subjSelect = document.getElementById('fupSubject');
         const unitSelect = document.getElementById('fupUnitSelect');
         if (!subjSelect || !unitSelect) return;
@@ -12328,6 +12870,13 @@ function openSidebarModal() {
           return `<option value="${u.unitNumber}" data-sylid="${u.firstSyllabusId}">Unit ${u.unitNumber}: ${escapeHtml(u.unitName)}</option>`;
         }).join('');
 
+        if (preselectedUnit !== undefined && preselectedUnit !== null) {
+          const matchVal = String(preselectedUnit).replace(/\D+/g, '');
+          if (matchVal) {
+            unitSelect.value = matchVal;
+          }
+        }
+
         handleFullUnitSelectChange();
       }
 
@@ -12335,6 +12884,7 @@ function openSidebarModal() {
         const subjSelect = document.getElementById('fupSubject');
         const unitSelect = document.getElementById('fupUnitSelect');
         const paperNoInput = document.getElementById('fupPaperNo');
+        const submitBtn = document.getElementById('fupSubmitBtn');
         if (!subjSelect || !unitSelect || !paperNoInput) return;
 
         const subject = subjSelect.value || 'ICT';
@@ -12348,11 +12898,31 @@ function openSidebarModal() {
         });
 
         const maxNo = papersForUnit.reduce((max, p) => Math.max(max, Number(p.paperNo) || 0), 0);
-        paperNoInput.value = maxNo + 1;
+        const nextNo = maxNo + 1;
+        paperNoInput.value = nextNo;
+
+        if (submitBtn) {
+          submitBtn.innerText = '💾 Save ' + getOrdinalNumberText(nextNo) + ' full unit paper Marks';
+        }
       }
 
       async function submitFullUnitPaper(event) {
         if (event) event.preventDefault();
+
+        const marksInput = document.getElementById('fupMarks');
+        const marksErr = document.getElementById('fupMarksError');
+        const marksRaw = marksInput ? marksInput.value.trim() : '';
+
+        if (marksRaw === '' || isNaN(marksRaw) || Number(marksRaw) < 0 || Number(marksRaw) > 100) {
+          if (marksInput) {
+            marksInput.style.borderColor = '#d63031';
+            marksInput.focus();
+          }
+          if (marksErr) marksErr.style.display = 'block';
+          return;
+        }
+        if (marksInput) marksInput.style.borderColor = '';
+        if (marksErr) marksErr.style.display = 'none';
 
         const passInput = document.getElementById('fupPasswordInput');
         const passVal = passInput ? passInput.value.trim() : '';
@@ -12368,6 +12938,7 @@ function openSidebarModal() {
         if (passErr) passErr.style.display = 'none';
 
         const submitBtn = document.getElementById('fupSubmitBtn');
+        const userPaperNo = parseInt(document.getElementById('fupPaperNo').value, 10) || 1;
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.innerText = 'සටහන් වෙමින් පවතී...';
@@ -12397,14 +12968,16 @@ function openSidebarModal() {
         }
 
         if (!firstSyllabusId) {
-          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = '💾 Save Full Unit Paper'; }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = '💾 Save ' + getOrdinalNumberText(userPaperNo) + ' full unit paper Marks';
+          }
           showHtmlAlert('දෝෂයකි: මෙම ඒකකය සඳහා Syllabus ID හඳුනාගත නොහැකි විය.', true);
           return;
         }
 
-        const userPaperNo = parseInt(document.getElementById('fupPaperNo').value, 10) || 1;
         const dateVal = document.getElementById('fupDate').value;
-        const marksVal = parseFloat(document.getElementById('fupMarks').value);
+        const marksVal = parseFloat(marksRaw);
         const timeVal = (document.getElementById('fupTime').value || '').trim();
         const remarksVal = (document.getElementById('fupRemarks').value || '').trim();
 
@@ -12441,7 +13014,10 @@ function openSidebarModal() {
 
           await refreshTelemetry();
         } catch (err) {
-          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = '💾 Save Full Unit Paper'; }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = '💾 Save ' + getOrdinalNumberText(userPaperNo) + ' full unit paper Marks';
+          }
           showHtmlAlert('දෝෂයකි: ' + (err.message || 'Full Unit Paper එක සටහන් කිරීම අසාර්ථක විය'), true);
         }
       }
@@ -12472,9 +13048,24 @@ function openSidebarModal() {
       // =========================================================================
       let pendingUrgentRadarConfirm = null;
 
-      function handleUrgentRadarTick(idx, checkbox, isFs) {
+      function handleUrgentRadarTick(idx, checkbox, isFs, isFullUnit) {
         if (!checkbox) return;
         checkbox.checked = false; // Revert until confirmation password verified
+
+        if (isFullUnit) {
+          let item = null;
+          if (isFs && Array.isArray(globalUrgentRadarFullUnitList)) {
+            item = globalUrgentRadarFullUnitList[idx];
+          } else if (Array.isArray(globalUrgentRadarFullUnitList)) {
+            item = globalUrgentRadarFullUnitList[idx];
+          }
+          if (!item) return;
+          if (isFs && typeof closeDataCardFullscreen === 'function') {
+            closeDataCardFullscreen();
+          }
+          openFullUnitPaperModal(item.subject, item.unitNumber);
+          return;
+        }
 
         let item = null;
         if (isFs && Array.isArray(globalUrgentRadarFullList)) {
