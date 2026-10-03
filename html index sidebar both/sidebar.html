@@ -464,7 +464,13 @@
       const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
       const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
       var supabase = (window.supabase && typeof window.supabase.createClient === 'function')
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false
+            }
+          })
         : window.supabase;
 
       let allLessons = [];
