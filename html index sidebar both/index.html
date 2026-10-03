@@ -6,18 +6,25 @@
     <title>Sinethmi A/L 2028 Mission Control</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       (function() {
-        const saved = localStorage.getItem('al_study_tracker_theme') || 'system';
+        let saved = 'system';
+        let savedScale = null;
+        try {
+          saved = localStorage.getItem('al_study_tracker_theme') || 'system';
+          savedScale = localStorage.getItem('al_study_tracker_font_scale') || localStorage.getItem('al_study_tracker_font_size');
+        } catch(e) {}
         const isDark = saved === 'dark' || (saved === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
         if (isDark) {
           document.documentElement.classList.add('dark-mode');
         }
-        const savedScale = localStorage.getItem('al_study_tracker_font_scale') || localStorage.getItem('al_study_tracker_font_size');
         let numScale = 100;
         if (savedScale) {
           const fontMap = { small: 85, normal: 100, large: 115, xlarge: 130 };
@@ -416,6 +423,12 @@
         margin-bottom: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         border-left: 4px solid #00cec9;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .velocity-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       }
       .velocity-header {
         font-size: 11.5px;
@@ -450,6 +463,17 @@
         padding: 8px;
         text-align: center;
         box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .velocity-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .submit-type-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        border-color: #0984e3 !important;
       }
       .velocity-subj-title { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
       .velocity-subj-title.ict { color: #20bf6b; }
@@ -3251,9 +3275,80 @@
       .marks-high { background: rgba(39, 174, 96, 0.12); color: #27ae60; }
       .marks-mid { background: rgba(9, 132, 227, 0.12); color: #0984e3; }
       .marks-low { background: rgba(235, 77, 75, 0.12); color: #eb4d4b; }
+      .marks-printed { background: rgba(108, 92, 231, 0.12); color: #6c5ce7; border: 1px solid rgba(108, 92, 231, 0.28); }
       body.dark-mode .marks-high { background: rgba(39, 174, 96, 0.25); color: #2ecc71; }
       body.dark-mode .marks-mid { background: rgba(9, 132, 227, 0.25); color: #74b9ff; }
       body.dark-mode .marks-low { background: rgba(235, 77, 75, 0.25); color: #ff7675; }
+      body.dark-mode .marks-printed { background: rgba(162, 155, 254, 0.22); color: #a29bfe; border-color: rgba(162, 155, 254, 0.4); }
+
+      .ranking-table th.col-print,
+      .ranking-table td.col-print {
+        width: 82px;
+        min-width: 82px;
+        max-width: 90px;
+        text-align: center;
+      }
+      .ranking-table th.col-print-days,
+      .ranking-table td.col-print-days {
+        width: 96px;
+        min-width: 96px;
+        max-width: 104px;
+        text-align: center;
+      }
+      .print-tick-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 3px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid #dfe6e9;
+        background: #ffffff;
+        color: #636e72;
+      }
+      .print-tick-btn:hover {
+        border-color: #6c5ce7;
+        color: #6c5ce7;
+        background: rgba(108, 92, 231, 0.05);
+      }
+      .print-tick-btn.is-printed {
+        border-color: #00b894;
+        background: rgba(0, 184, 148, 0.12);
+        color: #00b894;
+      }
+      .print-tick-btn.is-printed:hover {
+        background: rgba(0, 184, 148, 0.2);
+      }
+      .print-checkbox-box {
+        width: 13px;
+        height: 13px;
+        border: 1.5px solid currentColor;
+        border-radius: 3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1;
+      }
+      body.dark-mode .print-tick-btn {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #a0aec0;
+      }
+      body.dark-mode .print-tick-btn:hover {
+        border-color: #a29bfe;
+        color: #a29bfe;
+      }
+      body.dark-mode .print-tick-btn.is-printed {
+        background: rgba(0, 184, 148, 0.22);
+        border-color: #00b894;
+        color: #55efc4;
+      }
 
       .col-sub-no {
         font-weight: 700;
@@ -3806,9 +3901,15 @@
     <!-- Dual Clickable Action Bar -->
     <div class="action-bar-dual">
       <div class="action-bar-stats-group">
-        <div class="action-bar-stat-clickable badge-unit-stat" onclick="openUnitBreakdownModal()" title="විෂය අනුව Unit Papers විස්තරය බලන්න">
+        <div class="action-bar-stat-clickable badge-unit-stat" onclick="openUnitBreakdownModal()" title="විෂය අනුව Sub-Unit Papers විස්තරය බලන්න">
           <span>📄 Unit Papers:</span>
           <strong id="unitPapersCount" style="color: #0984e3; font-size: 12px;">0</strong>
+          <span style="font-size: 9px; color: #7f8fa6;">🔍</span>
+        </div>
+
+        <div class="action-bar-stat-clickable badge-fullunit-stat" onclick="openFullUnitBreakdownModal()" title="විෂය අනුව Full Unit Papers විස්තරය බලන්න" style="background: rgba(9, 132, 227, 0.08); border: 1px solid rgba(9, 132, 227, 0.25);">
+          <span>📑 Full Unit:</span>
+          <strong id="fullUnitPapersCount" style="color: #0984e3; font-size: 12px;">0</strong>
           <span style="font-size: 9px; color: #7f8fa6;">🔍</span>
         </div>
 
@@ -3821,8 +3922,7 @@
 
       <div class="action-bar-btns">
         <button class="btn-action-pill" style="background: linear-gradient(135deg, #fdcb6e, #e17055); color: white;" onclick="openSidebarModal()">📚 Syllabus Manager</button>
-        <button class="btn-action-pill btn-unitpaper" onclick="openUnitPaperModal()">+ 📄 Log Unit Paper</button>
-        <button class="btn-action-pill btn-fullpaper" onclick="openFullPaperModal()">+ 📝 Log Full Paper</button>
+        <button class="btn-action-pill btn-submit-marks" onclick="openSubmitMarksSelectorModal()" style="background: linear-gradient(135deg, #0984e3, #6c5ce7); color: white; font-weight: 700; box-shadow: 0 3px 10px rgba(9, 132, 227, 0.35);">+ 📝 Submit Marks</button>
         <button class="btn-action-pill btn-settings" onclick="openSettingsModal()">⚙️ Settings</button>
       </div>
     </div>
@@ -3870,7 +3970,7 @@
     </div>
 
     <!-- Syllabus Velocity & Finish Forecaster -->
-    <div class="velocity-card">
+    <div class="velocity-card" id="cardVelocityRadar" onclick="openDrilldownModal('ICT')" style="cursor: pointer;" title="🔍 විෂය ඒකක සහ ප්‍රගතිය විවෘත කරන්න (Click to open Drilldown)">
       <div class="velocity-header">
         <span>🚀 Syllabus Velocity & Projected Finish Radar</span>
         <span style="font-size: 8.5px; color: #7f8fa6;" id="veloWeeksLeft">0 Weeks to A/L 2028</span>
@@ -3883,21 +3983,21 @@
       </div>
 
       <div class="velocity-grid">
-        <div class="velocity-box">
+        <div class="velocity-box" onclick="event.stopPropagation(); openDrilldownModal('ICT')" style="cursor: pointer;" title="🔍 ICT ඒකක විවෘත කරන්න">
           <div class="velocity-subj-title ict">📗 ICT</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_ict_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_ict_rate">0</strong>/wk (අවශ්‍ය: <span id="v_ict_req">0</span>)</div>
           <div class="velocity-date-badge alert" id="v_ict_badge">-</div>
         </div>
 
-        <div class="velocity-box">
+        <div class="velocity-box" onclick="event.stopPropagation(); openDrilldownModal('ET')" style="cursor: pointer;" title="🔍 ET ඒකක විවෘත කරන්න">
           <div class="velocity-subj-title et">⚙️ ET</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_et_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_et_rate">0</strong>/wk (අවශ්‍ය: <span id="v_et_req">0</span>)</div>
           <div class="velocity-date-badge alert" id="v_et_badge">-</div>
         </div>
 
-        <div class="velocity-box">
+        <div class="velocity-box" onclick="event.stopPropagation(); openDrilldownModal('SFT')" style="cursor: pointer;" title="🔍 SFT ඒකක විවෘත කරන්න">
           <div class="velocity-subj-title sft">📘 SFT</div>
           <div class="velocity-subtext">ඉතිරි: <strong id="v_sft_rem">0</strong></div>
           <div class="velocity-subtext">වේගය: <strong id="v_sft_rate">0</strong>/wk (අවශ්‍ය: <span id="v_sft_req">0</span>)</div>
@@ -3911,26 +4011,34 @@
       <div class="ranking-header">
         <div class="ranking-title">
           <span class="ranking-icon">⚡</span>
-          <span>⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)</span>
+          <span id="urgentRadarCardTitle">⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)</span>
         </div>
         <div style="display: flex; align-items: center; gap: 6px;">
-          <span class="ranking-badge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Urgent Radar</span>
+          <span class="ranking-badge" id="urgentRadarCardBadge" style="background: rgba(235, 77, 75, 0.12); color: #eb4d4b;">Urgent Radar</span>
           <button type="button" class="card-fs-btn" onclick="openDataCardFullscreen('urgentRadar', event)" title="View Top 10 Fullscreen (සම්පූර්ණ තිරය)">⛶ Top 10</button>
         </div>
       </div>
-      <div class="ranking-subtitle">
+      <div class="ranking-subtitle" id="urgentRadarCardSubtitle">
         පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ පාඩම්.
+      </div>
+      <div class="ranking-tab-group" style="margin: 0 0 10px 0;" onclick="event.stopPropagation()">
+        <button type="button" class="ranking-tab-btn active" id="btnUrgentTabSubunit" onclick="switchUrgentRadarTab('subunit', event)">
+          <span>📑 Sub-Unit Radar</span>
+        </button>
+        <button type="button" class="ranking-tab-btn" id="btnUrgentTabFullunit" onclick="switchUrgentRadarTab('fullunit', event)">
+          <span>📚 Full Unit Radar</span>
+        </button>
       </div>
       <div class="ranking-table-responsive">
         <table class="ranking-table">
           <thead>
-            <tr>
-              <th class="col-rank">Priority</th>
+            <tr id="urgentRadarHeadRow">
+              <th class="col-rank">Done</th>
               <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
-              <th class="col-sub-name">Sub Unit Name</th>
+              <th class="col-sub-no" id="urgentColSubHeader">Sub Unit</th>
+              <th class="col-sub-name" id="urgentColSubNameHeader">Sub Unit Name</th>
               <th class="col-metric-wide">Days Elapsed</th>
             </tr>
           </thead>
@@ -4251,6 +4359,133 @@
       </div>
     </div>
 
+    <!-- Full Unit Test Paper Score Progression Card (3rd Chart) -->
+    <div class="chart-card" id="fullUnitPaperChartCard" style="margin-top: 14px;">
+      <div class="chart-header">
+        <span id="fullUnitChartCardHeading">📈 Full Unit Paper Score Progression (All)</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 8.5px; color: #a4b0be;" id="fullUnitChartZoomIndicator">Adaptive Zoom</span>
+          <button type="button" class="chart-data-toggle-btn" id="btnFullUnitPaperDataLabels" onclick="toggleChartDataLabels(event)" title="Toggle Data Values (ලකුණු අගයන් පෙන්වන්න/සඟවන්න)">🏷️ Values: ON</button>
+          <button type="button" class="chart-fullscreen-btn" id="btnFullUnitPaperFs" onclick="toggleChartFullscreen('fullUnitPaperChartCard')" title="Full Screen (සම්පූර්ණ තිරය)">⛶ Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="chart-tab-bar" id="fullUnitChartTabBar">
+        <button class="chart-tab-btn active" onclick="switchFullUnitChartTab('All')">All</button>
+        <button class="chart-tab-btn" onclick="switchFullUnitChartTab('ICT')">ICT</button>
+        <button class="chart-tab-btn" onclick="switchFullUnitChartTab('ET')">ET</button>
+        <button class="chart-tab-btn" onclick="switchFullUnitChartTab('SFT')">SFT</button>
+      </div>
+
+      <!-- Custom HTML Legend for Full Unit Paper Progression -->
+      <div class="chart-custom-legend" id="fullUnitPaperCustomLegend"></div>
+
+      <div class="chart-container" onclick="openChartFullscreenIfNormal('fullUnitPaperChartCard')" style="cursor: pointer;" title="Click to view full screen (සම්පූර්ණ තිරය සඳහා ක්ලික් කරන්න)">
+        <canvas id="fullUnitScoreChart" style="display: none;"></canvas>
+        <div id="noFullUnitChartMsg" class="chart-empty-msg">තවම ලකුණු සහිත Full Unit Paper එකක් සටහන් කර නොමැත 📝</div>
+      </div>
+
+      <!-- Full Unit Papers Quick Summary Bar -->
+      <div id="fullUnitPaperSummaryBar" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 12px 4px; border-top: 1px dashed rgba(0,0,0,0.06); font-size: 9.5px;">
+        <div style="flex: 1; min-width: 110px; background: rgba(108, 92, 231, 0.06); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(108, 92, 231, 0.15);">
+          <span style="color: #636e72;">මුළු Full Unit Papers:</span> <strong id="fupSummaryTotal" style="color: #6c5ce7;">0</strong>
+        </div>
+        <div style="flex: 1; min-width: 160px; background: rgba(243, 156, 18, 0.08); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(243, 156, 18, 0.25);">
+          <span style="color: #636e72;">පසුගිය Papers 5 සාමාන්‍යය:</span> <strong id="fupSummaryLast5Avg" style="color: #d35400;">-</strong>
+        </div>
+        <div style="flex: 1; min-width: 110px; background: rgba(39, 174, 96, 0.06); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(39, 174, 96, 0.15);">
+          <span style="color: #636e72;">සමස්ත සාමාන්‍යය:</span> <strong id="fupSummaryOverallAvg" style="color: #27ae60;">-</strong>
+        </div>
+      </div>
+
+      <!-- Full Unit Paper Multi-Window Analytics Panel -->
+      <div class="zscore-panel" id="fupAnalyticsPanel" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #dfe6e9;">
+        <div class="zscore-panel-title">
+          <span>📊 Full Unit Paper සාමාන්‍ය ලකුණු විග්‍රහය (Analytics)</span>
+          <span style="font-size: 8.5px; color: #6c5ce7; font-weight: 600;" id="fupAnalyticsSubjectBadge">සියලු විෂයයන් (All)</span>
+        </div>
+
+        <div class="zscore-grid">
+          <!-- 1. By Paper Count -->
+          <div class="zscore-box">
+            <div class="zscore-box-lbl">📝 ප්‍රශ්න පත්‍ර ගණන අනුව (Count Avg)</div>
+            <div class="zscore-row">
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 3:</span>
+                <span class="zscore-pill-val empty" id="fup_cnt_3">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 5:</span>
+                <span class="zscore-pill-val empty" id="fup_cnt_5">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 7:</span>
+                <span class="zscore-pill-val empty" id="fup_cnt_7">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 10:</span>
+                <span class="zscore-pill-val empty" id="fup_cnt_10">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 20:</span>
+                <span class="zscore-pill-val empty" id="fup_cnt_20">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">Papers 50:</span>
+                <span class="zscore-pill-val empty" id="fup_cnt_50">-</span>
+              </div>
+              <div class="zscore-pill" style="flex: 1 1 100%;">
+                <span class="zscore-pill-tag">සියල්ල (All Papers):</span>
+                <span class="zscore-pill-val empty" id="fup_cnt_all">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. By Time Range -->
+          <div class="zscore-box">
+            <div class="zscore-box-lbl">📅 කාල පරාස අනුව (Time Window Avg)</div>
+            <div class="zscore-row">
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 3:</span>
+                <span class="zscore-pill-val empty" id="fup_time_3d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 5:</span>
+                <span class="zscore-pill-val empty" id="fup_time_5d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 7:</span>
+                <span class="zscore-pill-val empty" id="fup_time_7d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 14:</span>
+                <span class="zscore-pill-val empty" id="fup_time_14d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 30:</span>
+                <span class="zscore-pill-val empty" id="fup_time_30d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 60:</span>
+                <span class="zscore-pill-val empty" id="fup_time_60d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">දින 90:</span>
+                <span class="zscore-pill-val empty" id="fup_time_90d">-</span>
+              </div>
+              <div class="zscore-pill">
+                <span class="zscore-pill-tag">සමස්ත කාලය:</span>
+                <span class="zscore-pill-val empty" id="fup_time_all">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="zscore-footnote" id="fupAnalyticsFootnote">
+          * තෝරාගත් විෂය පථය අනුව සාමාන්‍ය ලකුණු ගණනය කෙරේ.
+        </div>
+      </div>
+    </div>
+
     <!-- Card (B): Top 5 Highest Score Unit Papers -->
     <div class="ranking-card" id="cardTopHighestUnitPapers" onclick="handleCardClick('topHighest', event)">
       <div class="ranking-header">
@@ -4270,10 +4505,10 @@
       <!-- Tab Controls for Card B -->
       <div class="ranking-tab-group" id="topHighestTabBar" onclick="event.stopPropagation()">
         <button type="button" class="ranking-tab-btn active" id="btnTopHighestSubUnit" onclick="switchTopHighestTab('subunit', event)">
-          <span>📑 Sub-Unit Breakdown</span>
+          <span>📑 Unit Breakdown</span>
         </button>
         <button type="button" class="ranking-tab-btn" id="btnTopHighestUnit" onclick="switchTopHighestTab('unit', event)">
-          <span>📚 Unit-Wise Average</span>
+          <span>📚 Main Unit-Wise Average</span>
         </button>
       </div>
 
@@ -4285,7 +4520,7 @@
               <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-no">Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Avg Marks</th>
               <th class="col-date">Date</th>
@@ -4319,10 +4554,10 @@
       <!-- Tab Controls for Card C -->
       <div class="ranking-tab-group" id="lowestScoreTabBar" onclick="event.stopPropagation()">
         <button type="button" class="ranking-tab-btn active" id="btnLowestScoreSubUnit" onclick="switchLowestScoreTab('subunit', event)">
-          <span>📑 Sub-Unit Breakdown</span>
+          <span>📑 Unit Breakdown</span>
         </button>
         <button type="button" class="ranking-tab-btn" id="btnLowestScoreUnit" onclick="switchLowestScoreTab('unit', event)">
-          <span>📚 Unit-Wise Average</span>
+          <span>📚 Main Unit-Wise Average</span>
         </button>
       </div>
 
@@ -4334,7 +4569,7 @@
               <th class="col-subj">Subject</th>
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
+              <th class="col-sub-no">Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Avg Marks</th>
               <th class="col-date">Date</th>
@@ -4375,12 +4610,14 @@
               <th class="col-sub-no">Sub Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Lesson Days</th>
+              <th class="col-print" style="text-align: center;">Print</th>
+              <th class="col-print-days" style="text-align: center;">Print Days</th>
               <th class="col-date">Date</th>
             </tr>
           </thead>
           <tbody id="oldestLessonPendingBody">
             <tr>
-              <td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
+              <td colspan="10" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -4413,12 +4650,14 @@
               <th class="col-sub-no">Sub Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Paper Days</th>
+              <th class="col-print" style="text-align: center;">Print</th>
+              <th class="col-print-days" style="text-align: center;">Print Days</th>
               <th class="col-date">Date</th>
             </tr>
           </thead>
           <tbody id="oldestBothPendingBody">
             <tr>
-              <td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
+              <td colspan="10" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත ලබාගනිමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -4609,6 +4848,158 @@
       </div>
     </div>
 
+    <!-- Submit Marks Type Selector Modal (Req 5) -->
+    <div class="modal-overlay" id="submitMarksSelectorModal" onclick="closeSubmitMarksSelectorModal(event)">
+      <div class="modal-window" style="max-width: 490px; border-radius: 16px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.35);" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0984e3, #6c5ce7); padding: 14px 20px;">
+          <div class="modal-title" style="font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span>📝 Submit Marks — ප්‍රශ්න පත්‍ර තෝරාගැනීම</span>
+          </div>
+          <button class="modal-close-btn" onclick="hideSubmitMarksSelectorModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 18px 20px;">
+          <p style="font-size: 12px; color: var(--text-secondary, #636e72); margin-bottom: 16px; text-align: center;">
+            ඔබ ලකුණු ඇතුළත් කිරීමට බලාපොරොත්තු වන ප්‍රශ්න පත්‍ර වර්ගය තෝරන්න:
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Option 1: Sub Unit Paper Marks -->
+            <button type="button" class="submit-type-btn" onclick="selectSubmitMarksType('subunit')" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(0, 206, 201, 0.45); background: var(--card-bg, #ffffff); cursor: pointer; text-align: left; transition: all 0.2s ease;">
+              <span style="font-size: 26px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(0, 206, 201, 0.12); border-radius: 10px;">📄</span>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #00b894; margin-bottom: 2px;">1. Sub Unit Paper Marks</div>
+                <div style="font-size: 11px; color: var(--text-secondary, #636e72);">එක් එක් උප-පාඩම් සඳහා කරන ලද ප්‍රශ්න පත්‍ර ලකුණු සටහන් කරන්න</div>
+              </div>
+              <span style="font-size: 16px; color: #00b894; font-weight: 700;">➔</span>
+            </button>
+
+            <!-- Option 2: Main Unit Paper Marks -->
+            <button type="button" class="submit-type-btn" onclick="selectSubmitMarksType('fullunit')" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(9, 132, 227, 0.45); background: var(--card-bg, #ffffff); cursor: pointer; text-align: left; transition: all 0.2s ease;">
+              <span style="font-size: 26px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(9, 132, 227, 0.12); border-radius: 10px;">📑</span>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #0984e3; margin-bottom: 2px;">2. Main Unit Paper Marks</div>
+                <div style="font-size: 11px; color: var(--text-secondary, #636e72);">ප්‍රධාන සම්පූර්ණ ඒකකය සඳහා කරන ලද Full Unit Paper ලකුණු සටහන් කරන්න</div>
+              </div>
+              <span style="font-size: 16px; color: #0984e3; font-weight: 700;">➔</span>
+            </button>
+
+            <!-- Option 3: Full Paper Marks -->
+            <button type="button" class="submit-type-btn" onclick="selectSubmitMarksType('fullpaper')" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(108, 92, 231, 0.45); background: var(--card-bg, #ffffff); cursor: pointer; text-align: left; transition: all 0.2s ease;">
+              <span style="font-size: 26px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(108, 92, 231, 0.12); border-radius: 10px;">🎓</span>
+              <div style="flex: 1;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #6c5ce7; margin-bottom: 2px;">3. Full Paper Marks</div>
+                <div style="font-size: 11px; color: var(--text-secondary, #636e72);">සම්පූර්ණ A/L ආදර්ශ හෝ පසුගිය ප්‍රශ්න පත්‍ර (Model/Past) ලකුණු සටහන් කරන්න</div>
+              </div>
+              <span style="font-size: 16px; color: #6c5ce7; font-weight: 700;">➔</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Full Unit Exam Paper Modal -->
+    <div class="modal-overlay" id="fullUnitPaperModal" onclick="closeFullUnitPaperModal(event)">
+      <div class="modal-window" style="max-width: 440px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0984e3, #6c5ce7);">
+          <div class="modal-title">📑 Log Full Unit Exam Paper</div>
+          <button class="modal-close-btn" onclick="hideFullUnitPaperModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="fupForm" onsubmit="submitFullUnitPaper(event)">
+            <div class="form-group">
+              <label class="form-label">විෂය (Subject) *</label>
+              <select class="form-select" id="fupSubject" onchange="populateFullUnitDropdown()" required>
+                <option value="ICT">ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)</option>
+                <option value="ET">ET (ඉංජිනේරු තාක්ෂණවේදය)</option>
+                <option value="SFT">SFT (තාක්ෂණවේදය සඳහා විද්‍යාව)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">ප්‍රධාන ඒකකය (Main Unit) *</label>
+              <select class="form-select" id="fupUnitSelect" onchange="handleFullUnitSelectChange()" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">ප්‍රශ්න පත්‍ර අංකය (Paper No) *</label>
+                <input type="number" class="form-input" id="fupPaperNo" min="1" max="99" value="1" readonly style="background-color: var(--input-disabled-bg, #f1f2f6); cursor: not-allowed; opacity: 0.85;" title="ස්වයංක්‍රීයව අනුපිළිවෙලින් නියම කෙරේ (Auto-assigned)" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">දිනය (Date) *</label>
+                <input type="date" class="form-input" id="fupDate" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">ලකුණු % (Marks) *</label>
+                <input type="number" class="form-input" id="fupMarks" placeholder="උදා: 85" min="0" max="100" required>
+                <div id="fupMarksError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600;">⚠️ කරුණාකර වලංගු ලකුණු (0 - 100) ඇතුළත් කරන්න!</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">ගතවූ කාලය (Time - Optional)</label>
+                <input type="text" class="form-input" id="fupTime" placeholder="උදා: පැය 1.5">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">විශේෂ සටහන් (Remarks - Optional)</label>
+              <textarea class="form-textarea" id="fupRemarks" rows="2" placeholder="සටහන් හෝ අමාරු වූ කොටස්..."></textarea>
+            </div>
+
+            <div class="form-group" style="margin-top: 8px;">
+              <label class="form-label" style="font-weight: 700;">🔒 තහවුරු කිරීමේ මුරපදය (Security Password) *</label>
+              <input type="password" class="form-input" id="fupPasswordInput" placeholder="මුරපදය ඇතුළත් කරන්න..." style="font-size: 11px; padding: 7px 10px; text-align: center; letter-spacing: 2px;" autocomplete="off" required>
+              <div id="fupPasswordError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600; text-align: center;">
+                ⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="fupSubmitBtn" style="background: linear-gradient(135deg, #0984e3, #6c5ce7);">💾 Save 1st full unit paper Marks</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Unit Papers Breakdown Modal -->
+    <div class="modal-overlay" id="fullUnitBreakdownModal" onclick="closeFullUnitBreakdownModal(event)">
+      <div class="modal-window" style="max-width: 380px;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0984e3, #6c5ce7);">
+          <div class="modal-title">📑 Full Unit Papers විෂය අනුව විග්‍රහය</div>
+          <button class="modal-close-btn" onclick="hideFullUnitBreakdownModal()">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 16px;">
+          <div class="breakdown-grid">
+            <div class="breakdown-card ict">
+              <div class="breakdown-subj-lbl ict">📗 ICT</div>
+              <div class="breakdown-val" id="bd_fup_ict_val">0</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Full Unit Papers</div>
+            </div>
+            <div class="breakdown-card et">
+              <div class="breakdown-subj-lbl et">⚙️ ET</div>
+              <div class="breakdown-val" id="bd_fup_et_val">0</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Full Unit Papers</div>
+            </div>
+            <div class="breakdown-card sft">
+              <div class="breakdown-subj-lbl sft">📘 SFT</div>
+              <div class="breakdown-val" id="bd_fup_sft_val">0</div>
+              <div class="breakdown-sub-label" style="font-size: 8px;">Full Unit Papers</div>
+            </div>
+          </div>
+
+          <div class="breakdown-total-card" style="background: linear-gradient(135deg, rgba(9, 132, 227, 0.08), rgba(108, 92, 231, 0.08)); border: 1px solid rgba(9, 132, 227, 0.25);">
+            <div style="text-align: left;">
+              <div style="font-size: 11px; font-weight: 700; color: #0984e3;">මුළු Full Unit Papers ගණන</div>
+              <div style="font-size: 8.5px; opacity: 0.9;">සියලුම විෂයයන්හි එකතුව</div>
+            </div>
+            <div style="font-size: 22px; font-weight: 700; color: #6c5ce7;" id="bd_fup_total_val">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Unit Papers Breakdown Modal -->
     <div class="modal-overlay" id="unitBreakdownModal" onclick="closeUnitBreakdownModal(event)">
       <div class="modal-window" style="max-width: 380px;" onclick="event.stopPropagation()">
@@ -4724,7 +5115,7 @@
           </div>
           <div style="position: relative; width: 100%; height: 140px;">
             <canvas id="unitChartCanvas" style="display: none;"></canvas>
-            <div id="noUnitChartMsg" class="chart-empty-msg">මෙම ඒකකය සඳහා තවම ලකුණු සහිත Unit Paper එකක් ලොග් කර නැත 📝</div>
+            <div id="noDrilldownUnitChartMsg" class="chart-empty-msg">මෙම ඒකකය සඳහා තවම ලකුණු සහිත Unit Paper එකක් ලොග් කර නැත 📝</div>
           </div>
         </div>
       </div>
@@ -5148,6 +5539,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       // Full lists for Top 10 Modals & Top 5 Card Views
       let globalUrgentRadarFullList = [];
+      let globalUrgentRadarFullUnitList = [];
+      let currentUrgentRadarTab = 'subunit'; // 'subunit' | 'fullunit'
       let globalTopHighestFullList = [];
       let globalTopHighestUnitList = [];
       let globalLowestScoresFullList = [];
@@ -5158,15 +5551,33 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let globalPendingTestPapersFullList = [];
       let currentFsCardType = null;
       let showChartDataLabels = true;
+      let cachedPrintedPapersMap = {};
 
-      window.onload = function() {
- const today = new Date().toISOString().split('T')[0];
- const fpDate = document.getElementById('fpDate');
- if (fpDate) fpDate.value = today;
- refreshTelemetry();
- setupRealtimeSubscriptions();
- };
-  window.addEventListener('message', function(event) {
+      function initDashboard() {
+        const today = new Date().toISOString().split('T')[0];
+        const fpDate = document.getElementById('fpDate');
+        if (fpDate) fpDate.value = today;
+        try {
+          const localSaved = localStorage.getItem('al_study_tracker_printed_papers');
+          if (localSaved) {
+            const parsed = JSON.parse(localSaved);
+            if (parsed && typeof parsed === 'object') {
+              cachedPrintedPapersMap = parsed;
+            }
+          }
+        } catch(e) {}
+        refreshTelemetry();
+        setupRealtimeSubscriptions();
+      }
+
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(initDashboard, 1);
+      } else {
+        window.addEventListener('DOMContentLoaded', initDashboard);
+        window.addEventListener('load', initDashboard);
+      }
+
+      window.addEventListener('message', function(event) {
   if (event.data && event.data.action === 'JUMP_DRILLDOWN') {
     hideSidebarModal();
     openDrilldownModal(event.data.subject, event.data.code);
@@ -5490,10 +5901,120 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         return { trend: zTrend, byCount: byCount, byTime: byTime };
       }
 
+      // ── UNIFIED MULTI-SOURCE ACTIVITY STREAK ENGINE ─────────────
+      function getLocalDateString(val) {
+        if (!val && val !== 0) return null;
+        if (typeof val === 'string') {
+          const trimmed = val.trim();
+          if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+            return trimmed;
+          }
+        }
+        const d = (val instanceof Date) ? val : new Date(val);
+        if (isNaN(d.getTime())) return null;
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function calculateUnifiedStudyStreak(unitPapers, fullPapers, srLogs, refDate = new Date()) {
+        const activeDates = new Set();
+
+        // 1. Unit Paper Activity:
+        // A new or updated paper_no recorded in the unit paper table/attempts.
+        // Rule: paper_no must be valid (> 0).
+        // 0-Score exclusion: if marks is present, strictly exclude attempts where marks <= 0.
+        (unitPapers || []).forEach(row => {
+          if (!row) return;
+          const paperNo = (row.paper_no !== undefined && row.paper_no !== null)
+            ? Number(row.paper_no)
+            : ((row.paperNo !== undefined && row.paperNo !== null) ? Number(row.paperNo) : null);
+          if (paperNo === null || isNaN(paperNo) || paperNo <= 0) return;
+
+          const rawMarks = (row.marks !== undefined) ? row.marks : null;
+          if (rawMarks !== null && rawMarks !== undefined && String(rawMarks).trim() !== '') {
+            const numMarks = Number(rawMarks);
+            if (!isNaN(numMarks) && numMarks <= 0) return; // 0-score exclusion
+          }
+
+          const rawDate = row.updated_at || row.last_updated || row.logged_at || row.loggedAt || row.date || null;
+          const dateStr = getLocalDateString(rawDate);
+          if (dateStr) activeDates.add(dateStr);
+        });
+
+        // 2. Full Paper Activity:
+        // A marks entry logged/updated in full_papers.
+        // Rule: Must have valid numeric marks entry.
+        // 0-Score exclusion: marks must be a valid positive score (> 0).
+        (fullPapers || []).forEach(row => {
+          if (!row) return;
+          const rawMarks = (row.marks !== undefined) ? row.marks : null;
+          if (rawMarks === null || rawMarks === undefined || String(rawMarks).trim() === '') return;
+          const numMarks = Number(rawMarks);
+          if (isNaN(numMarks) || numMarks <= 0) return; // 0-score exclusion
+
+          const rawDate = row.exam_date || row.examDate || row.updated_at || row.last_updated || row.logged_at || row.loggedAt || row.fullDate || null;
+          const dateStr = getLocalDateString(rawDate);
+          if (dateStr) activeDates.add(dateStr);
+        });
+
+        // 3. Spaced Repetition Activity:
+        // A completed_at timestamp logged/updated in the space_repetition sheet/table.
+        // Rule: Must have valid completed_at (or updated_at / logged_at) timestamp.
+        (srLogs || []).forEach(row => {
+          if (!row) return;
+          const rawDate = row.completed_at || row.completedAt || row.updated_at || row.last_updated || row.logged_at || row.loggedAt || null;
+          if (!rawDate) return;
+          const dateStr = getLocalDateString(rawDate);
+          if (dateStr) activeDates.add(dateStr);
+        });
+
+        const todayStr = getLocalDateString(refDate);
+        const yesterday = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate() - 1);
+        const yesterdayStr = getLocalDateString(yesterday);
+
+        const workedToday = activeDates.has(todayStr);
+
+        let streak = 0;
+        let checkDate = null;
+
+        if (workedToday) {
+          // If an activity exists for Today, streak includes today.
+          checkDate = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate());
+        } else if (activeDates.has(yesterdayStr)) {
+          // If no activity exists for Today yet, but an activity exists for Yesterday,
+          // do not reset the streak—keep the streak alive pending today's action.
+          checkDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+        }
+
+        if (checkDate) {
+          while (true) {
+            const dStr = getLocalDateString(checkDate);
+            if (activeDates.has(dStr)) {
+              streak++;
+              checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+              break;
+            }
+          }
+        }
+
+        return {
+          streak: streak,
+          workedToday: workedToday,
+          activeDates: Array.from(activeDates).sort()
+        };
+      }
+
+      window.calculateUnifiedStudyStreak = calculateUnifiedStudyStreak;
+      window.getLocalDateString = getLocalDateString;
+
       async function refreshTelemetry() {
         try {
           unitAnalyticsCache = {};
           fullAnalyticsCache = {};
+          fullUnitAnalyticsCache = {};
           const promises = [
             supabase.rpc('get_dashboard_telemetry'),
             supabase.from('tracker_progress').select('*'),
@@ -5525,8 +6046,39 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const fpRawList = (fpRes.status === 'fulfilled' && fpRes.value.data) ? fpRes.value.data : [];
           const upRawList = (upRes && upRes.status === 'fulfilled' && upRes.value.data) ? upRes.value.data : [];
 
-          // Format full papers history directly from full_papers table (valid numeric marks only)
-          const validFpRawList = fpRawList.filter(r => r.marks !== null && r.marks !== undefined && !isNaN(r.marks));
+          // Extract printed papers config map directly from full_papers table (Database persistence - Req 3)
+          let printConfigRow = fpRawList.find(r => r.time_taken === 'APP_CONFIG_PRINTED_PAPERS');
+          if (!printConfigRow) {
+            try {
+              const { data: directCfg } = await supabase
+                .from('full_papers')
+                .select('remarks')
+                .eq('time_taken', 'APP_CONFIG_PRINTED_PAPERS')
+                .limit(1);
+              if (directCfg && directCfg[0]) {
+                printConfigRow = directCfg[0];
+              }
+            } catch(e) {
+              console.error('Fallback fetch for print config row error:', e);
+            }
+          }
+
+          if (printConfigRow && printConfigRow.remarks) {
+            try {
+              const parsed = JSON.parse(printConfigRow.remarks);
+              if (parsed && typeof parsed === 'object') {
+                cachedPrintedPapersMap = parsed;
+                try {
+                  localStorage.setItem('al_study_tracker_printed_papers', JSON.stringify(parsed));
+                } catch(e) {}
+              }
+            } catch(e) {
+              console.error('Error parsing printed papers map from database:', e);
+            }
+          }
+
+          // Format full papers history directly from full_papers table (valid numeric marks only, exclude config row)
+          const validFpRawList = fpRawList.filter(r => r.time_taken !== 'APP_CONFIG_PRINTED_PAPERS' && r.marks !== null && r.marks !== undefined && !isNaN(r.marks));
           const fullPapersHistory = validFpRawList.map(r => ({
             id: r.id,
             date: r.exam_date ? r.exam_date.substring(5) : (r.logged_at ? r.logged_at.substring(5, 10) : ''),
@@ -5541,12 +6093,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           // Format unit papers history directly from unit_papers table
           const unitPapersHistory = upRawList.map(r => {
             const rawUpdated = r.updated_at || r.last_updated || r.logged_at || null;
+            const pNo = (r.paper_no !== null && r.paper_no !== undefined) ? Number(r.paper_no) : null;
+            const displayPaperNo = (pNo !== null && pNo >= 1000) ? (pNo - 1000) : pNo;
             return {
               id: r.id,
               syllabusId: r.syllabus_id,
               subject: (r.subject || '').toUpperCase().trim(),
               code: r.sub_lesson_code || '',
-              paperNo: (r.paper_no !== null && r.paper_no !== undefined) ? Number(r.paper_no) : null,
+              paperNo: displayPaperNo,
               marks: (r.marks !== null && r.marks !== undefined && !isNaN(r.marks)) ? Number(r.marks) : null,
               loggedAt: r.logged_at,
               updated_at: rawUpdated,
@@ -5566,6 +6120,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           // Compute Spaced Repetition cycles accurately
           const ebbResult = calculateEbbinghausCycles(syllabusList, tpList, srLogs);
 
+          // Compute Unified Multi-Source Activity Streak across unit_papers, full_papers, and spaced_repetition_log
+          const streakResult = calculateUnifiedStudyStreak(upRawList, fpRawList, srLogs);
+
           if (!rpcData) {
             rpcData = {
               breakdown: {},
@@ -5577,13 +6134,23 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             };
           }
 
+          const fullUnitPapersHistory = unitPapersHistory.filter(p => p.code && String(p.code).toLowerCase().startsWith('unit'));
+          const subUnitPapersHistory = unitPapersHistory.filter(p => !p.code || !String(p.code).toLowerCase().startsWith('unit'));
+
           // Merge computed analytics into telemetryData
+          rpcData.streak = streakResult.streak;
+          rpcData.workedToday = streakResult.workedToday;
+          rpcData.activeDates = streakResult.activeDates;
           rpcData.velocityMetrics = velocityMetrics;
           rpcData.ebbinghaus = ebbResult.topEbbinghaus;
           rpcData.ebbCycleData = ebbResult.ebbCycleData;
           rpcData.maxCycle = ebbResult.maxCycle;
           rpcData.fullPapersHistory = fullPapersHistory;
           rpcData.unitPapersHistory = unitPapersHistory;
+          rpcData.fullUnitPapersHistory = fullUnitPapersHistory;
+          rpcData.subUnitPapersHistory = subUnitPapersHistory;
+          rpcData.totalFullUnitPapersDone = fullUnitPapersHistory.length;
+          rpcData.totalUnitPapersDone = subUnitPapersHistory.length;
           rpcData.totalFullPapersDone = fullPapersHistory.length;
           rpcData.zScoreAnalytics = zScoreAnalytics;
           rpcData.syllabusList = syllabusList;
@@ -5638,7 +6205,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             total: unitPapersHistory.length
           };
 
-          // Calculate Urgent Radar (display top five of "paper_days" highest number)
+          // 1. Calculate Urgent Radar (Sub-Units): display top lessons with paper_days > 0
           const urgentRadarItems = [];
           const tpMapById = {};
           tpList.forEach(t => { if (t.syllabus_id) tpMapById[t.syllabus_id] = t; });
@@ -5647,6 +6214,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const paperDays = (tp && tp.paper_days !== undefined && tp.paper_days !== null) ? Number(tp.paper_days) : 0;
             if (paperDays > 0) {
               urgentRadarItems.push({
+                isFullUnit: false,
                 subject: s.subject,
                 unitNumber: (s.unit_number !== undefined && s.unit_number !== null) ? s.unit_number : '',
                 unitName: s.unit_name || '',
@@ -5665,6 +6233,100 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           });
           globalUrgentRadarFullList = urgentRadarItems;
           rpcData.radar = urgentRadarItems.slice(0, 5);
+
+          // 2. Calculate Full Unit Urgent Radar (Req 1):
+          // List all full units in all subjects where tests for all sub-units have been completed (at least 1 sub-unit paper done)
+          // Out of those, show oldest which have not done main unit papers yet
+          const unitsMap = new Map();
+          syllabusList.forEach(s => {
+            const subj = (s.subject || '').toUpperCase().trim();
+            const uNum = (s.unit_number !== undefined && s.unit_number !== null) ? Number(s.unit_number) : null;
+            if (!subj || uNum === null) return;
+            const k = `${subj}||${uNum}`;
+            if (!unitsMap.has(k)) {
+              unitsMap.set(k, {
+                subject: subj,
+                unitNumber: uNum,
+                unitName: s.unit_name || `Unit ${uNum}`,
+                subLessons: [],
+                firstSyllabusId: s.id,
+                sortOrder: s.sort_order || (uNum * 1000)
+              });
+            }
+            unitsMap.get(k).subLessons.push(s);
+          });
+
+          const fullUnitUrgentItems = [];
+          unitsMap.forEach((unit) => {
+            let allSubUnitsHavePaper = true;
+            let latestSubUnitPaperTime = 0;
+            let latestSubUnitPaperDate = null;
+
+            for (const sub of unit.subLessons) {
+              const subPapers = subUnitPapersHistory.filter(p => {
+                const matchSyl = p.syllabusId && p.syllabusId === sub.id;
+                const matchCode = (p.subject || '').toUpperCase().trim() === unit.subject &&
+                                  p.code && sub.sub_lesson_code &&
+                                  String(p.code).trim() === String(sub.sub_lesson_code).trim();
+                return (matchSyl || matchCode) && (p.marks !== null && p.marks !== undefined);
+              });
+
+              if (subPapers.length === 0) {
+                allSubUnitsHavePaper = false;
+                break;
+              }
+
+              for (const sp of subPapers) {
+                const d = sp.loggedAt ? new Date(sp.loggedAt).getTime() : (sp.timestamp || 0);
+                if (d > latestSubUnitPaperTime) {
+                  latestSubUnitPaperTime = d;
+                  latestSubUnitPaperDate = sp.loggedAt || sp.fullDate || null;
+                }
+              }
+            }
+
+            if (!allSubUnitsHavePaper) return;
+
+            // Check if main unit paper done
+            const hasMainUnitPaper = fullUnitPapersHistory.some(p => {
+              const pSubj = (p.subject || '').toUpperCase().trim();
+              if (pSubj !== unit.subject) return false;
+              const m = String(p.code || '').match(/\d+/);
+              const pUnitNum = m ? parseInt(m[0], 10) : null;
+              return pUnitNum === unit.unitNumber && (p.marks !== null && p.marks !== undefined);
+            });
+
+            if (hasMainUnitPaper) return;
+
+            const now = new Date().getTime();
+            const daysElapsed = latestSubUnitPaperTime > 0 
+              ? Math.max(0, Math.floor((now - latestSubUnitPaperTime) / (1000 * 60 * 60 * 24)))
+              : 0;
+
+            fullUnitUrgentItems.push({
+              isFullUnit: true,
+              subject: unit.subject,
+              unitNumber: unit.unitNumber,
+              unitName: unit.unitName,
+              code: `Unit ${unit.unitNumber}`,
+              title: unit.unitName,
+              subLesson: `${unit.subLessons.length}/${unit.subLessons.length} Sub-Units Tested`,
+              subLessonsCount: unit.subLessons.length,
+              colH: daysElapsed,
+              latestDate: latestSubUnitPaperDate ? String(latestSubUnitPaperDate).substring(0, 10) : '-',
+              sortOrder: unit.sortOrder,
+              syllabusId: unit.firstSyllabusId
+            });
+          });
+
+          fullUnitUrgentItems.sort((a, b) => {
+            if (b.colH !== a.colH) return b.colH - a.colH;
+            return a.sortOrder - b.sortOrder;
+          });
+
+          globalUrgentRadarFullUnitList = fullUnitUrgentItems;
+          rpcData.fullUnitRadar = fullUnitUrgentItems.slice(0, 5);
+
           if (currentFsCardType === 'urgentRadar' && typeof openDataCardFullscreen === 'function') {
             openDataCardFullscreen('urgentRadar');
           }
@@ -5706,6 +6368,124 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
       }
 
+      function switchUrgentRadarTab(tab, event) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        currentUrgentRadarTab = tab;
+        const btnSub = document.getElementById('btnUrgentTabSubunit');
+        const btnFull = document.getElementById('btnUrgentTabFullunit');
+        if (btnSub) btnSub.classList.toggle('active', tab === 'subunit');
+        if (btnFull) btnFull.classList.toggle('active', tab === 'fullunit');
+
+        renderUrgentRadarCard();
+
+        if (currentFsCardType === 'urgentRadar' && typeof openDataCardFullscreen === 'function') {
+          openDataCardFullscreen('urgentRadar');
+        }
+      }
+
+      function renderUrgentRadarCard() {
+        const radarDiv = document.getElementById('radarList');
+        const titleEl = document.getElementById('urgentRadarCardTitle');
+        const badgeEl = document.getElementById('urgentRadarCardBadge');
+        const subEl = document.getElementById('urgentRadarCardSubtitle');
+        const colSubH = document.getElementById('urgentColSubHeader');
+        const colSubNameH = document.getElementById('urgentColSubNameHeader');
+
+        const btnSub = document.getElementById('btnUrgentTabSubunit');
+        const btnFull = document.getElementById('btnUrgentTabFullunit');
+        if (btnSub) btnSub.classList.toggle('active', currentUrgentRadarTab === 'subunit');
+        if (btnFull) btnFull.classList.toggle('active', currentUrgentRadarTab === 'fullunit');
+
+        if (!radarDiv) return;
+
+        if (currentUrgentRadarTab === 'fullunit') {
+          if (titleEl) titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Full Unit Radar)';
+          if (badgeEl) {
+            badgeEl.innerText = 'Full Unit Radar';
+            badgeEl.style.background = 'rgba(9, 132, 227, 0.15)';
+            badgeEl.style.color = '#0984e3';
+          }
+          if (subEl) subEl.innerText = 'සියලු උප-පාඩම් වල Papers අවසන් නමුත් තවමත් Main Unit Paper එකක් නොකළ ප්‍රධාන ඒකක.';
+          if (colSubH) colSubH.innerText = 'Sub Units';
+          if (colSubNameH) colSubNameH.innerText = 'Status';
+
+          const items = (globalUrgentRadarFullUnitList || []).slice(0, 5);
+          if (items.length > 0) {
+            radarDiv.innerHTML = items.map((item, idx) => {
+              const subj = item.subject || 'ICT';
+              const subjClass = `subj-pill-${subj.toLowerCase()}`;
+              const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+              const unitName = item.unitName || '-';
+              return `
+                <tr>
+                  <td class="col-rank">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                      <input type="checkbox" class="ebb-tick radar-tick" id="radarChk_${idx}" style="--chk-accent:#0984e3;" onchange="handleUrgentRadarTick(${idx}, this, false, true)" title="Full Unit Paper 1 ලොග් කරන්න">
+                      <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px; background: rgba(9, 132, 227, 0.15); color: #0984e3;">#${idx + 1} ⚡</span>
+                    </div>
+                  </td>
+                  <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
+                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                  <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #0984e3;">${item.subLessonsCount} Units</span></td>
+                  <td class="col-sub-name">
+                    <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">සියලු Sub-Units අවසන් ✅</a>
+                  </td>
+                  <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            radarDiv.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 14px; font-weight: 600;">නියමයි! සුදුසුකම් ලත් සියලු ඒකක සඳහා Full Unit Paper 1 සම්පූර්ණ කර ඇත 🌟</td></tr>';
+          }
+        } else {
+          if (titleEl) titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)';
+          if (badgeEl) {
+            badgeEl.innerText = 'Urgent Radar';
+            badgeEl.style.background = 'rgba(235, 77, 75, 0.12)';
+            badgeEl.style.color = '#eb4d4b';
+          }
+          if (subEl) subEl.innerText = 'පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ පාඩම්.';
+          if (colSubH) colSubH.innerText = 'Sub Unit';
+          if (colSubNameH) colSubNameH.innerText = 'Sub Unit Name';
+
+          const items = (globalUrgentRadarFullList || []).slice(0, 5);
+          if (items.length > 0) {
+            radarDiv.innerHTML = items.map((item, idx) => {
+              const subj = item.subject || 'ICT';
+              const subjClass = `subj-pill-${subj.toLowerCase()}`;
+              const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+              const unitName = item.unitName || '-';
+              const subUnitNo = item.code || '-';
+              let cleanTitle = (item.title || item.subLesson || '-').trim();
+              if (item.code && cleanTitle.startsWith(item.code)) {
+                cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+              }
+              return `
+                <tr>
+                  <td class="col-rank">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                      <input type="checkbox" class="ebb-tick radar-tick" id="radarChk_${idx}" style="--chk-accent:#eb4d4b;" onchange="handleUrgentRadarTick(${idx}, this, false, false)" title="Paper 1 අවසන් බව සලකුණු කරන්න">
+                      <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px;">#${idx + 1} ⚡</span>
+                    </div>
+                  </td>
+                  <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
+                  <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                  <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
+                  <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
+                  <td class="col-sub-name">
+                    <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                  </td>
+                  <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            radarDiv.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 14px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
+          }
+        }
+      }
+
       function renderData(data) {
         if (!data) return;
         telemetryData = data;
@@ -5733,14 +6513,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         const streak = data.streak || 0;
-        document.getElementById('streakDaysTxt').innerText = `${streak} Days Streak`;
+        const streakDaysEl = document.getElementById('streakDaysTxt');
+        if (streakDaysEl) streakDaysEl.innerText = `${streak} Days Streak`;
         const streakTag = document.getElementById('streakStatusTag');
-        if (data.workedToday) {
-          streakTag.className = "streak-tag done";
-          streakTag.innerText = "අද දින සම්පූර්ණයි ✅";
-        } else {
-          streakTag.className = "streak-tag pending";
-          streakTag.innerText = "අද දින තවම පාඩම් කර නැත ⏳";
+        if (streakTag) {
+          if (data.workedToday) {
+            streakTag.className = "streak-tag done";
+            streakTag.innerText = "අද දින සම්පූර්ණයි ✅";
+          } else {
+            streakTag.className = "streak-tag pending";
+            streakTag.innerText = "අද දින තවම පාඩම් කර නැත ⏳";
+          }
         }
 
         const unitPapers = data.totalUnitPapersDone || 0;
@@ -5753,6 +6536,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
         const unitPapersCount = document.getElementById('unitPapersCount');
         if (unitPapersCount) unitPapersCount.innerText = unitPapers;
+        const fullUnitPapersCount = document.getElementById('fullUnitPapersCount');
+        if (fullUnitPapersCount) fullUnitPapersCount.innerText = data.totalFullUnitPapersDone || 0;
         const fullPapersCount = document.getElementById('fullPapersCount');
         if (fullPapersCount) fullPapersCount.innerText = fullPapers;
 
@@ -5818,37 +6603,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         renderVelocityMetrics(data.velocityMetrics);
         renderMultiTabChart();
         renderUnitPaperChart();
+        renderFullUnitPaperChart();
         renderAnalyticsRankingCards(data);
 
-        const radarDiv = document.getElementById('radarList');
-        if (data.radar && data.radar.length > 0) {
-          radarDiv.innerHTML = data.radar.map((item, idx) => {
-            const subj = item.subject || 'ICT';
-            const subjClass = `subj-pill-${subj.toLowerCase()}`;
-            const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
-            const unitName = item.unitName || '-';
-            const subUnitNo = item.code || '-';
-            let cleanTitle = (item.title || item.subLesson || '-').trim();
-            if (item.code && cleanTitle.startsWith(item.code)) {
-              cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
-            }
-            return `
-              <tr>
-                <td class="col-rank"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
-                <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(subj)}</span></td>
-                <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
-                <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
-                <td class="col-sub-name">
-                  <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
-                </td>
-                <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
-              </tr>
-            `;
-          }).join('');
-        } else {
-          radarDiv.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 14px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
-        }
+        renderUrgentRadarCard();
 
         const balanceBox = document.getElementById('balanceAlertBox');
         if (data.balanceAlert) {
@@ -7358,6 +8116,479 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       }
 
       // =========================================================================
+      // Full Unit Paper Score Progression Chart Engine (3rd Chart)
+      // =========================================================================
+      let currentActiveFullUnitChartTab = 'All';
+      let fullUnitScoreChartInstance = null;
+
+      function switchFullUnitChartTab(tab) {
+        currentActiveFullUnitChartTab = tab;
+        const btns = document.querySelectorAll('#fullUnitChartTabBar .chart-tab-btn');
+        const tabOrder = ['All', 'ICT', 'ET', 'SFT'];
+        btns.forEach((b, idx) => {
+          if (tabOrder[idx] === tab) b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        renderFullUnitPaperChart();
+      }
+
+      function renderFullUnitPaperChart() {
+        if (!telemetryData) return;
+        const canvas = document.getElementById('fullUnitScoreChart');
+        const emptyMsg = document.getElementById('noFullUnitChartMsg');
+        const heading = document.getElementById('fullUnitChartCardHeading');
+        const zoomIndicator = document.getElementById('fullUnitChartZoomIndicator');
+
+        const totalEl = document.getElementById('fupSummaryTotal');
+        const last5AvgEl = document.getElementById('fupSummaryLast5Avg');
+        const overallAvgEl = document.getElementById('fupSummaryOverallAvg');
+
+        const history = (telemetryData.fullUnitPapersHistory || []).filter(h => h.marks !== null && h.marks !== undefined && !isNaN(h.marks) && Number(h.marks) !== 0);
+
+        if (heading) heading.innerText = `📈 Full Unit Paper Score Progression (${currentActiveFullUnitChartTab})`;
+
+        let relevantEntries = [];
+        if (currentActiveFullUnitChartTab === 'All') {
+          relevantEntries = history;
+        } else {
+          relevantEntries = history.filter(e => e.subject === currentActiveFullUnitChartTab);
+        }
+
+        if (relevantEntries.length === 0) {
+          if (canvas) canvas.style.display = 'none';
+          if (emptyMsg) {
+            emptyMsg.style.display = 'flex';
+            emptyMsg.innerText = currentActiveFullUnitChartTab === 'All' 
+              ? "තවම ලකුණු සහිත Full Unit Paper එකක් සටහන් කර නොමැත 📝"
+              : `${currentActiveFullUnitChartTab} සඳහා තවම ලකුණු සහිත Full Unit Paper එකක් සටහන් කර නොමැත 📝`;
+          }
+          if (totalEl) totalEl.innerText = `0 Papers (${currentActiveFullUnitChartTab})`;
+          if (last5AvgEl) last5AvgEl.innerText = "-";
+          if (overallAvgEl) overallAvgEl.innerText = "-";
+          if (zoomIndicator) zoomIndicator.innerText = "No Data";
+          if (fullUnitScoreChartInstance) {
+            fullUnitScoreChartInstance.destroy();
+            fullUnitScoreChartInstance = null;
+          }
+          renderCustomLegend('fullUnitPaper', []);
+          renderFullUnitPaperAnalytics([], currentActiveFullUnitChartTab);
+          return;
+        }
+
+        if (canvas) canvas.style.display = 'block';
+        if (emptyMsg) emptyMsg.style.display = 'none';
+
+        const marksPool = relevantEntries.map(e => e.marks);
+        const totalCount = relevantEntries.length;
+        const overallSum = marksPool.reduce((acc, v) => acc + v, 0);
+        const overallAvg = overallSum / totalCount;
+
+        // Last 5 papers slice and average
+        const last5Slice = relevantEntries.slice(-5);
+        const last5Sum = last5Slice.reduce((acc, v) => acc + v.marks, 0);
+        const last5Avg = last5Sum / last5Slice.length;
+
+        if (totalEl) {
+          const allPapers = (telemetryData && telemetryData.fullUnitPapersHistory) ? telemetryData.fullUnitPapersHistory : [];
+          if (currentActiveFullUnitChartTab === 'All') {
+            const ictC = allPapers.filter(h => h.subject === 'ICT').length;
+            const etC = allPapers.filter(h => h.subject === 'ET').length;
+            const sftC = allPapers.filter(h => h.subject === 'SFT').length;
+            totalEl.innerText = `${allPapers.length} Papers (ICT: ${ictC}, SFT: ${sftC}, ET: ${etC})`;
+          } else {
+            const subjCount = allPapers.filter(h => h.subject === currentActiveFullUnitChartTab).length;
+            totalEl.innerText = `${subjCount} Papers (${currentActiveFullUnitChartTab} පමණි)`;
+          }
+        }
+        if (last5AvgEl) last5AvgEl.innerText = `${last5Avg.toFixed(1)}% (${last5Slice.length} Papers)`;
+        if (overallAvgEl) overallAvgEl.innerText = `${overallAvg.toFixed(1)}%`;
+
+        const minMark = Math.min(...marksPool);
+        const dynamicYMin = Math.max(0, Math.floor(Math.min(minMark, last5Avg) - 10));
+        if (zoomIndicator) {
+          zoomIndicator.innerText = `පසුගිය 5 සාමාන්‍යය: ${last5Avg.toFixed(1)}% • Zoomed: ${dynamicYMin}% ~ 100%`;
+        }
+
+        const labels = relevantEntries.map((e, idx) => {
+          const codeTag = e.code ? `${e.code}` : e.subject;
+          return `P${idx + 1} [${codeTag}] (${e.date || ''})`;
+        });
+
+        // 1. Horizontal Reference Line for the Last 5 Papers Average
+        const last5LineData = new Array(labels.length).fill(Number(last5Avg.toFixed(1)));
+
+        // 2. Rolling 5-Paper Moving Average Line
+        const rolling5Data = relevantEntries.map((_, i) => {
+          const windowSlice = relevantEntries.slice(Math.max(0, i - 4), i + 1);
+          const wSum = windowSlice.reduce((acc, x) => acc + x.marks, 0);
+          return Number((wSum / windowSlice.length).toFixed(1));
+        });
+
+        const isDark = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark-mode');
+        const chartTextColor = isDark ? '#e6edf3' : '#2d3436';
+        const chartMutedColor = isDark ? '#8b949e' : '#636e72';
+        const chartGridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+        const pointBg = isDark ? '#161b22' : '#ffffff';
+
+        let datasets = [];
+
+        if (currentActiveFullUnitChartTab === 'All') {
+          const ictData = relevantEntries.map(e => e.subject === 'ICT' ? e.marks : null);
+          const etData = relevantEntries.map(e => e.subject === 'ET' ? e.marks : null);
+          const sftData = relevantEntries.map(e => e.subject === 'SFT' ? e.marks : null);
+
+          datasets = [
+            {
+              key: 'ict',
+              lineStyle: 'solid',
+              label: 'ICT',
+              data: ictData,
+              borderColor: '#20bf6b',
+              backgroundColor: isDark ? 'rgba(32, 191, 107, 0.18)' : 'rgba(32, 191, 107, 0.12)',
+              borderWidth: 2.2,
+              pointRadius: 5.5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: pointBg,
+              pointBorderColor: '#20bf6b',
+              pointBorderWidth: 2.5,
+              tension: 0.25,
+              spanGaps: true
+            },
+            {
+              key: 'et',
+              lineStyle: 'solid',
+              label: 'ET',
+              data: etData,
+              borderColor: isDark ? '#a29bfe' : '#8c7ae6',
+              backgroundColor: isDark ? 'rgba(162, 155, 254, 0.18)' : 'rgba(140, 122, 230, 0.12)',
+              borderWidth: 2.2,
+              pointRadius: 5.5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: pointBg,
+              pointBorderColor: isDark ? '#a29bfe' : '#8c7ae6',
+              pointBorderWidth: 2.5,
+              tension: 0.25,
+              spanGaps: true
+            },
+            {
+              key: 'sft',
+              lineStyle: 'solid',
+              label: 'SFT',
+              data: sftData,
+              borderColor: isDark ? '#58a6ff' : '#0984e3',
+              backgroundColor: isDark ? 'rgba(88, 166, 255, 0.18)' : 'rgba(9, 132, 227, 0.12)',
+              borderWidth: 2.2,
+              pointRadius: 5.5,
+              pointHoverRadius: 8,
+              pointBackgroundColor: pointBg,
+              pointBorderColor: isDark ? '#58a6ff' : '#0984e3',
+              pointBorderWidth: 2.5,
+              tension: 0.25,
+              spanGaps: true
+            },
+            {
+              key: 'last5Avg',
+              lineStyle: 'dashed',
+              label: `📊 පසුගිය Papers 5 සාමාන්‍යය (${last5Avg.toFixed(1)}%)`,
+              data: last5LineData,
+              borderColor: '#f39c12',
+              borderWidth: 2,
+              borderDash: [6, 6],
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              key: 'movingTrend',
+              lineStyle: 'dotted',
+              label: `📈 5-Paper Moving Trend`,
+              data: rolling5Data,
+              borderColor: isDark ? '#a29bfe' : '#8c7ae6',
+              borderWidth: 1.8,
+              borderDash: [3, 3],
+              pointRadius: 3,
+              pointBackgroundColor: isDark ? '#a29bfe' : '#8c7ae6',
+              tension: 0.3,
+              fill: false
+            }
+          ];
+        } else {
+          const datasetColor = currentActiveFullUnitChartTab === 'ICT' ? '#20bf6b' : (currentActiveFullUnitChartTab === 'ET' ? (isDark ? '#a29bfe' : '#8c7ae6') : (isDark ? '#58a6ff' : '#0984e3'));
+          datasets = [
+            {
+              key: 'subjectMarks',
+              lineStyle: 'solid',
+              label: `${currentActiveFullUnitChartTab} Marks`,
+              data: relevantEntries.map(e => e.marks),
+              borderColor: datasetColor,
+              backgroundColor: datasetColor + '1a',
+              borderWidth: 2.5,
+              pointRadius: 6,
+              pointHoverRadius: 9,
+              pointBackgroundColor: pointBg,
+              pointBorderColor: datasetColor,
+              pointBorderWidth: 3,
+              tension: 0.25,
+              fill: true
+            },
+            {
+              key: 'last5Avg',
+              lineStyle: 'dashed',
+              label: `📊 පසුගිය Papers 5 සාමාන්‍යය (${last5Avg.toFixed(1)}%)`,
+              data: last5LineData,
+              borderColor: '#f39c12',
+              borderWidth: 2,
+              borderDash: [6, 6],
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              key: 'movingTrend',
+              lineStyle: 'dotted',
+              label: `📈 5-Paper Moving Trend`,
+              data: rolling5Data,
+              borderColor: isDark ? '#a29bfe' : '#8c7ae6',
+              borderWidth: 1.8,
+              borderDash: [3, 3],
+              pointRadius: 3,
+              pointBackgroundColor: isDark ? '#a29bfe' : '#8c7ae6',
+              tension: 0.3,
+              fill: false
+            }
+          ];
+        }
+
+        if (fullUnitScoreChartInstance) fullUnitScoreChartInstance.destroy();
+        const ctx = canvas.getContext('2d');
+        fullUnitScoreChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: datasets
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(c) {
+                    if (c.dataset.label && c.dataset.label.includes('පසුගිය Papers 5 සාමාන්‍යය')) {
+                      return ` 📊 පසුගිය Papers 5 සාමාන්‍යය: ${c.parsed.y}%`;
+                    }
+                    if (c.dataset.label && c.dataset.label.includes('Moving')) {
+                      return ` 📈 5-Paper Moving Trend: ${c.parsed.y}%`;
+                    }
+                    const item = relevantEntries[c.dataIndex];
+                    let tip = ` [${item.subject}] ${item.code} (Paper ${item.paperNo}): ${c.parsed.y}%`;
+                    if (item && item.fullDate) tip += ` • ${item.fullDate}`;
+                    return tip;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                min: dynamicYMin,
+                max: 100,
+                ticks: {
+                  color: chartMutedColor,
+                  font: { size: 9 },
+                  callback: function(val) { return val + '%'; }
+                },
+                grid: { color: chartGridColor }
+              },
+              x: {
+                ticks: {
+                  color: chartMutedColor,
+                  font: { size: window.innerWidth < 640 ? 7.5 : 8.5 },
+                  maxRotation: window.innerWidth < 640 ? 0 : 45,
+                  minRotation: 0,
+                  autoSkip: true,
+                  maxTicksLimit: window.innerWidth < 640 ? 8 : 25,
+                  callback: function(val) {
+                    const rawLabel = this.getLabelForValue(val) || '';
+                    if (window.innerWidth < 640) {
+                      return rawLabel.replace(/\s*\([^)]*\)/g, '').trim();
+                    }
+                    return rawLabel;
+                  }
+                },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+
+        // Render responsive custom HTML legend pills
+        renderCustomLegend('fullUnitPaper', datasets);
+
+        // Trigger multi-window analytics update for the active view
+        renderFullUnitPaperAnalytics(relevantEntries, currentActiveFullUnitChartTab);
+      }
+
+      // =========================================================================
+      // Full Unit Paper Analytics Memoization Cache & Formatter
+      // =========================================================================
+      let fullUnitAnalyticsCache = {};
+      const fupPillElementsCache = {};
+
+      function formatFupStat(val, elemId) {
+        if (!fupPillElementsCache[elemId]) {
+          fupPillElementsCache[elemId] = document.getElementById(elemId);
+        }
+        const el = fupPillElementsCache[elemId];
+        if (!el) return;
+
+        if (val === null || val === undefined || isNaN(val)) {
+          el.className = "zscore-pill-val empty";
+          el.style.color = "";
+          el.innerText = "-";
+        } else {
+          el.className = "zscore-pill-val";
+          const num = Number(val);
+          if (num >= 75) el.style.color = "#27ae60";      // Distinction (A Grade)
+          else if (num >= 65) el.style.color = "#0984e3"; // Credit (B Grade)
+          else if (num >= 50) el.style.color = "#e67e22"; // Pass (C/S Grade)
+          else el.style.color = "#e84393";                // Review needed
+          el.innerText = num.toFixed(1) + "%";
+        }
+      }
+
+      function renderFullUnitPaperAnalytics(entries, tab) {
+        const badgeEl = document.getElementById('fupAnalyticsSubjectBadge');
+        const footnoteEl = document.getElementById('fupAnalyticsFootnote');
+        const safeEntries = entries || [];
+        const N = safeEntries.length;
+
+        const allFup = (telemetryData && telemetryData.fullUnitPapersHistory) ? telemetryData.fullUnitPapersHistory : [];
+        const totalPapersForTab = tab === 'All' ? allFup.length : allFup.filter(p => p.subject === tab).length;
+
+        if (badgeEl) {
+          const tabTitles = {
+            'All': `🌐 සියලු විෂයයන් (All: ${totalPapersForTab} Papers)`,
+            'ICT': `📘 ICT විෂය සඳහා (${totalPapersForTab} Papers)`,
+            'ET': `📙 ET විෂය සඳහා (${totalPapersForTab} Papers)`,
+            'SFT': `📗 SFT විෂය සඳහා (${totalPapersForTab} Papers)`
+          };
+          badgeEl.innerText = tabTitles[tab] || `${tab} (${totalPapersForTab} Papers)`;
+        }
+
+        if (footnoteEl) {
+          if (tab === 'All') {
+            footnoteEl.innerText = "* සියලු විෂයයන්හි (ICT, ET, SFT) Full Unit Papers එක්ව සලකා ගණනය කර ඇත. (ලකුණු 0 ප්‍රශ්න පත්‍ර ගණනයෙන් බැහැර කර ඇත)";
+          } else if (N === 0) {
+            footnoteEl.innerText = `* ${tab} සඳහා තවම ලකුණු සහිත Full Unit Paper එකක් සටහන් කර නොමැත 📝`;
+          } else {
+            footnoteEl.innerText = `* ${tab} Full Unit Papers පමණක් සලකා ගණනය කර ඇත. (ලකුණු 0 ප්‍රශ්න පත්‍ර ගණනයෙන් බැහැර කර ඇත)`;
+          }
+        }
+
+        if (N === 0) {
+          formatFupStat(null, "fup_cnt_3");
+          formatFupStat(null, "fup_cnt_5");
+          formatFupStat(null, "fup_cnt_7");
+          formatFupStat(null, "fup_cnt_10");
+          formatFupStat(null, "fup_cnt_20");
+          formatFupStat(null, "fup_cnt_50");
+          formatFupStat(null, "fup_cnt_all");
+
+          formatFupStat(null, "fup_time_3d");
+          formatFupStat(null, "fup_time_5d");
+          formatFupStat(null, "fup_time_7d");
+          formatFupStat(null, "fup_time_14d");
+          formatFupStat(null, "fup_time_30d");
+          formatFupStat(null, "fup_time_60d");
+          formatFupStat(null, "fup_time_90d");
+          formatFupStat(null, "fup_time_all");
+          return;
+        }
+
+        let stats = fullUnitAnalyticsCache[tab];
+        if (!stats) {
+          const targetCounts = [3, 5, 7, 10, 20, 50];
+          const targetDays = [3, 5, 7, 14, 30, 60, 90];
+          const now = Date.now();
+
+          let countSum = 0;
+          let countProcessed = 0;
+          const countAverages = {};
+          targetCounts.forEach(c => countAverages[c] = null);
+
+          const timeSums = {};
+          const timeCounts = {};
+          targetDays.forEach(d => {
+            timeSums[d] = 0;
+            timeCounts[d] = 0;
+          });
+          let allTimeSum = 0;
+          let allTimeCount = 0;
+
+          for (let i = safeEntries.length - 1; i >= 0; i--) {
+            const item = safeEntries[i];
+            const marks = item.marks;
+
+            countSum += marks;
+            countProcessed++;
+
+            for (let j = 0; j < targetCounts.length; j++) {
+              const c = targetCounts[j];
+              if (countProcessed === c) {
+                countAverages[c] = countSum / c;
+              }
+            }
+
+            allTimeSum += marks;
+            allTimeCount++;
+
+            const ts = item.timestamp || (item.loggedAt ? new Date(item.loggedAt).getTime() : 0);
+            if (ts > 0) {
+              const diffDays = (now - ts) / 86400000;
+              for (let k = 0; k < targetDays.length; k++) {
+                const d = targetDays[k];
+                if (diffDays <= d) {
+                  timeSums[d] += marks;
+                  timeCounts[d]++;
+                }
+              }
+            }
+          }
+
+          const byCount = {};
+          targetCounts.forEach(c => {
+            byCount[c] = countAverages[c] !== null ? Number(countAverages[c].toFixed(1)) : null;
+          });
+          byCount.all = countProcessed > 0 ? Number((countSum / countProcessed).toFixed(1)) : null;
+
+          const byTime = {};
+          targetDays.forEach(d => {
+            byTime[d] = timeCounts[d] > 0 ? Number((timeSums[d] / timeCounts[d]).toFixed(1)) : null;
+          });
+          byTime.all = allTimeCount > 0 ? Number((allTimeSum / allTimeCount).toFixed(1)) : null;
+
+          stats = { byCount, byTime };
+          fullUnitAnalyticsCache[tab] = stats;
+        }
+
+        formatFupStat(stats.byCount[3], "fup_cnt_3");
+        formatFupStat(stats.byCount[5], "fup_cnt_5");
+        formatFupStat(stats.byCount[7], "fup_cnt_7");
+        formatFupStat(stats.byCount[10], "fup_cnt_10");
+        formatFupStat(stats.byCount[20], "fup_cnt_20");
+        formatFupStat(stats.byCount[50], "fup_cnt_50");
+        formatFupStat(stats.byCount.all, "fup_cnt_all");
+
+        formatFupStat(stats.byTime[3], "fup_time_3d");
+        formatFupStat(stats.byTime[5], "fup_time_5d");
+        formatFupStat(stats.byTime[7], "fup_time_7d");
+        formatFupStat(stats.byTime[14], "fup_time_14d");
+        formatFupStat(stats.byTime[30], "fup_time_30d");
+        formatFupStat(stats.byTime[60], "fup_time_60d");
+        formatFupStat(stats.byTime[90], "fup_time_90d");
+        formatFupStat(stats.byTime.all, "fup_time_all");
+      }
+
+      // =========================================================================
       // HELPER: HTML Escaping
       // =========================================================================
       function escapeHtml(str) {
@@ -7373,7 +8604,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // =========================================================================
       // DASHBOARD THEME & SETTINGS CONTROLLER
       // =========================================================================
-      let currentThemeMode = localStorage.getItem('al_study_tracker_theme') || 'system';
+      let currentThemeMode = 'system';
+      try {
+        currentThemeMode = localStorage.getItem('al_study_tracker_theme') || 'system';
+      } catch (e) {}
 
       function applyTheme(mode) {
         const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -7393,6 +8627,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
         if (typeof renderUnitPaperChart === 'function') {
           try { renderUnitPaperChart(); } catch(e) {}
+        }
+        if (typeof renderFullUnitPaperChart === 'function') {
+          try { renderFullUnitPaperChart(); } catch(e) {}
         }
         if (typeof renderMultiTabChart === 'function') {
           try { renderMultiTabChart(); } catch(e) {}
@@ -7436,7 +8673,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // =========================================================
       let currentFontScale = 100;
       (function initFontScale() {
-        const saved = localStorage.getItem('al_study_tracker_font_scale') || localStorage.getItem('al_study_tracker_font_size');
+        let saved = null;
+        try {
+          saved = localStorage.getItem('al_study_tracker_font_scale') || localStorage.getItem('al_study_tracker_font_size');
+        } catch (e) {}
         if (saved) {
           const fontMap = { small: 85, normal: 100, large: 115, xlarge: 130 };
           if (fontMap[saved]) currentFontScale = fontMap[saved];
@@ -7513,7 +8753,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // =========================================================
       // DASHBOARD LOCALIZATION: SINHALA / ENGLISH CONTROLLER
       // =========================================================
-      let currentLang = localStorage.getItem('al_study_tracker_lang') || 'si';
+      let currentLang = 'si';
+      try {
+        currentLang = localStorage.getItem('al_study_tracker_lang') || 'si';
+      } catch (e) {}
 
       const I18N_DICT = {
         si: {
@@ -7626,7 +8869,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       function toggleChartDataLabels(e) {
         if (e && e.stopPropagation) e.stopPropagation();
         showChartDataLabels = !showChartDataLabels;
-        const btns = [document.getElementById('btnFullPaperDataLabels'), document.getElementById('btnUnitPaperDataLabels')];
+        const btns = [document.getElementById('btnFullPaperDataLabels'), document.getElementById('btnUnitPaperDataLabels'), document.getElementById('btnFullUnitPaperDataLabels')];
         btns.forEach(b => {
           if (!b) return;
           if (showChartDataLabels) {
@@ -7639,6 +8882,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         });
         if (scoreChartInstance) scoreChartInstance.update('none');
         if (unitScoreChartInstance) unitScoreChartInstance.update('none');
+        if (fullUnitScoreChartInstance) fullUnitScoreChartInstance.update('none');
       }
 
       const chartDataLabelsPlugin = {
@@ -7691,7 +8935,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // Isolated Responsive HTML Custom Chart Legend System
       // =========================================================================
       function renderCustomLegend(chartType, datasets) {
-        const containerId = chartType === 'fullPaper' ? 'fullPaperCustomLegend' : 'unitPaperCustomLegend';
+        const containerId = chartType === 'fullPaper' ? 'fullPaperCustomLegend' : (chartType === 'fullUnitPaper' ? 'fullUnitPaperCustomLegend' : 'unitPaperCustomLegend');
         const container = document.getElementById(containerId);
         if (!container) return;
 
@@ -7702,7 +8946,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         container.style.display = 'flex';
-        const chart = chartType === 'fullPaper' ? scoreChartInstance : unitScoreChartInstance;
+        const chart = chartType === 'fullPaper' ? scoreChartInstance : (chartType === 'fullUnitPaper' ? fullUnitScoreChartInstance : unitScoreChartInstance);
 
         let html = '';
         datasets.forEach((ds, index) => {
@@ -7749,8 +8993,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (typeof event.preventDefault === 'function') event.preventDefault();
         }
 
-        const chart = chartType === 'fullPaper' ? scoreChartInstance : unitScoreChartInstance;
-        const containerId = chartType === 'fullPaper' ? 'fullPaperCustomLegend' : 'unitPaperCustomLegend';
+        const chart = chartType === 'fullPaper' ? scoreChartInstance : (chartType === 'fullUnitPaper' ? fullUnitScoreChartInstance : unitScoreChartInstance);
+        const containerId = chartType === 'fullPaper' ? 'fullPaperCustomLegend' : (chartType === 'fullUnitPaper' ? 'fullUnitPaperCustomLegend' : 'unitPaperCustomLegend');
 
         if (!chart || !chart.data || !chart.data.datasets) return;
 
@@ -7818,6 +9062,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           } else if (cardId === 'unitPaperChartCard' && unitScoreChartInstance) {
             unitScoreChartInstance.resize();
             unitScoreChartInstance.update('none');
+          } else if (cardId === 'fullUnitPaperChartCard' && fullUnitScoreChartInstance) {
+            fullUnitScoreChartInstance.resize();
+            fullUnitScoreChartInstance.update('none');
           }
         };
         doRefresh();
@@ -7906,53 +9153,121 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         extraEl.innerHTML = '';
 
         if (cardType === 'urgentRadar') {
-          titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)';
-          badgeEl.innerText = 'Top 10 Urgent Radar';
-          badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
-          badgeEl.style.color = '#ffffff';
-          headerEl.style.background = 'linear-gradient(135deg, #eb4d4b, #d63031)';
-          subEl.innerText = 'පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ මුල්ම පාඩම් 10.';
-
-          theadEl.innerHTML = `
-            <tr>
-              <th class="col-rank">Priority</th>
-              <th class="col-subj">Subject</th>
-              <th class="col-unit-no">Unit No</th>
-              <th class="col-unit-name">Unit Name</th>
-              <th class="col-sub-no">Sub Unit</th>
-              <th class="col-sub-name">Sub Unit Name</th>
-              <th class="col-metric-wide">Days Elapsed</th>
-            </tr>
+          extraEl.style.display = 'block';
+          extraEl.innerHTML = `
+            <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
+              <button type="button" class="ranking-tab-btn ${currentUrgentRadarTab === 'subunit' ? 'active' : ''}" onclick="switchUrgentRadarTab('subunit', event)">
+                <span>📑 Sub-Unit Radar</span>
+              </button>
+              <button type="button" class="ranking-tab-btn ${currentUrgentRadarTab === 'fullunit' ? 'active' : ''}" onclick="switchUrgentRadarTab('fullunit', event)">
+                <span>📚 Full Unit Radar</span>
+              </button>
+            </div>
           `;
 
-          const items = (globalUrgentRadarFullList || []).slice(0, 10);
-          if (items.length === 0) {
-            tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 16px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
+          if (currentUrgentRadarTab === 'fullunit') {
+            titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Full Unit Radar)';
+            badgeEl.innerText = 'Top 10 Full Unit Radar';
+            badgeEl.style.background = 'rgba(9, 132, 227, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            headerEl.style.background = 'linear-gradient(135deg, #0984e3, #2980b9)';
+            subEl.innerText = 'සියලු උප-පාඩම් වල Papers අවසන් නමුත් තවමත් Main Unit Paper එකක් නොකළ ප්‍රධාන ඒකක (Top 10).';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th class="col-rank">Done</th>
+                <th class="col-subj">Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th class="col-sub-no">Sub Units</th>
+                <th class="col-sub-name">Status</th>
+                <th class="col-metric-wide">Days Elapsed</th>
+              </tr>
+            `;
+
+            const items = (globalUrgentRadarFullUnitList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 16px; font-weight: 600;">නියමයි! සුදුසුකම් ලත් සියලු ඒකක සඳහා Full Unit Paper 1 සම්පූර්ණ කර ඇත 🌟</td></tr>';
+            } else {
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const subj = item.subject || 'ICT';
+                const subjClass = `subj-pill-${subj.toLowerCase()}`;
+                const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+                const unitName = item.unitName || '-';
+                return `
+                  <tr>
+                    <td class="col-rank">
+                      <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <input type="checkbox" class="ebb-tick radar-tick" id="radarFsChk_${idx}" style="--chk-accent:#0984e3;" onchange="handleUrgentRadarTick(${idx}, this, true, true)" title="Full Unit Paper 1 ලොග් කරන්න">
+                        <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px; background: rgba(9, 132, 227, 0.15); color: #0984e3;">#${idx + 1} ⚡</span>
+                      </div>
+                    </td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                    <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-code" style="color: #0984e3;">${item.subLessonsCount} Units</span></td>
+                    <td class="col-sub-name">
+                      <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}')" title="Drilldown විවෘත කරන්න">සියලු Sub-Units අවසන් ✅</a>
+                    </td>
+                    <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                  </tr>
+                `;
+              }).join('');
+            }
           } else {
-            tbodyEl.innerHTML = items.map((item, idx) => {
-              const subj = item.subject || 'ICT';
-              const subjClass = `subj-pill-${subj.toLowerCase()}`;
-              const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
-              const unitName = item.unitName || '-';
-              const subUnitNo = item.code || '-';
-              let cleanTitle = (item.title || item.subLesson || '-').trim();
-              if (item.code && cleanTitle.startsWith(item.code)) {
-                cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
-              }
-              return `
-                <tr>
-                  <td class="col-rank"><span class="rank-pill rank-badge-warn">#${idx + 1} ⚡</span></td>
-                  <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
-                  <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
-                  <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
-                  <td class="col-sub-no"><span class="chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
-                  <td class="col-sub-name" title="${escapeHtml(cleanTitle)}">
-                    <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
-                  </td>
-                  <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
-                </tr>
-              `;
-            }).join('');
+            titleEl.innerHTML = '⚡ වහාම Model Paper 1 කළ යුතු පාඩම් (Urgent Radar)';
+            badgeEl.innerText = 'Top 10 Urgent Radar';
+            badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
+            badgeEl.style.color = '#ffffff';
+            headerEl.style.background = 'linear-gradient(135deg, #eb4d4b, #d63031)';
+            subEl.innerText = 'පාඩම් කිරීම (HW) අවසන් වූ නමුත් තවමත් ප්‍රශ්න පත්‍රයක් සම්පූර්ණ නොකළ මුල්ම පාඩම් 10.';
+
+            theadEl.innerHTML = `
+              <tr>
+                <th class="col-rank">Done</th>
+                <th class="col-subj">Subject</th>
+                <th class="col-unit-no">Unit No</th>
+                <th class="col-unit-name">Unit Name</th>
+                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-name">Sub Unit Name</th>
+                <th class="col-metric-wide">Days Elapsed</th>
+              </tr>
+            `;
+
+            const items = (globalUrgentRadarFullList || []).slice(0, 10);
+            if (items.length === 0) {
+              tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #20bf6b; text-align: center; padding: 16px; font-weight: 600;">නියමයි! සියලු පාඩම් සඳහා Model Paper 1 ආරම්භ කර ඇත 🌟</td></tr>';
+            } else {
+              tbodyEl.innerHTML = items.map((item, idx) => {
+                const subj = item.subject || 'ICT';
+                const subjClass = `subj-pill-${subj.toLowerCase()}`;
+                const unitNo = item.unitNumber ? (String(item.unitNumber).toLowerCase().startsWith('unit') ? item.unitNumber : `Unit ${item.unitNumber}`) : '-';
+                const unitName = item.unitName || '-';
+                const subUnitNo = item.code || '-';
+                let cleanTitle = (item.title || item.subLesson || '-').trim();
+                if (item.code && cleanTitle.startsWith(item.code)) {
+                  cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
+                }
+                return `
+                  <tr>
+                    <td class="col-rank">
+                      <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <input type="checkbox" class="ebb-tick radar-tick" id="radarFsChk_${idx}" style="--chk-accent:#eb4d4b;" onchange="handleUrgentRadarTick(${idx}, this, true, false)" title="Paper 1 අවසන් බව සලකුණු කරන්න">
+                        <span class="rank-pill rank-badge-warn" style="font-size: 8.5px; padding: 1px 4px;">#${idx + 1} ⚡</span>
+                      </div>
+                    </td>
+                    <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(subj)}</span></td>
+                    <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
+                    <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
+                    <td class="col-sub-no"><span class="chip-code" style="color: #e17055;">${escapeHtml(subUnitNo)}</span></td>
+                    <td class="col-sub-name" title="${escapeHtml(cleanTitle)}">
+                      <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                    </td>
+                    <td class="col-metric-wide"><span class="radar-tag" style="white-space: nowrap;">දින ${item.colH}ක්</span></td>
+                  </tr>
+                `;
+              }).join('');
+            }
           }
 
         } else if (cardType === 'ebbinghaus') {
@@ -7985,10 +9300,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           extraEl.innerHTML = `
             <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
               <button type="button" class="ranking-tab-btn ${currentTopHighestTab === 'subunit' ? 'active' : ''}" onclick="switchTopHighestTab('subunit', event)">
-                <span>📑 Sub-Unit Breakdown</span>
+                <span>📑 Unit Breakdown</span>
               </button>
               <button type="button" class="ranking-tab-btn ${currentTopHighestTab === 'unit' ? 'active' : ''}" onclick="switchTopHighestTab('unit', event)">
-                <span>📚 Unit-Wise Average</span>
+                <span>📚 Main Unit-Wise Average</span>
               </button>
             </div>
           `;
@@ -8005,7 +9320,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide">Unit Name</th>
-                <th class="col-sub-count">Sub-Units Tested</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Latest Date</th>
               </tr>
@@ -8013,7 +9327,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             const items = (globalTopHighestUnitList || []).slice(0, 10);
             if (items.length === 0) {
-              tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+              tbodyEl.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
             } else {
               const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
               tbodyEl.innerHTML = items.map((item, idx) => {
@@ -8027,7 +9341,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} papers)</small>
@@ -8041,7 +9354,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             badgeEl.innerText = 'Top 10 High';
             badgeEl.style.background = 'rgba(39, 174, 96, 0.25)';
             badgeEl.style.color = '#ffffff';
-            subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Sub-Unit Papers 10 (Zero-mark excluded).';
+            subEl.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 10 (Zero-mark excluded).';
 
             theadEl.innerHTML = `
               <tr>
@@ -8049,7 +9362,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -8095,10 +9408,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           extraEl.innerHTML = `
             <div class="ranking-tab-group" style="margin: 0 0 10px 0;">
               <button type="button" class="ranking-tab-btn ${currentLowestScoreTab === 'subunit' ? 'active' : ''}" onclick="switchLowestScoreTab('subunit', event)">
-                <span>📑 Sub-Unit Breakdown</span>
+                <span>📑 Unit Breakdown</span>
               </button>
               <button type="button" class="ranking-tab-btn ${currentLowestScoreTab === 'unit' ? 'active' : ''}" onclick="switchLowestScoreTab('unit', event)">
-                <span>📚 Unit-Wise Average</span>
+                <span>📚 Main Unit-Wise Average</span>
               </button>
             </div>
           `;
@@ -8115,7 +9428,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide">Unit Name</th>
-                <th class="col-sub-count">Sub-Units Tested</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Latest Date</th>
               </tr>
@@ -8123,7 +9435,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
             const items = (globalLowestScoresUnitList || []).slice(0, 10);
             if (items.length === 0) {
-              tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
+              tbodyEl.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a4b0be; padding: 16px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>';
             } else {
               tbodyEl.innerHTML = items.map((item, idx) => {
                 const rankLabel = `#${idx + 1} ⚠️`;
@@ -8135,7 +9447,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="chip-badge chip-subj ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" title="${escapeHtml(item.unitName)}"><span class="unit-name-txt">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9.5px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
@@ -8149,7 +9460,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             badgeEl.innerText = 'Top 10 Lowest';
             badgeEl.style.background = 'rgba(235, 77, 75, 0.25)';
             badgeEl.style.color = '#ffffff';
-            subEl.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Sub-Unit Papers 10.';
+            subEl.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Unit Papers 10.';
 
             theadEl.innerHTML = `
               <tr>
@@ -8157,7 +9468,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -8210,13 +9521,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <th class="col-sub-no">Sub Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Lesson Days</th>
+              <th class="col-print" style="text-align: center;">Print</th>
+              <th class="col-print-days" style="text-align: center;">Print Days</th>
               <th class="col-date">Date</th>
             </tr>
           `;
 
           const items = (globalPendingLessonsFullList || []).slice(0, 10);
           if (items.length === 0) {
-            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>';
+            tbodyEl.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>';
           } else {
             tbodyEl.innerHTML = items.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -8231,6 +9544,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td class="col-metric"><span class="marks-pill marks-mid">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-print" style="text-align: center;">
+                    <button type="button" class="print-tick-btn ${item.isPrinted ? 'is-printed' : ''}" onclick="openPrintPaperConfirm('${item.id}', '${escapeHtml(item.subject)}', '${escapeHtml(item.subUnitNumber)}', ${item.isPrinted ? 'true' : 'false'}, event)" title="${item.isPrinted ? 'මුද්‍රණය කර ඇත (Printed). මුරපදය මගින් වෙනස් කිරීමට ක්ලික් කරන්න.' : 'ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව සටහන් කරන්න'}">
+                      <span class="print-checkbox-box">${item.isPrinted ? '✓' : ''}</span>
+                      <span>${item.isPrinted ? 'Printed' : 'Print'}</span>
+                    </button>
+                  </td>
+                  <td class="col-print-days" style="text-align: center;">
+                    ${item.isPrinted 
+                      ? `<span class="marks-pill marks-printed" title="මුද්‍රණය කළ දිනය: ${item.printedAt ? escapeHtml(item.printedAt.substring(0, 10)) : '-'}">දින ${item.printedDays !== null ? item.printedDays : 0}ක්</span>` 
+                      : `<span style="color: #a4b0be; font-size: 11px;">-</span>`}
+                  </td>
                   <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
@@ -8254,13 +9578,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <th class="col-sub-no">Sub Unit</th>
               <th class="col-sub-name">Sub Unit Name</th>
               <th class="col-metric">Paper Days</th>
+              <th class="col-print" style="text-align: center;">Print</th>
+              <th class="col-print-days" style="text-align: center;">Print Days</th>
               <th class="col-date">Date</th>
             </tr>
           `;
 
           const items = (globalPendingTestPapersFullList || []).slice(0, 10);
           if (items.length === 0) {
-            tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! ටෙස්ට් පේපර් කිරීමට ඉතිරි පාඩම් නොමැත 🌟</td></tr>';
+            tbodyEl.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #27ae60; font-weight: 600; padding: 16px;">නියමයි! ටෙස්ට් පේපර් කිරීමට ඉතිරි පාඩම් නොමැත 🌟</td></tr>';
           } else {
             tbodyEl.innerHTML = items.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -8275,6 +9601,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${item.subject}', '${item.subUnitNumber}')" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td class="col-metric"><span class="marks-pill marks-low">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-print" style="text-align: center;">
+                    <button type="button" class="print-tick-btn ${item.isPrinted ? 'is-printed' : ''}" onclick="openPrintPaperConfirm('${item.id}', '${escapeHtml(item.subject)}', '${escapeHtml(item.subUnitNumber)}', ${item.isPrinted ? 'true' : 'false'}, event)" title="${item.isPrinted ? 'මුද්‍රණය කර ඇත (Printed). මුරපදය මගින් වෙනස් කිරීමට ක්ලික් කරන්න.' : 'ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව සටහන් කරන්න'}">
+                      <span class="print-checkbox-box">${item.isPrinted ? '✓' : ''}</span>
+                      <span>${item.isPrinted ? 'Printed' : 'Print'}</span>
+                    </button>
+                  </td>
+                  <td class="col-print-days" style="text-align: center;">
+                    ${item.isPrinted 
+                      ? `<span class="marks-pill marks-printed" title="මුද්‍රණය කළ දිනය: ${item.printedAt ? escapeHtml(item.printedAt.substring(0, 10)) : '-'}">දින ${item.printedDays !== null ? item.printedDays : 0}ක්</span>` 
+                      : `<span style="color: #a4b0be; font-size: 11px;">-</span>`}
+                  </td>
                   <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
@@ -9304,7 +10641,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide" colspan="2">Unit Name</th>
-                <th class="col-sub-count">Sub-Units</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
               </tr>
@@ -9313,7 +10649,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (bBody) {
             const top5 = (globalTopHighestUnitList || []).slice(0, 5);
             if (top5.length === 0) {
-              bBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+              bBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
             } else {
               const rankLabels = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th', '5th'];
               bBody.innerHTML = top5.map((item, idx) => {
@@ -9327,7 +10663,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" colspan="2"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #0984e3;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
@@ -9345,7 +10680,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             bBadge.style.color = '#27ae60';
           }
           if (bSub) {
-            bSub.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Sub-Unit Papers 5 (Zero-mark excluded).';
+            bSub.innerText = 'විභාග සාර්ථකත්වය වෙනුවෙන් ඉහළම ප්‍රතිඵල ලබාගත් Unit Papers 5 (Zero-mark excluded).';
           }
           if (bHead) {
             bHead.innerHTML = `
@@ -9354,7 +10689,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -9411,13 +10746,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             cSub.innerText = 'නැවත සමාලෝචනය අවශ්‍ය අවම සාමාන්‍ය ලකුණු (Mean Score) සහිත ප්‍රධාන Units.';
           }
           if (cHead) {
+            bHead = null; // no-op safeguard
             cHead.innerHTML = `
               <tr>
                 <th class="col-rank">Rank</th>
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name col-unit-name-wide" colspan="2">Unit Name</th>
-                <th class="col-sub-count">Sub-Units</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
               </tr>
@@ -9426,7 +10761,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (cBody) {
             const least5 = (globalLowestScoresUnitList || []).slice(0, 5);
             if (least5.length === 0) {
-              cBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
+              cBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">තවම වලංගු ලකුණු සහිත Unit Papers සටහන් කර නොමැත 📝</td></tr>`;
             } else {
               cBody.innerHTML = least5.map((item, idx) => {
                 const rankLabel = `#${idx + 1} ⚠️`;
@@ -9438,7 +10773,6 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <td class="col-subj"><span class="subj-pill ${subjClass}">${escapeHtml(item.subject)}</span></td>
                     <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(item.unitNumber)}</span></td>
                     <td class="col-unit-name col-unit-name-wide" colspan="2"><span class="unit-name-txt" title="${escapeHtml(item.unitName)}">${escapeHtml(item.unitName)}</span></td>
-                    <td class="col-sub-count" style="font-weight: 600; color: #e17055;">${item.testedSubUnitsCount} sub-units</td>
                     <td class="col-metric">
                       <span class="marks-pill ${markClass}">${item.avgMarks}%</span>
                       <small style="display:block; font-size:9px; color:#7f8fa6;">(${item.attemptsCount} paper${item.attemptsCount > 1 ? 's' : ''})</small>
@@ -9456,7 +10790,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             cBadge.style.color = '#eb4d4b';
           }
           if (cSub) {
-            cSub.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Sub-Unit Papers 5.';
+            cSub.innerText = 'නැවත සමාලෝචනය හා වැඩිදියුණු කිරීම අවශ්‍ය අවම සාමාන්‍ය ලකුණු ලැබූ Unit Papers 5.';
           }
           if (cHead) {
             cHead.innerHTML = `
@@ -9465,7 +10799,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <th class="col-subj">Subject</th>
                 <th class="col-unit-no">Unit No</th>
                 <th class="col-unit-name">Unit Name</th>
-                <th class="col-sub-no">Sub Unit</th>
+                <th class="col-sub-no">Unit</th>
                 <th class="col-sub-name">Sub Unit Name</th>
                 <th class="col-metric">Avg Marks</th>
                 <th class="col-date">Date</th>
@@ -9505,10 +10839,276 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       }
 
       // =========================================================================
+      // PRINTED TEST PAPERS CONTROLLER (Card E Tick & Days Tracking)
+      // Password protected (Hardcoded: 340800)
+      // =========================================================================
+      const PRINT_PAPER_PASSWORD = '340800';
+      let pendingPrintPaperConfirm = null;
+      let lastDashboardData = null;
+
+      function getPrintedPapersStorage() {
+        if (cachedPrintedPapersMap && typeof cachedPrintedPapersMap === 'object' && Object.keys(cachedPrintedPapersMap).length > 0) {
+          return cachedPrintedPapersMap;
+        }
+        try {
+          const localRaw = localStorage.getItem('al_study_tracker_printed_papers');
+          if (localRaw) {
+            const parsed = JSON.parse(localRaw);
+            if (parsed && typeof parsed === 'object') {
+              if (!cachedPrintedPapersMap || Object.keys(cachedPrintedPapersMap).length === 0) {
+                cachedPrintedPapersMap = parsed;
+              }
+              return parsed;
+            }
+          }
+        } catch(e) {}
+        return (cachedPrintedPapersMap && typeof cachedPrintedPapersMap === 'object') ? cachedPrintedPapersMap : {};
+      }
+
+      async function setPrintedPapersStorage(map) {
+        cachedPrintedPapersMap = map || {};
+        const jsonStr = JSON.stringify(cachedPrintedPapersMap);
+        const nowIso = new Date().toISOString();
+
+        // 1. Instant local mirror to localStorage
+        try {
+          localStorage.setItem('al_study_tracker_printed_papers', jsonStr);
+        } catch(e) {}
+
+        // 2. Primary database update to full_papers table
+        try {
+          const { data: updateRes, error: updateErr } = await supabase
+            .from('full_papers')
+            .update({
+              remarks: jsonStr,
+              logged_at: nowIso
+            })
+            .eq('time_taken', 'APP_CONFIG_PRINTED_PAPERS')
+            .select('id');
+
+          if (updateErr || !updateRes || updateRes.length === 0) {
+            // Row might not exist, insert it
+            await supabase
+              .from('full_papers')
+              .insert([{
+                subject: 'ICT',
+                marks: 0,
+                exam_date: nowIso.substring(0, 10),
+                time_taken: 'APP_CONFIG_PRINTED_PAPERS',
+                remarks: jsonStr,
+                logged_at: nowIso
+              }]);
+          }
+        } catch (e) {
+          console.error('Error persisting printed papers map to Supabase database:', e);
+        }
+
+        // 3. Fallback direct REST API PATCH with keepalive to guarantee background transmission
+        try {
+          fetch(SUPABASE_URL + '/rest/v1/full_papers?time_taken=eq.APP_CONFIG_PRINTED_PAPERS', {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({
+              remarks: jsonStr,
+              logged_at: nowIso
+            }),
+            keepalive: true
+          }).catch(() => {});
+        } catch(e) {}
+      }
+
+      function isPaperPrinted(syllabusId, subject, subUnitNumber) {
+        const map = getPrintedPapersStorage();
+        if (!map || typeof map !== 'object') return null;
+
+        // 1. Direct syllabusId key match
+        if (syllabusId && map[syllabusId]) return map[syllabusId];
+
+        // 2. Normalized subject + subUnitNumber key match
+        const cleanSubj = (subject || '').toUpperCase().trim();
+        const cleanCode = (subUnitNumber || '').trim();
+        if (cleanSubj && cleanCode) {
+          const k1 = `${cleanSubj}||${cleanCode}`;
+          if (map[k1]) return map[k1];
+          const k2 = `${(subject || '').trim()}||${cleanCode}`;
+          if (map[k2]) return map[k2];
+          const k3 = `${cleanSubj.toLowerCase()}||${cleanCode}`;
+          if (map[k3]) return map[k3];
+        }
+
+        // 3. Fallback search through values in map
+        for (const k in map) {
+          const rec = map[k];
+          if (rec && typeof rec === 'object') {
+            if (syllabusId && rec.syllabus_id === syllabusId) return rec;
+            if (cleanSubj && cleanCode &&
+                (rec.subject || '').toUpperCase().trim() === cleanSubj &&
+                String(rec.sub_lesson_code || '').trim() === cleanCode) {
+              return rec;
+            }
+          }
+        }
+        return null;
+      }
+
+      function openPrintPaperConfirm(syllabusId, subject, subUnitNumber, isCurrentlyPrinted, event) {
+        if (event && event.stopPropagation) event.stopPropagation();
+
+        pendingPrintPaperConfirm = {
+          syllabusId: syllabusId,
+          subject: subject,
+          subUnitNumber: subUnitNumber,
+          isCurrentlyPrinted: !!isCurrentlyPrinted
+        };
+
+        const popup = document.getElementById('printPaperConfirmPopup');
+        const titleEl = document.getElementById('printPaperPopupTitle');
+        const msgEl = document.getElementById('printPaperConfirmMsg');
+        const passInp = document.getElementById('printPaperPasswordInput');
+        const passErr = document.getElementById('printPaperPasswordError');
+        const okBtn = document.getElementById('printPaperConfirmOkBtn');
+
+        if (passInp) passInp.value = '';
+        if (passErr) passErr.style.display = 'none';
+
+        if (titleEl) {
+          titleEl.innerText = isCurrentlyPrinted 
+            ? 'මුද්‍රණ සටහන ඉවත් කිරීම — මුරපදය' 
+            : 'ප්‍රශ්න පත්‍ර මුද්‍රණය — තහවුරු කිරීම';
+        }
+
+        if (msgEl) {
+          msgEl.innerHTML = isCurrentlyPrinted
+            ? `<strong>${escapeHtml(subject)} — ${escapeHtml(subUnitNumber)}</strong> පාඩම සඳහා මුද්‍රිත බව සටහන ඉවත් කිරීමට (Untick) කරුණාකර මුරපදය ඇතුළත් කරන්න.`
+            : `<strong>${escapeHtml(subject)} — ${escapeHtml(subUnitNumber)}</strong> සඳහා ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව (Printed) සටහන් කිරීමට ආරක්ෂිත මුරපදය ඇතුළත් කරන්න.`;
+        }
+
+        if (okBtn) {
+          okBtn.disabled = false;
+          okBtn.innerText = isCurrentlyPrinted ? 'ඉවත් කරන්න ✕' : 'තහවුරු කරන්න ✅';
+        }
+
+        if (popup) {
+          popup.style.display = 'flex';
+          if (typeof focusModal === 'function') focusModal(popup);
+          setTimeout(() => {
+            if (passInp) passInp.focus();
+          }, 100);
+        }
+      }
+
+      function cancelPrintPaperConfirm() {
+        const popup = document.getElementById('printPaperConfirmPopup');
+        if (popup) popup.style.display = 'none';
+        const passInp = document.getElementById('printPaperPasswordInput');
+        if (passInp) passInp.value = '';
+        const passErr = document.getElementById('printPaperPasswordError');
+        if (passErr) passErr.style.display = 'none';
+        pendingPrintPaperConfirm = null;
+      }
+
+      function closePrintPaperConfirm(event) {
+        if (event && event.target && event.target.id === 'printPaperConfirmPopup') {
+          cancelPrintPaperConfirm();
+        }
+      }
+
+      async function confirmPrintPaperDone() {
+        if (!pendingPrintPaperConfirm) return;
+
+        const passInput = document.getElementById('printPaperPasswordInput');
+        const passVal = passInput ? passInput.value.trim() : '';
+        const passErr = document.getElementById('printPaperPasswordError');
+
+        if (passVal !== '340800') {
+          if (passErr) {
+            passErr.innerText = passVal === '' 
+              ? '⚠️ කරුණාකර මුරපදය ඇතුළත් කරන්න!' 
+              : '⚠️ මුරපදය වැරදියි! (මුරපදය 340800 වේ)';
+            passErr.style.display = 'block';
+          }
+          if (passInput) passInput.focus();
+          return;
+        }
+
+        if (passErr) passErr.style.display = 'none';
+
+        const okBtn = document.getElementById('printPaperConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = true;
+          okBtn.innerText = 'සටහන් වෙමින් පවතී...';
+        }
+
+        const { syllabusId, subject, subUnitNumber, isCurrentlyPrinted } = pendingPrintPaperConfirm;
+        const map = getPrintedPapersStorage();
+        const cleanSubj = (subject || '').toUpperCase().trim();
+        const cleanCode = (subUnitNumber || '').trim();
+        const key = syllabusId || `${cleanSubj}||${cleanCode}`;
+        const altKey = `${cleanSubj}||${cleanCode}`;
+
+        const newPrintedState = !isCurrentlyPrinted;
+        const nowIso = new Date().toISOString();
+
+        if (newPrintedState) {
+          const record = {
+            printed: true,
+            printed_at: nowIso,
+            syllabus_id: syllabusId || null,
+            subject: cleanSubj,
+            sub_lesson_code: cleanCode
+          };
+          if (syllabusId) map[syllabusId] = record;
+          if (cleanSubj && cleanCode) map[altKey] = record;
+        } else {
+          if (syllabusId) delete map[syllabusId];
+          if (cleanSubj && cleanCode) {
+            delete map[altKey];
+            delete map[`${(subject || '').trim()}||${cleanCode}`];
+            delete map[`${cleanSubj.toLowerCase()}||${cleanCode}`];
+          }
+          // Clean any matching record in map
+          for (const k in map) {
+            const rec = map[k];
+            if (rec && typeof rec === 'object') {
+              if (syllabusId && rec.syllabus_id === syllabusId) delete map[k];
+              else if (cleanSubj && cleanCode &&
+                       (rec.subject || '').toUpperCase().trim() === cleanSubj &&
+                       String(rec.sub_lesson_code || '').trim() === cleanCode) {
+                delete map[k];
+              }
+            }
+          }
+        }
+
+        await setPrintedPapersStorage(map);
+        cancelPrintPaperConfirm();
+
+        showHtmlAlert(
+          newPrintedState 
+            ? `[${subject}] ${subUnitNumber} ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව සාර්ථකව සටහන් විය! 🖨️✅` 
+            : `[${subject}] ${subUnitNumber} මුද්‍රණ සටහන ඉවත් කරන ලදී.`, 
+          false
+        );
+
+        if (typeof lastDashboardData !== 'undefined' && lastDashboardData) {
+          renderAnalyticsRankingCards(lastDashboardData);
+        }
+        if (typeof refreshTelemetry === 'function') {
+          refreshTelemetry().catch(console.error);
+        }
+      }
+
+      // =========================================================================
       // ANALYTICS RANKING CARDS CONTROLLER (Cards B, C, D, E)
       // =========================================================================
       function renderAnalyticsRankingCards(data) {
         if (!data) return;
+        lastDashboardData = data;
 
         const syllabusList = data.syllabusList || cachedCanonicalSyllabus || [];
         const tpList = data.tpList || [];
@@ -9545,19 +11145,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const sylKey = `${(p.subject || syl.subject || '').toUpperCase().trim()}||${(p.code || syl.sub_lesson_code || '').trim()}`;
           const tp = (syl.id && tpMap[syl.id]) || (p.syllabusId && tpMap[p.syllabusId]) || tpMapByKey[sylKey] || {};
 
-          // Bind directly to last updated date (last_updated / updated_at timestamp)
-          const pUpdatedRaw = p.updated_at || p.last_updated || p.loggedAt || p.fullDate || null;
-          const tpUpdatedRaw = tp.updated_at || tp.last_updated || null;
-          const pUpdatedTs = pUpdatedRaw ? new Date(pUpdatedRaw).getTime() : 0;
-          const tpUpdatedTs = tpUpdatedRaw ? new Date(tpUpdatedRaw).getTime() : 0;
-
-          let lastUpdatedRaw = pUpdatedRaw;
-          let lastUpdatedTs = pUpdatedTs;
-          if (tpUpdatedTs > pUpdatedTs) {
-            lastUpdatedRaw = tpUpdatedRaw;
-            lastUpdatedTs = tpUpdatedTs;
-          }
-          const updatedDateStr = lastUpdatedRaw ? String(lastUpdatedRaw).substring(0, 10) : '-';
+          // 2.4 Latest date from unit_papers table in logged_at column
+          const pLoggedRaw = p.loggedAt || p.logged_at || null;
+          const pLoggedTs = pLoggedRaw ? new Date(pLoggedRaw).getTime() : 0;
+          const pLoggedDateStr = pLoggedRaw ? String(pLoggedRaw).substring(0, 10) : '-';
 
           if (!subUnitMap[sId]) {
             subUnitMap[sId] = {
@@ -9570,9 +11161,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitName: syl.sub_lesson_title || '-',
               totalMarks: 0,
               attemptsCount: 0,
-              date: updatedDateStr,
-              latestDate: updatedDateStr,
-              latestTimestamp: lastUpdatedTs
+              date: pLoggedDateStr,
+              latestDate: pLoggedDateStr,
+              latestTimestamp: pLoggedTs
             };
           }
 
@@ -9580,10 +11171,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           subUnitMap[sId].totalMarks += m;
           subUnitMap[sId].attemptsCount += 1;
 
-          if (lastUpdatedTs > subUnitMap[sId].latestTimestamp) {
-            subUnitMap[sId].latestTimestamp = lastUpdatedTs;
-            subUnitMap[sId].latestDate = updatedDateStr;
-            subUnitMap[sId].date = updatedDateStr;
+          if (pLoggedTs > subUnitMap[sId].latestTimestamp) {
+            subUnitMap[sId].latestTimestamp = pLoggedTs;
+            subUnitMap[sId].latestDate = pLoggedDateStr;
+            subUnitMap[sId].date = pLoggedDateStr;
           }
         });
 
@@ -9599,36 +11190,36 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         validUnitPapers.forEach(p => {
           const syl = sylMapById[p.syllabusId] || sylMapByKey[`${(p.subject || '').toUpperCase().trim()}||${(p.code || '').trim()}`] || {};
           const subject = p.subject || syl.subject || 'ICT';
-          const unitNumber = (syl.unit_number !== undefined && syl.unit_number !== null) ? `Unit ${syl.unit_number}` : (p.unitNumber || '-');
+          let unitNumber = (syl.unit_number !== undefined && syl.unit_number !== null) ? `Unit ${syl.unit_number}` : (p.unitNumber || '-');
+          if ((unitNumber === '-' || !unitNumber) && p.code && String(p.code).toLowerCase().startsWith('unit')) {
+            const m = String(p.code).match(/\d+/);
+            if (m) unitNumber = `Unit ${m[0]}`;
+          }
           const unitKey = `${subject.toUpperCase().trim()}||${unitNumber}`;
           const sylKey = `${(p.subject || syl.subject || '').toUpperCase().trim()}||${(p.code || syl.sub_lesson_code || '').trim()}`;
           const tp = (syl.id && tpMap[syl.id]) || (p.syllabusId && tpMap[p.syllabusId]) || tpMapByKey[sylKey] || {};
 
-          // Bind directly to last updated date (last_updated / updated_at timestamp)
-          const pUpdatedRaw = p.updated_at || p.last_updated || p.loggedAt || p.fullDate || null;
-          const tpUpdatedRaw = tp.updated_at || tp.last_updated || null;
-          const pUpdatedTs = pUpdatedRaw ? new Date(pUpdatedRaw).getTime() : 0;
-          const tpUpdatedTs = tpUpdatedRaw ? new Date(tpUpdatedRaw).getTime() : 0;
-
-          let lastUpdatedRaw = pUpdatedRaw;
-          let lastUpdatedTs = pUpdatedTs;
-          if (tpUpdatedTs > pUpdatedTs) {
-            lastUpdatedRaw = tpUpdatedRaw;
-            lastUpdatedTs = tpUpdatedTs;
-          }
-          const updatedDateStr = lastUpdatedRaw ? String(lastUpdatedRaw).substring(0, 10) : '-';
+          // 2.4 Latest date from unit_papers table in logged_at column
+          const pLoggedRaw = p.loggedAt || p.logged_at || null;
+          const pLoggedTs = pLoggedRaw ? new Date(pLoggedRaw).getTime() : 0;
+          const pLoggedDateStr = pLoggedRaw ? String(pLoggedRaw).substring(0, 10) : '-';
 
           if (!unitMap[unitKey]) {
+            let uName = syl.unit_name || '-';
+            if ((uName === '-' || !uName) && syllabusList) {
+              const uMatch = syllabusList.find(s => (s.subject || '').toUpperCase().trim() === subject.toUpperCase().trim() && (s.unit_number !== undefined && s.unit_number !== null) && `Unit ${s.unit_number}` === unitNumber);
+              if (uMatch && uMatch.unit_name) uName = uMatch.unit_name;
+            }
             unitMap[unitKey] = {
               subject: subject,
               unitNumber: unitNumber,
-              unitName: syl.unit_name || '-',
+              unitName: uName,
               totalMarks: 0,
               attemptsCount: 0,
               testedSubUnitsSet: new Set(),
-              date: updatedDateStr,
-              latestDate: updatedDateStr,
-              latestTimestamp: lastUpdatedTs
+              date: pLoggedDateStr,
+              latestDate: pLoggedDateStr,
+              latestTimestamp: pLoggedTs
             };
           }
 
@@ -9638,10 +11229,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const subCode = p.code || syl.sub_lesson_code || syl.id;
           if (subCode) unitMap[unitKey].testedSubUnitsSet.add(subCode);
 
-          if (lastUpdatedTs > unitMap[unitKey].latestTimestamp) {
-            unitMap[unitKey].latestTimestamp = lastUpdatedTs;
-            unitMap[unitKey].latestDate = updatedDateStr;
-            unitMap[unitKey].date = updatedDateStr;
+          if (pLoggedTs > unitMap[unitKey].latestTimestamp) {
+            unitMap[unitKey].latestTimestamp = pLoggedTs;
+            unitMap[unitKey].latestDate = pLoggedDateStr;
+            unitMap[unitKey].date = pLoggedDateStr;
           }
         });
 
@@ -9693,15 +11284,29 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
             const tp = tpMap[s.id] || tpMapByKey[sylKey] || {};
 
-            // Bind directly to last updated date (last_updated / updated_at timestamp)
-            const rawUpdated = tp.updated_at || tp.last_updated || tp.lesson_done_at || null;
-            const dateStr = rawUpdated ? String(rawUpdated).substring(0, 10) : '-';
-            const ts = rawUpdated ? new Date(rawUpdated).getTime() : 0;
+            // Date logic: show the date as lesson_done_at
+            const lessonDoneDateStr = tp.lesson_done_at ? String(tp.lesson_done_at).substring(0, 10) : '-';
+            const rawUpdated = tp.lesson_done_at || tp.updated_at || tp.last_updated || null;
+            const ts = tp.lesson_done_at ? new Date(tp.lesson_done_at).getTime() : (rawUpdated ? new Date(rawUpdated).getTime() : 0);
 
             let days = (tp && tp.lesson_days !== undefined && tp.lesson_days !== null) ? Number(tp.lesson_days) : 0;
             if (days === 0 && rawUpdated) {
               const diffMs = Math.max(0, Date.now() - new Date(rawUpdated).getTime());
               days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
+
+            // Printed status & calculation of days since printed date
+            const printInfo = isPaperPrinted(s.id, s.subject, s.sub_lesson_code);
+            const isPrinted = !!(printInfo && printInfo.printed);
+            const printedAt = (printInfo && printInfo.printed_at) ? printInfo.printed_at : null;
+            let printedDays = null;
+            if (isPrinted && printedAt) {
+              const pDate = new Date(printedAt);
+              if (!isNaN(pDate.getTime())) {
+                const now = new Date();
+                const diffMs = Math.max(0, now.getTime() - pDate.getTime());
+                printedDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+              }
             }
 
             return {
@@ -9711,9 +11316,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               unitName: s.unit_name || '-',
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
-              date: dateStr,
-              latestDate: dateStr,
+              date: lessonDoneDateStr,
+              latestDate: lessonDoneDateStr,
               days: days,
+              isPrinted: isPrinted,
+              printedAt: printedAt,
+              printedDays: printedDays,
               timestamp: ts,
               sortOrder: Number(s.sort_order) || 0
             };
@@ -9728,7 +11336,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const dBody = document.getElementById('oldestLessonPendingBody');
         if (dBody) {
           if (pendingLessons.length === 0) {
-            dBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>`;
+            dBody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! දැනට උගන්වන සියලු පාඩම් සඳහා ගෙදර වැඩ අවසන් කර ඇත 🌟</td></tr>`;
           } else {
             dBody.innerHTML = pendingLessons.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -9743,6 +11351,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${escapeHtml(item.subUnitNumber)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td class="col-metric"><span class="marks-pill marks-mid">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-print" style="text-align: center;">
+                    <button type="button" class="print-tick-btn ${item.isPrinted ? 'is-printed' : ''}" onclick="openPrintPaperConfirm('${item.id}', '${escapeHtml(item.subject)}', '${escapeHtml(item.subUnitNumber)}', ${item.isPrinted ? 'true' : 'false'}, event)" title="${item.isPrinted ? 'මුද්‍රණය කර ඇත (Printed). මුරපදය මගින් වෙනස් කිරීමට ක්ලික් කරන්න.' : 'ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව සටහන් කරන්න'}">
+                      <span class="print-checkbox-box">${item.isPrinted ? '✓' : ''}</span>
+                      <span>${item.isPrinted ? 'Printed' : 'Print'}</span>
+                    </button>
+                  </td>
+                  <td class="col-print-days" style="text-align: center;">
+                    ${item.isPrinted 
+                      ? `<span class="marks-pill marks-printed" title="මුද්‍රණය කළ දිනය: ${item.printedAt ? escapeHtml(item.printedAt.substring(0, 10)) : '-'}">දින ${item.printedDays !== null ? item.printedDays : 0}ක්</span>` 
+                      : `<span style="color: #a4b0be; font-size: 11px;">-</span>`}
+                  </td>
                   <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
@@ -9751,11 +11370,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
 
         // --- Card (E): Pending Test Papers (උගන්නලා , පාඩම් කරලා තියන නමුත් පේපර් නොකරපු පාඩම්) ---
-        // Requirement: Item is shown ONLY if ALL 4 of the following conditions evaluate to true (AND logic):
-        // 1. lesson_done === true
-        // 2. hw_done === true
-        // 3. hw_days === 0
-        // 4. In unit_paper table: paper_no === 0 or null or no data
+        // Logic requirement:
+        // 1. lesson_done = true in tracker_progress table
+        // 2. hw_done = true in tracker_progress table
+        // 3. In unit_paper table: paper_no = 0 or not listed in unit paper table
+        // ONLY these conditions met should show in the table.
         const unitPapersBySylId = {};
         const unitPapersBySylKey = {};
         unitPapers.forEach(p => {
@@ -9774,17 +11393,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const tp = tpMap[s.id] || tpMapByKey[sylKey];
             if (!tp) return false;
 
-            // Condition 1: lesson_done === true
-            const cond1 = tp.lesson_done === true;
+            // Condition 1: lesson_done = true in tracker_progress table
+            const cond1 = tp.lesson_done === true || tp.lesson_done === 'true' || tp.lesson_done === 1;
 
-            // Condition 2: hw_done === true
-            const cond2 = tp.hw_done === true;
+            // Condition 2: hw_done = true in tracker_progress table
+            const cond2 = tp.hw_done === true || tp.hw_done === 'true' || tp.hw_done === 1;
 
-            // Condition 3: hw_days === 0
-            const hwDaysNum = (tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : null;
-            const cond3 = hwDaysNum === 0;
-
-            // Condition 4: In unit_paper table: paper_no === 0 or null or no data
+            // Condition 3: In unit_paper table: paper_no = 0 or not listed in unit paper table
             const papersForSubUnit = [
               ...(unitPapersBySylId[s.id] || []),
               ...(unitPapersBySylKey[sylKey] || [])
@@ -9799,24 +11414,45 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
             });
 
-            // No data -> true
-            // If papers exist -> all must have paper_no === 0, null, or undefined (strictly no paper_no > 0)
-            const cond4 = uniquePapers.length === 0 || uniquePapers.every(p => {
-              const pNo = p.paperNo !== undefined ? p.paperNo : p.paper_no;
-              return pNo === 0 || pNo === null || pNo === undefined || Number(pNo) === 0;
+            // Either not listed in unit paper table OR all entries have paper_no === 0 (strictly no paper_no > 0)
+            const cond3 = uniquePapers.length === 0 || uniquePapers.every(p => {
+              const rawPNo = p.paperNo !== undefined ? p.paperNo : p.paper_no;
+              const pNo = Number(rawPNo);
+              return rawPNo === null || rawPNo === undefined || isNaN(pNo) || pNo === 0;
             });
 
-            return cond1 && cond2 && cond3 && cond4;
+            // Only these conditions met should show
+            return cond1 && cond2 && cond3;
           })
           .map(s => {
             const sylKey = `${(s.subject || '').toUpperCase().trim()}||${(s.sub_lesson_code || '').trim()}`;
             const tp = tpMap[s.id] || tpMapByKey[sylKey] || {};
 
-            // Bind directly to last updated date (last_updated / updated_at timestamp)
-            const rawUpdated = tp.updated_at || tp.last_updated || tp.hw_done_at || tp.lesson_done_at || null;
-            const dateStr = rawUpdated ? String(rawUpdated).substring(0, 10) : '-';
-            const ts = rawUpdated ? new Date(rawUpdated).getTime() : 0;
-            const days = (tp.hw_days !== undefined && tp.hw_days !== null) ? Number(tp.hw_days) : 0;
+            // Requirement 4: hw_done_at = date should display "date" field in this chart
+            const hwDoneDateStr = tp.hw_done_at ? String(tp.hw_done_at).substring(0, 10) : '-';
+            const rawUpdated = tp.hw_done_at || tp.updated_at || tp.last_updated || tp.lesson_done_at || null;
+            const ts = tp.hw_done_at ? new Date(tp.hw_done_at).getTime() : (rawUpdated ? new Date(rawUpdated).getTime() : 0);
+            let days = (tp.paper_days !== undefined && tp.paper_days !== null && Number(tp.paper_days) > 0)
+              ? Number(tp.paper_days)
+              : ((tp.hw_days !== undefined && tp.hw_days !== null && Number(tp.hw_days) > 0) ? Number(tp.hw_days) : (Number(tp.lesson_days) || 0));
+            if (days === 0 && rawUpdated) {
+              const diffMs = Math.max(0, Date.now() - new Date(rawUpdated).getTime());
+              days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            }
+
+            // Printed status & calculation of days since printed date
+            const printInfo = isPaperPrinted(s.id, s.subject, s.sub_lesson_code);
+            const isPrinted = !!(printInfo && printInfo.printed);
+            const printedAt = (printInfo && printInfo.printed_at) ? printInfo.printed_at : null;
+            let printedDays = null;
+            if (isPrinted && printedAt) {
+              const pDate = new Date(printedAt);
+              if (!isNaN(pDate.getTime())) {
+                const now = new Date();
+                const diffMs = Math.max(0, now.getTime() - pDate.getTime());
+                printedDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+              }
+            }
 
             return {
               id: s.id,
@@ -9826,14 +11462,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               subUnitNumber: s.sub_lesson_code || '-',
               subUnitName: s.sub_lesson_title || '-',
               days: days,
-              date: dateStr,
-              latestDate: dateStr,
+              isPrinted: isPrinted,
+              printedAt: printedAt,
+              printedDays: printedDays,
+              date: hwDoneDateStr,
+              latestDate: hwDoneDateStr,
               timestamp: ts,
               sortOrder: Number(s.sort_order) || 0
             };
           })
           .sort((a, b) => {
-            if (b.timestamp !== a.timestamp) return b.timestamp - a.timestamp; // Most recently updated first
+            if (b.days !== a.days) return b.days - a.days; // Paper days oldest first
+            if (b.timestamp !== a.timestamp) return b.timestamp - a.timestamp;
             return a.sortOrder - b.sortOrder;
           });
         const pendingTestPapers = globalPendingTestPapersFullList.slice(0, 5);
@@ -9841,7 +11481,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const eBody = document.getElementById('oldestBothPendingBody');
         if (eBody) {
           if (pendingTestPapers.length === 0) {
-            eBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ටෙස්ට් පේපර් කිරීමට ඉතිරි පාඩම් නොමැත 🌟</td></tr>`;
+            eBody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: #27ae60; font-weight: 600; padding: 14px;">නියමයි! ටෙස්ට් පේපර් කිරීමට ඉතිරි පාඩම් නොමැත 🌟</td></tr>`;
           } else {
             eBody.innerHTML = pendingTestPapers.map((item, idx) => {
               const subjClass = `subj-pill-${item.subject.toLowerCase()}`;
@@ -9856,6 +11496,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     <a href="javascript:void(0)" onclick="openDrilldownModal('${item.subject}', '${escapeHtml(item.subUnitNumber)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(item.subUnitName)}</a>
                   </td>
                   <td class="col-metric"><span class="marks-pill marks-low">දින ${item.days !== undefined && item.days !== null ? item.days : 0}ක්</span></td>
+                  <td class="col-print" style="text-align: center;">
+                    <button type="button" class="print-tick-btn ${item.isPrinted ? 'is-printed' : ''}" onclick="openPrintPaperConfirm('${item.id}', '${escapeHtml(item.subject)}', '${escapeHtml(item.subUnitNumber)}', ${item.isPrinted ? 'true' : 'false'}, event)" title="${item.isPrinted ? 'මුද්‍රණය කර ඇත (Printed). මුරපදය මගින් වෙනස් කිරීමට ක්ලික් කරන්න.' : 'ප්‍රශ්න පත්‍රය මුද්‍රණය කළ බව සටහන් කරන්න'}">
+                      <span class="print-checkbox-box">${item.isPrinted ? '✓' : ''}</span>
+                      <span>${item.isPrinted ? 'Printed' : 'Print'}</span>
+                    </button>
+                  </td>
+                  <td class="col-print-days" style="text-align: center;">
+                    ${item.isPrinted 
+                      ? `<span class="marks-pill marks-printed" title="මුද්‍රණය කළ දිනය: ${item.printedAt ? escapeHtml(item.printedAt.substring(0, 10)) : '-'}">දින ${item.printedDays !== null ? item.printedDays : 0}ක්</span>` 
+                      : `<span style="color: #a4b0be; font-size: 11px;">-</span>`}
+                  </td>
                   <td class="col-date"><span class="date-cell-txt">${item.date ? escapeHtml(item.date) : '-'}</span></td>
                 </tr>
               `;
@@ -10998,14 +12649,14 @@ function openSidebarModal() {
         setRoll(r.allTime, 'roll_all');
 
         const canvas = document.getElementById('unitChartCanvas');
-        const noMsg = document.getElementById('noUnitChartMsg');
+        const noMsg = document.getElementById('noDrilldownUnitChartMsg');
         const zoomLbl = document.getElementById('unitChartZoomLbl');
 
         const validHistory = (data.history || []).filter(h => h.marks !== null && h.marks !== undefined && !isNaN(h.marks) && Number(h.marks) !== 0);
 
         if (!validHistory || validHistory.length === 0) {
           canvas.style.display = 'none';
-          noMsg.style.display = 'flex';
+          if (noMsg) noMsg.style.display = 'flex';
           return;
         }
 
@@ -11099,6 +12750,482 @@ function openSidebarModal() {
         iconEl.innerText = isError ? '❌' : 'ℹ️';
         popup.style.display = 'flex';
         focusModal(popup);
+      }
+
+      // =========================================================================
+      // Submit Marks Selector Modal Controllers (Consolidated Entry Point)
+      // =========================================================================
+      function openSubmitMarksSelectorModal() {
+        const modal = document.getElementById('submitMarksSelectorModal');
+        if (modal) {
+          modal.style.display = 'flex';
+          focusModal(modal);
+        }
+      }
+
+      function hideSubmitMarksSelectorModal() {
+        const modal = document.getElementById('submitMarksSelectorModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function closeSubmitMarksSelectorModal(event) {
+        if (event && event.target && event.target.id === 'submitMarksSelectorModal') {
+          hideSubmitMarksSelectorModal();
+        }
+      }
+
+      function selectSubmitMarksType(type) {
+        hideSubmitMarksSelectorModal();
+        if (type === 'subunit') {
+          openUnitPaperModal();
+        } else if (type === 'fullunit' || type === 'mainunit') {
+          openFullUnitPaperModal();
+        } else if (type === 'fullpaper') {
+          openFullPaperModal();
+        }
+      }
+
+      function getOrdinalNumberText(n) {
+        const num = parseInt(n, 10) || 1;
+        const j = num % 10, k = num % 100;
+        if (j === 1 && k !== 11) return `${num}st`;
+        if (j === 2 && k !== 12) return `${num}nd`;
+        if (j === 3 && k !== 13) return `${num}rd`;
+        return `${num}th`;
+      }
+
+      // =========================================================================
+      // Full Unit Paper Modal & Breakdown Controllers
+      // =========================================================================
+      function openFullUnitPaperModal(preselectedSubject, preselectedUnit) {
+        const modal = document.getElementById('fullUnitPaperModal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+
+        const today = new Date().toISOString().substring(0, 10);
+        const dateInput = document.getElementById('fupDate');
+        if (dateInput && !dateInput.value) dateInput.value = today;
+
+        const marksInput = document.getElementById('fupMarks');
+        if (marksInput) {
+          marksInput.value = '';
+          marksInput.style.borderColor = '';
+        }
+        const marksErr = document.getElementById('fupMarksError');
+        if (marksErr) marksErr.style.display = 'none';
+
+        const timeInput = document.getElementById('fupTime');
+        if (timeInput) timeInput.value = '';
+        const remarksInput = document.getElementById('fupRemarks');
+        if (remarksInput) remarksInput.value = '';
+        const passInput = document.getElementById('fupPasswordInput');
+        if (passInput) passInput.value = '';
+        const passErr = document.getElementById('fupPasswordError');
+        if (passErr) passErr.style.display = 'none';
+
+        if (preselectedSubject) {
+          const subjSelect = document.getElementById('fupSubject');
+          if (subjSelect) subjSelect.value = preselectedSubject;
+        }
+
+        populateFullUnitDropdown(preselectedUnit);
+        focusModal(modal);
+      }
+
+      function hideFullUnitPaperModal() {
+        const modal = document.getElementById('fullUnitPaperModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function closeFullUnitPaperModal(event) {
+        if (event && event.target && event.target.id === 'fullUnitPaperModal') {
+          hideFullUnitPaperModal();
+        }
+      }
+
+      function populateFullUnitDropdown(preselectedUnit) {
+        const subjSelect = document.getElementById('fupSubject');
+        const unitSelect = document.getElementById('fupUnitSelect');
+        if (!subjSelect || !unitSelect) return;
+        const subject = subjSelect.value || 'ICT';
+
+        const syllabus = cachedCanonicalSyllabus || (telemetryData && telemetryData.syllabusList) || [];
+        const subjSyllabus = syllabus.filter(s => (s.subject || '').toUpperCase().trim() === subject.toUpperCase().trim());
+
+        const unitMap = new Map();
+        subjSyllabus.forEach(s => {
+          const uNum = (s.unit_number !== undefined && s.unit_number !== null) ? Number(s.unit_number) : null;
+          if (uNum !== null && !unitMap.has(uNum)) {
+            unitMap.set(uNum, {
+              unitNumber: uNum,
+              unitName: s.unit_name || `Unit ${uNum}`,
+              firstSyllabusId: s.id
+            });
+          }
+        });
+
+        const sortedUnits = Array.from(unitMap.values()).sort((a, b) => a.unitNumber - b.unitNumber);
+
+        unitSelect.innerHTML = sortedUnits.map(u => {
+          return `<option value="${u.unitNumber}" data-sylid="${u.firstSyllabusId}">Unit ${u.unitNumber}: ${escapeHtml(u.unitName)}</option>`;
+        }).join('');
+
+        if (preselectedUnit !== undefined && preselectedUnit !== null) {
+          const matchVal = String(preselectedUnit).replace(/\D+/g, '');
+          if (matchVal) {
+            unitSelect.value = matchVal;
+          }
+        }
+
+        handleFullUnitSelectChange();
+      }
+
+      function handleFullUnitSelectChange() {
+        const subjSelect = document.getElementById('fupSubject');
+        const unitSelect = document.getElementById('fupUnitSelect');
+        const paperNoInput = document.getElementById('fupPaperNo');
+        const submitBtn = document.getElementById('fupSubmitBtn');
+        if (!subjSelect || !unitSelect || !paperNoInput) return;
+
+        const subject = subjSelect.value || 'ICT';
+        const unitNum = parseInt(unitSelect.value, 10);
+
+        const fupHistory = (telemetryData && telemetryData.fullUnitPapersHistory) || [];
+        const papersForUnit = fupHistory.filter(p => {
+          if ((p.subject || '').toUpperCase().trim() !== subject.toUpperCase().trim()) return false;
+          const codeMatch = String(p.code || '').match(/\d+/);
+          return codeMatch ? parseInt(codeMatch[0], 10) === unitNum : false;
+        });
+
+        const maxNo = papersForUnit.reduce((max, p) => Math.max(max, Number(p.paperNo) || 0), 0);
+        const nextNo = maxNo + 1;
+        paperNoInput.value = nextNo;
+
+        if (submitBtn) {
+          submitBtn.innerText = '💾 Save ' + getOrdinalNumberText(nextNo) + ' full unit paper Marks';
+        }
+      }
+
+      async function submitFullUnitPaper(event) {
+        if (event) event.preventDefault();
+
+        const marksInput = document.getElementById('fupMarks');
+        const marksErr = document.getElementById('fupMarksError');
+        const marksRaw = marksInput ? marksInput.value.trim() : '';
+
+        if (marksRaw === '' || isNaN(marksRaw) || Number(marksRaw) < 0 || Number(marksRaw) > 100) {
+          if (marksInput) {
+            marksInput.style.borderColor = '#d63031';
+            marksInput.focus();
+          }
+          if (marksErr) marksErr.style.display = 'block';
+          return;
+        }
+        if (marksInput) marksInput.style.borderColor = '';
+        if (marksErr) marksErr.style.display = 'none';
+
+        const passInput = document.getElementById('fupPasswordInput');
+        const passVal = passInput ? passInput.value.trim() : '';
+        const passErr = document.getElementById('fupPasswordError');
+        if (passVal !== '3408') {
+          if (passErr) {
+            passErr.innerText = passVal === '' ? '⚠️ කරුණාකර මුරපදය ඇතුළත් කරන්න!' : '⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.';
+            passErr.style.display = 'block';
+          }
+          if (passInput) passInput.focus();
+          return;
+        }
+        if (passErr) passErr.style.display = 'none';
+
+        const submitBtn = document.getElementById('fupSubmitBtn');
+        const userPaperNo = parseInt(document.getElementById('fupPaperNo').value, 10) || 1;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerText = 'සටහන් වෙමින් පවතී...';
+        }
+
+        const subject = document.getElementById('fupSubject').value;
+        const unitSelect = document.getElementById('fupUnitSelect');
+        const unitNumber = parseInt(unitSelect.value, 10);
+        const selectedOpt = unitSelect.options[unitSelect.selectedIndex];
+        let firstSyllabusId = selectedOpt ? selectedOpt.getAttribute('data-sylid') : null;
+
+        if (!firstSyllabusId) {
+          const syllabus = cachedCanonicalSyllabus || (telemetryData && telemetryData.syllabusList) || [];
+          const match = syllabus.find(s => (s.subject || '').toUpperCase().trim() === subject.toUpperCase().trim() && Number(s.unit_number) === unitNumber);
+          if (match) firstSyllabusId = match.id;
+        }
+
+        if (!firstSyllabusId) {
+          const { data: sylRow } = await supabase
+            .from('canonical_syllabus')
+            .select('id')
+            .eq('subject', subject)
+            .eq('unit_number', unitNumber)
+            .limit(1)
+            .maybeSingle();
+          if (sylRow) firstSyllabusId = sylRow.id;
+        }
+
+        if (!firstSyllabusId) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = '💾 Save ' + getOrdinalNumberText(userPaperNo) + ' full unit paper Marks';
+          }
+          showHtmlAlert('දෝෂයකි: මෙම ඒකකය සඳහා Syllabus ID හඳුනාගත නොහැකි විය.', true);
+          return;
+        }
+
+        const dateVal = document.getElementById('fupDate').value;
+        const marksVal = parseFloat(marksRaw);
+        const timeVal = (document.getElementById('fupTime').value || '').trim();
+        const remarksVal = (document.getElementById('fupRemarks').value || '').trim();
+
+        const loggedAt = dateVal ? new Date(dateVal + 'T12:00:00Z').toISOString() : new Date().toISOString();
+        const dbPaperNo = userPaperNo >= 1000 ? userPaperNo : (1000 + userPaperNo);
+
+        try {
+          const { error: insErr } = await supabase
+            .from('unit_papers')
+            .insert([{
+              syllabus_id: firstSyllabusId,
+              subject: subject,
+              sub_lesson_code: `Unit ${unitNumber}`,
+              paper_no: dbPaperNo,
+              marks: marksVal,
+              logged_at: loggedAt
+            }]);
+
+          if (insErr) throw insErr;
+
+          // Reset paper_days in tracker_progress for syllabus records in this unit
+          await supabase
+            .from('tracker_progress')
+            .update({ paper_days: 0, updated_at: new Date().toISOString() })
+            .eq('syllabus_id', firstSyllabusId);
+
+          hideFullUnitPaperModal();
+
+          try {
+            confetti({ particleCount: 90, spread: 75, origin: { y: 0.6 }, colors: ['#0984e3', '#6c5ce7', '#00cec9', '#55efc4'] });
+          } catch(e) {}
+
+          showHtmlAlert(`[${subject}] Unit ${unitNumber} Full Unit Paper ${userPaperNo} (ලකුණු: ${marksVal}%) සාර්ථකව සටහන් විය! 🎉`, false);
+
+          await refreshTelemetry();
+        } catch (err) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = '💾 Save ' + getOrdinalNumberText(userPaperNo) + ' full unit paper Marks';
+          }
+          showHtmlAlert('දෝෂයකි: ' + (err.message || 'Full Unit Paper එක සටහන් කිරීම අසාර්ථක විය'), true);
+        }
+      }
+
+      function openFullUnitBreakdownModal() {
+        if (!telemetryData) return;
+        const fupList = telemetryData.fullUnitPapersHistory || [];
+
+        const ictCount = fupList.filter(p => (p.subject || '').toUpperCase().trim() === 'ICT').length;
+        const etCount = fupList.filter(p => (p.subject || '').toUpperCase().trim() === 'ET').length;
+        const sftCount = fupList.filter(p => (p.subject || '').toUpperCase().trim() === 'SFT').length;
+        const totalCount = telemetryData.totalFullUnitPapersDone || fupList.length;
+
+        document.getElementById('bd_fup_ict_val').innerText = ictCount;
+        document.getElementById('bd_fup_et_val').innerText = etCount;
+        document.getElementById('bd_fup_sft_val').innerText = sftCount;
+        document.getElementById('bd_fup_total_val').innerText = totalCount;
+
+        const modal = document.getElementById('fullUnitBreakdownModal');
+        modal.style.display = 'flex';
+        focusModal(modal);
+      }
+      function hideFullUnitBreakdownModal() { document.getElementById('fullUnitBreakdownModal').style.display = 'none'; }
+      function closeFullUnitBreakdownModal(event) { if (event.target.id === 'fullUnitBreakdownModal') hideFullUnitBreakdownModal(); }
+
+      // =========================================================================
+      // Urgent Radar Model Paper 1 Tick Controllers
+      // =========================================================================
+      let pendingUrgentRadarConfirm = null;
+
+      function handleUrgentRadarTick(idx, checkbox, isFs, isFullUnit) {
+        if (!checkbox) return;
+        checkbox.checked = false; // Revert until confirmation password verified
+
+        if (isFullUnit) {
+          let item = null;
+          if (isFs && Array.isArray(globalUrgentRadarFullUnitList)) {
+            item = globalUrgentRadarFullUnitList[idx];
+          } else if (Array.isArray(globalUrgentRadarFullUnitList)) {
+            item = globalUrgentRadarFullUnitList[idx];
+          }
+          if (!item) return;
+          if (isFs && typeof closeDataCardFullscreen === 'function') {
+            closeDataCardFullscreen();
+          }
+          openFullUnitPaperModal(item.subject, item.unitNumber);
+          return;
+        }
+
+        let item = null;
+        if (isFs && Array.isArray(globalUrgentRadarFullList)) {
+          item = globalUrgentRadarFullList[idx];
+        } else if (telemetryData && Array.isArray(telemetryData.radar)) {
+          item = telemetryData.radar[idx];
+        }
+
+        if (!item) return;
+
+        pendingUrgentRadarConfirm = {
+          ...item,
+          checkboxEl: checkbox,
+          isFs: !!isFs
+        };
+
+        const subjNames = {
+          ICT: 'ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)',
+          ET: 'ET (ඉංජිනේරු තාක්ෂණවේදය)',
+          SFT: 'SFT (තාක්ෂණවේදය සඳහා විද්‍යාව)'
+        };
+
+        const msgEl = document.getElementById('urgentRadarConfirmMsg');
+        if (msgEl) {
+          msgEl.innerHTML = `ඔබ <strong>${subjNames[item.subject] || item.subject}</strong> විෂයේ<br><strong>${escapeHtml(item.subLesson || item.title)}</strong><br>පාඩම සඳහා <strong>Model Paper 1</strong> සම්පූර්ණ කළාද?<br><br><span style="font-size: 10px; opacity: 0.85;">⚠️ මෙමඟින් මෙම පාඩම සඳහා Model Paper 1 සම්පූර්ණ කළ බව සටහන් වන අතර Urgent Radar ලැයිස්තුවෙන් ඉවත් වේ.</span>`;
+        }
+
+        const marksInput = document.getElementById('urgentRadarMarksInput');
+        if (marksInput) marksInput.value = '';
+        const passInp = document.getElementById('urgentRadarPasswordInput');
+        if (passInp) passInp.value = '';
+        const passErr = document.getElementById('urgentRadarPasswordError');
+        if (passErr) passErr.style.display = 'none';
+        const okBtn = document.getElementById('urgentRadarConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = false;
+          okBtn.innerText = 'ඔව්, Paper 1 අවසන් ✅';
+        }
+
+        const popup = document.getElementById('urgentRadarConfirmPopup');
+        if (popup) {
+          popup.style.display = 'flex';
+          focusModal(popup);
+        }
+      }
+
+      function cancelUrgentRadarConfirm() {
+        const passInp = document.getElementById('urgentRadarPasswordInput');
+        if (passInp) passInp.value = '';
+        const passErr = document.getElementById('urgentRadarPasswordError');
+        if (passErr) passErr.style.display = 'none';
+        const okBtn = document.getElementById('urgentRadarConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = false;
+          okBtn.innerText = 'ඔව්, Paper 1 අවසන් ✅';
+        }
+        const popup = document.getElementById('urgentRadarConfirmPopup');
+        if (popup) popup.style.display = 'none';
+        pendingUrgentRadarConfirm = null;
+      }
+
+      function closeUrgentRadarConfirm(event) {
+        if (event && event.target && event.target.id === 'urgentRadarConfirmPopup') {
+          cancelUrgentRadarConfirm();
+        }
+      }
+
+      async function confirmUrgentRadarDone() {
+        if (!pendingUrgentRadarConfirm) return;
+
+        const passInput = document.getElementById('urgentRadarPasswordInput');
+        const passVal = passInput ? passInput.value.trim() : '';
+        const passErr = document.getElementById('urgentRadarPasswordError');
+        if (passVal !== '3408') {
+          if (passErr) {
+            passErr.innerText = passVal === '' ? '⚠️ කරුණාකර මුරපදය ඇතුළත් කරන්න!' : '⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.';
+            passErr.style.display = 'block';
+          }
+          if (passInput) passInput.focus();
+          return;
+        }
+        if (passErr) passErr.style.display = 'none';
+
+        const okBtn = document.getElementById('urgentRadarConfirmOkBtn');
+        if (okBtn) {
+          okBtn.disabled = true;
+          okBtn.innerText = 'සටහන් වෙමින් පවතී...';
+        }
+
+        const item = pendingUrgentRadarConfirm;
+        const marksVal = document.getElementById('urgentRadarMarksInput').value;
+        const numericMarks = (marksVal !== '' && !isNaN(marksVal)) ? parseFloat(marksVal) : 0;
+
+        try {
+          // Check existing papers to determine next paper number
+          const { data: existingPapers } = await supabase
+            .from('unit_papers')
+            .select('paper_no')
+            .eq('syllabus_id', item.syllabusId);
+
+          const maxExistingNo = (existingPapers || []).reduce((max, p) => Math.max(max, Number(p.paper_no) || 0), 0);
+          const nextPaperNo = maxExistingNo > 0 ? (maxExistingNo + 1) : 1;
+
+          // Insert Paper 1 into unit_papers
+          const { error: insErr } = await supabase
+            .from('unit_papers')
+            .insert([{
+              syllabus_id: item.syllabusId,
+              subject: item.subject,
+              sub_lesson_code: item.code,
+              paper_no: nextPaperNo,
+              marks: numericMarks,
+              logged_at: new Date().toISOString()
+            }]);
+
+          if (insErr) throw insErr;
+
+          // Reset paper_days in tracker_progress so this item leaves Urgent Radar immediately
+          const { error: tpErr } = await supabase
+            .from('tracker_progress')
+            .update({
+              paper_days: 0,
+              updated_at: new Date().toISOString()
+            })
+            .eq('syllabus_id', item.syllabusId);
+
+          if (tpErr) throw tpErr;
+
+          if (passInput) passInput.value = '';
+          const popup = document.getElementById('urgentRadarConfirmPopup');
+          if (popup) popup.style.display = 'none';
+          if (okBtn) {
+            okBtn.disabled = false;
+            okBtn.innerText = 'ඔව්, Paper 1 අවසන් ✅';
+          }
+
+          try {
+            confetti({
+              particleCount: 80,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#eb4d4b', '#ff7675', '#55efc4', '#fdcb6e']
+            });
+          } catch(e) {}
+
+          pendingUrgentRadarConfirm = null;
+          showHtmlAlert(`[${item.subject}] ${item.code} සඳහා Model Paper ${nextPaperNo} සාර්ථකව අවසන් කර Urgent Radar වෙතින් ඉවත් කරන ලදී! 🎯`, false);
+
+          await refreshTelemetry();
+        } catch (err) {
+          if (passInput) passInput.value = '';
+          const popup = document.getElementById('urgentRadarConfirmPopup');
+          if (popup) popup.style.display = 'none';
+          if (okBtn) {
+            okBtn.disabled = false;
+            okBtn.innerText = 'ඔව්, Paper 1 අවසන් ✅';
+          }
+          showHtmlAlert('දෝෂයකි: ' + (err.message || 'සටහන් කිරීම අසාර්ථක විය'), true);
+          pendingUrgentRadarConfirm = null;
+        }
       }
     </script>
     <!-- Timer Alarm Popup -->
@@ -11221,6 +13348,63 @@ function openSidebarModal() {
             ඔව්, සම්පූර්ණයි ✅
           </button>
           <button type="button" onclick="cancelSubLessonConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
+            අවලංගු කරන්න ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Urgent Radar Model Paper 1 Confirmation Popup -->
+    <div id="urgentRadarConfirmPopup" class="modal-overlay-alert" style="z-index: 100003;" onclick="closeUrgentRadarConfirm(event)">
+      <div class="alert-popup-card" style="border-top: 5px solid #eb4d4b; max-width: 390px;" onclick="event.stopPropagation()">
+        <div class="alert-popup-icon">⚡</div>
+        <div class="alert-popup-title" style="color: #eb4d4b;">Model Paper 1 — තහවුරු කිරීම</div>
+        <div id="urgentRadarConfirmMsg" class="alert-popup-msg" style="background: rgba(235, 77, 75, 0.08); border-radius: 10px; padding: 12px 10px; border: 1px solid rgba(235, 77, 75, 0.25); color: inherit; font-size: 11px; line-height: 1.5; text-align: left;"></div>
+        
+        <div class="form-group" style="margin: 10px 0 4px; text-align: left;">
+          <label class="form-label" style="font-size: 10px; color: inherit; font-weight: 700;">ලකුණු % (Paper 1 Marks - Optional):</label>
+          <input type="number" class="form-input" id="urgentRadarMarksInput" placeholder="ලකුණු ප්‍රතිශතය (0 - 100, උදා: 75)" min="0" max="100" style="font-size: 11px; padding: 6px 10px; text-align: center;">
+        </div>
+
+        <div class="form-group" style="margin: 6px 0 4px; text-align: left;">
+          <label class="form-label" style="font-size: 10px; color: inherit; font-weight: 700;">🔒 තහවුරු කිරීමේ මුරපදය (Security Password) *</label>
+          <input type="password" class="form-input" id="urgentRadarPasswordInput" placeholder="මුරපදය ඇතුළත් කරන්න..." style="font-size: 11px; padding: 6px 10px; text-align: center; letter-spacing: 2px;" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmUrgentRadarDone();}">
+          <div id="urgentRadarPasswordError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600; text-align: center;">
+            ⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 10px; margin-top: 14px;">
+          <button id="urgentRadarConfirmOkBtn" class="alert-popup-btn" onclick="confirmUrgentRadarDone()" style="background: linear-gradient(135deg, #eb4d4b, #d63031); color: white; box-shadow: 0 4px 14px rgba(235,77,75,0.3); font-weight: 700;">
+            ඔව්, Paper 1 අවසන් ✅
+          </button>
+          <button type="button" onclick="cancelUrgentRadarConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
+            අවලංගු කරන්න ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Print Paper Confirmation Modal Popup -->
+    <div id="printPaperConfirmPopup" class="modal-overlay-alert" style="z-index: 100004;" onclick="closePrintPaperConfirm(event)">
+      <div class="alert-popup-card" style="border-top: 5px solid #6c5ce7; max-width: 390px;" onclick="event.stopPropagation()">
+        <div class="alert-popup-icon">🖨️</div>
+        <div class="alert-popup-title" id="printPaperPopupTitle" style="color: #6c5ce7;">ප්‍රශ්න පත්‍ර මුද්‍රණය — තහවුරු කිරීම</div>
+        <div id="printPaperConfirmMsg" class="alert-popup-msg" style="background: rgba(108, 92, 231, 0.08); border-radius: 10px; padding: 12px 10px; border: 1px solid rgba(108, 92, 231, 0.25); color: inherit; font-size: 11px; line-height: 1.5; text-align: left;"></div>
+        
+        <div class="form-group" style="margin: 10px 0 4px; text-align: left;">
+          <label class="form-label" style="font-size: 10px; color: inherit; font-weight: 700;">🔒 ආරක්ෂිත මුරපදය (Security Password) *</label>
+          <input type="password" class="form-input" id="printPaperPasswordInput" placeholder="මුරපදය ඇතුළත් කරන්න..." style="font-size: 11px; padding: 6px 10px; text-align: center; letter-spacing: 2px;" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPrintPaperDone();}">
+          <div id="printPaperPasswordError" style="display: none; color: #d63031; font-size: 10px; margin-top: 3px; font-weight: 600; text-align: center;">
+            ⚠️ මුරපදය වැරදියි! කරුණාකර නැවත උත්සාහ කරන්න.
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 10px; margin-top: 14px;">
+          <button id="printPaperConfirmOkBtn" class="alert-popup-btn" onclick="confirmPrintPaperDone()" style="background: linear-gradient(135deg, #6c5ce7, #8e44ad); color: white; box-shadow: 0 4px 14px rgba(108,92,231,0.3); font-weight: 700;">
+            තහවුරු කරන්න ✅
+          </button>
+          <button type="button" onclick="cancelPrintPaperConfirm()" class="alert-popup-btn" style="background: #f1f2f6; color: #636e72; border: 1px solid #dfe6e9; font-weight: 600;">
             අවලංගු කරන්න ✕
           </button>
         </div>

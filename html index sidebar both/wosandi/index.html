@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wosandi O/L Mission Control - Phase 2</title>
+  <link rel="stylesheet" href="../style.css" onerror="this.onerror=null;">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --border-color: #e2e8f0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .nav-back-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      background: #e2e8f0;
+      color: #1e293b;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .nav-back-btn:hover { background: #cbd5e1; }
+    .btn-subject-drawer {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-subject-drawer:hover {
+      background: #1d4ed8;
+    }
+    .btn-subject-drawer:active {
+      transform: scale(0.98);
+    }
+    .grade-selector-container { display: flex; gap: 10px; align-items: center; }
+    .grade-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .grade-btn.active {
+      background: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .tab-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--border-color);
+      background: #f1f5f9;
+      color: #334155;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+    }
+    .analytics-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .analytics-table th, .analytics-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .analytics-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+    }
+    .analytics-table tr:hover {
+      background: #f8fafc;
+    }
+    .score-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .score-high { background: #dcfce7; color: #166534; }
+    .score-mid { background: #fef9c3; color: #854d0e; }
+    .score-low { background: #fee2e2; color: #991b1b; }
+    .pending-paper-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header-bar">
+    <div>
+      <a href="../index.html" class="nav-back-btn" id="btnBackToSinethmi">← Sinethmi Dashboard වෙත</a>
+      <h1 style="margin: 12px 0 0 0; font-size: 1.5rem;">🎯 Wosandi O/L Mission Control</h1>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <span id="lastUpdatedBadge" style="font-size: 0.78rem; color: #64748b; background: #f1f5f9; padding: 5px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+        යාවත්කාලීන විය: --
+      </span>
+      <button class="btn-subject-drawer" id="btnOpenSubjectDrawer">
+        📚 විෂයයන් තෝරන්න
+      </button>
+      <div class="grade-selector-container" id="gradeSelector">
+        <span>ශ්‍රේණිය:</span>
+        <button class="grade-btn" data-grade="9">Grade 9</button>
+        <button class="grade-btn" data-grade="10">Grade 10</button>
+        <button class="grade-btn active" data-grade="11">Grade 11</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    <!-- Top Priorities Card -->
+    <section class="card" id="cardTodayPriorities">
+      <h2>📌 අද මුලින්ම කළ යුතු දේවල්</h2>
+      <div id="prioritiesContent">දත්ත පූරණය වෙමින් පවතී...</div>
+    </section>
+
+    <!-- Multi-source Activity Streak -->
+    <section class="card" id="cardActivityStreak">
+      <h2>🔥 අඛණ්ඩ අධ්‍යයන දින (Streak)</h2>
+      <div id="streakContent">ගණනය වෙමින් පවතී...</div>
+    </section>
+
+    <!-- Strict Pending Test Papers Filter Card -->
+    <section class="card" id="cardPendingTestPapers">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
+        <h2 style="margin: 0;">📑 විසඳිය යුතු Test Papers (Pending Test Papers)</h2>
+        <span id="pendingPapersBadge" style="font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 3px 10px; border-radius: 12px; border: 1px solid #bfdbfe;">0 ක් සූදානම්</span>
+      </div>
+      <p style="font-size: 0.82rem; color: #64748b; margin-top: 2px; margin-bottom: 14px;">
+        (Lesson & HW සම්පූර්ණ කළ, HW Days = 0 සහ Paper 1 හෝ ඊට වැඩි අගයක් ඇති පාඩම්)
+      </p>
+      <div id="pendingPapersContent">පූරණය වෙමින් පවතී...</div>
+    </section>
+
+    <!-- Dual-Tab Analytics -->
+    <section class="card" id="cardUnitAnalytics">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h2 style="margin: 0;">📊 Unit Papers විශ්ලේෂණය</h2>
+          <span style="font-size: 0.78rem; color: #16a34a; font-weight: 600;">✓ Zero-Score Exclusion සක්‍රියයි (ලකුණු 0 বাদදී ඇත)</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="tabSubUnit" class="tab-btn active">Sub-Unit Breakdown</button>
+          <button id="tabUnitWise" class="tab-btn">Unit-Wise Average</button>
+        </div>
+      </div>
+      <div id="analyticsContent">සංඛ්‍යාලේඛන සූදානම් වෙමින් පවතී...</div>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
