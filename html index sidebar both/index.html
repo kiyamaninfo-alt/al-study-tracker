@@ -1113,11 +1113,12 @@
         background: var(--card-bg, #ffffff);
         border-radius: 16px;
         padding: 16px 20px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 6px 20px rgba(140, 122, 230, 0.08);
         margin-bottom: 14px;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        border-left: 5px solid #00cec9;
+        border: 1px solid rgba(140, 122, 230, 0.18);
+        border-left: 5px solid var(--primary, #8c7ae6);
         transition: all 0.2s ease;
+        font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
       }
       .focus-timer-header {
         display: flex;
@@ -1136,12 +1137,15 @@
         font-size: 22px;
       }
       .focus-card-title {
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 700;
-        color: var(--text-color, #2d3436);
+        background: linear-gradient(45deg, #8c7ae6, #6c5ce7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
       }
       .focus-card-subtitle {
-        font-size: 10px;
+        font-size: 10.5px;
         color: #7f8fa6;
         margin-top: 1px;
       }
@@ -1157,12 +1161,13 @@
         padding: 4px 10px;
         font-size: 10.5px;
         font-weight: 700;
-        background: #f1f2f6;
-        color: #2d3436;
-        border: 1px solid #dfe6e9;
+        background: #f5f3ff;
+        color: #6c5ce7;
+        border: 1px solid #ddd6fe;
         border-radius: 12px;
         cursor: pointer;
         transition: all 0.15s ease;
+        font-family: inherit;
       }
       .btn-focus-sound.muted {
         background: #ffeaa7;
@@ -1189,8 +1194,9 @@
         box-shadow: 0 0 6px rgba(0, 184, 148, 0.8);
       }
       .btn-focus-quick-settings {
-        background: transparent;
-        border: 1px solid #dfe6e9;
+        background: #f5f3ff;
+        color: #6c5ce7;
+        border: 1px solid #ddd6fe;
         border-radius: 8px;
         padding: 4px 8px;
         cursor: pointer;
@@ -1198,61 +1204,101 @@
         transition: background 0.15s ease;
       }
       .btn-focus-quick-settings:hover {
-        background: #f1f2f6;
+        background: #ede9fe;
       }
 
-      /* Subject Quick-Select */
-      .focus-subject-bar {
+      /* Dual Panel Space-Efficient Layout */
+      .focus-dual-panel {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 16px;
+        align-items: stretch;
+      }
+      @media (max-width: 860px) {
+        .focus-dual-panel {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+      }
+
+      /* Left Panel: Target and Timer */
+      .focus-panel-timer {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* Active Target Bar */
+      .focus-target-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 14px;
-        padding: 8px 12px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        flex-wrap: wrap;
         gap: 8px;
+        background: rgba(140, 122, 230, 0.08);
+        border: 1px solid rgba(140, 122, 230, 0.2);
+        border-radius: 10px;
+        padding: 7px 11px;
+        margin-bottom: 10px;
       }
-      .focus-bar-label {
-        font-size: 11px;
-        font-weight: 700;
-        color: #636e72;
-      }
-      .focus-subject-toggles {
+      .focus-target-left {
         display: flex;
-        gap: 6px;
-      }
-      .btn-focus-subj {
-        display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 5px 12px;
+        gap: 6px;
+        min-width: 0;
+        flex: 1;
+      }
+      .focus-target-label {
         font-size: 11px;
         font-weight: 700;
+        color: #6c5ce7;
+        white-space: nowrap;
+      }
+      .focus-target-badge-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
+      }
+      .focus-subj-pill {
+        padding: 2px 7px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+      }
+      .focus-subj-pill.badge-ict { background: rgba(32, 191, 107, 0.15); color: #20bf6b; }
+      .focus-subj-pill.badge-et { background: rgba(9, 132, 227, 0.15); color: #0984e3; }
+      .focus-subj-pill.badge-sft { background: rgba(136, 84, 208, 0.15); color: #8854d0; }
+      .focus-unit-name {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-dark, #2d3436);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .btn-focus-change-target {
         background: #ffffff;
-        color: #2d3436;
-        border: 1.5px solid #dfe6e9;
-        border-radius: 8px;
+        color: #6c5ce7;
+        border: 1px solid rgba(108, 92, 231, 0.35);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-size: 10.5px;
+        font-weight: 700;
         cursor: pointer;
         transition: all 0.15s ease;
+        white-space: nowrap;
+        font-family: inherit;
+        flex-shrink: 0;
       }
-      .btn-focus-subj .subj-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-      .indicator-ict { background: #20bf6b; }
-      .indicator-et { background: #0984e3; }
-      .indicator-sft { background: #8854d0; }
-      .btn-focus-subj.active {
-        background: #2d3436;
+      .btn-focus-change-target:hover {
+        background: #6c5ce7;
         color: #ffffff;
-        border-color: #2d3436;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       }
-      .btn-focus-subj.active[data-subject="ICT"] { background: #20bf6b; border-color: #20bf6b; }
-      .btn-focus-subj.active[data-subject="ET"] { background: #0984e3; border-color: #0984e3; }
-      .btn-focus-subj.active[data-subject="SFT"] { background: #8854d0; border-color: #8854d0; }
 
       /* Countdown Ring and Digital Display */
       .focus-countdown-container {
@@ -1260,12 +1306,12 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 10px 0 16px;
+        padding: 6px 0 10px;
       }
       .focus-countdown-ring-wrap {
         position: relative;
-        width: 170px;
-        height: 170px;
+        width: 146px;
+        height: 146px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1285,10 +1331,10 @@
       }
       .focus-ring-fill {
         fill: none;
-        stroke: #00cec9;
+        stroke: #8c7ae6;
         stroke-width: 8;
         stroke-linecap: round;
-        stroke-dasharray: 452.4;
+        stroke-dasharray: 439.82;
         stroke-dashoffset: 0;
         transition: stroke-dashoffset 0.8s ease, stroke 0.3s ease;
       }
@@ -1300,17 +1346,17 @@
         z-index: 1;
       }
       .focus-digital-time {
-        font-size: 34px;
+        font-size: 32px;
         font-weight: 800;
         font-family: 'Poppins', monospace, sans-serif;
-        color: var(--text-color, #2d3436);
-        letter-spacing: 1px;
+        color: var(--text-dark, #2d3436);
+        letter-spacing: 0.5px;
         line-height: 1;
       }
       .focus-status-badge {
         font-size: 9px;
         font-weight: 800;
-        letter-spacing: 1px;
+        letter-spacing: 0.8px;
         margin-top: 6px;
         padding: 3px 8px;
         border-radius: 10px;
@@ -1319,8 +1365,8 @@
         text-transform: uppercase;
       }
       .focus-status-badge.running {
-        background: rgba(0, 206, 201, 0.15);
-        color: #00b894;
+        background: rgba(108, 92, 231, 0.15);
+        color: #6c5ce7;
       }
       .focus-status-badge.paused {
         background: rgba(253, 203, 110, 0.25);
@@ -1331,30 +1377,31 @@
       .focus-controls-row {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-top: 14px;
+        gap: 8px;
+        margin-top: 10px;
       }
       .btn-focus-action {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
-        padding: 8px 18px;
-        font-size: 12px;
+        padding: 7px 16px;
+        font-size: 11.5px;
         font-weight: 700;
-        border-radius: 10px;
+        border-radius: 9px;
         border: none;
         cursor: pointer;
         transition: all 0.15s ease;
+        font-family: inherit;
       }
       .btn-focus-start {
-        background: linear-gradient(135deg, #00cec9, #0984e3);
+        background: linear-gradient(135deg, #6c5ce7, #8c7ae6);
         color: #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 206, 201, 0.35);
+        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.35);
       }
       .btn-focus-start:hover {
         transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(0, 206, 201, 0.45);
+        box-shadow: 0 6px 16px rgba(108, 92, 231, 0.45);
       }
       .btn-focus-pause {
         background: linear-gradient(135deg, #fdcb6e, #e17055);
@@ -1371,62 +1418,66 @@
         color: #2d3436;
       }
 
-      /* Heatmap & Consistency Section */
-      .focus-heatmap-section {
-        margin-top: 16px;
-        border-top: 1px solid #f1f2f6;
-        padding-top: 14px;
+      /* Right Panel: Heatmap & Consistency Section */
+      .focus-panel-heatmap {
+        background: rgba(248, 249, 250, 0.65);
+        border: 1px solid rgba(140, 122, 230, 0.12);
+        border-radius: 12px;
+        padding: 10px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
       .focus-heatmap-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 10px;
+        gap: 6px;
+        margin-bottom: 8px;
       }
       .focus-heatmap-title {
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 700;
-        color: var(--text-color, #2d3436);
+        color: var(--text-dark, #2d3436);
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
       }
       .focus-metrics-badges {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
       }
       .focus-metric-pill {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 3px 9px;
-        font-size: 11px;
-        background: #f8f9fa;
-        border: 1px solid #dfe6e9;
-        border-radius: 12px;
-        color: #2d3436;
+        gap: 4px;
+        padding: 2.5px 7px;
+        font-size: 10.5px;
+        background: #ffffff;
+        border: 1px solid rgba(140, 122, 230, 0.2);
+        border-radius: 10px;
+        color: var(--text-dark, #2d3436);
       }
       .focus-metric-pill strong {
-        color: #0984e3;
+        color: #6c5ce7;
       }
       .heatmap-scroll-wrapper {
         overflow-x: auto;
-        padding-bottom: 4px;
+        padding-bottom: 3px;
       }
       .heatmap-container {
         display: inline-grid;
-        grid-template-rows: repeat(7, 12px);
+        grid-template-rows: repeat(7, 11px);
         grid-auto-flow: column;
         gap: 3px;
-        padding: 4px 0;
+        padding: 3px 0;
       }
       .h-cell {
-        width: 12px;
-        height: 12px;
+        width: 11px;
+        height: 11px;
         border-radius: 2px;
         background: #ebedf0;
         cursor: pointer;
@@ -1434,27 +1485,197 @@
         transition: transform 0.1s ease;
       }
       .h-cell:hover {
-        transform: scale(1.25);
+        transform: scale(1.3);
         z-index: 10;
-        outline: 1px solid rgba(0,0,0,0.3);
+        outline: 1.5px solid rgba(108, 92, 231, 0.6);
       }
       .h-cell.level-0 { background: #ebedf0; }
-      .h-cell.level-1 { background: #9be9a8; }
-      .h-cell.level-2 { background: #40c463; }
-      .h-cell.level-3 { background: #30a14e; }
-      .h-cell.level-4 { background: #216e39; }
+      .h-cell.level-1 { background: #dcdde1; }
+      .h-cell.level-2 { background: #55efc4; }
+      .h-cell.level-3 { background: #00cec9; }
+      .h-cell.level-4 { background: #6c5ce7; }
       .heatmap-footer-legend {
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        gap: 6px;
-        font-size: 10px;
+        gap: 5px;
+        font-size: 9.5px;
         color: #7f8fa6;
-        margin-top: 6px;
+        margin-top: 5px;
       }
       .heatmap-legend-scale {
         display: inline-flex;
         gap: 3px;
+      }
+
+      /* Modal for Subject & Unit Selection (Interactive Start Sequence) */
+      .focus-target-modal-window {
+        max-width: 480px;
+        width: 92%;
+        border-radius: 16px;
+        background: var(--card-bg, #ffffff);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+        overflow: hidden;
+      }
+      .focus-target-modal-body {
+        padding: 16px;
+        font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+      }
+      .focus-modal-step-title {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--text-dark, #2d3436);
+        margin-bottom: 3px;
+      }
+      .focus-modal-step-sub {
+        font-size: 11px;
+        color: #7f8fa6;
+        margin-bottom: 12px;
+      }
+      .focus-modal-subj-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .focus-subj-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 14px;
+        background: #ffffff;
+        border: 1.5px solid #dfe6e9;
+        border-radius: 12px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+      .focus-subj-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .btn-modal-subj-ict:hover { border-color: #20bf6b; background: rgba(32, 191, 107, 0.05); }
+      .btn-modal-subj-et:hover { border-color: #0984e3; background: rgba(9, 132, 227, 0.05); }
+      .btn-modal-subj-sft:hover { border-color: #8854d0; background: rgba(136, 84, 208, 0.05); }
+      .focus-subj-card-icon {
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .btn-modal-subj-ict .focus-subj-card-icon { background: rgba(32, 191, 107, 0.12); color: #20bf6b; }
+      .btn-modal-subj-et .focus-subj-card-icon { background: rgba(9, 132, 227, 0.12); color: #0984e3; }
+      .btn-modal-subj-sft .focus-subj-card-icon { background: rgba(136, 84, 208, 0.12); color: #8854d0; }
+      .focus-subj-card-info {
+        flex: 1;
+      }
+      .focus-subj-card-code {
+        font-size: 13.5px;
+        font-weight: 800;
+        color: var(--text-dark, #2d3436);
+      }
+      .focus-subj-card-name {
+        font-size: 11px;
+        color: #636e72;
+        margin-top: 1px;
+      }
+      .focus-subj-card-badge {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #6c5ce7;
+        background: rgba(108, 92, 231, 0.08);
+        padding: 4px 8px;
+        border-radius: 8px;
+      }
+
+      .focus-modal-unit-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #dfe6e9;
+      }
+      .btn-focus-modal-back {
+        background: transparent;
+        border: none;
+        color: #6c5ce7;
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 4px 6px;
+        border-radius: 6px;
+        font-family: inherit;
+      }
+      .btn-focus-modal-back:hover {
+        background: rgba(108, 92, 231, 0.08);
+      }
+      .focus-modal-active-subj-pill {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 800;
+        background: #f1f2f6;
+      }
+      .focus-modal-units-list {
+        max-height: 290px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-right: 4px;
+        margin-top: 8px;
+      }
+      .focus-unit-item-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: #ffffff;
+        border: 1px solid #dfe6e9;
+        border-radius: 9px;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.15s ease;
+        font-family: inherit;
+      }
+      .focus-unit-item-btn:hover {
+        border-color: #6c5ce7;
+        background: rgba(108, 92, 231, 0.05);
+        transform: translateX(2px);
+      }
+      .unit-num-badge {
+        padding: 2px 7px;
+        border-radius: 6px;
+        background: #f1f2f6;
+        color: #2d3436;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .unit-name-text {
+        flex: 1;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-dark, #2d3436);
+        line-height: 1.3;
+      }
+      .unit-start-arrow {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #6c5ce7;
+        white-space: nowrap;
+      }
+      .focus-unit-general-btn {
+        border: 1.5px dashed #8c7ae6;
+        background: rgba(140, 122, 230, 0.06);
+      }
+      .focus-unit-general-btn:hover {
+        background: rgba(140, 122, 230, 0.12);
       }
 
       /* Dark mode overrides for focus timer */
@@ -1476,16 +1697,25 @@
       body.dark-mode .prio-line-2 strong {
         color: #74b9ff;
       }
-      body.dark-mode .focus-subject-bar {
-        background: #2f3640;
+      body.dark-mode .focus-panel-heatmap {
+        background: #232d36;
+        border-color: #2f3542;
       }
-      body.dark-mode .btn-focus-subj {
-        background: #1e272e;
+      body.dark-mode .focus-target-bar {
+        background: rgba(140, 122, 230, 0.12);
+        border-color: rgba(140, 122, 230, 0.25);
+      }
+      body.dark-mode .focus-unit-name {
         color: #f5f6fa;
-        border-color: #353b48;
+      }
+      body.dark-mode .btn-focus-change-target {
+        background: #2f3640;
+        color: #a29bfe;
+        border-color: #485460;
       }
       body.dark-mode .btn-focus-sound,
-      body.dark-mode .btn-focus-reset {
+      body.dark-mode .btn-focus-reset,
+      body.dark-mode .btn-focus-quick-settings {
         background: #2f3640;
         color: #f5f6fa;
         border-color: #353b48;
@@ -1503,6 +1733,40 @@
       }
       body.dark-mode .h-cell.level-0 {
         background: #2f3640;
+      }
+      body.dark-mode .h-cell.level-1 {
+        background: #4b6584;
+      }
+      body.dark-mode .focus-target-modal-window {
+        background: #1e272e;
+      }
+      body.dark-mode .focus-modal-step-title {
+        color: #f5f6fa;
+      }
+      body.dark-mode .focus-subj-card {
+        background: #232d36;
+        border-color: #353b48;
+      }
+      body.dark-mode .focus-subj-card-code {
+        color: #f5f6fa;
+      }
+      body.dark-mode .focus-subj-card-name {
+        color: #dcdde1;
+      }
+      body.dark-mode .focus-unit-item-btn {
+        background: #232d36;
+        border-color: #353b48;
+      }
+      body.dark-mode .unit-num-badge {
+        background: #2f3640;
+        color: #f5f6fa;
+      }
+      body.dark-mode .unit-name-text {
+        color: #f5f6fa;
+      }
+      body.dark-mode .focus-unit-general-btn {
+        background: rgba(140, 122, 230, 0.12);
+        border-color: #8c7ae6;
       }
       #radarList::-webkit-scrollbar,
       #ebbinghausList::-webkit-scrollbar,
@@ -4304,64 +4568,66 @@
         </div>
       </div>
 
-      <div class="focus-timer-body">
-        <!-- Subject Quick-Select: ICT, ET, SFT -->
-        <div class="focus-subject-bar">
-          <span class="focus-bar-label">විෂය තෝරන්න (Subject):</span>
-          <div class="focus-subject-toggles">
-            <button type="button" class="btn-focus-subj active" data-subject="ICT" onclick="setFocusSubject('ICT')">
-              <span class="subj-indicator indicator-ict"></span> ICT
-            </button>
-            <button type="button" class="btn-focus-subj" data-subject="ET" onclick="setFocusSubject('ET')">
-              <span class="subj-indicator indicator-et"></span> ET
-            </button>
-            <button type="button" class="btn-focus-subj" data-subject="SFT" onclick="setFocusSubject('SFT')">
-              <span class="subj-indicator indicator-sft"></span> SFT
+      <!-- Dual Panel Layout for Space Efficiency -->
+      <div class="focus-dual-panel">
+        <!-- Left Panel: Focus Timer & Target Control -->
+        <div class="focus-panel-timer">
+          <!-- Active Target Display Chip (Place to view/change Subject & Unit) -->
+          <div class="focus-target-bar">
+            <div class="focus-target-left">
+              <span class="focus-target-label">🎯 ඉලක්කය:</span>
+              <div class="focus-target-badge-wrap" id="activeTargetBadgeWrap">
+                <span class="focus-subj-pill badge-ict" id="activeTargetSubjPill">ICT</span>
+                <span class="focus-unit-name" id="activeTargetUnitName" title="පාඩම තෝරා ගැනීමට Start ක්ලික් කරන්න">Unit තෝරාගෙන නැත (Click Start)</span>
+              </div>
+            </div>
+            <button type="button" class="btn-focus-change-target" onclick="openFocusTargetModal(false)" title="විෂය සහ පාඩම වෙනස් කරන්න">
+              ✏️ Change
             </button>
           </div>
-        </div>
 
-        <!-- Center Countdown Display -->
-        <div class="focus-countdown-container">
-          <div class="focus-countdown-ring-wrap">
-            <svg class="focus-svg-ring" viewBox="0 0 160 160">
-              <circle class="focus-ring-track" cx="80" cy="80" r="72"></circle>
-              <circle class="focus-ring-fill" id="focusRingFill" cx="80" cy="80" r="72"></circle>
-            </svg>
-            <div class="focus-digital-display">
-              <div class="focus-digital-time" id="focusTimerDisplay">50:00</div>
-              <div class="focus-status-badge" id="focusStatusBadge">READY TO FOCUS</div>
+          <!-- Circular Ring & Digital Countdown -->
+          <div class="focus-countdown-container">
+            <div class="focus-countdown-ring-wrap">
+              <svg class="focus-svg-ring" viewBox="0 0 160 160">
+                <circle class="focus-ring-track" cx="80" cy="80" r="70"></circle>
+                <circle class="focus-ring-fill" id="focusRingFill" cx="80" cy="80" r="70"></circle>
+              </svg>
+              <div class="focus-digital-display">
+                <div class="focus-digital-time" id="focusTimerDisplay">50:00</div>
+                <div class="focus-status-badge" id="focusStatusBadge">READY TO FOCUS</div>
+              </div>
+            </div>
+
+            <!-- Controls: Start / Pause / Reset -->
+            <div class="focus-controls-row">
+              <button type="button" class="btn-focus-action btn-focus-start" id="btnFocusStart" onclick="handleStartFocusClick()">
+                <span class="btn-icon">▶</span> <span id="btnFocusStartText">Start Focus</span>
+              </button>
+              <button type="button" class="btn-focus-action btn-focus-pause" id="btnFocusPause" onclick="pauseFocusTimer()" style="display: none;">
+                <span class="btn-icon">⏸</span> Pause
+              </button>
+              <button type="button" class="btn-focus-action btn-focus-reset" id="btnFocusReset" onclick="resetFocusTimer()">
+                <span class="btn-icon">🔄</span> Reset
+              </button>
             </div>
           </div>
-
-          <!-- Controls: Start / Pause / Reset -->
-          <div class="focus-controls-row">
-            <button type="button" class="btn-focus-action btn-focus-start" id="btnFocusStart" onclick="startFocusTimer()">
-              <span class="btn-icon">▶</span> <span id="btnFocusStartText">Start Focus</span>
-            </button>
-            <button type="button" class="btn-focus-action btn-focus-pause" id="btnFocusPause" onclick="pauseFocusTimer()" style="display: none;">
-              <span class="btn-icon">⏸</span> Pause
-            </button>
-            <button type="button" class="btn-focus-action btn-focus-reset" id="btnFocusReset" onclick="resetFocusTimer()">
-              <span class="btn-icon">🔄</span> Reset
-            </button>
-          </div>
         </div>
 
-        <!-- Activity Contribution Heatmap & Consistency Metrics -->
-        <div class="focus-heatmap-section">
+        <!-- Right Panel: Study Consistency & Activity Heatmap -->
+        <div class="focus-panel-heatmap">
           <div class="focus-heatmap-header">
             <div class="focus-heatmap-title">
-              <span>📊 Study Consistency (පසුගිය සති 16)</span>
+              <span>📊 Study Consistency (සති 16)</span>
             </div>
             <div class="focus-metrics-badges">
               <div class="focus-metric-pill" title="අඛණ්ඩව අවධානයෙන් පාඩම් කළ දින ගණන">
                 <span class="metric-fire">🔥</span>
-                <span class="metric-txt">Current Streak: <strong id="focusStreakDays">0</strong> days</span>
+                <span class="metric-txt">Streak: <strong id="focusStreakDays">0</strong> d</span>
               </div>
               <div class="focus-metric-pill" title="අද දින අධ්‍යයන කාලය">
                 <span class="metric-clock">⏱️</span>
-                <span class="metric-txt">Today's Focus: <strong id="focusTodayMins">0</strong> mins</span>
+                <span class="metric-txt">Today: <strong id="focusTodayMins">0</strong> m</span>
               </div>
             </div>
           </div>
@@ -5400,6 +5666,73 @@
       </div>
     </div>
 
+    <!-- Focus Timer Target Selection Modal (Phase 3 Interactive Start Sequence) -->
+    <div class="modal-overlay" id="focusTargetModal" onclick="closeFocusTargetModal(event)" style="display: none;">
+      <div class="modal-window focus-target-modal-window" onclick="event.stopPropagation()">
+        <div class="modal-header" style="background: linear-gradient(135deg, #6c5ce7, #8c7ae6);">
+          <div class="modal-title">🎯 Focus Session ඉලක්කය තෝරන්න</div>
+          <button type="button" class="modal-close-btn" onclick="closeFocusTargetModalDirect()">✕</button>
+        </div>
+        <div class="modal-body focus-target-modal-body">
+          <!-- Step 1: Subject Selection -->
+          <div id="focusTargetStepSubject" class="focus-target-step">
+            <div class="focus-modal-step-title">1. විෂය තෝරන්න (Select Subject):</div>
+            <div class="focus-modal-step-sub">අධ්‍යයනය කිරීමට බලාපොරොත්තු වන විෂය ක්ලික් කරන්න:</div>
+            <div class="focus-modal-subj-grid">
+              <button type="button" class="focus-subj-card btn-modal-subj-ict" onclick="selectFocusModalSubject('ICT')">
+                <span class="focus-subj-card-icon">💻</span>
+                <div class="focus-subj-card-info">
+                  <div class="focus-subj-card-code">ICT</div>
+                  <div class="focus-subj-card-name">තොරතුරු හා සන්නිවේදන තාක්ෂණය</div>
+                </div>
+                <span class="focus-subj-card-badge">13 Units ➔</span>
+              </button>
+              <button type="button" class="focus-subj-card btn-modal-subj-et" onclick="selectFocusModalSubject('ET')">
+                <span class="focus-subj-card-icon">⚙️</span>
+                <div class="focus-subj-card-info">
+                  <div class="focus-subj-card-code">ET</div>
+                  <div class="focus-subj-card-name">ඉංජිනේරු තාක්ෂණවේදය</div>
+                </div>
+                <span class="focus-subj-card-badge">14 Units ➔</span>
+              </button>
+              <button type="button" class="focus-subj-card btn-modal-subj-sft" onclick="selectFocusModalSubject('SFT')">
+                <span class="focus-subj-card-icon">🔬</span>
+                <div class="focus-subj-card-info">
+                  <div class="focus-subj-card-code">SFT</div>
+                  <div class="focus-subj-card-name">තාක්ෂණවේදය සඳහා විද්‍යාව</div>
+                </div>
+                <span class="focus-subj-card-badge">23 Units ➔</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: Unit Selection (Shown dynamically when subject selected) -->
+          <div id="focusTargetStepUnit" class="focus-target-step" style="display: none;">
+            <div class="focus-modal-unit-nav">
+              <button type="button" class="btn-focus-modal-back" onclick="backToFocusModalSubjects()">
+                ← වෙනත් විෂයක් (Change Subject)
+              </button>
+              <span class="focus-modal-active-subj-pill" id="focusModalActiveSubjPill">ICT</span>
+            </div>
+            <div class="focus-modal-step-title">2. පාඩම / ඒකකය තෝරන්න (Select Unit):</div>
+            <div class="focus-modal-step-sub">ඒකකය ක්ලික් කළ පසු Countdown ආරම්භ වේ:</div>
+
+            <!-- General Revision Option -->
+            <button type="button" class="focus-unit-item-btn focus-unit-general-btn" onclick="selectFocusModalUnit(0, 'සාමාන්‍ය පුනරීක්ෂණ (General Revision)')">
+              <span class="unit-num-badge">📚 All</span>
+              <span class="unit-name-text">සාමාන්‍ය පුනරීක්ෂණ සහ මිශ්‍ර ප්‍රශ්න (General Revision / Mixed)</span>
+              <span class="unit-start-arrow">▶ Start</span>
+            </button>
+
+            <!-- Dynamic Scrollable Units Container -->
+            <div class="focus-modal-units-list custom-scroll-container" id="focusModalUnitsList">
+              <!-- Rendered via JS based on selected subject -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Log Full Unit Exam Paper Modal -->
     <div class="modal-overlay" id="fullUnitPaperModal" onclick="closeFullUnitPaperModal(event)">
       <div class="modal-window" style="max-width: 440px;" onclick="event.stopPropagation()">
@@ -5821,7 +6154,7 @@
               <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                 <input type="number" id="settingTimerDurationInput" min="5" max="180" value="50" style="width: 80px; padding: 7px 10px; border: 1px solid #dfe6e9; border-radius: 8px; font-size: 13px; font-weight: 700; text-align: center;">
                 <span style="font-size: 12px; font-weight: 600; color: #636e72;">Minutes</span>
-                <button type="button" class="btn-save-setting" onclick="saveTimerDurationSetting()" style="padding: 7px 14px; background: #00cec9; color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                <button type="button" class="btn-save-setting" onclick="saveTimerDurationSetting()" style="padding: 7px 14px; background: linear-gradient(135deg, #6c5ce7, #8c7ae6); color: white; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
                   💾 Save Duration
                 </button>
               </div>
@@ -5901,13 +6234,80 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // =========================================================================
       // 2. DEEP FOCUS SESSION TIMER & ACTIVITY HUB CONTROLLER (PHASE 3)
       // =========================================================================
-      let activeFocusSubject = 'ICT'; // 'ICT' | 'ET' | 'SFT'
+      // Canonical Units Fallback (Ensures 100% offline & fast rendering for target selection)
+      const CANONICAL_UNITS_FALLBACK = {
+        ET: [
+          { unit_number: 1, unit_name: "ඒකකය 01: ඉංජිනේරු තාක්ෂණවේදයේ සංවර්ධනය හා භාවිතය" },
+          { unit_number: 2, unit_name: "ඒකකය 02: ඉංජිනේරුමය සැලසුම් චිත්‍ර ඇඳීම" },
+          { unit_number: 3, unit_name: "ඒකකය 03: වැඩබිම් ආරක්ෂාව සහ සෞඛ්‍යය" },
+          { unit_number: 4, unit_name: "ඒකකය 04: ගොඩනැගිලි ඉදිකිරීම් තාක්ෂණවේදය" },
+          { unit_number: 5, unit_name: "ඒකකය 05: යන්ත්‍රවල චලිත සහ ජව සම්ප්‍රේෂණය" },
+          { unit_number: 6, unit_name: "ඒකකය 06: මෝටර් රථ පද්ධති සහ නඩත්තුව" },
+          { unit_number: 7, unit_name: "ඒකකය 07: ඉංජිනේරු ප්‍රමිති සහ පිරිවිතර" },
+          { unit_number: 8, unit_name: "ඒකකය 08: විදුලි ජවය උත්පාදනය, සම්ප්‍රේෂණය සහ බෙදා හැරීම" },
+          { unit_number: 9, unit_name: "ඒකකය 09: ඉලෙක්ට්‍රොනික තාක්ෂණය සහ එදිනෙදා යෙදීම්" },
+          { unit_number: 10, unit_name: "ඒකකය 10: තරල භාවිත යන්ත්‍ර සහ තාක්ෂණය" },
+          { unit_number: 11, unit_name: "ඒකකය 11: බිම් මැනීම සහ මට්ටම් ගැනීම" },
+          { unit_number: 12, unit_name: "ඒකකය 12: ගෘහස්ථ ජල සම්පාදනය හා කසළ කළමනාකරණය" },
+          { unit_number: 13, unit_name: "ඒකකය 13: ප්‍රමාණ බිල්පත් (BOQ) සහ පිරිවැය ගණනය" },
+          { unit_number: 14, unit_name: "ඒකකය 14: ව්‍යාපාර සංවර්ධනය සහ ව්‍යවසායකත්වය" }
+        ],
+        ICT: [
+          { unit_number: 1, unit_name: "ඒකකය 01: තොරතුරු හා සන්නිවේදන තාක්ෂණයේ මූලික සංකල්ප" },
+          { unit_number: 2, unit_name: "ඒකකය 02: පරිගණන උපකරණවල පරිණාමය සහ කාර්ය සාධනය" },
+          { unit_number: 3, unit_name: "ඒකකය 03: දත්ත සහ උපදෙස් නිරූපණය" },
+          { unit_number: 4, unit_name: "ඒකකය 04: මූලික අංකිත පරිපථ සහ තාර්කික ද්වාර" },
+          { unit_number: 5, unit_name: "ඒකකය 05: මෙහෙයුම් පද්ධති භාවිතය" },
+          { unit_number: 6, unit_name: "ඒකකය 06: දත්ත සන්නිවේදනය සහ පරිගණක ජාලකරණය" },
+          { unit_number: 7, unit_name: "ඒකකය 07: පද්ධති සංකල්පය සහ පද්ධති සංවර්ධනය" },
+          { unit_number: 8, unit_name: "ඒකකය 08: දත්ත සමුදාය පද්ධති සැලසුම් කිරීම සහ සංවර්ධනය" },
+          { unit_number: 9, unit_name: "ඒකකය 09: ගැටලු විසඳීම සහ ක්‍රමලේඛකරණය" },
+          { unit_number: 10, unit_name: "ඒකකය 10: බහුමාධ්‍ය තාක්ෂණය සහ වෙබ් අඩවි සංවර්ධනය" },
+          { unit_number: 11, unit_name: "ඒකකය 11: සාර්ව ද්‍රව්‍ය අන්තර්ජාලය සහ නිහිත පද්ධති" },
+          { unit_number: 12, unit_name: "ඒකකය 12: ව්‍යාපාර තුළ තොරතුරු හා සන්නිවේදන තාක්ෂණය" },
+          { unit_number: 13, unit_name: "ඒකකය 13: තොරතුරු සන්නිවේදන තාක්ෂණයේ නව ප්‍රවණතා සහ අනාගත දිශානති" }
+        ],
+        SFT: [
+          { unit_number: 1, unit_name: "ඒකකය 01: වර්ගඵලය හා පරිමාව පිළිබඳ විමර්ශනය" },
+          { unit_number: 2, unit_name: "ඒකකය 02: මිනුම් ඒකක සහ මිනුම් උපකරණ භාවිතය" },
+          { unit_number: 3, unit_name: "ඒකකය 03: පයිතගරස් සම්බන්ධතාව සහ එහි භාවිතය" },
+          { unit_number: 4, unit_name: "ඒකකය 04: ජීවීන්ගේ සෛලීය සංවිධානය සහ තාක්ෂණික යෙදීම්" },
+          { unit_number: 5, unit_name: "ඒකකය 05: බලය සහ එහි ආචරණ" },
+          { unit_number: 6, unit_name: "ඒකකය 06: කාර්යය, ශක්තිය සහ ක්ෂමතාව" },
+          { unit_number: 7, unit_name: "ඒකකය 07: ත්‍රිකෝණමිතික අනුපාත භාවිතය" },
+          { unit_number: 8, unit_name: "ඒකකය 08: භ්‍රමණ චලිතය සහ එහි ප්‍රායෝගික භාවිතය" },
+          { unit_number: 9, unit_name: "ඒකකය 09: විද්‍යුතය සහ විද්‍යුත් චුම්බකත්වය" },
+          { unit_number: 10, unit_name: "ඒකකය 10: තාපය සහ තාප සංක්‍රාමණය" },
+          { unit_number: 11, unit_name: "ඒකකය 11: තාප රසායනයේ මූලික සංකල්ප" },
+          { unit_number: 12, unit_name: "ඒකකය 12: බහු අවයවික ද්‍රව්‍ය" },
+          { unit_number: 13, unit_name: "ඒකකය 13: ද්‍රව්‍යයේ යාන්ත්‍රික ගුණ" },
+          { unit_number: 14, unit_name: "ඒකකය 14: නිශ්චල හා චලිත තරල" },
+          { unit_number: 15, unit_name: "ඒකකය 15: ශ්‍රී ලංකාවේ රසායනික කර්මාන්ත" },
+          { unit_number: 16, unit_name: "ඒකකය 16: ස්වභාව නිෂ්පාදන හා නිස්සාරණය" },
+          { unit_number: 17, unit_name: "ඒකකය 17: කාටිසියානු ඛණ්ඩාංක හා ශ්‍රිත" },
+          { unit_number: 18, unit_name: "ඒකකය 18: විස්තාරාත්මක සංඛ්‍යානය" },
+          { unit_number: 19, unit_name: "ඒකකය 19: පරිගණක පද්ධතිය හා උපාංග" },
+          { unit_number: 20, unit_name: "ඒකකය 20: පරිගණක මෙහෙයුම් පද්ධති" },
+          { unit_number: 21, unit_name: "ඒකකය 21: යෙදුම් මෘදුකාංග" },
+          { unit_number: 22, unit_name: "ඒකකය 22: අන්තර්ජාලය හා විද්‍යුත් සන්නිවේදනය" },
+          { unit_number: 23, unit_name: "ඒකකය 23: තාක්ෂණය හා පරිසර සමතුලිතතාව" }
+        ]
+      };
+
+      let activeFocusSubject = localStorage.getItem('al_tracker_focus_subj') || 'ICT';
+      let activeFocusUnit = null;
+      try {
+        const savedUnit = localStorage.getItem('al_tracker_focus_unit');
+        if (savedUnit) activeFocusUnit = JSON.parse(savedUnit);
+      } catch (e) {}
+
       let focusDurationMins = parseInt(localStorage.getItem('al_tracker_timer_duration'), 10) || 50;
       let focusTotalSeconds = focusDurationMins * 60;
       let focusRemainingSeconds = focusTotalSeconds;
       let focusTimerInterval = null;
       let isFocusRunning = false;
       let sessionStartTime = null;
+      let focusAutoStartAfterSelect = true;
       const originalDocTitle = document.title;
 
       // Screen Wake Lock API
@@ -6085,21 +6485,161 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
       }
 
-      // Subject Toggle Action
+      // =========================================================================
+      // INTERACTIVE FOCUS TARGET POPUP (SUBJECT -> UNIT -> COUNTDOWN SEQUENCE)
+      // =========================================================================
+      function getUnitsForSubject(subj) {
+        const syllabus = cachedCanonicalSyllabus || (window.telemetryData && window.telemetryData.syllabusList) || [];
+        const subjSyllabus = syllabus.filter(s => (s.subject || '').toUpperCase().trim() === subj.toUpperCase().trim());
+        if (subjSyllabus.length > 0) {
+          const unitMap = new Map();
+          subjSyllabus.forEach(s => {
+            const uNum = (s.unit_number !== undefined && s.unit_number !== null) ? Number(s.unit_number) : null;
+            if (uNum !== null && !unitMap.has(uNum)) {
+              unitMap.set(uNum, {
+                unit_number: uNum,
+                unit_name: s.unit_name || `Unit ${uNum}`
+              });
+            }
+          });
+          const sorted = Array.from(unitMap.values()).sort((a, b) => a.unit_number - b.unit_number);
+          if (sorted.length > 0) return sorted;
+        }
+        return CANONICAL_UNITS_FALLBACK[subj] || [];
+      }
+
+      function handleStartFocusClick() {
+        if (isFocusRunning) return;
+        // If paused midway, resume without modal
+        if (focusRemainingSeconds < focusTotalSeconds && focusRemainingSeconds > 0) {
+          startFocusTimerEngine();
+          return;
+        }
+        // When starting new session: open modal to pick Subject -> Unit, then start countdown!
+        openFocusTargetModal(true);
+      }
+
+      function openFocusTargetModal(autoStart = true) {
+        focusAutoStartAfterSelect = !!autoStart;
+        const modal = document.getElementById('focusTargetModal');
+        const stepSubj = document.getElementById('focusTargetStepSubject');
+        const stepUnit = document.getElementById('focusTargetStepUnit');
+        if (stepSubj) stepSubj.style.display = 'block';
+        if (stepUnit) stepUnit.style.display = 'none';
+
+        if (modal) {
+          modal.style.display = 'flex';
+          focusModal(modal);
+        }
+      }
+
+      function closeFocusTargetModal(e) {
+        const modal = document.getElementById('focusTargetModal');
+        if (e && e.target === modal) {
+          closeFocusTargetModalDirect();
+        }
+      }
+
+      function closeFocusTargetModalDirect() {
+        const modal = document.getElementById('focusTargetModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function selectFocusModalSubject(subj) {
+        activeFocusSubject = subj || 'ICT';
+        const stepSubj = document.getElementById('focusTargetStepSubject');
+        const stepUnit = document.getElementById('focusTargetStepUnit');
+        const pill = document.getElementById('focusModalActiveSubjPill');
+        const list = document.getElementById('focusModalUnitsList');
+
+        if (stepSubj) stepSubj.style.display = 'none';
+        if (stepUnit) stepUnit.style.display = 'block';
+
+        if (pill) {
+          pill.className = `focus-modal-active-subj-pill badge-${activeFocusSubject.toLowerCase()}`;
+          const icon = activeFocusSubject === 'ICT' ? '💻' : (activeFocusSubject === 'ET' ? '⚙️' : '🔬');
+          pill.innerText = `${icon} ${activeFocusSubject}`;
+        }
+
+        const units = getUnitsForSubject(activeFocusSubject);
+        if (list) {
+          list.innerHTML = units.map(u => {
+            const escapedName = (u.unit_name || `Unit ${u.unit_number}`).replace(/"/g, '&quot;');
+            const clickParam = escapedName.replace(/'/g, "\\'");
+            return `
+              <button type="button" class="focus-unit-item-btn" onclick="selectFocusModalUnit(${u.unit_number}, '${clickParam}')">
+                <span class="unit-num-badge">Unit ${String(u.unit_number).padStart(2, '0')}</span>
+                <span class="unit-name-text">${escapeHtml(u.unit_name)}</span>
+                <span class="unit-start-arrow">▶ Start</span>
+              </button>
+            `;
+          }).join('');
+        }
+      }
+
+      function backToFocusModalSubjects() {
+        const stepSubj = document.getElementById('focusTargetStepSubject');
+        const stepUnit = document.getElementById('focusTargetStepUnit');
+        if (stepSubj) stepSubj.style.display = 'block';
+        if (stepUnit) stepUnit.style.display = 'none';
+      }
+
+      function selectFocusModalUnit(unitNo, unitName) {
+        activeFocusUnit = {
+          unitNumber: Number(unitNo) || 0,
+          unitName: unitName || (unitNo > 0 ? `Unit ${unitNo}` : 'සාමාන්‍ය පුනරීක්ෂණ')
+        };
+
+        try {
+          localStorage.setItem('al_tracker_focus_subj', activeFocusSubject);
+          localStorage.setItem('al_tracker_focus_unit', JSON.stringify(activeFocusUnit));
+        } catch (e) {}
+
+        updateActiveTargetUI();
+        closeFocusTargetModalDirect();
+
+        // ONLY START COUNTDOWN AFTER UNIT SELECTION
+        if (focusAutoStartAfterSelect) {
+          startFocusTimerEngine();
+        }
+      }
+
+      function updateActiveTargetUI() {
+        const subjPill = document.getElementById('activeTargetSubjPill');
+        const unitNameEl = document.getElementById('activeTargetUnitName');
+        const ringFill = document.getElementById('focusRingFill');
+
+        if (subjPill) {
+          subjPill.className = `focus-subj-pill badge-${activeFocusSubject.toLowerCase()}`;
+          subjPill.innerText = activeFocusSubject;
+        }
+
+        if (unitNameEl) {
+          if (activeFocusUnit && activeFocusUnit.unitName) {
+            unitNameEl.innerText = activeFocusUnit.unitName;
+            unitNameEl.title = `${activeFocusSubject} - ${activeFocusUnit.unitName}`;
+          } else {
+            unitNameEl.innerText = 'Unit තෝරාගෙන නැත (Click Start)';
+            unitNameEl.title = 'පාඩම තෝරා ගැනීමට Start ක්ලික් කරන්න';
+          }
+        }
+
+        if (ringFill) {
+          if (activeFocusSubject === 'ET') ringFill.style.stroke = '#0984e3';
+          else if (activeFocusSubject === 'SFT') ringFill.style.stroke = '#8854d0';
+          else ringFill.style.stroke = '#20bf6b';
+        }
+      }
+
+      // Legacy subject toggle support
       function setFocusSubject(subj) {
         if (isFocusRunning) {
           if (!confirm('ටයිමරය ක්‍රියාත්මකව පවතී. විෂය වෙනස් කිරීමට අවශ්‍යද?')) return;
           resetFocusTimer();
         }
         activeFocusSubject = subj || 'ICT';
-        const btns = document.querySelectorAll('.btn-focus-subj');
-        btns.forEach(b => {
-          if (b.getAttribute('data-subject') === activeFocusSubject) {
-            b.classList.add('active');
-          } else {
-            b.classList.remove('active');
-          }
-        });
+        activeFocusUnit = null;
+        updateActiveTargetUI();
       }
 
       // Display & Ring Controls
@@ -6113,11 +6653,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const secs = focusRemainingSeconds % 60;
         timeEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
-        // Ring progress stroke-dashoffset (Circumference: 452.39)
+        // Ring progress stroke-dashoffset (Circumference: 439.82 = 2 * PI * 70)
         if (ringFill) {
           const total = focusTotalSeconds || 1;
           const progress = Math.max(0, Math.min(1, focusRemainingSeconds / total));
-          const offset = 452.39 * (1 - progress);
+          const offset = 439.82 * (1 - progress);
           ringFill.style.strokeDashoffset = offset;
 
           if (activeFocusSubject === 'ET') ringFill.style.stroke = '#0984e3';
@@ -6140,7 +6680,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       }
 
       // Timer Actions: Start / Pause / Reset
-      async function startFocusTimer() {
+      async function startFocusTimerEngine() {
         if (isFocusRunning) return;
         isFocusRunning = true;
         if (!sessionStartTime) {
@@ -6166,6 +6706,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             onFocusSessionCompleted();
           }
         }, 1000);
+      }
+
+      function startFocusTimer() {
+        handleStartFocusClick();
       }
 
       function pauseFocusTimer() {
@@ -6229,7 +6773,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             particleCount: 120,
             spread: 90,
             origin: { y: 0.6 },
-            colors: ['#00cec9', '#0984e3', '#fdcb6e', '#e17055', '#20bf6b']
+            colors: ['#00cec9', '#0984e3', '#fdcb6e', '#e17055', '#20bf6b', '#8c7ae6']
           });
         } catch (e) {}
 
@@ -6302,6 +6846,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const newSession = {
           id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now(),
           subject: activeFocusSubject,
+          unit_number: activeFocusUnit ? activeFocusUnit.unitNumber : null,
+          unit_name: activeFocusUnit ? (activeFocusUnit.unitName || `Unit ${activeFocusUnit.unitNumber}`) : 'සාමාන්‍ය පුනරීක්ෂණ',
           start_time: sessionStartTime || new Date(Date.now() - durationMins * 60000).toISOString(),
           duration_minutes: Number(durationMins) || 50,
           session_date: new Date().toISOString().split('T')[0],
@@ -6542,6 +7088,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const timeTxt = sess.start_time ? new Date(sess.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
           const subjClass = sess.subject === 'ICT' ? 'background: rgba(32,191,107,0.15); color: #20bf6b;'
             : (sess.subject === 'ET' ? 'background: rgba(9,132,227,0.15); color: #0984e3;' : 'background: rgba(136,84,208,0.15); color: #8854d0;');
+          const unitHtml = sess.unit_name ? `<div style="font-size: 10px; color: #636e72; margin-top: 1px; max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(sess.unit_name)}</div>` : '';
 
           return `
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fdfdfd; border: 1px solid #f1f2f6; border-radius: 8px; font-size: 11.5px;">
@@ -6549,7 +7096,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <span style="padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 10px; ${subjClass}">${escapeHtml(sess.subject || 'ICT')}</span>
                 <div>
                   <div style="font-weight: 600; color: #2d3436;">${escapeHtml(dateTxt)} <span style="font-size: 10px; color: #7f8fa6;">${escapeHtml(timeTxt)}</span></div>
-                  <div style="font-size: 10.5px; color: #0984e3; font-weight: 700;">${sess.duration_minutes || 50} mins</div>
+                  ${unitHtml}
+                  <div style="font-size: 10.5px; color: #6c5ce7; font-weight: 700;">${sess.duration_minutes || 50} mins</div>
                 </div>
               </div>
               <div style="display: flex; gap: 6px;">
@@ -6609,6 +7157,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // Initialize Focus Timer UI & Heatmap on startup
       (function initFocusTimerModule() {
         updateFocusSoundUI();
+        updateActiveTargetUI();
         updateFocusDisplay();
         renderStudyHeatmap();
         if ('serviceWorker' in navigator) {
