@@ -441,86 +441,115 @@
       align-items: center;
     }
 
-    /* Habit Matrix Table (Item 12) */
-    .habit-matrix-wrap {
-      overflow-x: auto;
+    /* 24 × 7 Day-of-Week & Active Times Habit Matrix (Responsive & Sticky) */
+    .habit-matrix-outer-container {
+      width: 100%;
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      overflow: hidden;
       margin-top: 14px;
     }
-    .habit-matrix-table {
+    .habit-matrix-scroll-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 5px;
-      font-size: 11px;
+      padding-bottom: 6px;
     }
-    .habit-matrix-table th {
-      padding: 8px 10px;
-      background: var(--card-inner);
+    .habit-matrix-scroll-wrap::-webkit-scrollbar {
+      height: 6px;
+    }
+    .habit-matrix-scroll-wrap::-webkit-scrollbar-thumb {
+      background: #2b3648;
+      border-radius: 4px;
+    }
+    .habit-matrix-24x7-table {
+      border-collapse: separate;
+      border-spacing: 3px;
+      min-width: 820px;
+      width: 100%;
+    }
+    .habit-matrix-24x7-table th {
+      padding: 6px 3px;
+      background: #141c28;
       color: var(--text-muted);
+      font-size: 9px;
       font-weight: 700;
       text-align: center;
-      border-radius: 8px;
-      font-size: 10px;
+      border-radius: 4px;
       border: 1px solid var(--border-color);
+      white-space: nowrap;
     }
-    .habit-matrix-table td {
-      padding: 8px 6px;
-      text-align: center;
-      border-radius: 8px;
-      background: #111822;
-      transition: all 0.2s;
-      min-width: 80px;
-      border: 1px solid var(--border-color);
+    .habit-day-th-sticky {
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      background: #141c28 !important;
+      text-align: left !important;
+      padding: 6px 10px !important;
+      min-width: 90px;
+      box-shadow: 2px 0 6px rgba(0, 0, 0, 0.45);
     }
-    .habit-matrix-table td.day-label-cell {
-      background: var(--card-inner);
+    .habit-day-td-sticky {
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      background: #121824 !important;
       color: #f0f6fc;
+      font-size: 11px;
       font-weight: 700;
       text-align: left;
-      padding-left: 12px;
-      min-width: 120px;
+      padding: 4px 10px;
+      min-width: 90px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      white-space: nowrap;
+      box-shadow: 2px 0 6px rgba(0, 0, 0, 0.45);
     }
-    .habit-matrix-table td.total-cell {
-      background: rgba(108, 92, 231, 0.12);
-      color: #a29bfe;
-      font-weight: 700;
-      border-color: rgba(108, 92, 231, 0.3);
+    .habit-cell-24 {
+      width: 25px;
+      height: 25px;
+      min-width: 25px;
+      max-width: 25px;
+      text-align: center;
+      vertical-align: middle;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid #1a2230;
+      background: #0f1520;
+      transition: transform 0.12s ease, outline 0.12s ease, box-shadow 0.12s ease;
+      padding: 0;
     }
-    .habit-matrix-table td.slot-level-0 {
-      background: #10151f;
-      color: #485460;
+    .habit-cell-24:hover, .habit-cell-24.active-tap {
+      transform: scale(1.3);
+      z-index: 10;
+      outline: 2px solid #a29bfe;
+      box-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
     }
-    .habit-matrix-table td.slot-level-1 {
-      background: rgba(108, 92, 231, 0.2);
-      color: #dcdde1;
+    .habit-cell-lvl-0 {
+      background: #0f1520;
+      border-color: #192230;
+    }
+    .habit-cell-lvl-1 {
+      background: rgba(108, 92, 231, 0.22);
       border-color: rgba(108, 92, 231, 0.35);
     }
-    .habit-matrix-table td.slot-level-2 {
-      background: rgba(108, 92, 231, 0.42);
-      color: #f5f6fa;
-      border-color: rgba(108, 92, 231, 0.55);
+    .habit-cell-lvl-2 {
+      background: rgba(108, 92, 231, 0.45);
+      border-color: rgba(108, 92, 231, 0.6);
     }
-    .habit-matrix-table td.slot-level-3 {
-      background: rgba(108, 92, 231, 0.68);
-      color: #ffffff;
-      border-color: rgba(108, 92, 231, 0.85);
-      font-weight: 700;
+    .habit-cell-lvl-3 {
+      background: rgba(108, 92, 231, 0.72);
+      border-color: rgba(108, 92, 231, 0.9);
     }
-    .habit-matrix-table td.slot-level-4 {
+    .habit-cell-lvl-4 {
       background: #6c5ce7;
-      color: #ffffff;
-      font-weight: 800;
       border-color: #a29bfe;
-      box-shadow: 0 0 10px rgba(108, 92, 231, 0.4);
+      box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.4);
     }
-    .matrix-cell-val {
-      font-size: 11.5px;
-      line-height: 1.2;
-    }
-    .matrix-cell-sub {
-      font-size: 9.5px;
-      opacity: 0.85;
-      margin-top: 2px;
-    }
+
 
     /* Visual Charts Timeframe Filter Tabs (Items 10 & 11) */
     .chart-filter-tabs {
@@ -1173,6 +1202,36 @@
       outline: none;
       border-color: #6c5ce7;
     }
+
+    /* Security PIN Modal & Shake Animation */
+    @keyframes pinShakeAnim {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .pin-shake {
+      animation: pinShakeAnim 0.35s ease-in-out;
+    }
+    .pin-mask-input {
+      width: 170px;
+      font-size: 26px;
+      text-align: center;
+      letter-spacing: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      background: var(--card-inner);
+      color: var(--text-main);
+      font-family: monospace;
+      outline: none;
+      margin: 0 auto;
+      display: block;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .pin-mask-input:focus {
+      border-color: #6c5ce7;
+      box-shadow: 0 0 12px rgba(108, 92, 231, 0.4);
+    }
   </style>
 </head>
 <body>
@@ -1305,10 +1364,8 @@
           <span>Study Consistency Heatmap (අඛණ්ඩතා දර්ශකය)</span>
         </div>
         <div class="timeframe-tabs">
-          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('1D', this)">1 Day</button>
-          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('1W', this)">1 Week</button>
-          <button type="button" class="timeframe-tab-btn active" onclick="setTimeframeWeeks('1M', this)">1 Month</button>
           <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('3M', this)">3 Months</button>
+          <button type="button" class="timeframe-tab-btn active" onclick="setTimeframeWeeks('6M', this)">6 Months</button>
           <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('1Y', this)">1 Year</button>
           <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('ALL', this)">🌐 All Time</button>
         </div>
@@ -1378,18 +1435,30 @@
       </div>
     </section>
 
-    <!-- Peak Study Time Periods Breakdown Card with Subject Tabs (Item 2) -->
+    <!-- Peak Study Time Periods Breakdown Card with Subject Tabs (Item 2 & 3) -->
     <section class="section-card" id="sectionPeakTimeSlots">
-      <div class="section-header">
+      <div class="section-header" style="flex-wrap: wrap; gap: 10px;">
         <div class="section-title">
           <span class="section-title-icon">🕒</span>
           <span>වැඩිපුරම පාඩම් කළ කාල පරාසයන් (Peak Study Time Periods Analysis)</span>
         </div>
-        <div class="slot-filter-tabs">
-          <button type="button" class="slot-tab-btn active" onclick="setSlotFilter('ALL', this)">🌐 All Subjects</button>
-          <button type="button" class="slot-tab-btn" onclick="setSlotFilter('ICT', this)">💻 ICT</button>
-          <button type="button" class="slot-tab-btn" onclick="setSlotFilter('ET', this)">⚙️ ET</button>
-          <button type="button" class="slot-tab-btn" onclick="setSlotFilter('SFT', this)">🔬 SFT</button>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <!-- Timeframe filter tabs for Peak Study Slots -->
+          <div class="chart-filter-tabs" id="peakTimeframeTabs">
+            <button type="button" class="chart-tab-btn" onclick="setPeakTimeframe('1d', this)">1 Day</button>
+            <button type="button" class="chart-tab-btn" onclick="setPeakTimeframe('7d', this)">7 Days</button>
+            <button type="button" class="chart-tab-btn" onclick="setPeakTimeframe('1m', this)">1 Month</button>
+            <button type="button" class="chart-tab-btn" onclick="setPeakTimeframe('3m', this)">3 Months</button>
+            <button type="button" class="chart-tab-btn" onclick="setPeakTimeframe('1y', this)">1 Year</button>
+            <button type="button" class="chart-tab-btn active" onclick="setPeakTimeframe('all', this)">All Time</button>
+          </div>
+          <!-- Subject pills filter -->
+          <div class="slot-filter-tabs">
+            <button type="button" class="slot-tab-btn active" onclick="setSlotFilter('ALL', this)">🌐 All Subjects</button>
+            <button type="button" class="slot-tab-btn" onclick="setSlotFilter('ICT', this)">💻 ICT</button>
+            <button type="button" class="slot-tab-btn" onclick="setSlotFilter('ET', this)">⚙️ ET</button>
+            <button type="button" class="slot-tab-btn" onclick="setSlotFilter('SFT', this)">🔬 SFT</button>
+          </div>
         </div>
       </div>
 
@@ -1410,35 +1479,49 @@
       </div>
     </section>
 
-    <!-- Day-of-Week & Active Times Visualization (Item 12: Weekly Focus Habit Punchcard / Matrix) -->
+    <!-- Day-of-Week & Active Times Visualization (24 × 7 Habit Matrix) -->
     <section class="section-card" id="sectionWeeklyHabitMatrix">
       <div class="section-header">
         <div class="section-title">
           <span class="section-title-icon">🗓️</span>
-          <span>සතිපතා දෛනික හා කාල පරාස අනුකෘතිය (Day-of-Week &amp; Active Times Matrix)</span>
+          <span>සතිපතා දෛනික හා කාල පරාස අනුකෘතිය (24 × 7 Day-of-Week &amp; Active Times Matrix)</span>
         </div>
         <div class="header-extra-info">
-          <span style="font-size:11px; color:var(--text-muted);">සතියේ දින සහ වේලාවන් අනුව අධ්‍යයන පුරුදු (Weekly Focus Habits)</span>
+          <span style="font-size:11px; color:var(--text-muted);">සතියේ දින 7 සහ පැය 24 පුරා අධ්‍යයන රටාව (Weekly Focus Habits)</span>
         </div>
       </div>
 
-      <div class="habit-matrix-wrap">
-        <table class="habit-matrix-table" id="habitMatrixTable">
-          <thead>
-            <tr>
-              <th>සතියේ දිනය (Day)</th>
-              <th>🌅 Early Morning<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">04:00 – 08:00</span></th>
-              <th>☀️ Morning<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">08:00 – 12:00</span></th>
-              <th>🌤️ Afternoon<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">12:00 – 17:00</span></th>
-              <th>🌆 Evening<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">17:00 – 21:00</span></th>
-              <th>🌙 Late Night<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">21:00 – 04:00</span></th>
-              <th>මුළු කාලය (Total)</th>
-            </tr>
-          </thead>
-          <tbody id="habitMatrixBody">
-            <!-- Rendered via JS -->
-          </tbody>
-        </table>
+      <div class="habit-matrix-outer-container">
+        <div class="habit-matrix-scroll-wrap" id="habitMatrixScrollWrap">
+          <table class="habit-matrix-24x7-table" id="habitMatrixTable">
+            <thead>
+              <tr id="habitMatrixHeaderRow">
+                <th class="habit-day-th-sticky">Day / Time</th>
+                <th>00:00</th><th>01:00</th><th>02:00</th><th>03:00</th><th>04:00</th><th>05:00</th>
+                <th>06:00</th><th>07:00</th><th>08:00</th><th>09:00</th><th>10:00</th><th>11:00</th>
+                <th>12:00</th><th>13:00</th><th>14:00</th><th>15:00</th><th>16:00</th><th>17:00</th>
+                <th>18:00</th><th>19:00</th><th>20:00</th><th>21:00</th><th>22:00</th><th>23:00</th>
+              </tr>
+            </thead>
+            <tbody id="habitMatrixBody">
+              <!-- Rendered via renderWeeklyHabitMatrix() -->
+            </tbody>
+          </table>
+        </div>
+        <div class="habit-matrix-legend-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:10px; padding: 4px 6px;">
+          <div id="habitActiveInfo" style="font-size:11.5px; color:var(--text-main); font-weight:600;">
+            💡 Hover or tap any cell to inspect focus time
+          </div>
+          <div style="display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text-muted);">
+            <span>Less</span>
+            <span class="habit-cell-24 habit-cell-lvl-0" style="width:14px; height:14px; min-width:14px; display:inline-block;"></span>
+            <span class="habit-cell-24 habit-cell-lvl-1" style="width:14px; height:14px; min-width:14px; display:inline-block;"></span>
+            <span class="habit-cell-24 habit-cell-lvl-2" style="width:14px; height:14px; min-width:14px; display:inline-block;"></span>
+            <span class="habit-cell-24 habit-cell-lvl-3" style="width:14px; height:14px; min-width:14px; display:inline-block;"></span>
+            <span class="habit-cell-24 habit-cell-lvl-4" style="width:14px; height:14px; min-width:14px; display:inline-block;"></span>
+            <span>More</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1451,12 +1534,12 @@
             <span>🍩</span> <span>විෂය අනුව කාලය බෙදීයාම (Subject Distribution)</span>
           </div>
           <div class="chart-filter-tabs" id="doughnutFilterTabs">
-            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('7d', this)">7D</button>
-            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('14d', this)">14D</button>
-            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('1m', this)">1M</button>
-            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('3m', this)">3M</button>
-            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('1y', this)">1Y</button>
-            <button type="button" class="chart-tab-btn active" onclick="setDoughnutTimeframe('all', this)">All</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('7d', this)">7 Days</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('14d', this)">14 Days</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('1m', this)">1 Month</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('3m', this)">3 Months</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('1y', this)">1 Year</button>
+            <button type="button" class="chart-tab-btn active" onclick="setDoughnutTimeframe('all', this)">All Time</button>
           </div>
         </div>
         <div class="chart-canvas-wrap">
@@ -1719,9 +1802,66 @@
           <label class="form-label">අධ්‍යයන කාලය (මිනිත්තු / Minutes) *</label>
           <input type="number" id="manualDurationInput" class="form-control" value="50" min="5" max="360">
         </div>
+        <div id="manualModalErrorMsg" style="color: #ff6b6b; font-size: 11px; font-weight: 700; margin-bottom: 8px; display: none;"></div>
         <button type="button" onclick="saveManualSession()" style="width:100%; padding:10px; background:linear-gradient(135deg,#6c5ce7,#8c7ae6); color:white; font-weight:700; border:none; border-radius:9px; cursor:pointer; font-family:inherit; margin-top:6px;">
           ✅ සුරකින්න (Save Session)
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security PIN Verification Modal -->
+  <div class="modal-overlay" id="securityPinModal" onclick="closePinModal(event)">
+    <div class="modal-box" id="pinModalBox" onclick="event.stopPropagation()" style="max-width: 370px; text-align: center;">
+      <div class="modal-box-head">
+        <span style="display:flex; align-items:center; gap:8px;">🔒 ආරක්ෂක PIN අංකය (Security PIN)</span>
+        <button type="button" onclick="cancelPinModal()" style="background:transparent; border:none; color:white; font-size:16px; cursor:pointer;">✕</button>
+      </div>
+      <div class="modal-box-body" style="padding: 24px 20px;">
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+          මෙම ක්‍රියාව සිදුකිරීම සඳහා කරුණාකර ඔබගේ ඉලක්කම් 4 ක ආරක්ෂක PIN අංකය ඇතුළත් කරන්න.
+        </p>
+        <div style="margin-bottom: 12px;">
+          <input type="password" id="pinInput" class="pin-mask-input" maxlength="4" placeholder="••••" autocomplete="off" />
+        </div>
+        <div id="pinErrorMsg" style="color: #ff6b6b; font-size: 11.5px; font-weight: 700; min-height: 20px; margin-bottom: 14px; display: none;">
+          වලංගු නොවන PIN අංකයකි / Invalid PIN
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 6px;">
+          <button type="button" id="pinCancelBtn" onclick="cancelPinModal()" style="flex: 1; padding: 10px 12px; background: rgba(255, 255, 255, 0.08); color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;">
+            අවලංගු කරන්න (Cancel)
+          </button>
+          <button type="button" id="pinConfirmBtn" onclick="confirmPinModal()" style="flex: 1; padding: 10px 12px; background: linear-gradient(135deg, #6c5ce7, #8c7ae6); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;">
+            තහවුරු කරන්න (Confirm)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Session Duration Modal -->
+  <div class="modal-overlay" id="editDurationModal" onclick="closeEditDurationModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width: 380px;">
+      <div class="modal-box-head">
+        <span>✏️ කාලය සංස්කරණය (Edit Duration)</span>
+        <button type="button" onclick="closeEditDurationModalDirect()" style="background:transparent; border:none; color:white; font-size:16px; cursor:pointer;">✕</button>
+      </div>
+      <div class="modal-box-body" style="padding: 20px;">
+        <div class="form-group">
+          <label class="form-label">සැසියේ නිවැරදි අධ්‍යයන කාලය (මිනිත්තු / Minutes 1 - 480) *</label>
+          <input type="number" id="editDurationInput" class="form-control" min="1" max="480" />
+        </div>
+        <div id="editDurationErrorMsg" style="color: #ff6b6b; font-size: 11px; font-weight: 700; margin-bottom: 12px; display: none;">
+          කරුණාකර වලංගු මිනිත්තු සංඛ්‍යාවක් ලබාදෙන්න (1 - 480).
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+          <button type="button" onclick="closeEditDurationModalDirect()" style="padding: 8px 14px; background: rgba(255, 255, 255, 0.08); color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;">
+            අවලංගු කරන්න (Cancel)
+          </button>
+          <button type="button" id="btnSaveEditedDuration" onclick="saveEditedDurationDirect()" style="padding: 8px 16px; background: linear-gradient(135deg, #6c5ce7, #8c7ae6); color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit;">
+            සුරකින්න (Save)
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1897,9 +2037,14 @@
       }
     }
 
+    // Completely eliminate native browser alert and prompt popups
+    window.alert = function(msg) { console.warn('Native alert blocked:', msg); };
+    window.prompt = function(msg) { console.warn('Native prompt blocked:', msg); return null; };
+
     // State
     let allSessions = [];
-    let currentHeatmapWeeks = '1M'; // Default to 1 Month
+    let currentHeatmapWeeks = '6M'; // Strictly default to 6 Months
+    let currentPeakTimeframe = 'all'; // Default to All Time for Peak Study Time
     let currentDoughnutTimeframe = 'all'; // Default to All Time
     let currentTrendTimeframe = '14d'; // Default to 14 Days
     let currentHistoryFilter = 'ALL';
@@ -1910,6 +2055,192 @@
     let currentDetailPeriod = 'today';
     let subjectChartInstance = null;
     let trendChartInstance = null;
+    let subjectCoverageUnits = {
+      ICT: new Set(),
+      ET: new Set(),
+      SFT: new Set()
+    };
+
+    // Helper: Session Timestamp Extractor
+    function getSessionTimestamp(s) {
+      if (!s) return 0;
+      if (s.start_time) {
+        const t = new Date(s.start_time).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      const dateStr = s.timer_start_date || s.session_date;
+      const timeStr = s.timer_start_time || '00:00:00';
+      if (dateStr) {
+        const fullTimeStr = timeStr.length === 5 ? timeStr + ':00' : timeStr;
+        const t = new Date(`${dateStr}T${fullTimeStr}`).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      if (s.created_at) {
+        const t = new Date(s.created_at).getTime();
+        if (!isNaN(t) && t > 0) return t;
+      }
+      return 0;
+    }
+
+    // 1. Custom Security PIN Verification Modal (Item 1: Eliminated window.prompt/alert)
+    let pinResolver = null;
+
+    function requestPinVerification() {
+      return new Promise((resolve) => {
+        pinResolver = resolve;
+        const modal = document.getElementById('securityPinModal');
+        const input = document.getElementById('pinInput');
+        const err = document.getElementById('pinErrorMsg');
+        const box = document.getElementById('pinModalBox');
+        if (err) err.style.display = 'none';
+        if (box) box.classList.remove('pin-shake');
+        if (input) {
+          input.value = '';
+        }
+        if (modal) {
+          modal.style.display = 'flex';
+          setTimeout(() => { if (input) input.focus(); }, 60);
+        }
+      });
+    }
+
+    function confirmPinModal() {
+      const input = document.getElementById('pinInput');
+      const err = document.getElementById('pinErrorMsg');
+      const box = document.getElementById('pinModalBox');
+      const val = (input ? input.value : '').trim();
+
+      if (val === '3408') {
+        const modal = document.getElementById('securityPinModal');
+        if (modal) modal.style.display = 'none';
+        if (pinResolver) {
+          const r = pinResolver;
+          pinResolver = null;
+          r(true);
+        }
+      } else {
+        if (err) {
+          err.textContent = 'වලංගු නොවන PIN අංකයකි / Invalid PIN';
+          err.style.display = 'block';
+        }
+        if (box) {
+          box.classList.remove('pin-shake');
+          void box.offsetWidth;
+          box.classList.add('pin-shake');
+        }
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+
+    function cancelPinModal() {
+      const modal = document.getElementById('securityPinModal');
+      if (modal) modal.style.display = 'none';
+      if (pinResolver) {
+        const r = pinResolver;
+        pinResolver = null;
+        r(false);
+      }
+    }
+
+    function closePinModal(e) {
+      const modal = document.getElementById('securityPinModal');
+      if (e && e.target === modal) {
+        cancelPinModal();
+      }
+    }
+
+    // Modal Edit Duration (Replaces window.prompt/alert in editSessionDuration)
+    let editingSessionId = null;
+
+    function openEditDurationModal(sess) {
+      editingSessionId = sess.id;
+      const modal = document.getElementById('editDurationModal');
+      const input = document.getElementById('editDurationInput');
+      const err = document.getElementById('editDurationErrorMsg');
+      if (err) err.style.display = 'none';
+      if (input) input.value = sess.duration_minutes || 50;
+      if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => { if (input) { input.focus(); input.select(); } }, 60);
+      }
+    }
+
+    function closeEditDurationModalDirect() {
+      const modal = document.getElementById('editDurationModal');
+      if (modal) modal.style.display = 'none';
+      editingSessionId = null;
+    }
+
+    function closeEditDurationModal(e) {
+      const modal = document.getElementById('editDurationModal');
+      if (e && e.target === modal) {
+        closeEditDurationModalDirect();
+      }
+    }
+
+    async function saveEditedDurationDirect() {
+      if (!editingSessionId) return;
+      const sess = allSessions.find(s => s.id === editingSessionId);
+      if (!sess) return;
+      const input = document.getElementById('editDurationInput');
+      const err = document.getElementById('editDurationErrorMsg');
+      const num = parseInt(input ? input.value : '', 10);
+      if (isNaN(num) || num <= 0 || num > 480) {
+        if (err) err.style.display = 'block';
+        return;
+      }
+      if (err) err.style.display = 'none';
+      closeEditDurationModalDirect();
+
+      sess.duration_minutes = num;
+      sess.synced = false;
+      saveCachedSessions(allSessions);
+
+      try {
+        const db = await openOfflineDB();
+        if (db) {
+          const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+          const tx = db.transaction(storeName, 'readwrite');
+          tx.objectStore(storeName).put(sess);
+        }
+      } catch (_) {}
+
+      const payload = {
+        id: sess.id,
+        duration_minutes: num
+      };
+
+      const sb = getSupabase();
+      if (navigator.onLine && sb) {
+        try {
+          let { error } = await sb.from('study_timer_sessions').update({ duration_minutes: num }).eq('id', sess.id);
+          if (error) {
+            const fbRes = await sb.from('study_sessions').update({ duration_minutes: num }).eq('id', sess.id);
+            if (fbRes.error) throw fbRes.error;
+          }
+          sess.synced = true;
+          saveCachedSessions(allSessions);
+          try {
+            const db = await openOfflineDB();
+            if (db) {
+              const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+              const tx = db.transaction(storeName, 'readwrite');
+              tx.objectStore(storeName).put(sess);
+            }
+          } catch (_) {}
+        } catch (err) {
+          console.warn('Direct update failed, enqueuing to sync_queue:', err);
+          await enqueueSyncTask('UPDATE', 'study_timer_sessions', payload);
+        }
+      } else {
+        await enqueueSyncTask('UPDATE', 'study_timer_sessions', payload);
+      }
+
+      await refreshAnalyticsData();
+    }
 
     // Study Timer Start Benchmark (Tracking strictly begins from today: 2026-10-04)
     const TRACKING_START_DATE = '2026-10-04';
@@ -2307,6 +2638,70 @@
       return allSessions;
     }
 
+    // 6. Query Supabase 'unit_paper' Table for Live Subject Coverage (ආවරණය)
+    async function loadSubjectCoverageFromUnitPaper() {
+      const sb = getSupabase();
+      if (navigator.onLine && sb) {
+        try {
+          let res = await sb.from('unit_paper').select('subject, sub_lesson_code');
+          if (res.error && (res.error.code === 'PGRST205' || (res.error.message && res.error.message.includes('not find')))) {
+            res = await sb.from('unit_papers').select('subject, sub_lesson_code');
+          }
+          if (res.data && Array.isArray(res.data)) {
+            const unitsICT = new Set();
+            const unitsET = new Set();
+            const unitsSFT = new Set();
+
+            res.data.forEach(item => {
+              const subj = (item.subject || '').toUpperCase().trim();
+              const code = String(item.sub_lesson_code || '').trim();
+              if (!code) return;
+
+              let unitNum = null;
+              const unitMatch = code.match(/(?:Unit|ඒකකය)\s*(\d+)/i);
+              if (unitMatch) {
+                unitNum = parseInt(unitMatch[1], 10);
+              } else {
+                const numMatch = code.match(/^(\d+)(?:\.|$)/);
+                if (numMatch) unitNum = parseInt(numMatch[1], 10);
+              }
+
+              if (unitNum && !isNaN(unitNum) && unitNum > 0) {
+                if (subj === 'ICT') unitsICT.add(unitNum);
+                else if (subj === 'ET') unitsET.add(unitNum);
+                else if (subj === 'SFT') unitsSFT.add(unitNum);
+              }
+            });
+
+            subjectCoverageUnits.ICT = unitsICT;
+            subjectCoverageUnits.ET = unitsET;
+            subjectCoverageUnits.SFT = unitsSFT;
+
+            try {
+              localStorage.setItem('al_subject_coverage_cache', JSON.stringify({
+                ICT: Array.from(unitsICT),
+                ET: Array.from(unitsET),
+                SFT: Array.from(unitsSFT),
+                timestamp: Date.now()
+              }));
+            } catch (_) {}
+          }
+        } catch (err) {
+          console.warn('Failed to load subject coverage from unit_paper:', err);
+        }
+      } else {
+        try {
+          const cached = localStorage.getItem('al_subject_coverage_cache');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed.ICT) subjectCoverageUnits.ICT = new Set(parsed.ICT);
+            if (parsed.ET) subjectCoverageUnits.ET = new Set(parsed.ET);
+            if (parsed.SFT) subjectCoverageUnits.SFT = new Set(parsed.SFT);
+          }
+        } catch (_) {}
+      }
+    }
+
     // Refresh entire analytics view
     async function refreshAnalyticsData() {
       if (navigator.onLine) {
@@ -2321,6 +2716,11 @@
         await loadAllSessions();
       } catch (e) {
         console.warn('loadAllSessions error:', e);
+      }
+      try {
+        await loadSubjectCoverageFromUnitPaper();
+      } catch (e) {
+        console.warn('loadSubjectCoverageFromUnitPaper error:', e);
       }
       try { renderKPIs(); } catch (e) { console.error('renderKPIs error:', e); }
       try { renderComprehensiveHeatmap(); } catch (e) { console.error('renderComprehensiveHeatmap error:', e); }
@@ -2537,14 +2937,6 @@
       currentHeatmapWeeks = weeks;
       document.querySelectorAll('.timeframe-tab-btn').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
-      if (weeks === '1D') {
-        currentDetailPeriod = 'today';
-        const pBtn = document.querySelector('.period-tab-btn[onclick*="today"]');
-        if (pBtn) {
-          document.querySelectorAll('.period-tab-btn').forEach(b => b.classList.remove('active'));
-          pBtn.classList.add('active');
-        }
-      }
       renderComprehensiveHeatmap();
     }
 
@@ -2569,14 +2961,12 @@
         subjectDetailMap[ds].sessions.push(s);
       });
 
-      // Calculate weeks count dynamically (support '1D', '1W', '1M', '3M', '1Y', 'ALL')
-      let weeksCount = 5; // Default for 1M
-      if (currentHeatmapWeeks === '1D' || currentHeatmapWeeks === '1W') {
-        weeksCount = 1;
-      } else if (currentHeatmapWeeks === '1M') {
-        weeksCount = 5;
-      } else if (currentHeatmapWeeks === '3M') {
+      // Calculate weeks count dynamically (strictly support '3M', '6M', '1Y', 'ALL')
+      let weeksCount = 26; // Default to 6 Months
+      if (currentHeatmapWeeks === '3M') {
         weeksCount = 13;
+      } else if (currentHeatmapWeeks === '6M') {
+        weeksCount = 26;
       } else if (currentHeatmapWeeks === '1Y') {
         weeksCount = 52;
       } else if (currentHeatmapWeeks === 'ALL') {
@@ -2589,9 +2979,9 @@
           }
         });
         const spanWeeks = Math.ceil((Date.now() - earliestTime) / (7 * 86400000));
-        weeksCount = Math.max(5, Math.min(104, spanWeeks + 2)); // Minimum 5 weeks, padded
+        weeksCount = Math.max(13, Math.min(104, spanWeeks + 2)); // Minimum 13 weeks, padded
       } else {
-        weeksCount = Number(currentHeatmapWeeks) || 5;
+        weeksCount = Number(currentHeatmapWeeks) || 26;
       }
 
       const totalDays = weeksCount * 7;
@@ -2817,23 +3207,25 @@
 
     // Helper: Filter sessions by timeframe (1d, 7d, 14d, 1m, 3m, 1y, all)
     function filterSessionsByTimeframe(sessions, tf) {
-      if (!tf || tf === 'all') return sessions;
+      if (!tf || tf === 'all') return [...sessions];
       const now = new Date();
-      let days = 14;
-      if (tf === '1d') days = 1;
-      else if (tf === '7d') days = 7;
-      else if (tf === '14d') days = 14;
-      else if (tf === '1m') days = 30;
-      else if (tf === '3m') days = 90;
-      else if (tf === '1y') days = 365;
-
-      const cutoff = new Date(now.getTime() - days * 86400000);
-      return sessions.filter(s => {
-        const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
-        if (!ds) return false;
-        const d = new Date(ds + 'T23:59:59');
-        return d >= cutoff && d <= now;
-      });
+      let ms = 14 * 86400000;
+      if (tf === '1d') {
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        return sessions.filter(s => getSessionTimestamp(s) >= startOfToday);
+      } else if (tf === '7d') {
+        ms = 7 * 86400000;
+      } else if (tf === '14d') {
+        ms = 14 * 86400000;
+      } else if (tf === '1m') {
+        ms = 30 * 86400000;
+      } else if (tf === '3m') {
+        ms = 90 * 86400000;
+      } else if (tf === '1y') {
+        ms = 365 * 86400000;
+      }
+      const cutoffTime = now.getTime() - ms;
+      return sessions.filter(s => getSessionTimestamp(s) >= cutoffTime);
     }
 
     // Chart Timeframe Setters
@@ -2873,51 +3265,59 @@
       });
 
       const total = subjMins.ICT + subjMins.ET + subjMins.SFT;
+      const chartLabels = total > 0 ? ['ICT', 'ET', 'SFT'] : ['දත්ත නොමැත (No Data)'];
+      const chartData = total > 0 ? [subjMins.ICT, subjMins.ET, subjMins.SFT] : [1];
+      const chartColors = total > 0 ? ['#20bf6b', '#0984e3', '#8854d0'] : ['#2d3748'];
 
       try {
-        const doughnutCtx = doughnutEl.getContext('2d');
-        if (subjectChartInstance) subjectChartInstance.destroy();
-
-        subjectChartInstance = new Chart(doughnutCtx, {
-          type: 'doughnut',
-          data: {
-            labels: ['ICT', 'ET', 'SFT'],
-            datasets: [{
-              data: total > 0 ? [subjMins.ICT, subjMins.ET, subjMins.SFT] : [1, 1, 1],
-              backgroundColor: total > 0 ? ['#20bf6b', '#0984e3', '#8854d0'] : ['#2d3748', '#2d3748', '#2d3748'],
-              borderColor: '#090d14',
-              borderWidth: 3,
-              hoverOffset: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  color: '#f0f6fc',
-                  font: { family: 'Poppins', size: 11, weight: '700' },
-                  padding: 14
-                }
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(ctx) {
-                    if (total === 0) return ' දත්ත නොමැත (No data)';
-                    const val = ctx.raw || 0;
-                    const pct = total > 0 ? Math.round((val / total) * 100) : 0;
-                    return ` ${ctx.label}: ${val} mins (${pct}%)`;
+        if (subjectChartInstance) {
+          subjectChartInstance.data.labels = chartLabels;
+          subjectChartInstance.data.datasets[0].data = chartData;
+          subjectChartInstance.data.datasets[0].backgroundColor = chartColors;
+          subjectChartInstance.update();
+        } else {
+          const doughnutCtx = doughnutEl.getContext('2d');
+          subjectChartInstance = new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: {
+              labels: chartLabels,
+              datasets: [{
+                data: chartData,
+                backgroundColor: chartColors,
+                borderColor: '#090d14',
+                borderWidth: 3,
+                hoverOffset: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: '#f0f6fc',
+                    font: { family: 'Poppins', size: 11, weight: '700' },
+                    padding: 14
+                  }
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(ctx) {
+                      if (total === 0) return ' දත්ත නොමැත (No data)';
+                      const val = ctx.raw || 0;
+                      const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                      return ` ${ctx.label}: ${val} mins (${pct}%)`;
+                    }
                   }
                 }
-              }
-            },
-            cutout: '68%'
-          }
-        });
+              },
+              cutout: '68%'
+            }
+          });
+        }
       } catch (err) {
-        console.error('Error creating doughnut chart:', err);
+        console.error('Error rendering doughnut chart:', err);
       }
     }
 
@@ -3107,12 +3507,25 @@
       renderTrendBarChart();
     }
 
-    // 4. Day-of-Week & Active Times Habit Matrix
+    // 4. 24 × 7 Day-of-Week & Active Times Habit Matrix
+    function showHabitCellDetail(dayName, daySinhala, startHour, endHour, mins, count, cellEl) {
+      document.querySelectorAll('.habit-cell-24').forEach(c => c.classList.remove('active-tap'));
+      if (cellEl) cellEl.classList.add('active-tap');
+      const infoEl = document.getElementById('habitActiveInfo');
+      if (infoEl) {
+        if (mins > 0) {
+          infoEl.innerHTML = `📅 <strong>${dayName} (${daySinhala})</strong> ${startHour} – ${endHour}: <span style="color:#a29bfe; font-weight:700;">${mins} mins</span> (${count} ${count === 1 ? 'session' : 'sessions'})`;
+        } else {
+          infoEl.innerHTML = `📅 <strong>${dayName} (${daySinhala})</strong> ${startHour} – ${endHour}: <span style="color:var(--text-muted);">0 mins (No sessions)</span>`;
+        }
+      }
+    }
+
     function renderWeeklyHabitMatrix() {
       const tbody = document.getElementById('habitMatrixBody');
       if (!tbody) return;
 
-      const DAYS = [
+      const DAYS_ORDER = [
         { key: 1, name: 'Monday', sinhala: 'සඳුදා' },
         { key: 2, name: 'Tuesday', sinhala: 'අඟහරුවාදා' },
         { key: 3, name: 'Wednesday', sinhala: 'බදාදා' },
@@ -3122,30 +3535,14 @@
         { key: 0, name: 'Sunday', sinhala: 'ඉරිදා' }
       ];
 
-      const SLOTS = ['early_morning', 'morning', 'afternoon', 'evening', 'late_night'];
-
       const matrix = {};
-      DAYS.forEach(d => {
-        matrix[d.key] = {
-          early_morning: { mins: 0, count: 0 },
-          morning: { mins: 0, count: 0 },
-          afternoon: { mins: 0, count: 0 },
-          evening: { mins: 0, count: 0 },
-          late_night: { mins: 0, count: 0 },
-          totalMins: 0,
-          totalCount: 0
-        };
+      DAYS_ORDER.forEach(d => {
+        matrix[d.key] = {};
+        for (let h = 0; h < 24; h++) {
+          matrix[d.key][h] = { mins: 0, count: 0 };
+        }
       });
 
-      const colTotals = {
-        early_morning: { mins: 0, count: 0 },
-        morning: { mins: 0, count: 0 },
-        afternoon: { mins: 0, count: 0 },
-        evening: { mins: 0, count: 0 },
-        late_night: { mins: 0, count: 0 }
-      };
-      let grandTotalMins = 0;
-      let grandTotalCount = 0;
       let maxCellMins = 0;
 
       allSessions.forEach(s => {
@@ -3155,108 +3552,89 @@
         let dObj = null;
         if (s.start_time) dObj = new Date(s.start_time);
         else if (s.created_at) dObj = new Date(s.created_at);
-        else if (s.session_date) dObj = new Date(s.session_date + 'T12:00:00');
+        else if (s.session_date) {
+          const timeStr = s.timer_start_time || '12:00';
+          dObj = new Date(`${s.session_date}T${timeStr.length === 5 ? timeStr + ':00' : timeStr}`);
+        }
         if (!dObj || isNaN(dObj.getTime())) dObj = new Date();
 
         const dayKey = dObj.getDay();
         const hr = dObj.getHours();
-        let slotId = 'late_night';
-        if (hr >= 4 && hr < 8) slotId = 'early_morning';
-        else if (hr >= 8 && hr < 12) slotId = 'morning';
-        else if (hr >= 12 && hr < 17) slotId = 'afternoon';
-        else if (hr >= 17 && hr < 21) slotId = 'evening';
 
-        if (matrix[dayKey] && matrix[dayKey][slotId]) {
-          matrix[dayKey][slotId].mins += mins;
-          matrix[dayKey][slotId].count++;
-          matrix[dayKey].totalMins += mins;
-          matrix[dayKey].totalCount++;
-
-          colTotals[slotId].mins += mins;
-          colTotals[slotId].count++;
-          grandTotalMins += mins;
-          grandTotalCount++;
-
-          if (matrix[dayKey][slotId].mins > maxCellMins) {
-            maxCellMins = matrix[dayKey][slotId].mins;
+        if (matrix[dayKey] && matrix[dayKey][hr]) {
+          matrix[dayKey][hr].mins += mins;
+          matrix[dayKey][hr].count++;
+          if (matrix[dayKey][hr].mins > maxCellMins) {
+            maxCellMins = matrix[dayKey][hr].mins;
           }
         }
       });
 
-      const getHeatStyle = (mins) => {
-        if (mins === 0) return 'background: transparent; color: var(--text-dim);';
-        const intensity = Math.min(1, Math.max(0.15, mins / (maxCellMins || 60)));
-        const bgAlpha = (intensity * 0.45).toFixed(2);
-        return `background: rgba(108, 92, 231, ${bgAlpha}); color: #ffffff; font-weight: 700; border: 1px solid rgba(108, 92, 231, 0.4);`;
-      };
-
-      const rowsHtml = DAYS.map(d => {
-        const dayData = matrix[d.key];
-        const dayTotalHrs = (dayData.totalMins / 60).toFixed(1);
-
-        const slotTds = SLOTS.map(slotId => {
-          const st = dayData[slotId];
-          if (st.mins === 0) {
-            return `<td style="color:#484f58; text-align:center; font-size:11px;">—</td>`;
+      const rowsHtml = DAYS_ORDER.map(d => {
+        let cellsHtml = '';
+        for (let h = 0; h < 24; h++) {
+          const st = matrix[d.key][h];
+          const mins = st.mins;
+          let lvl = 0;
+          if (mins > 0) {
+            if (maxCellMins <= 60) {
+              if (mins >= 45) lvl = 4;
+              else if (mins >= 30) lvl = 3;
+              else if (mins >= 15) lvl = 2;
+              else lvl = 1;
+            } else {
+              const ratio = mins / maxCellMins;
+              if (ratio >= 0.75) lvl = 4;
+              else if (ratio >= 0.5) lvl = 3;
+              else if (ratio >= 0.25) lvl = 2;
+              else lvl = 1;
+            }
           }
-          const hrs = st.mins >= 60 ? (st.mins / 60).toFixed(1) + 'h' : `${st.mins}m`;
-          return `
-            <td style="${getHeatStyle(st.mins)}; text-align:center;">
-              <div style="font-size:12px;">${hrs}</div>
-              <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${st.count} sess</div>
+          const startHour = String(h).padStart(2, '0') + ':00';
+          const endHour = String((h + 1) % 24).padStart(2, '0') + ':00';
+          const tip = `${d.name} (${d.sinhala}) ${startHour} – ${endHour}: ${mins} mins (${st.count} ${st.count === 1 ? 'session' : 'sessions'})`;
+
+          cellsHtml += `
+            <td class="habit-cell-24 habit-cell-lvl-${lvl}"
+                data-day="${d.name}"
+                data-hour="${startHour}"
+                data-mins="${mins}"
+                data-count="${st.count}"
+                title="${escapeHtml(tip)}"
+                onmouseenter="showHabitCellDetail('${d.name}', '${d.sinhala}', '${startHour}', '${endHour}', ${mins}, ${st.count}, this)"
+                onclick="showHabitCellDetail('${d.name}', '${d.sinhala}', '${startHour}', '${endHour}', ${mins}, ${st.count}, this)">
             </td>
           `;
-        }).join('');
+        }
 
         return `
           <tr>
-            <td style="font-weight:600; color:#f0f6fc; white-space:nowrap;">
+            <td class="habit-day-td-sticky">
               <div>${d.name}</div>
-              <small style="font-size:10px; color:var(--text-muted);">${d.sinhala}</small>
+              <small style="font-size:9.5px; color:var(--text-muted); font-weight:normal;">${d.sinhala}</small>
             </td>
-            ${slotTds}
-            <td style="text-align:center; font-weight:700; color:#55efc4; background: rgba(85, 239, 196, 0.06);">
-              <div style="font-size:12px;">${dayData.totalMins >= 60 ? dayTotalHrs + 'h' : dayData.totalMins + 'm'}</div>
-              <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${dayData.totalCount} sess</div>
-            </td>
+            ${cellsHtml}
           </tr>
         `;
       }).join('');
 
-      // Summary footer row
-      const colTotalTds = SLOTS.map(slotId => {
-        const st = colTotals[slotId];
-        if (st.mins === 0) {
-          return `<td style="color:#484f58; text-align:center; font-size:11px;">—</td>`;
-        }
-        const hrs = st.mins >= 60 ? (st.mins / 60).toFixed(1) + 'h' : `${st.mins}m`;
-        return `
-          <td style="text-align:center; font-weight:700; color:#a29bfe; background:rgba(108, 92, 231, 0.1);">
-            <div style="font-size:12px;">${hrs}</div>
-            <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${st.count} sess</div>
-          </td>
-        `;
-      }).join('');
-
-      const grandTotalHrs = (grandTotalMins / 60).toFixed(1);
-      const footerRow = `
-        <tr style="border-top: 2px solid var(--border-color); background: rgba(255,255,255,0.02);">
-          <td style="font-weight:700; color:#f0f6fc;">මුළු එකතුව (Total)</td>
-          ${colTotalTds}
-          <td style="text-align:center; font-weight:800; color:#20bf6b; background: rgba(32, 191, 107, 0.12);">
-            <div style="font-size:13px;">${grandTotalMins >= 60 ? grandTotalHrs + 'h' : grandTotalMins + 'm'}</div>
-            <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${grandTotalCount} sess</div>
-          </td>
-        </tr>
-      `;
-
-      tbody.innerHTML = rowsHtml + footerRow;
+      tbody.innerHTML = rowsHtml;
     }
 
-    // 4. Peak Study Time Periods Filter & Renderer (Item 2 & 3)
+    // 4. Peak Study Time Periods Filter & Renderer (Items 2 & 3)
     function setSlotFilter(subj, btn) {
       currentSlotFilter = subj;
       document.querySelectorAll('.slot-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderPeakTimeSlots();
+    }
+
+    function setPeakTimeframe(tf, btn) {
+      currentPeakTimeframe = tf;
+      const container = document.getElementById('peakTimeframeTabs');
+      if (container) {
+        container.querySelectorAll('.chart-tab-btn').forEach(b => b.classList.remove('active'));
+      }
       if (btn) btn.classList.add('active');
       renderPeakTimeSlots();
     }
@@ -3305,7 +3683,11 @@
         }
       ];
 
-      const filteredSessions = allSessions.filter(s => {
+      // 1. Timeframe filter on allSessions before slot aggregation
+      const tfFiltered = filterSessionsByTimeframe(allSessions, currentPeakTimeframe);
+
+      // 2. Subject filter
+      const filteredSessions = tfFiltered.filter(s => {
         if (currentSlotFilter === 'ALL') return true;
         return (s.subject || '').toUpperCase() === currentSlotFilter;
       });
@@ -3326,7 +3708,10 @@
         let dObj = null;
         if (s.start_time) dObj = new Date(s.start_time);
         else if (s.created_at) dObj = new Date(s.created_at);
-        else if (s.session_date) dObj = new Date(s.session_date + 'T12:00:00');
+        else if (s.session_date) {
+          const timeStr = s.timer_start_time || '12:00';
+          dObj = new Date(`${s.session_date}T${timeStr.length === 5 ? timeStr + ':00' : timeStr}`);
+        }
         if (!dObj || isNaN(dObj.getTime())) dObj = new Date();
 
         const hr = dObj.getHours();
@@ -3364,14 +3749,14 @@
           highlightTitle.innerText = `Peak Focus Window (${currentSlotFilter}): ${peakCfg.name} (${peakCfg.range})`;
         }
         if (highlightDesc) {
-          highlightDesc.innerText = `ඔබ ${filterLabel} වැඩිපුරම අවධානයෙන් පාඩම් කර ඇත්තේ ${peakCfg.sinhala} කාලයේදීය — සම්පූර්ණ කාලයෙන් ${peakPct}% (${peakHours} පැය, සැසි ${slotStats[peakSlotId].count}).`;
+          highlightDesc.innerText = `ඔබ ${filterLabel} වැඩිපුරම අවධානයෙන් පාඩම් කර ඇත්තේ ${peakCfg.sinhala} කාලයේදීය — තෝරාගත් කාල පරාසයේ සම්පූර්ණ කාලයෙන් ${peakPct}% (${peakHours} පැය, සැසි ${slotStats[peakSlotId].count}).`;
         }
       } else {
         if (highlightTitle) {
           highlightTitle.innerText = `තවමත් දත්ත නොමැත (${currentSlotFilter})`;
         }
         if (highlightDesc) {
-          highlightDesc.innerText = `${filterLabel} තවමත් අධ්‍යයන සැසි සටහන් කර නොමැත. ටයිමරය හෝ Manual Entry භාවිතා කර පාඩම් කිරීම ආරම්භ කරන්න.`;
+          highlightDesc.innerText = `${filterLabel} තෝරාගත් කාල පරාසය තුළ කිසිදු අධ්‍යයන සැසියක් සටහන් කර නොමැත.`;
         }
       }
 
@@ -3412,12 +3797,12 @@
       }
     }
 
-    // 5. Subject-wise Progress & Target Tracking (Item 1)
+    // 5. Subject-wise Progress & Target Tracking (Item 1 & 6)
     function renderSubjectProgressSection() {
       const stats = {
-        ICT: { mins: 0, count: 0, units: new Set(), totalLessons: 13, name: 'තොරතුරු හා සන්නිවේදන තාක්ෂණය' },
-        ET: { mins: 0, count: 0, units: new Set(), totalLessons: 14, name: 'ඉංජිනේරු තාක්ෂණවේදය' },
-        SFT: { mins: 0, count: 0, units: new Set(), totalLessons: 23, name: 'තාක්ෂණවේදය සඳහා විද්‍යාව' }
+        ICT: { mins: 0, count: 0, units: new Set(subjectCoverageUnits.ICT), totalLessons: 13, name: 'තොරතුරු හා සන්නිවේදන තාක්ෂණය' },
+        ET: { mins: 0, count: 0, units: new Set(subjectCoverageUnits.ET), totalLessons: 14, name: 'ඉංජිනේරු තාක්ෂණවේදය' },
+        SFT: { mins: 0, count: 0, units: new Set(subjectCoverageUnits.SFT), totalLessons: 23, name: 'තාක්ෂණවේදය සඳහා විද්‍යාව' }
       };
       let grandTotalMins = 0;
 
@@ -3458,13 +3843,10 @@
       if (barSft) barSft.style.width = `${sftShare}%`;
 
       // Render cards for ICT, ET, SFT
-      const GOAL_HOURS = 25; // 25h goal benchmark per subject
-
       ['ICT', 'ET', 'SFT'].forEach(sub => {
         const d = stats[sub];
         const hrs = (d.mins / 60).toFixed(1);
-        const share = grandTotalMins > 0 ? Math.round((d.mins / grandTotalMins) * 100) : 0;
-        const goalPct = Math.min(100, Math.round((Number(hrs) / GOAL_HOURS) * 100));
+        const coveragePct = Math.min(100, Math.round((d.units.size / d.totalLessons) * 100));
 
         const prefix = sub === 'ICT' ? 'Ict' : sub === 'ET' ? 'Et' : 'Sft';
         const pctBadge = document.getElementById(`prog${prefix}PctBadge`);
@@ -3475,23 +3857,23 @@
         const targetSubEl = document.getElementById(`prog${prefix}TargetSub`);
         const statusBadgeEl = document.getElementById(`prog${prefix}StatusBadge`);
 
-        if (pctBadge) pctBadge.innerText = `${share}%`;
+        if (pctBadge) pctBadge.innerText = `${coveragePct}%`;
         if (hoursEl) hoursEl.innerText = `${hrs} Hrs`;
         if (sessEl) sessEl.innerText = d.count;
         if (unitsEl) unitsEl.innerText = `${d.units.size} / ${d.totalLessons} Units`;
-        if (wideBarEl) wideBarEl.style.width = `${goalPct}%`;
-        if (targetSubEl) targetSubEl.innerText = `${goalPct}% of ${GOAL_HOURS}h Goal`;
+        if (wideBarEl) wideBarEl.style.width = `${coveragePct}%`;
+        if (targetSubEl) targetSubEl.innerText = `${coveragePct}% Coverage (${hrs}h logged)`;
 
         if (statusBadgeEl) {
-          if (goalPct >= 100) {
+          if (coveragePct >= 100) {
             statusBadgeEl.innerText = 'Goal Reached 🏆';
             statusBadgeEl.style.background = 'rgba(32, 191, 107, 0.2)';
             statusBadgeEl.style.color = '#20bf6b';
-          } else if (goalPct >= 50) {
+          } else if (coveragePct >= 50) {
             statusBadgeEl.innerText = 'Strong Pace 🚀';
             statusBadgeEl.style.background = 'rgba(9, 132, 227, 0.2)';
             statusBadgeEl.style.color = '#0984e3';
-          } else if (d.mins > 0) {
+          } else if (d.units.size > 0 || d.mins > 0) {
             statusBadgeEl.innerText = 'In Progress ⏳';
             statusBadgeEl.style.background = 'rgba(253, 203, 110, 0.2)';
             statusBadgeEl.style.color = '#fdcb6e';
@@ -3507,10 +3889,12 @@
     // 6. Render Sessions History Table & Pagination
     function getFilteredHistorySessions() {
       const tfFiltered = filterSessionsByTimeframe(allSessions, currentHistoryTimeframe);
-      return tfFiltered.filter(s => {
+      const subjectFiltered = tfFiltered.filter(s => {
         if (currentHistoryFilter === 'ALL') return true;
         return (s.subject || '').toUpperCase() === currentHistoryFilter;
       });
+      // Enforce strict descending sorting by session start time (newest sessions first) BEFORE pagination slicing
+      return subjectFiltered.sort((a, b) => getSessionTimestamp(b) - getSessionTimestamp(a));
     }
 
     function setHistoryTimeframe(tf, btn) {
@@ -3625,73 +4009,17 @@
       }).join('');
     }
 
-    async function editSessionDuration(sessionId) {
+    function editSessionDuration(sessionId) {
       const sess = allSessions.find(s => s.id === sessionId);
       if (!sess) return;
-      const current = sess.duration_minutes || 50;
-      const val = prompt('සැසියේ නිවැරදි අධ්‍යයන කාලය (මිනිත්තු වලින්):', current);
-      if (val === null) return;
-      const num = parseInt(val, 10);
-      if (isNaN(num) || num <= 0 || num > 480) {
-        alert('කරුණාකර වලංගු මිනිත්තු සංඛ්‍යාවක් ලබාදෙන්න (1 - 480).');
-        return;
-      }
-      sess.duration_minutes = num;
-      sess.synced = false;
-      saveCachedSessions(allSessions);
-
-      // Mutate local IndexedDB immediately
-      try {
-        const db = await openOfflineDB();
-        if (db) {
-          const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
-          const tx = db.transaction(storeName, 'readwrite');
-          tx.objectStore(storeName).put(sess);
-        }
-      } catch (_) {}
-
-      const payload = {
-        id: sessionId,
-        duration_minutes: num
-      };
-
-      const sb = getSupabase();
-      if (navigator.onLine && sb) {
-        try {
-          let { error } = await sb.from('study_timer_sessions').update({ duration_minutes: num }).eq('id', sessionId);
-          if (error) {
-            const fbRes = await sb.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId);
-            if (fbRes.error) throw fbRes.error;
-          }
-          sess.synced = true;
-          saveCachedSessions(allSessions);
-          try {
-            const db = await openOfflineDB();
-            if (db) {
-              const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
-              const tx = db.transaction(storeName, 'readwrite');
-              tx.objectStore(storeName).put(sess);
-            }
-          } catch (_) {}
-        } catch (err) {
-          console.warn('Direct update failed, enqueuing to sync_queue:', err);
-          await enqueueSyncTask('UPDATE', 'study_timer_sessions', payload);
-        }
-      } else {
-        await enqueueSyncTask('UPDATE', 'study_timer_sessions', payload);
-      }
-
-      await refreshAnalyticsData();
+      openEditDurationModal(sess);
     }
 
     async function deleteSession(sessionId) {
       if (!confirm('මෙම අධ්‍යයන සැසිය ලැයිස්තුවෙන් ඉවත් කිරීමට අවශ්‍ය බව තහවුරු කරන්නද?')) return;
 
-      const pin = prompt('මෙම සැසිය ඉවත් කිරීමට ආරක්ෂක PIN අංකය ඇතුළත් කරන්න (Security PIN):');
-      if (pin !== '3408') {
-        alert('වලංගු නොවන PIN අංකයකි / Invalid PIN');
-        return;
-      }
+      const ok = await requestPinVerification();
+      if (!ok) return;
 
       allSessions = allSessions.filter(s => s.id !== sessionId);
       saveCachedSessions(allSessions);
@@ -3765,17 +4093,19 @@
 
     async function saveManualSession() {
       const dur = parseInt(document.getElementById('manualDurationInput').value, 10);
+      const modalErr = document.getElementById('manualModalErrorMsg');
       if (isNaN(dur) || dur <= 0 || dur > 480) {
-        alert('කරුණාකර වලංගු මිනිත්තු සංඛ්‍යාවක් ලබාදෙන්න (1 - 480).');
+        if (modalErr) {
+          modalErr.textContent = 'කරුණාකර වලංගු මිනිත්තු සංඛ්‍යාවක් ලබාදෙන්න (1 - 480).';
+          modalErr.style.display = 'block';
+        }
         return;
       }
+      if (modalErr) modalErr.style.display = 'none';
 
-      // Security PIN prompt for manual addition
-      const pin = prompt('කරුණාකර PIN අංකය ඇතුළත් කරන්න (Security PIN):');
-      if (pin !== '3408') {
-        alert('වලංගු නොවන PIN අංකයකි / Invalid PIN');
-        return;
-      }
+      // Security PIN verification modal
+      const ok = await requestPinVerification();
+      if (!ok) return;
 
       const subj = document.getElementById('manualSubjSelect').value;
       const unitVal = document.getElementById('manualUnitSelect').value;
@@ -3913,6 +4243,40 @@
     window.enqueueSyncTask = enqueueSyncTask;
     window.processSyncQueue = processSyncQueue;
     window.updateSyncUI = updateSyncUI;
+    window.setPeakTimeframe = setPeakTimeframe;
+    window.showHabitCellDetail = showHabitCellDetail;
+    window.confirmPinModal = confirmPinModal;
+    window.cancelPinModal = cancelPinModal;
+    window.closePinModal = closePinModal;
+    window.requestPinVerification = requestPinVerification;
+    window.openEditDurationModal = openEditDurationModal;
+    window.closeEditDurationModalDirect = closeEditDurationModalDirect;
+    window.closeEditDurationModal = closeEditDurationModal;
+    window.saveEditedDurationDirect = saveEditedDurationDirect;
+
+    // Keyboard support for Enter/Escape on PIN and Duration modals
+    document.addEventListener('keydown', (e) => {
+      const pinModal = document.getElementById('securityPinModal');
+      if (pinModal && pinModal.style.display === 'flex') {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          confirmPinModal();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          cancelPinModal();
+        }
+      }
+      const durModal = document.getElementById('editDurationModal');
+      if (durModal && durModal.style.display === 'flex') {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          saveEditedDurationDirect();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          closeEditDurationModalDirect();
+        }
+      }
+    });
 
     // Storage and online listeners
     window.addEventListener('storage', (e) => {
