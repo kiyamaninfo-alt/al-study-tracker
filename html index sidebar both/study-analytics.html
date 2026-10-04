@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="si" class="dark-mode">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Analytics & Focus Intelligence — Sinethmi A/L 2028</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #8c7ae6;
+      --primary-dark: #6c5ce7;
+      --accent-green: #20bf6b;
+      --accent-blue: #0984e3;
+      --accent-purple: #8854d0;
+      --accent-yellow: #fdcb6e;
+      --accent-red: #eb4d4b;
+      --bg-dark: #030508;
+      --card-bg: #090d14;
+      --card-inner: #0e131d;
+      --border-color: #1e2530;
+      --border-subtle: #161d28;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif;
+      background: linear-gradient(135deg, #030508 0%, #080c12 50%, #0a0e16 100%) !important;
+      color: var(--text-main);
+      padding: 16px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    /* Header Bar */
+    .analytics-header-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-inner);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-back-home:hover {
+      background: #1a2230;
+      border-color: #6c5ce7;
+      color: #a29bfe;
+      transform: translateX(-2px);
+    }
+    .header-titles h1 {
+      font-size: 17px;
+      font-weight: 800;
+      background: linear-gradient(45deg, #8c7ae6, #00cec9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .header-titles p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .sync-status-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(32, 191, 107, 0.12);
+      color: #20bf6b;
+      border: 1px solid rgba(32, 191, 107, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .sync-status-badge.offline {
+      background: rgba(253, 203, 110, 0.15);
+      color: #fdcb6e;
+      border-color: rgba(253, 203, 110, 0.3);
+    }
+    .btn-action-sm {
+      background: var(--card-inner);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 9px;
+      padding: 5px 11px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-action-sm:hover {
+      background: #1a2230;
+      border-color: #6c5ce7;
+    }
+
+    /* Executive KPI Cards Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 1024px) {
+      .kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 680px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 440px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary);
+    }
+    .kpi-card.streak::before { background: #ff7675; }
+    .kpi-card.time::before { background: #0984e3; }
+    .kpi-card.today::before { background: #00cec9; }
+    .kpi-card.avg::before { background: #a29bfe; }
+    .kpi-card.count::before { background: #55efc4; }
+
+    .kpi-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .kpi-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kpi-icon {
+      font-size: 18px;
+    }
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.1;
+      font-family: 'Poppins', monospace, sans-serif;
+    }
+    .kpi-sub {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* Section Card */
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .section-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+    .section-title-icon {
+      font-size: 18px;
+    }
+    .timeframe-tabs {
+      display: flex;
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 3px;
+    }
+    .timeframe-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .timeframe-tab-btn.active {
+      background: #1e2530;
+      color: #58a6ff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    /* Comprehensive Heatmap Container */
+    .heatmap-outer-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 8px 0;
+    }
+    .heatmap-layout {
+      display: inline-block;
+      min-width: max-content;
+    }
+    .heatmap-months-row {
+      display: flex;
+      font-size: 9.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      padding-left: 24px;
+      height: 14px;
+    }
+    .heatmap-body {
+      display: flex;
+      gap: 6px;
+    }
+    .heatmap-day-labels {
+      display: grid;
+      grid-template-rows: repeat(7, 12px);
+      gap: 4px;
+      font-size: 8.5px;
+      color: var(--text-dim);
+      font-weight: 600;
+      line-height: 12px;
+      width: 18px;
+    }
+    .heatmap-matrix {
+      display: grid;
+      grid-template-rows: repeat(7, 12px);
+      grid-auto-flow: column;
+      gap: 4px;
+    }
+    .heat-cell {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      background: #121822;
+      border: 1px solid #1a222f;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.12s ease, outline 0.12s ease;
+    }
+    .heat-cell:hover, .heat-cell.selected {
+      transform: scale(1.35);
+      z-index: 10;
+      outline: 2px solid #6c5ce7;
+    }
+    .heat-cell.level-0 { background: #121822; border-color: #1a222f; }
+    .heat-cell.level-1 { background: #1f3a52; border-color: #2b4c68; }
+    .heat-cell.level-2 { background: #00b894; border-color: #00cec9; }
+    .heat-cell.level-3 { background: #00cec9; border-color: #81ecec; }
+    .heat-cell.level-4 { background: #6c5ce7; border-color: #a29bfe; }
+
+    .heatmap-legend-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 10px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .legend-scale-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .legend-boxes {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    /* Interactive Day Detail Card */
+    .day-detail-banner {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .day-detail-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .day-detail-date {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .day-detail-mins {
+      font-size: 12px;
+      font-weight: 800;
+      color: #00cec9;
+      background: rgba(0, 206, 201, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .day-detail-subjects {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 860px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .chart-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .chart-box-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chart-canvas-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Subject Breakdown 3-Cards Row */
+    .subj-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 768px) {
+      .subj-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .subj-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+    .subj-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .subj-pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 7px;
+      text-transform: uppercase;
+    }
+    .subj-pill.ict { background: rgba(32, 191, 107, 0.18); color: #20bf6b; }
+    .subj-pill.et { background: rgba(9, 132, 227, 0.18); color: #0984e3; }
+    .subj-pill.sft { background: rgba(136, 84, 208, 0.18); color: #8854d0; }
+    .subj-total-mins {
+      font-size: 16px;
+      font-weight: 800;
+      font-family: 'Poppins', monospace, sans-serif;
+    }
+    .subj-progress-track {
+      background: #161d28;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 8px 0 6px;
+    }
+    .subj-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+    .subj-progress-fill.ict { background: #20bf6b; }
+    .subj-progress-fill.et { background: #0984e3; }
+    .subj-progress-fill.sft { background: #8854d0; }
+    .subj-card-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    /* Sessions History Table */
+    .history-filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .filter-pills-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .filter-btn.active {
+      background: #1e2530;
+      color: #58a6ff;
+      border-color: #58a6ff;
+    }
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .sessions-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      text-align: left;
+    }
+    .sessions-table th {
+      background: var(--card-inner);
+      color: var(--text-muted);
+      padding: 9px 12px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+    .sessions-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--card-bg);
+      color: var(--text-main);
+    }
+    .sessions-table tr:last-child td {
+      border-bottom: none;
+    }
+    .sessions-table tr:hover td {
+      background: #0d121b;
+    }
+    .btn-table-action {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 2.5px 7px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-table-action:hover {
+      background: #1a2230;
+      color: #f0f6fc;
+    }
+    .btn-table-del:hover {
+      background: rgba(235, 77, 75, 0.15);
+      color: #ff7675;
+      border-color: #eb4d4b;
+    }
+
+    /* Modal for Manual Entry */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      z-index: 99999;
+    }
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 95%;
+      max-width: 440px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+    .modal-box-head {
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #6c5ce7, #8c7ae6);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 13.5px;
+    }
+    .modal-box-body {
+      padding: 16px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      padding: 8px 10px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #6c5ce7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top Navigation & Header -->
+    <header class="analytics-header-card">
+      <div class="header-left">
+        <a href="index.html" class="btn-back-home" title="ආපසු Dashboard වෙත යන්න">
+          <span>←</span> <span>Dashboard</span>
+        </a>
+        <div class="header-titles">
+          <h1>📊 Study Analytics & Focus Intelligence</h1>
+          <p>ගැඹුරු අධ්‍යයන දත්ත, අඛණ්ඩතා Heatmap සහ විෂය ප්‍රගති විශ්ලේෂණය</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="sync-status-badge" id="analyticsSyncBadge">
+          <span>🟢</span> <span>Online Synced</span>
+        </div>
+        <button type="button" class="btn-action-sm" onclick="openManualSessionModal()">
+          <span>➕ Add Session</span>
+        </button>
+        <button type="button" class="btn-action-sm" onclick="refreshAnalyticsData()" title="නැවුම් කරන්න">
+          <span>🔄 Refresh</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Top Executive KPIs -->
+    <section class="kpi-grid">
+      <div class="kpi-card streak">
+        <div class="kpi-top">
+          <span class="kpi-title">Current Streak</span>
+          <span class="kpi-icon">🔥</span>
+        </div>
+        <div class="kpi-val"><span id="kpiCurrentStreak">0</span> <small style="font-size:13px; font-weight:600;">Days</small></div>
+        <div class="kpi-sub">Best Record: <strong id="kpiBestStreak" style="color:#f0f6fc;">0</strong> Days</div>
+      </div>
+
+      <div class="kpi-card time">
+        <div class="kpi-top">
+          <span class="kpi-title">Total Focus Time</span>
+          <span class="kpi-icon">⏱️</span>
+        </div>
+        <div class="kpi-val"><span id="kpiTotalHours">0.0</span> <small style="font-size:13px; font-weight:600;">Hrs</small></div>
+        <div class="kpi-sub">Total: <strong id="kpiTotalMinutes" style="color:#0984e3;">0</strong> Mins</div>
+      </div>
+
+      <div class="kpi-card today">
+        <div class="kpi-top">
+          <span class="kpi-title">Today's Focus</span>
+          <span class="kpi-icon">📅</span>
+        </div>
+        <div class="kpi-val"><span id="kpiTodayMins">0</span> <small style="font-size:13px; font-weight:600;">Mins</small></div>
+        <div class="kpi-sub">Daily Target: <strong style="color:#00cec9;">180m</strong></div>
+      </div>
+
+      <div class="kpi-card avg">
+        <div class="kpi-top">
+          <span class="kpi-title">Daily Average (7d)</span>
+          <span class="kpi-icon">📈</span>
+        </div>
+        <div class="kpi-val"><span id="kpiWeeklyAvg">0</span> <small style="font-size:13px; font-weight:600;">m/day</small></div>
+        <div class="kpi-sub">This Week: <strong id="kpiThisWeekTotal" style="color:#a29bfe;">0</strong> Mins</div>
+      </div>
+
+      <div class="kpi-card count">
+        <div class="kpi-top">
+          <span class="kpi-title">Sessions Finished</span>
+          <span class="kpi-icon">🎯</span>
+        </div>
+        <div class="kpi-val"><span id="kpiTotalSessions">0</span> <small style="font-size:13px; font-weight:600;">Sess</small></div>
+        <div class="kpi-sub">Avg Session: <strong id="kpiAvgSessionMins" style="color:#55efc4;">50</strong> Mins</div>
+      </div>
+    </section>
+
+    <!-- Comprehensive GitHub-Style Consistency Heatmap -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">🗓️</span>
+          <span>Study Consistency Heatmap (අඛණ්ඩතා දර්ශකය)</span>
+        </div>
+        <div class="timeframe-tabs">
+          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks(16, this)">16 Weeks</button>
+          <button type="button" class="timeframe-tab-btn active" onclick="setTimeframeWeeks(26, this)">6 Months</button>
+          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks(52, this)">1 Year</button>
+        </div>
+      </div>
+
+      <div class="heatmap-outer-wrapper">
+        <div class="heatmap-layout">
+          <div class="heatmap-months-row" id="heatmapMonthsRow">
+            <!-- Dynamic month labels -->
+          </div>
+          <div class="heatmap-body">
+            <div class="heatmap-day-labels">
+              <span>M</span>
+              <span></span>
+              <span>W</span>
+              <span></span>
+              <span>F</span>
+              <span></span>
+              <span>S</span>
+            </div>
+            <div class="heatmap-matrix" id="fullHeatmapGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="heatmap-legend-row">
+        <div>
+          <span>Total Active Days: <strong id="legendActiveDays" style="color:#f0f6fc;">0</strong> / <span id="legendTotalDays">182</span></span>
+        </div>
+        <div class="legend-scale-wrap">
+          <span>Less</span>
+          <div class="legend-boxes">
+            <span class="heat-cell level-0" title="0 mins"></span>
+            <span class="heat-cell level-1" title="1 - 25 mins"></span>
+            <span class="heat-cell level-2" title="26 - 50 mins"></span>
+            <span class="heat-cell level-3" title="51 - 80 mins"></span>
+            <span class="heat-cell level-4" title="81+ mins"></span>
+          </div>
+          <span>More</span>
+        </div>
+      </div>
+
+      <!-- Interactive Clicked Day Details Card -->
+      <div class="day-detail-banner" id="dayDetailBanner">
+        <div class="day-detail-left">
+          <span style="font-size: 18px;">📌</span>
+          <div>
+            <div class="day-detail-date" id="selectedDateTxt">අද දින තොරතුරු (Today)</div>
+            <div style="font-size: 10px; color: var(--text-dim);" id="selectedDateSessionsCount">0 Sessions</div>
+          </div>
+          <div class="day-detail-mins" id="selectedDateMins">0 Mins Focused</div>
+        </div>
+        <div class="day-detail-subjects" id="selectedDateSubjects">
+          <!-- Subject tags -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Charts: Subject Breakdown & 14-Day Trend -->
+    <section class="charts-grid">
+      <!-- Subject Focus Distribution (Doughnut Chart) -->
+      <div class="chart-box">
+        <div class="chart-box-header">
+          <div class="chart-box-title">
+            <span>🍩</span> <span>විෂය අනුව කාලය බෙදීයාම (Subject Distribution)</span>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas id="subjectDoughnutChart"></canvas>
+        </div>
+      </div>
+
+      <!-- 14-Day Focus Trend (Bar Chart) -->
+      <div class="chart-box">
+        <div class="chart-box-header">
+          <div class="chart-box-title">
+            <span>📊</span> <span>පසුගිය දින 14 තුළ දෛනික ප්‍රගතිය (14-Day Trend)</span>
+          </div>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas id="dailyTrendBarChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Subject 3-Card Summary Deep-Dive -->
+    <section class="subj-cards-grid">
+      <!-- ICT Card -->
+      <div class="subj-card">
+        <div class="subj-card-head">
+          <span class="subj-pill ict">💻 ICT</span>
+          <span class="subj-total-mins" id="subjIctMins" style="color: #20bf6b;">0m</span>
+        </div>
+        <div class="subj-progress-track">
+          <div class="subj-progress-fill ict" id="subjIctBar" style="width: 0%;"></div>
+        </div>
+        <div class="subj-card-meta">
+          <span>Sessions: <strong id="subjIctCount" style="color:#f0f6fc;">0</strong></span>
+          <span>Share: <strong id="subjIctShare" style="color:#20bf6b;">0%</strong></span>
+        </div>
+      </div>
+
+      <!-- ET Card -->
+      <div class="subj-card">
+        <div class="subj-card-head">
+          <span class="subj-pill et">⚙️ ET</span>
+          <span class="subj-total-mins" id="subjEtMins" style="color: #0984e3;">0m</span>
+        </div>
+        <div class="subj-progress-track">
+          <div class="subj-progress-fill et" id="subjEtBar" style="width: 0%;"></div>
+        </div>
+        <div class="subj-card-meta">
+          <span>Sessions: <strong id="subjEtCount" style="color:#f0f6fc;">0</strong></span>
+          <span>Share: <strong id="subjEtShare" style="color:#0984e3;">0%</strong></span>
+        </div>
+      </div>
+
+      <!-- SFT Card -->
+      <div class="subj-card">
+        <div class="subj-card-head">
+          <span class="subj-pill sft">🔬 SFT</span>
+          <span class="subj-total-mins" id="subjSftMins" style="color: #8854d0;">0m</span>
+        </div>
+        <div class="subj-progress-track">
+          <div class="subj-progress-fill sft" id="subjSftBar" style="width: 0%;"></div>
+        </div>
+        <div class="subj-card-meta">
+          <span>Sessions: <strong id="subjSftCount" style="color:#f0f6fc;">0</strong></span>
+          <span>Share: <strong id="subjSftShare" style="color:#8854d0;">0%</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Focus Sessions History Table -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">📜</span>
+          <span>අධ්‍යයන සැසි වාර්තාව (Session History Log)</span>
+        </div>
+      </div>
+
+      <div class="history-filter-bar">
+        <div class="filter-pills-group">
+          <button type="button" class="filter-btn active" onclick="setHistoryFilter('ALL', this)">සියල්ල (All)</button>
+          <button type="button" class="filter-btn" onclick="setHistoryFilter('ICT', this)">💻 ICT</button>
+          <button type="button" class="filter-btn" onclick="setHistoryFilter('ET', this)">⚙️ ET</button>
+          <button type="button" class="filter-btn" onclick="setHistoryFilter('SFT', this)">🔬 SFT</button>
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted);">
+          Total Logged: <strong id="historyFilteredCount" style="color:#f0f6fc;">0</strong>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="sessions-table">
+          <thead>
+            <tr>
+              <th>දිනය සහ වේලාව</th>
+              <th>විෂය</th>
+              <th>පාඩම / ඒකකය (Full Lesson)</th>
+              <th>කාලය (Mins)</th>
+              <th>තත්ත්වය</th>
+              <th>ක්‍රියා</th>
+            </tr>
+          </thead>
+          <tbody id="sessionsTableBody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 18px;">දත්ත ලබාගනිමින්...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Manual Session Entry Modal -->
+  <div class="modal-overlay" id="manualSessionModal" onclick="closeManualSessionModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-box-head">
+        <span>➕ අධ්‍යයන සැසියක් සටහන් කරන්න (Manual Entry)</span>
+        <button type="button" onclick="closeManualSessionModalDirect()" style="background:transparent; border:none; color:white; font-size:16px; cursor:pointer;">✕</button>
+      </div>
+      <div class="modal-box-body">
+        <div class="form-group">
+          <label class="form-label">විෂය (Subject) *</label>
+          <select id="manualSubjSelect" class="form-control" onchange="populateManualUnits()">
+            <option value="ICT">💻 ICT - තොරතුරු තාක්ෂණය</option>
+            <option value="ET">⚙️ ET - ඉංජිනේරු තාක්ෂණවේදය</option>
+            <option value="SFT">🔬 SFT - තාක්ෂණවේදය සඳහා විද්‍යාව</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">පාඩම / ඒකකය (Full Lesson) *</label>
+          <select id="manualUnitSelect" class="form-control">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">අධ්‍යයන කාලය (මිනිත්තු / Minutes) *</label>
+          <input type="number" id="manualDurationInput" class="form-control" value="50" min="5" max="360">
+        </div>
+        <div class="form-group">
+          <label class="form-label">දිනය (Session Date) *</label>
+          <input type="date" id="manualDateInput" class="form-control">
+        </div>
+        <button type="button" onclick="saveManualSession()" style="width:100%; padding:10px; background:linear-gradient(135deg,#6c5ce7,#8c7ae6); color:white; font-weight:700; border:none; border-radius:9px; cursor:pointer; font-family:inherit; margin-top:6px;">
+          ✅ සුරකින්න (Save Session)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Canonical Fallback Units for Full Lessons (No Sub-units)
+    const CANONICAL_UNITS = {
+      ET: [
+        { unit_number: 1, unit_name: "ඒකකය 01: ඉංජිනේරු තාක්ෂණවේදයේ සංවර්ධනය හා භාවිතය" },
+        { unit_number: 2, unit_name: "ඒකකය 02: ඉංජිනේරුමය සැලසුම් චිත්‍ර ඇඳීම" },
+        { unit_number: 3, unit_name: "ඒකකය 03: වැඩබිම් ආරක්ෂාව සහ සෞඛ්‍යය" },
+        { unit_number: 4, unit_name: "ඒකකය 04: ගොඩනැගිලි ඉදිකිරීම් තාක්ෂණවේදය" },
+        { unit_number: 5, unit_name: "ඒකකය 05: යන්ත්‍රවල චලිත සහ ජව සම්ප්‍රේෂණය" },
+        { unit_number: 6, unit_name: "ඒකකය 06: මෝටර් රථ පද්ධති සහ නඩත්තුව" },
+        { unit_number: 7, unit_name: "ඒකකය 07: ඉංජිනේරු ප්‍රමිති සහ පිරිවිතර" },
+        { unit_number: 8, unit_name: "ඒකකය 08: විදුලි ජවය උත්පාදනය, සම්ප්‍රේෂණය සහ බෙදා හැරීම" },
+        { unit_number: 9, unit_name: "ඒකකය 09: ඉලෙක්ට්‍රොනික තාක්ෂණය සහ එදිනෙදා යෙදීම්" },
+        { unit_number: 10, unit_name: "ඒකකය 10: තරල භාවිත යන්ත්‍ර සහ තාක්ෂණය" },
+        { unit_number: 11, unit_name: "ඒකකය 11: බිම් මැනීම සහ මට්ටම් ගැනීම" },
+        { unit_number: 12, unit_name: "ඒකකය 12: ගෘහස්ථ ජල සම්පාදනය හා කසළ කළමනාකරණය" },
+        { unit_number: 13, unit_name: "ඒකකය 13: ප්‍රමාණ බිල්පත් (BOQ) සහ පිරිවැය ගණනය" },
+        { unit_number: 14, unit_name: "ඒකකය 14: ව්‍යාපාර සංවර්ධනය සහ ව්‍යවසායකත්වය" }
+      ],
+      ICT: [
+        { unit_number: 1, unit_name: "ඒකකය 01: තොරතුරු හා සන්නිවේදන තාක්ෂණයේ මූලික සංකල්ප" },
+        { unit_number: 2, unit_name: "ඒකකය 02: පරිගණන උපකරණවල පරිණාමය සහ කාර්ය සාධනය" },
+        { unit_number: 3, unit_name: "ඒකකය 03: දත්ත සහ උපදෙස් නිරූපණය" },
+        { unit_number: 4, unit_name: "ඒකකය 04: මූලික අංකිත පරිපථ සහ තාර්කික ද්වාර" },
+        { unit_number: 5, unit_name: "ඒකකය 05: මෙහෙයුම් පද්ධති භාවිතය" },
+        { unit_number: 6, unit_name: "ඒකකය 06: දත්ත සන්නිවේදනය සහ පරිගණක ජාලකරණය" },
+        { unit_number: 7, unit_name: "ඒකකය 07: පද්ධති සංකල්පය සහ පද්ධති සංවර්ධනය" },
+        { unit_number: 8, unit_name: "ඒකකය 08: දත්ත සමුදාය පද්ධති සැලසුම් කිරීම සහ සංවර්ධනය" },
+        { unit_number: 9, unit_name: "ඒකකය 09: ගැටලු විසඳීම සහ ක්‍රමලේඛකරණය" },
+        { unit_number: 10, unit_name: "ඒකකය 10: බහුමාධ්‍ය තාක්ෂණය සහ වෙබ් අඩවි සංවර්ධනය" },
+        { unit_number: 11, unit_name: "ඒකකය 11: සාර්ව ද්‍රව්‍ය අන්තර්ජාලය සහ නිහිත පද්ධති" },
+        { unit_number: 12, unit_name: "ඒකකය 12: ව්‍යාපාර තුළ තොරතුරු හා සන්නිවේදන තාක්ෂණය" },
+        { unit_number: 13, unit_name: "ඒකකය 13: තොරතුරු සන්නිවේදන තාක්ෂණයේ නව ප්‍රවණතා සහ අනාගත දිශානති" }
+      ],
+      SFT: [
+        { unit_number: 1, unit_name: "ඒකකය 01: වර්ගඵලය හා පරිමාව පිළිබඳ විමර්ශනය" },
+        { unit_number: 2, unit_name: "ඒකකය 02: මිනුම් ඒකක සහ මිනුම් උපකරණ භාවිතය" },
+        { unit_number: 3, unit_name: "ඒකකය 03: පයිතගරස් සම්බන්ධතාව සහ එහි භාවිතය" },
+        { unit_number: 4, unit_name: "ඒකකය 04: ජීවීන්ගේ සෛලීය සංවිධානය සහ තාක්ෂණික යෙදීම්" },
+        { unit_number: 5, unit_name: "ඒකකය 05: බලය සහ එහි ආචරණ" },
+        { unit_number: 6, unit_name: "ඒකකය 06: කාර්යය, ශක්තිය සහ ක්ෂමතාව" },
+        { unit_number: 7, unit_name: "ඒකකය 07: ත්‍රිකෝණමිතික අනුපාත භාවිතය" },
+        { unit_number: 8, unit_name: "ඒකකය 08: භ්‍රමණ චලිතය සහ එහි ප්‍රායෝගික භාවිතය" },
+        { unit_number: 9, unit_name: "ඒකකය 09: විද්‍යුතය සහ විද්‍යුත් චුම්බකත්වය" },
+        { unit_number: 10, unit_name: "ඒකකය 10: තාපය සහ තාප සංක්‍රාමණය" },
+        { unit_number: 11, unit_name: "ඒකකය 11: තාප රසායනයේ මූලික සංකල්ප" },
+        { unit_number: 12, unit_name: "ඒකකය 12: බහු අවයවික ද්‍රව්‍ය" },
+        { unit_number: 13, unit_name: "ඒකකය 13: ද්‍රව්‍යයේ යාන්ත්‍රික ගුණ" },
+        { unit_number: 14, unit_name: "ඒකකය 14: නිශ්චල හා චලිත තරල" },
+        { unit_number: 15, unit_name: "ඒකකය 15: ශ්‍රී ලංකාවේ රසායනික කර්මාන්ත" },
+        { unit_number: 16, unit_name: "ඒකකය 16: ස්වභාව නිෂ්පාදන හා නිස්සාරණය" },
+        { unit_number: 17, unit_name: "ඒකකය 17: කාටිසියානු ඛණ්ඩාංක හා ශ්‍රිත" },
+        { unit_number: 18, unit_name: "ඒකකය 18: විස්තාරාත්මක සංඛ්‍යානය" },
+        { unit_number: 19, unit_name: "ඒකකය 19: පරිගණක පද්ධතිය හා උපාංග" },
+        { unit_number: 20, unit_name: "ඒකකය 20: පරිගණක මෙහෙයුම් පද්ධති" },
+        { unit_number: 21, unit_name: "ඒකකය 21: යෙදුම් මෘදුකාංග" },
+        { unit_number: 22, unit_name: "ඒකකය 22: අන්තර්ජාලය හා විද්‍යුත් සන්නිවේදනය" },
+        { unit_number: 23, unit_name: "ඒකකය 23: තාක්ෂණය හා පරිසර සමතුලිතතාව" }
+      ]
+    };
+
+    // Supabase Client
+    const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
+    let supabase = null;
+    try {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+        });
+      }
+    } catch (e) {}
+
+    // State
+    let allSessions = [];
+    let currentHeatmapWeeks = 26; // Default to 6 Months
+    let currentHistoryFilter = 'ALL';
+    let subjectChartInstance = null;
+    let trendChartInstance = null;
+
+    // Helper: Local Storage access
+    function getCachedSessions() {
+      try {
+        const raw = localStorage.getItem('al_study_sessions_cache');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function saveCachedSessions(sessions) {
+      try {
+        localStorage.setItem('al_study_sessions_cache', JSON.stringify(sessions));
+      } catch (e) {}
+    }
+
+    // Helper: IndexedDB access
+    function openOfflineDB() {
+      return new Promise((resolve) => {
+        if (!window.indexedDB) return resolve(null);
+        const req = indexedDB.open('al_study_tracker_offline_db', 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('study_sessions')) {
+            db.createObjectStore('study_sessions', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('sync_queue')) {
+            db.createObjectStore('sync_queue', { keyPath: 'queue_id', autoIncrement: true });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    // Load Sessions from LocalStorage + IndexedDB + Supabase (if online)
+    async function loadAllSessions() {
+      let sessions = getCachedSessions();
+
+      // Read from IndexedDB to supplement
+      try {
+        const db = await openOfflineDB();
+        if (db) {
+          const tx = db.transaction('study_sessions', 'readonly');
+          const store = tx.objectStore('study_sessions');
+          const req = store.getAll();
+          await new Promise((resolve) => {
+            req.onsuccess = () => {
+              const idbList = req.result || [];
+              const map = new Map();
+              sessions.forEach(s => map.set(s.id, s));
+              idbList.forEach(s => map.set(s.id, s));
+              sessions = Array.from(map.values());
+              resolve();
+            };
+            req.onerror = () => resolve();
+          });
+        }
+      } catch (e) {}
+
+      // If online and Supabase is reachable, try fetching remote
+      if (navigator.onLine && supabase) {
+        try {
+          const { data, error } = await supabase.from('study_sessions').select('*').order('created_at', { ascending: false });
+          if (!error && Array.isArray(data)) {
+            const map = new Map();
+            sessions.forEach(s => map.set(s.id, s));
+            data.forEach(s => {
+              map.set(s.id, { ...s, synced: true });
+            });
+            sessions = Array.from(map.values());
+            updateSyncUI(true);
+          } else {
+            updateSyncUI(false);
+          }
+        } catch (_) {
+          updateSyncUI(false);
+        }
+      } else {
+        updateSyncUI(false);
+      }
+
+      // Sort by start_time / date descending
+      sessions.sort((a, b) => {
+        const tA = new Date(a.start_time || a.created_at || a.session_date).getTime() || 0;
+        const tB = new Date(b.start_time || b.created_at || b.session_date).getTime() || 0;
+        return tB - tA;
+      });
+
+      allSessions = sessions;
+      saveCachedSessions(allSessions);
+      return allSessions;
+    }
+
+    function updateSyncUI(isOnline) {
+      const badge = document.getElementById('analyticsSyncBadge');
+      if (!badge) return;
+      if (isOnline && navigator.onLine) {
+        badge.className = 'sync-status-badge';
+        badge.innerHTML = '<span>🟢</span> <span>Online Synced</span>';
+      } else {
+        badge.className = 'sync-status-badge offline';
+        badge.innerHTML = '<span>🟡</span> <span>Offline Mode</span>';
+      }
+    }
+
+    // Refresh entire analytics view
+    async function refreshAnalyticsData() {
+      await loadAllSessions();
+      renderKPIs();
+      renderComprehensiveHeatmap();
+      renderVisualCharts();
+      renderSubjectCards();
+      renderSessionsTable();
+    }
+
+    // 1. Render Top Executive KPIs
+    function renderKPIs() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const dateMinsMap = {};
+      let totalMins = 0;
+      let totalSessions = allSessions.length;
+
+      allSessions.forEach(s => {
+        const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+        const mins = Number(s.duration_minutes) || 0;
+        if (ds) {
+          dateMinsMap[ds] = (dateMinsMap[ds] || 0) + mins;
+        }
+        totalMins += mins;
+      });
+
+      // Today's focus
+      const todayMins = dateMinsMap[todayStr] || 0;
+      document.getElementById('kpiTodayMins').innerText = todayMins;
+
+      // Total Hours & Minutes
+      const totalHours = (totalMins / 60).toFixed(1);
+      document.getElementById('kpiTotalHours').innerText = totalHours;
+      document.getElementById('kpiTotalMinutes').innerText = totalMins;
+
+      // Current Streak Calculation
+      let streak = 0;
+      let checkDate = new Date();
+      if (!dateMinsMap[todayStr]) {
+        checkDate.setDate(checkDate.getDate() - 1);
+      }
+      while (true) {
+        const ds = checkDate.toISOString().split('T')[0];
+        if (dateMinsMap[ds] && dateMinsMap[ds] > 0) {
+          streak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      document.getElementById('kpiCurrentStreak').innerText = streak;
+
+      // Best Streak Calculation
+      const sortedDates = Object.keys(dateMinsMap).filter(d => dateMinsMap[d] > 0).sort();
+      let bestStreak = 0;
+      let curCount = 0;
+      let lastD = null;
+      sortedDates.forEach(dStr => {
+        const dObj = new Date(dStr);
+        if (lastD) {
+          const diffDays = Math.round((dObj - lastD) / (1000 * 60 * 60 * 24));
+          if (diffDays === 1) {
+            curCount++;
+          } else if (diffDays > 1) {
+            curCount = 1;
+          }
+        } else {
+          curCount = 1;
+        }
+        if (curCount > bestStreak) bestStreak = curCount;
+        lastD = dObj;
+      });
+      document.getElementById('kpiBestStreak').innerText = Math.max(streak, bestStreak);
+
+      // Last 7 Days Total & Daily Average
+      let weekMins = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const ds = d.toISOString().split('T')[0];
+        weekMins += (dateMinsMap[ds] || 0);
+      }
+      const weeklyAvg = Math.round(weekMins / 7);
+      document.getElementById('kpiWeeklyAvg').innerText = weeklyAvg;
+      document.getElementById('kpiThisWeekTotal').innerText = weekMins;
+
+      // Total Sessions & Average
+      document.getElementById('kpiTotalSessions').innerText = totalSessions;
+      const avgSess = totalSessions > 0 ? Math.round(totalMins / totalSessions) : 0;
+      document.getElementById('kpiAvgSessionMins').innerText = avgSess;
+    }
+
+    // 2. Render Comprehensive Heatmap
+    function setTimeframeWeeks(weeks, btn) {
+      currentHeatmapWeeks = weeks;
+      document.querySelectorAll('.timeframe-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderComprehensiveHeatmap();
+    }
+
+    function renderComprehensiveHeatmap() {
+      const grid = document.getElementById('fullHeatmapGrid');
+      const monthsRow = document.getElementById('heatmapMonthsRow');
+      if (!grid) return;
+
+      const dateMap = {};
+      const subjectDetailMap = {};
+
+      allSessions.forEach(s => {
+        const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+        const mins = Number(s.duration_minutes) || 0;
+        if (!ds) return;
+        dateMap[ds] = (dateMap[ds] || 0) + mins;
+        if (!subjectDetailMap[ds]) subjectDetailMap[ds] = { ICT: 0, ET: 0, SFT: 0, sessions: [] };
+        const subj = (s.subject || 'ICT').toUpperCase();
+        if (subjectDetailMap[ds][subj] !== undefined) {
+          subjectDetailMap[ds][subj] += mins;
+        }
+        subjectDetailMap[ds].sessions.push(s);
+      });
+
+      const totalDays = currentHeatmapWeeks * 7;
+      const endDate = new Date();
+      // Advance to current Saturday
+      const dayOfWeek = endDate.getDay(); // 0 is Sunday
+      const daysToSat = (6 - dayOfWeek + 7) % 7;
+      const alignedEnd = new Date(endDate);
+      alignedEnd.setDate(alignedEnd.getDate() + daysToSat);
+
+      const cells = [];
+      let activeDaysCount = 0;
+      let monthLabelsHtml = '';
+      let lastMonth = -1;
+
+      // Month labels distribution
+      const monthCols = [];
+      for (let w = 0; w < currentHeatmapWeeks; w++) {
+        const d = new Date(alignedEnd);
+        d.setDate(d.getDate() - (currentHeatmapWeeks - 1 - w) * 7);
+        const m = d.getMonth();
+        if (m !== lastMonth) {
+          const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          monthCols.push({ col: w, name: mNames[m] });
+          lastMonth = m;
+        }
+      }
+
+      // Render cells
+      const todayStr = new Date().toISOString().split('T')[0];
+      for (let i = totalDays - 1; i >= 0; i--) {
+        const d = new Date(alignedEnd);
+        d.setDate(d.getDate() - i);
+        const ds = d.toISOString().split('T')[0];
+        const isFuture = d > new Date();
+        const mins = isFuture ? 0 : (dateMap[ds] || 0);
+
+        if (mins > 0) activeDaysCount++;
+
+        let level = 0;
+        if (mins > 80) level = 4;
+        else if (mins > 50) level = 3;
+        else if (mins > 25) level = 2;
+        else if (mins > 0) level = 1;
+
+        const isToday = (ds === todayStr);
+        cells.push(`
+          <span class="heat-cell level-${level} ${isToday ? 'selected' : ''}"
+                data-date="${ds}"
+                data-mins="${mins}"
+                onclick="handleHeatCellClick('${ds}')"
+                title="${ds}: ${mins} mins focused">
+          </span>
+        `);
+      }
+
+      grid.innerHTML = cells.join('');
+
+      // Build month labels row
+      const colWidth = 16; // 12px width + 4px gap
+      monthsRow.innerHTML = monthCols.map(m => `
+        <span style="position: absolute; left: ${m.col * colWidth + 24}px;">${m.name}</span>
+      `).join('');
+      monthsRow.style.position = 'relative';
+
+      // Update legend counts
+      document.getElementById('legendActiveDays').innerText = activeDaysCount;
+      document.getElementById('legendTotalDays').innerText = totalDays;
+
+      // Select today by default in the detail banner
+      handleHeatCellClick(todayStr);
+    }
+
+    function handleHeatCellClick(dateStr) {
+      document.querySelectorAll('.heat-cell').forEach(c => c.classList.remove('selected'));
+      const activeCell = document.querySelector(`.heat-cell[data-date="${dateStr}"]`);
+      if (activeCell) activeCell.classList.add('selected');
+
+      const dateObj = new Date(dateStr);
+      const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+      const formatted = dateObj.toLocaleDateString('si-LK', options) || dateStr;
+
+      const dateSessions = allSessions.filter(s => (s.session_date === dateStr || (s.start_time && s.start_time.startsWith(dateStr))));
+      const totalMins = dateSessions.reduce((acc, s) => acc + (Number(s.duration_minutes) || 0), 0);
+
+      document.getElementById('selectedDateTxt').innerText = `${dateStr} (${formatted})`;
+      document.getElementById('selectedDateSessionsCount').innerText = `${dateSessions.length} Sessions Logged`;
+      document.getElementById('selectedDateMins').innerText = `${totalMins} Mins Focused`;
+
+      const subjMap = {};
+      dateSessions.forEach(s => {
+        const subj = s.subject || 'ICT';
+        subjMap[subj] = (subjMap[subj] || 0) + (Number(s.duration_minutes) || 0);
+      });
+
+      const tagsHtml = Object.keys(subjMap).map(subj => {
+        const cls = subj.toLowerCase();
+        return `<span class="subj-pill ${cls}">${subj}: ${subjMap[subj]}m</span>`;
+      }).join('');
+
+      document.getElementById('selectedDateSubjects').innerHTML = tagsHtml || '<span style="font-size:11px; color:#6e7681;">අධ්‍යයන සැසි සටහන් කර නැත</span>';
+    }
+
+    // 3. Render Visual Charts (Subject Distribution & 14-Day Trend)
+    function renderVisualCharts() {
+      // Calculate Subject Totals
+      const subjMins = { ICT: 0, ET: 0, SFT: 0 };
+      allSessions.forEach(s => {
+        const subj = (s.subject || 'ICT').toUpperCase();
+        if (subjMins[subj] !== undefined) {
+          subjMins[subj] += (Number(s.duration_minutes) || 0);
+        }
+      });
+
+      // Render Doughnut Chart
+      const doughnutCtx = document.getElementById('subjectDoughnutChart').getContext('2d');
+      if (subjectChartInstance) subjectChartInstance.destroy();
+
+      subjectChartInstance = new Chart(doughnutCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['ICT', 'ET', 'SFT'],
+          datasets: [{
+            data: [subjMins.ICT, subjMins.ET, subjMins.SFT],
+            backgroundColor: ['#20bf6b', '#0984e3', '#8854d0'],
+            borderColor: '#090d14',
+            borderWidth: 3,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#f0f6fc',
+                font: { family: 'Poppins', size: 11, weight: '700' },
+                padding: 14
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  const val = ctx.raw || 0;
+                  const total = subjMins.ICT + subjMins.ET + subjMins.SFT;
+                  const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                  return ` ${ctx.label}: ${val} mins (${pct}%)`;
+                }
+              }
+            }
+          },
+          cutout: '68%'
+        }
+      });
+
+      // Render 14-Day Bar Chart
+      const barLabels = [];
+      const ictData = [];
+      const etData = [];
+      const sftData = [];
+
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const ds = d.toISOString().split('T')[0];
+        const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+        barLabels.push(`${dayName} ${d.getDate()}`);
+
+        let mIct = 0, mEt = 0, mSft = 0;
+        allSessions.forEach(s => {
+          if (s.session_date === ds || (s.start_time && s.start_time.startsWith(ds))) {
+            const mins = Number(s.duration_minutes) || 0;
+            const sub = (s.subject || 'ICT').toUpperCase();
+            if (sub === 'ICT') mIct += mins;
+            else if (sub === 'ET') mEt += mins;
+            else if (sub === 'SFT') mSft += mins;
+          }
+        });
+
+        ictData.push(mIct);
+        etData.push(mEt);
+        sftData.push(mSft);
+      }
+
+      const barCtx = document.getElementById('dailyTrendBarChart').getContext('2d');
+      if (trendChartInstance) trendChartInstance.destroy();
+
+      trendChartInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: barLabels,
+          datasets: [
+            { label: 'ICT', data: ictData, backgroundColor: '#20bf6b', borderRadius: 4, stack: 'combined' },
+            { label: 'ET', data: etData, backgroundColor: '#0984e3', borderRadius: 4, stack: 'combined' },
+            { label: 'SFT', data: sftData, backgroundColor: '#8854d0', borderRadius: 4, stack: 'combined' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#f0f6fc',
+                font: { family: 'Poppins', size: 10, weight: '700' },
+                boxWidth: 12
+              }
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false },
+              ticks: { color: '#8b949e', font: { size: 9.5 } }
+            },
+            y: {
+              stacked: true,
+              grid: { color: '#161d28' },
+              ticks: { color: '#8b949e', font: { size: 9.5 } }
+            }
+          }
+        }
+      });
+    }
+
+    // 4. Render Subject Summary Cards
+    function renderSubjectCards() {
+      const stats = {
+        ICT: { mins: 0, count: 0 },
+        ET: { mins: 0, count: 0 },
+        SFT: { mins: 0, count: 0 }
+      };
+      let grandTotal = 0;
+
+      allSessions.forEach(s => {
+        const sub = (s.subject || 'ICT').toUpperCase();
+        const mins = Number(s.duration_minutes) || 0;
+        if (stats[sub]) {
+          stats[sub].mins += mins;
+          stats[sub].count++;
+          grandTotal += mins;
+        }
+      });
+
+      ['ICT', 'ET', 'SFT'].forEach(sub => {
+        const sData = stats[sub];
+        const share = grandTotal > 0 ? Math.round((sData.mins / grandTotal) * 100) : 0;
+        const low = sub.toLowerCase();
+
+        document.getElementById(`subj${sub}Mins`).innerText = `${sData.mins}m`;
+        document.getElementById(`subj${sub}Count`).innerText = sData.count;
+        document.getElementById(`subj${sub}Share`).innerText = `${share}%`;
+        document.getElementById(`subj${sub}Bar`).style.width = `${share}%`;
+      });
+    }
+
+    // 5. Render Sessions History Table
+    function setHistoryFilter(subj, btn) {
+      currentHistoryFilter = subj;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderSessionsTable();
+    }
+
+    function renderSessionsTable() {
+      const tbody = document.getElementById('sessionsTableBody');
+      const filtered = allSessions.filter(s => {
+        if (currentHistoryFilter === 'ALL') return true;
+        return (s.subject || '').toUpperCase() === currentHistoryFilter;
+      });
+
+      document.getElementById('historyFilteredCount').innerText = filtered.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 18px;">මෙම විෂය සඳහා කිසිදු සැසියක් සටහන් කර නොමැත.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(s => {
+        const dateTxt = s.session_date || (s.start_time ? s.start_time.split('T')[0] : '-');
+        const timeTxt = s.start_time ? new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const subj = (s.subject || 'ICT').toUpperCase();
+        const pillCls = subj.toLowerCase();
+        const unitName = s.unit_name || (s.unit_number ? `Unit ${s.unit_number}` : 'සාමාන්‍ය පුනරීක්ෂණ');
+        const mins = Number(s.duration_minutes) || 50;
+        const syncBadge = s.synced ? '<span style="color:#20bf6b; font-size:10px;">🟢 Synced</span>' : '<span style="color:#fdcb6e; font-size:10px;">🟡 Local</span>';
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight: 600;">${dateTxt}</div>
+              <div style="font-size: 10px; color: var(--text-dim);">${timeTxt}</div>
+            </td>
+            <td><span class="subj-pill ${pillCls}">${subj}</span></td>
+            <td style="max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(unitName)}">
+              ${escapeHtml(unitName)}
+            </td>
+            <td><strong style="color:#6c5ce7; font-size:12px;">${mins} min</strong></td>
+            <td>${syncBadge}</td>
+            <td>
+              <div style="display: flex; gap: 5px;">
+                <button type="button" class="btn-table-action" onclick="editSessionDuration('${s.id}')" title="කාලය වෙනස් කරන්න">✏️ Edit</button>
+                <button type="button" class="btn-table-action btn-table-del" onclick="deleteSession('${s.id}')" title="ඉවත් කරන්න">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function editSessionDuration(sessionId) {
+      const sess = allSessions.find(s => s.id === sessionId);
+      if (!sess) return;
+      const current = sess.duration_minutes || 50;
+      const val = prompt('සැසියේ නිවැරදි අධ්‍යයන කාලය (මිනිත්තු වලින්):', current);
+      if (val === null) return;
+      const num = parseInt(val, 10);
+      if (isNaN(num) || num <= 0 || num > 480) {
+        alert('කරුණාකර වලංගු මිනිත්තු සංඛ්‍යාවක් ලබාදෙන්න (1 - 480).');
+        return;
+      }
+      sess.duration_minutes = num;
+      saveCachedSessions(allSessions);
+
+      // Update in Supabase
+      if (navigator.onLine && supabase) {
+        supabase.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId).catch(() => {});
+      }
+
+      refreshAnalyticsData();
+    }
+
+    async function deleteSession(sessionId) {
+      if (!confirm('මෙම අධ්‍යයන සැසිය ලැයිස්තුවෙන් ඉවත් කිරීමට අවශ්‍ය බව තහවුරු කරන්නද?')) return;
+      allSessions = allSessions.filter(s => s.id !== sessionId);
+      saveCachedSessions(allSessions);
+
+      try {
+        const db = await openOfflineDB();
+        if (db) {
+          const tx = db.transaction('study_sessions', 'readwrite');
+          tx.objectStore('study_sessions').delete(sessionId);
+        }
+      } catch (e) {}
+
+      if (navigator.onLine && supabase) {
+        supabase.from('study_sessions').delete().eq('id', sessionId).catch(() => {});
+      }
+
+      refreshAnalyticsData();
+    }
+
+    // 6. Manual Session Entry Modal
+    function openManualSessionModal() {
+      const modal = document.getElementById('manualSessionModal');
+      const dateInput = document.getElementById('manualDateInput');
+      if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+      populateManualUnits();
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeManualSessionModal(e) {
+      const modal = document.getElementById('manualSessionModal');
+      if (e && e.target === modal) closeManualSessionModalDirect();
+    }
+
+    function closeManualSessionModalDirect() {
+      const modal = document.getElementById('manualSessionModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function populateManualUnits() {
+      const subj = document.getElementById('manualSubjSelect').value || 'ICT';
+      const unitSelect = document.getElementById('manualUnitSelect');
+      const units = CANONICAL_UNITS[subj] || [];
+
+      let opts = '<option value="0|සාමාන්‍ය පුනරීක්ෂණ (General Revision)">📚 සාමාන්‍ය පුනරීක්ෂණ සහ මිශ්‍ර ප්‍රශ්න</option>';
+      opts += units.map(u => `<option value="${u.unit_number}|${escapeHtml(u.unit_name)}">${escapeHtml(u.unit_name)}</option>`).join('');
+      unitSelect.innerHTML = opts;
+    }
+
+    async function saveManualSession() {
+      const subj = document.getElementById('manualSubjSelect').value;
+      const unitVal = document.getElementById('manualUnitSelect').value;
+      const [uNum, uName] = unitVal.split('|');
+      const dur = parseInt(document.getElementById('manualDurationInput').value, 10) || 50;
+      const dateVal = document.getElementById('manualDateInput').value || new Date().toISOString().split('T')[0];
+
+      const newSess = {
+        id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now(),
+        subject: subj,
+        unit_number: Number(uNum) || 0,
+        unit_name: uName || 'සාමාන්‍ය පුනරීක්ෂණ',
+        start_time: `${dateVal}T10:00:00.000Z`,
+        duration_minutes: dur,
+        session_date: dateVal,
+        created_at: new Date().toISOString(),
+        synced: false
+      };
+
+      allSessions.unshift(newSess);
+      saveCachedSessions(allSessions);
+
+      try {
+        const db = await openOfflineDB();
+        if (db) {
+          const tx = db.transaction('study_sessions', 'readwrite');
+          tx.objectStore('study_sessions').put(newSess);
+        }
+      } catch (e) {}
+
+      if (navigator.onLine && supabase) {
+        supabase.from('study_sessions').insert([{
+          id: newSess.id,
+          subject: newSess.subject,
+          duration_minutes: newSess.duration_minutes,
+          session_date: newSess.session_date,
+          created_at: newSess.created_at
+        }]).then(({ error }) => {
+          if (!error) newSess.synced = true;
+          saveCachedSessions(allSessions);
+        }).catch(() => {});
+      }
+
+      closeManualSessionModalDirect();
+      refreshAnalyticsData();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // Storage and online listeners
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'al_study_sessions_cache') {
+        refreshAnalyticsData();
+      }
+    });
+
+    window.addEventListener('online', () => updateSyncUI(true));
+    window.addEventListener('offline', () => updateSyncUI(false));
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      refreshAnalyticsData();
+    });
+  </script>
+</body>
+</html>

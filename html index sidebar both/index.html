@@ -1154,6 +1154,28 @@
         align-items: center;
         gap: 8px;
       }
+      .btn-focus-analytics-head {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        font-size: 10.5px;
+        font-weight: 700;
+        background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(140, 122, 230, 0.22));
+        color: #6c5ce7;
+        border: 1px solid rgba(108, 92, 231, 0.35);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+        text-decoration: none;
+      }
+      .btn-focus-analytics-head:hover {
+        background: linear-gradient(135deg, #6c5ce7, #8c7ae6);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        transform: translateY(-1px);
+      }
       .btn-focus-sound {
         display: inline-flex;
         align-items: center;
@@ -1718,6 +1740,96 @@
         gap: 3px;
       }
 
+      /* Analytics Hub & Gateway Styles */
+      .focus-panel-analytics-hub {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .focus-analytics-preview-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(108, 92, 231, 0.08), rgba(0, 206, 201, 0.08));
+        border: 1px solid rgba(108, 92, 231, 0.2);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .focus-analytics-preview-card:hover {
+        background: linear-gradient(135deg, rgba(108, 92, 231, 0.14), rgba(0, 206, 201, 0.14));
+        border-color: rgba(108, 92, 231, 0.4);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(108, 92, 231, 0.15);
+      }
+      .f-ap-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .f-ap-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+      .f-ap-text {
+        min-width: 0;
+      }
+      .f-ap-title {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-dark, #2d3436);
+        line-height: 1.3;
+      }
+      .f-ap-sub {
+        font-size: 10px;
+        color: #7f8fa6;
+        line-height: 1.25;
+        margin-top: 2px;
+      }
+      .f-ap-arrow {
+        font-size: 14px;
+        color: #6c5ce7;
+        font-weight: 700;
+        margin-left: 8px;
+        transition: transform 0.2s ease;
+      }
+      .focus-analytics-preview-card:hover .f-ap-arrow {
+        transform: translateX(3px);
+      }
+      .focus-analytics-action-row {
+        width: 100%;
+      }
+      .btn-focus-analytics-link {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #ffffff;
+        background: linear-gradient(135deg, #6c5ce7, #8c7ae6);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(108, 92, 231, 0.3);
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+      .btn-focus-analytics-link:hover {
+        background: linear-gradient(135deg, #5b48e0, #7b68e0);
+        box-shadow: 0 6px 18px rgba(108, 92, 231, 0.45);
+        transform: translateY(-1px);
+      }
+      .analytics-btn-arrow {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
       /* Modal for Subject & Unit Selection (Interactive Start Sequence) */
       .focus-target-modal-window {
         max-width: 480px;
@@ -1967,6 +2079,25 @@
       body.dark-mode .focus-metric-pill {
         background: #0e131d !important;
         border-color: #1e2530 !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .btn-focus-analytics-head {
+        background: rgba(108, 92, 231, 0.22) !important;
+        color: #a29bfe !important;
+        border-color: rgba(162, 155, 254, 0.4) !important;
+      }
+      body.dark-mode .btn-focus-analytics-head:hover {
+        background: #6c5ce7 !important;
+        color: #ffffff !important;
+      }
+      body.dark-mode .focus-analytics-preview-card {
+        background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(0, 206, 201, 0.08)) !important;
+        border-color: rgba(108, 92, 231, 0.35) !important;
+      }
+      body.dark-mode .focus-analytics-preview-card:hover {
+        background: linear-gradient(135deg, rgba(108, 92, 231, 0.25), rgba(0, 206, 201, 0.15)) !important;
+      }
+      body.dark-mode .f-ap-title {
         color: #f0f6fc !important;
       }
       body.dark-mode .h-cell.level-0 {
@@ -4825,6 +4956,9 @@
           </div>
         </div>
         <div class="focus-header-actions">
+          <button type="button" class="btn-focus-analytics-head" onclick="openStudyAnalyticsPage()" title="විස්තරාත්මක Heatmap &amp; Study Analytics පිටුව විවෘත කරන්න">
+            <span>📊 Analytics &amp; Heatmap ↗</span>
+          </button>
           <button type="button" class="btn-focus-sound" id="btnFocusSound" onclick="toggleFocusSound()" title="Ambient Brown Noise Toggle">
             <span id="focusSoundIcon">🔊</span>
             <span id="focusSoundLabel">Sound: ON</span>
@@ -4883,11 +5017,11 @@
           </div>
         </div>
 
-        <!-- Right Panel: Study Consistency & Activity Heatmap -->
-        <div class="focus-panel-heatmap">
+        <!-- Right Panel: Study Consistency & Activity Hub (Opens dedicated analytics page) -->
+        <div class="focus-panel-heatmap focus-panel-analytics-hub">
           <div class="focus-heatmap-header">
             <div class="focus-heatmap-title">
-              <span>📊 Study Consistency (සති 16)</span>
+              <span>📊 Study Activity &amp; Consistency Hub</span>
             </div>
             <div class="focus-metrics-badges">
               <div class="focus-metric-pill" title="අඛණ්ඩව අවධානයෙන් පාඩම් කළ දින ගණන">
@@ -4901,30 +5035,29 @@
             </div>
           </div>
 
-          <!-- Heatmap Grid Container -->
-          <div class="heatmap-scroll-wrapper">
-            <div class="heatmap-container" id="studyHeatmapGrid">
-              <!-- Rendered via JS -->
+          <div class="focus-analytics-preview-card" onclick="openStudyAnalyticsPage()" title="විස්තරාත්මක අධ්‍යයන විශ්ලේෂණ සහ Heatmap පිටුව විවෘත කරන්න">
+            <div class="f-ap-left">
+              <div class="f-ap-icon">📈</div>
+              <div class="f-ap-text">
+                <div class="f-ap-title">Deep Heatmap &amp; Activity Insights</div>
+                <div class="f-ap-sub">16w / 26w / 52w Consistency, Subject Mix, 14-day Focus Trend &amp; History</div>
+              </div>
             </div>
+            <div class="f-ap-arrow">➔</div>
           </div>
 
-          <div class="heatmap-footer-legend">
-            <span>Less</span>
-            <div class="heatmap-legend-scale">
-              <span class="h-cell level-0" title="0 mins"></span>
-              <span class="h-cell level-1" title="1-25 mins"></span>
-              <span class="h-cell level-2" title="26-50 mins"></span>
-              <span class="h-cell level-3" title="51-80 mins"></span>
-              <span class="h-cell level-4" title="81+ mins"></span>
-            </div>
-            <span>More</span>
+          <div class="focus-analytics-action-row">
+            <button type="button" class="btn-focus-analytics-link" onclick="openStudyAnalyticsPage()" title="විස්තරාත්මක Heatmap සහ Analytics පිටුවට යන්න">
+              <span>📊 View Full Analytics &amp; Heatmap</span>
+              <span class="analytics-btn-arrow">↗</span>
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Study Streak Card (Focus Timer Removed) -->
-    <div class="streak-card">
+    <!-- Study Streak Card -->
+    <div class="streak-card" onclick="openStudyAnalyticsPage()" style="cursor: pointer;" title="විස්තරාත්මක Analytics සහ Heatmap පිටුව බලන්න">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="font-size: 22px;">🔥</span>
         <div>
@@ -5984,13 +6117,13 @@
               <span class="focus-modal-active-subj-pill" id="focusModalActiveSubjPill">ICT</span>
             </div>
             <div class="focus-modal-step-title">2. පාඩම / ඒකකය තෝරන්න (Select Unit):</div>
-            <div class="focus-modal-step-sub">ඒකකය ක්ලික් කළ පසු Countdown ආරම්භ වේ:</div>
+            <div class="focus-modal-step-sub">පාඩම ක්ලික් කළ වහාම Session එක Database එකට Save වී ටයිමරය ආරම්භ වේ:</div>
 
             <!-- General Revision Option -->
             <button type="button" class="focus-unit-item-btn focus-unit-general-btn" onclick="selectFocusModalUnit(0, 'සාමාන්‍ය පුනරීක්ෂණ (General Revision)')">
               <span class="unit-num-badge">📚 All</span>
               <span class="unit-name-text">සාමාන්‍ය පුනරීක්ෂණ සහ මිශ්‍ර ප්‍රශ්න (General Revision / Mixed)</span>
-              <span class="unit-start-arrow">▶ Start</span>
+              <span class="unit-start-arrow">▶ Start &amp; Save</span>
             </button>
 
             <!-- Dynamic Scrollable Units Container -->
@@ -6757,34 +6890,30 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // =========================================================================
       // INTERACTIVE FOCUS TARGET POPUP (SUBJECT -> UNIT -> COUNTDOWN SEQUENCE)
       // =========================================================================
-      function getUnitsForSubject(subj) {
-        const syllabus = cachedCanonicalSyllabus || (window.telemetryData && window.telemetryData.syllabusList) || [];
-        const subjSyllabus = syllabus.filter(s => (s.subject || '').toUpperCase().trim() === subj.toUpperCase().trim());
-        if (subjSyllabus.length > 0) {
-          const unitMap = new Map();
-          subjSyllabus.forEach(s => {
-            const uNum = (s.unit_number !== undefined && s.unit_number !== null) ? Number(s.unit_number) : null;
-            if (uNum !== null && !unitMap.has(uNum)) {
-              unitMap.set(uNum, {
-                unit_number: uNum,
-                unit_name: s.unit_name || `Unit ${uNum}`
-              });
-            }
-          });
-          const sorted = Array.from(unitMap.values()).sort((a, b) => a.unit_number - b.unit_number);
-          if (sorted.length > 0) return sorted;
+      function openStudyAnalyticsPage() {
+        try {
+          const w = window.open('study-analytics.html', '_blank');
+          if (!w || w.closed || typeof w.closed === 'undefined') {
+            window.location.href = 'study-analytics.html';
+          }
+        } catch (e) {
+          window.location.href = 'study-analytics.html';
         }
+      }
+
+      function getUnitsForSubject(subj) {
+        // Authoritative full lessons only (strictly excludes sub-units as requested)
         return CANONICAL_UNITS_FALLBACK[subj] || [];
       }
 
       function handleStartFocusClick() {
         if (isFocusRunning) return;
-        // If paused midway, resume without modal
-        if (focusRemainingSeconds < focusTotalSeconds && focusRemainingSeconds > 0) {
+        // If actively paused midway, resume without restarting session:
+        if (focusRemainingSeconds < focusTotalSeconds && focusRemainingSeconds > 0 && sessionStartTime) {
           startFocusTimerEngine();
           return;
         }
-        // When starting new session: open modal to pick Subject -> Unit, then start countdown!
+        // Strict sequence: Hit start switch -> HTML popup asking for Subject -> Full lessons -> Click to start while saving to DB
         openFocusTargetModal(true);
       }
 
@@ -6830,6 +6959,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           pill.innerText = `${icon} ${activeFocusSubject}`;
         }
 
+        // Full lessons only (no sub-units)
         const units = getUnitsForSubject(activeFocusSubject);
         if (list) {
           list.innerHTML = units.map(u => {
@@ -6839,7 +6969,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <button type="button" class="focus-unit-item-btn" onclick="selectFocusModalUnit(${u.unit_number}, '${clickParam}')">
                 <span class="unit-num-badge">Unit ${String(u.unit_number).padStart(2, '0')}</span>
                 <span class="unit-name-text">${escapeHtml(u.unit_name)}</span>
-                <span class="unit-start-arrow">▶ Start</span>
+                <span class="unit-start-arrow">▶ Start &amp; Save</span>
               </button>
             `;
           }).join('');
@@ -6853,7 +6983,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (stepUnit) stepUnit.style.display = 'none';
       }
 
-      function selectFocusModalUnit(unitNo, unitName) {
+      let currentActiveSessionId = null;
+
+      async function selectFocusModalUnit(unitNo, unitName) {
         activeFocusUnit = {
           unitNumber: Number(unitNo) || 0,
           unitName: unitName || (unitNo > 0 ? `Unit ${unitNo}` : 'සාමාන්‍ය පුනරීක්ෂණ')
@@ -6867,10 +6999,56 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         updateActiveTargetUI();
         closeFocusTargetModalDirect();
 
-        // ONLY START COUNTDOWN AFTER UNIT SELECTION
+        // Sequence: when clicked, start timer while saving session to database immediately!
         if (focusAutoStartAfterSelect) {
+          await saveStartedStudySession();
           startFocusTimerEngine();
         }
+      }
+
+      async function saveStartedStudySession() {
+        const sessionId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now();
+        currentActiveSessionId = sessionId;
+        sessionStartTime = new Date().toISOString();
+
+        const newSession = {
+          id: sessionId,
+          subject: activeFocusSubject,
+          unit_number: activeFocusUnit ? activeFocusUnit.unitNumber : 0,
+          unit_name: activeFocusUnit ? (activeFocusUnit.unitName || `Unit ${activeFocusUnit.unitNumber}`) : 'සාමාන්‍ය පුනරීක්ෂණ',
+          start_time: sessionStartTime,
+          duration_minutes: focusDurationMins,
+          session_date: new Date().toISOString().split('T')[0],
+          created_at: sessionStartTime,
+          status: 'active',
+          synced: false
+        };
+
+        // 1. Save locally in cache immediately
+        const sessions = getLocalStoredSessions();
+        const existingIdx = sessions.findIndex(s => s.id === sessionId);
+        if (existingIdx !== -1) {
+          sessions[existingIdx] = newSession;
+        } else {
+          sessions.unshift(newSession);
+        }
+        saveLocalStoredSessions(sessions);
+
+        // 2. Save in IndexedDB immediately
+        try {
+          const db = await openOfflineDB();
+          if (db) {
+            const tx = db.transaction('study_sessions', 'readwrite');
+            tx.objectStore('study_sessions').put(newSession);
+          }
+        } catch (e) {}
+
+        // 3. Update UI stats (streak & today's mins) immediately
+        renderStudyHeatmap();
+        renderRecentSessionsInSettings();
+
+        // 4. Save to Supabase (or queue for offline sync if offline)
+        await uploadOrQueueSession(newSession);
       }
 
       function updateActiveTargetUI() {
@@ -7004,6 +7182,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         clearInterval(focusTimerInterval);
         isFocusRunning = false;
         sessionStartTime = null;
+        currentActiveSessionId = null;
 
         const startBtn = document.getElementById('btnFocusStart');
         const startText = document.getElementById('btnFocusStartText');
@@ -7058,8 +7237,28 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           focusModal(popup);
         }
 
-        // Log session to Supabase & IndexedDB
-        await logCompletedStudySession(durationLogged);
+        // Mark active session as completed
+        if (currentActiveSessionId) {
+          const sessions = getLocalStoredSessions();
+          const sess = sessions.find(s => s.id === currentActiveSessionId);
+          if (sess) {
+            sess.status = 'completed';
+            saveLocalStoredSessions(sessions);
+            try {
+              const db = await openOfflineDB();
+              if (db) {
+                const tx = db.transaction('study_sessions', 'readwrite');
+                tx.objectStore('study_sessions').put(sess);
+              }
+            } catch (e) {}
+          }
+        } else {
+          await logCompletedStudySession(durationLogged);
+        }
+
+        currentActiveSessionId = null;
+        sessionStartTime = null;
+        renderStudyHeatmap();
       }
 
       function stopAlarmAndClosePopup() {
@@ -7121,6 +7320,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           duration_minutes: Number(durationMins) || 50,
           session_date: new Date().toISOString().split('T')[0],
           created_at: new Date().toISOString(),
+          status: 'completed',
           synced: false
         };
 
@@ -7244,10 +7444,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // STUDY ACTIVITY HEATMAP & CONSISTENCY METRICS
       // =========================================================================
       function renderStudyHeatmap() {
-        const grid = document.getElementById('studyHeatmapGrid');
         const streakEl = document.getElementById('focusStreakDays');
         const todayMinsEl = document.getElementById('focusTodayMins');
-        if (!grid) return;
+        const streakDaysTxt = document.getElementById('streakDaysTxt');
+        const streakStatusTag = document.getElementById('streakStatusTag');
 
         const sessions = getLocalStoredSessions();
         const dateMinsMap = {};
@@ -7280,11 +7480,25 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
         if (streakEl) streakEl.innerText = streak;
 
-        // Build 16 weeks = 112 days grid ending on current Saturday
+        // Update Dashboard Streak Card
+        if (streakDaysTxt) streakDaysTxt.innerText = `${streak} Days Streak`;
+        if (streakStatusTag) {
+          if (todayTotalMins > 0) {
+            streakStatusTag.className = 'streak-tag active';
+            streakStatusTag.innerText = `අද දින අධ්‍යයනය සම්පූර්ණයි (${todayTotalMins} mins) ✅`;
+          } else {
+            streakStatusTag.className = 'streak-tag pending';
+            streakStatusTag.innerText = 'අද දින තවම පාඩම් කර නැත ⏳';
+          }
+        }
+
+        // Render grid if element is present in DOM (for full heatmap page or views)
+        const grid = document.getElementById('studyHeatmapGrid');
+        if (!grid) return;
+
         const totalDays = 112; // 16 weeks * 7 days
         const cellsHtml = [];
         const endDate = new Date();
-        // Advance to coming Saturday to align columns Mon-Sun cleanly
         const dayOfWeek = endDate.getDay(); // 0 is Sunday
         const daysToSat = (6 - dayOfWeek + 7) % 7;
         const alignedEnd = new Date(endDate);
@@ -7429,6 +7643,45 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         updateActiveTargetUI();
         updateFocusDisplay();
         renderStudyHeatmap();
+
+        // Cross-tab sync listener (e.g. if sessions added/edited in study-analytics.html)
+        window.addEventListener('storage', (e) => {
+          if (e.key === 'al_study_sessions_cache') {
+            renderStudyHeatmap();
+          }
+        });
+
+        // Remote Supabase sync to keep local cache and streak current
+        if (navigator.onLine && supabase && typeof supabase.from === 'function') {
+          supabase.from('study_sessions').select('*').order('created_at', { ascending: false }).limit(200)
+            .then(({ data, error }) => {
+              if (!error && Array.isArray(data) && data.length > 0) {
+                const local = getLocalStoredSessions();
+                const map = new Map();
+                local.forEach(s => map.set(s.id, s));
+                data.forEach(r => {
+                  if (!map.has(r.id)) {
+                    map.set(r.id, {
+                      id: r.id,
+                      subject: r.subject || 'ICT',
+                      duration_minutes: Number(r.duration_minutes) || 50,
+                      session_date: r.session_date || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+                      created_at: r.created_at || new Date().toISOString(),
+                      unit_number: null,
+                      unit_name: 'Study Session',
+                      status: 'completed',
+                      synced: true
+                    });
+                  }
+                });
+                const merged = Array.from(map.values()).sort((a, b) => new Date(b.created_at || b.session_date) - new Date(a.created_at || a.session_date));
+                saveLocalStoredSessions(merged);
+                renderStudyHeatmap();
+              }
+            })
+            .catch(() => {});
+        }
+
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').catch(err => {
