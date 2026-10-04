@@ -1525,20 +1525,22 @@
       ]
     };
 
-    // Supabase Client Helper
+    // Supabase Client Helper (use sbClient to prevent collision with window.supabase from CDN)
     const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
-    let supabase = null;
+    let sbClient = null;
 
     function getSupabase() {
-      if (!supabase && window.supabase && typeof window.supabase.createClient === 'function') {
+      if (!sbClient && window.supabase && typeof window.supabase.createClient === 'function') {
         try {
-          supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
           });
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Failed to initialize Supabase client:', e);
+        }
       }
-      return supabase;
+      return sbClient;
     }
     getSupabase();
 
@@ -2684,8 +2686,9 @@
       saveCachedSessions(allSessions);
 
       // Update in Supabase
-      if (navigator.onLine && supabase) {
-        supabase.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId).catch(() => {});
+      const sb = getSupabase();
+      if (navigator.onLine && sb) {
+        sb.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId).catch(() => {});
       }
 
       refreshAnalyticsData();
@@ -2704,8 +2707,9 @@
         }
       } catch (e) {}
 
-      if (navigator.onLine && supabase) {
-        supabase.from('study_sessions').delete().eq('id', sessionId).catch(() => {});
+      const sb = getSupabase();
+      if (navigator.onLine && sb) {
+        sb.from('study_sessions').delete().eq('id', sessionId).catch(() => {});
       }
 
       refreshAnalyticsData();
@@ -2770,8 +2774,9 @@
         }
       } catch (e) {}
 
-      if (navigator.onLine && supabase) {
-        supabase.from('study_sessions').insert([{
+      const sb = getSupabase();
+      if (navigator.onLine && sb) {
+        sb.from('study_sessions').insert([{
           id: newSess.id,
           subject: newSess.subject,
           duration_minutes: newSess.duration_minutes,
@@ -2794,6 +2799,21 @@
       }[m]));
     }
 
+    // Explicitly expose all interactive handlers to window for inline onclick attributes
+    window.openManualSessionModal = openManualSessionModal;
+    window.closeManualSessionModal = closeManualSessionModal;
+    window.closeManualSessionModalDirect = closeManualSessionModalDirect;
+    window.populateManualUnits = populateManualUnits;
+    window.saveManualSession = saveManualSession;
+    window.setTimeframeWeeks = setTimeframeWeeks;
+    window.setDetailPeriod = setDetailPeriod;
+    window.handleHeatCellClick = handleHeatCellClick;
+    window.setSlotFilter = setSlotFilter;
+    window.setHistoryFilter = setHistoryFilter;
+    window.refreshAnalyticsData = refreshAnalyticsData;
+    window.editSessionDuration = editSessionDuration;
+    window.deleteSession = deleteSession;
+
     // Storage and online listeners
     window.addEventListener('storage', (e) => {
       if (e.key === 'al_study_sessions_cache') {
@@ -2804,10 +2824,14 @@
     window.addEventListener('online', () => updateSyncUI(true));
     window.addEventListener('offline', () => updateSyncUI(false));
 
-    // Initialize on page load
-    window.addEventListener('DOMContentLoaded', () => {
+    // Robust initialization on page load
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => {
+        refreshAnalyticsData();
+      });
+    } else {
       refreshAnalyticsData();
-    });
+    }
   </script>
 </body>
 </html>
