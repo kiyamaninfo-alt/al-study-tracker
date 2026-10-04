@@ -1,4 +1,4 @@
-const CACHE_NAME = 'al-study-tracker-v7';
+const CACHE_NAME = 'al-study-tracker-v8';
 const PRECACHE_ASSETS = [
   './',
   './study-analytics',
