@@ -436,8 +436,183 @@
     }
     .day-detail-subjects {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Habit Matrix Table (Item 12) */
+    .habit-matrix-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+    .habit-matrix-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 5px;
+      font-size: 11px;
+    }
+    .habit-matrix-table th {
+      padding: 8px 10px;
+      background: var(--card-inner);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .habit-matrix-table td {
+      padding: 8px 6px;
+      text-align: center;
+      border-radius: 8px;
+      background: #111822;
+      transition: all 0.2s;
+      min-width: 80px;
+      border: 1px solid var(--border-color);
+    }
+    .habit-matrix-table td.day-label-cell {
+      background: var(--card-inner);
+      color: #f0f6fc;
+      font-weight: 700;
+      text-align: left;
+      padding-left: 12px;
+      min-width: 120px;
+    }
+    .habit-matrix-table td.total-cell {
+      background: rgba(108, 92, 231, 0.12);
+      color: #a29bfe;
+      font-weight: 700;
+      border-color: rgba(108, 92, 231, 0.3);
+    }
+    .habit-matrix-table td.slot-level-0 {
+      background: #10151f;
+      color: #485460;
+    }
+    .habit-matrix-table td.slot-level-1 {
+      background: rgba(108, 92, 231, 0.2);
+      color: #dcdde1;
+      border-color: rgba(108, 92, 231, 0.35);
+    }
+    .habit-matrix-table td.slot-level-2 {
+      background: rgba(108, 92, 231, 0.42);
+      color: #f5f6fa;
+      border-color: rgba(108, 92, 231, 0.55);
+    }
+    .habit-matrix-table td.slot-level-3 {
+      background: rgba(108, 92, 231, 0.68);
+      color: #ffffff;
+      border-color: rgba(108, 92, 231, 0.85);
+      font-weight: 700;
+    }
+    .habit-matrix-table td.slot-level-4 {
+      background: #6c5ce7;
+      color: #ffffff;
+      font-weight: 800;
+      border-color: #a29bfe;
+      box-shadow: 0 0 10px rgba(108, 92, 231, 0.4);
+    }
+    .matrix-cell-val {
+      font-size: 11.5px;
+      line-height: 1.2;
+    }
+    .matrix-cell-sub {
+      font-size: 9.5px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    /* Visual Charts Timeframe Filter Tabs (Items 10 & 11) */
+    .chart-filter-tabs {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .chart-tab-btn {
+      background: var(--card-inner);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .chart-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .chart-tab-btn.active {
+      background: rgba(108, 92, 231, 0.25);
+      color: #a29bfe;
+      border-color: #6c5ce7;
+    }
+
+    /* History Log Timeframe Filter Tabs & Pagination (Items 13 & 13.2) */
+    .history-timeframe-tabs {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .hist-time-tab-btn {
+      background: var(--card-inner);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .hist-time-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .hist-time-tab-btn.active {
+      background: rgba(108, 92, 231, 0.25);
+      color: #a29bfe;
+      border-color: #6c5ce7;
+    }
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--card-inner);
+      border-top: 1px solid var(--border-color);
+      border-radius: 0 0 14px 14px;
+    }
+    .btn-page {
+      background: #1b2330;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-page:hover:not(:disabled) {
+      background: rgba(108, 92, 231, 0.25);
+      border-color: #6c5ce7;
+      color: #a29bfe;
+    }
+    .btn-page:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .page-indicator {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 700;
     }
 
     /* Charts Grid */
@@ -1117,8 +1292,8 @@
           <span class="kpi-title">Completion Rate</span>
           <span class="kpi-icon">🎯</span>
         </div>
-        <div class="kpi-val"><span id="kpiCompletionRate">100%</span></div>
-        <div class="kpi-sub">Completed: <strong id="kpiCompletedSessionsCount" style="color:#55efc4;">0</strong> Sessions</div>
+        <div class="kpi-val"><span id="kpiCompletionRate">0%</span></div>
+        <div class="kpi-sub" id="kpiCompletionRateSub">Goal: 25h/week (Current: <strong id="kpiWeeklyCurrentHours" style="color:#55efc4;">0.0h</strong>)</div>
       </div>
     </section>
 
@@ -1130,9 +1305,11 @@
           <span>Study Consistency Heatmap (අඛණ්ඩතා දර්ශකය)</span>
         </div>
         <div class="timeframe-tabs">
-          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks(16, this)">16 Weeks</button>
-          <button type="button" class="timeframe-tab-btn active" onclick="setTimeframeWeeks(26, this)">6 Months</button>
-          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks(52, this)">1 Year</button>
+          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('1D', this)">1 Day</button>
+          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('1W', this)">1 Week</button>
+          <button type="button" class="timeframe-tab-btn active" onclick="setTimeframeWeeks('1M', this)">1 Month</button>
+          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('3M', this)">3 Months</button>
+          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('1Y', this)">1 Year</button>
           <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('ALL', this)">🌐 All Time</button>
         </div>
       </div>
@@ -1233,6 +1410,38 @@
       </div>
     </section>
 
+    <!-- Day-of-Week & Active Times Visualization (Item 12: Weekly Focus Habit Punchcard / Matrix) -->
+    <section class="section-card" id="sectionWeeklyHabitMatrix">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">🗓️</span>
+          <span>සතිපතා දෛනික හා කාල පරාස අනුකෘතිය (Day-of-Week &amp; Active Times Matrix)</span>
+        </div>
+        <div class="header-extra-info">
+          <span style="font-size:11px; color:var(--text-muted);">සතියේ දින සහ වේලාවන් අනුව අධ්‍යයන පුරුදු (Weekly Focus Habits)</span>
+        </div>
+      </div>
+
+      <div class="habit-matrix-wrap">
+        <table class="habit-matrix-table" id="habitMatrixTable">
+          <thead>
+            <tr>
+              <th>සතියේ දිනය (Day)</th>
+              <th>🌅 Early Morning<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">04:00 – 08:00</span></th>
+              <th>☀️ Morning<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">08:00 – 12:00</span></th>
+              <th>🌤️ Afternoon<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">12:00 – 17:00</span></th>
+              <th>🌆 Evening<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">17:00 – 21:00</span></th>
+              <th>🌙 Late Night<br><span style="font-weight:400; font-size:9.5px; opacity:0.8;">21:00 – 04:00</span></th>
+              <th>මුළු කාලය (Total)</th>
+            </tr>
+          </thead>
+          <tbody id="habitMatrixBody">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Visual Charts: Subject Breakdown & 14-Day Trend -->
     <section class="charts-grid">
       <!-- Subject Focus Distribution (Doughnut Chart) -->
@@ -1241,17 +1450,33 @@
           <div class="chart-box-title">
             <span>🍩</span> <span>විෂය අනුව කාලය බෙදීයාම (Subject Distribution)</span>
           </div>
+          <div class="chart-filter-tabs" id="doughnutFilterTabs">
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('7d', this)">7D</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('14d', this)">14D</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('1m', this)">1M</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('3m', this)">3M</button>
+            <button type="button" class="chart-tab-btn" onclick="setDoughnutTimeframe('1y', this)">1Y</button>
+            <button type="button" class="chart-tab-btn active" onclick="setDoughnutTimeframe('all', this)">All</button>
+          </div>
         </div>
         <div class="chart-canvas-wrap">
           <canvas id="subjectDoughnutChart"></canvas>
         </div>
       </div>
 
-      <!-- 14-Day Focus Trend (Bar Chart) -->
+      <!-- Focus Trend (Bar Chart) -->
       <div class="chart-box">
         <div class="chart-box-header">
           <div class="chart-box-title">
-            <span>📊</span> <span>පසුගිය දින 14 තුළ දෛනික ප්‍රගතිය (14-Day Trend)</span>
+            <span>📊</span> <span id="trendChartTitle">දෛනික ප්‍රගතිය (14-Day Focus Trend)</span>
+          </div>
+          <div class="chart-filter-tabs" id="trendFilterTabs">
+            <button type="button" class="chart-tab-btn" onclick="setTrendTimeframe('7d', this)">7D</button>
+            <button type="button" class="chart-tab-btn active" onclick="setTrendTimeframe('14d', this)">14D</button>
+            <button type="button" class="chart-tab-btn" onclick="setTrendTimeframe('1m', this)">1M</button>
+            <button type="button" class="chart-tab-btn" onclick="setTrendTimeframe('3m', this)">3M</button>
+            <button type="button" class="chart-tab-btn" onclick="setTrendTimeframe('1y', this)">1Y</button>
+            <button type="button" class="chart-tab-btn" onclick="setTrendTimeframe('all', this)">All</button>
           </div>
         </div>
         <div class="chart-canvas-wrap">
@@ -1275,7 +1500,10 @@
       <!-- Combined Balance Distribution Bar -->
       <div class="subj-balance-wrapper">
         <div class="subj-balance-header">
-          <span>විෂය තුල්‍යතා අනුපාතය (Overall Subject Study Balance):</span>
+          <div>
+            <span>විෂය තුල්‍යතා අනුපාතය (Overall Subject Study Balance)</span>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 2px;">Target: ICT 33% | ET 33% | SFT 34%</div>
+          </div>
           <div class="subj-balance-legend">
             <span class="legend-dot-item"><span class="dot ict"></span> ICT <strong id="legendIctPct">0%</strong></span>
             <span class="legend-dot-item"><span class="dot et"></span> ET <strong id="legendEtPct">0%</strong></span>
@@ -1399,14 +1627,29 @@
       </div>
 
       <div class="history-filter-bar">
-        <div class="filter-pills-group">
-          <button type="button" class="filter-btn active" onclick="setHistoryFilter('ALL', this)">සියල්ල (All)</button>
-          <button type="button" class="filter-btn" onclick="setHistoryFilter('ICT', this)">💻 ICT</button>
-          <button type="button" class="filter-btn" onclick="setHistoryFilter('ET', this)">⚙️ ET</button>
-          <button type="button" class="filter-btn" onclick="setHistoryFilter('SFT', this)">🔬 SFT</button>
-        </div>
-        <div style="font-size: 11px; color: var(--text-muted);">
-          Total Logged: <strong id="historyFilteredCount" style="color:#f0f6fc;">0</strong>
+        <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+          <!-- Timeframe filter tabs for history log (Item 13.2) -->
+          <div class="history-timeframe-tabs">
+            <button type="button" class="hist-time-tab-btn" onclick="setHistoryTimeframe('1d', this)">1 Day</button>
+            <button type="button" class="hist-time-tab-btn" onclick="setHistoryTimeframe('7d', this)">7 Days</button>
+            <button type="button" class="hist-time-tab-btn" onclick="setHistoryTimeframe('14d', this)">14 Days</button>
+            <button type="button" class="hist-time-tab-btn" onclick="setHistoryTimeframe('1m', this)">1 Month</button>
+            <button type="button" class="hist-time-tab-btn" onclick="setHistoryTimeframe('3m', this)">3 Months</button>
+            <button type="button" class="hist-time-tab-btn" onclick="setHistoryTimeframe('1y', this)">1 Year</button>
+            <button type="button" class="hist-time-tab-btn active" onclick="setHistoryTimeframe('all', this)">All Time</button>
+          </div>
+          <!-- Subject pills filter -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div class="filter-pills-group">
+              <button type="button" class="filter-btn active" onclick="setHistoryFilter('ALL', this)">සියල්ල (All Subjects)</button>
+              <button type="button" class="filter-btn" onclick="setHistoryFilter('ICT', this)">💻 ICT</button>
+              <button type="button" class="filter-btn" onclick="setHistoryFilter('ET', this)">⚙️ ET</button>
+              <button type="button" class="filter-btn" onclick="setHistoryFilter('SFT', this)">🔬 SFT</button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted);">
+              Total Logged: <strong id="historyFilteredCount" style="color:#f0f6fc;">0</strong>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1429,6 +1672,13 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Pagination Controls (Item 13) -->
+      <div class="pagination-bar" id="historyPaginationBar">
+        <button type="button" class="btn-page" id="btnPagePrev" onclick="prevHistoryPage()">← Previous</button>
+        <span class="page-indicator" id="historyPageIndicator">Page 1 of 1</span>
+        <button type="button" class="btn-page" id="btnPageNext" onclick="nextHistoryPage()">Next →</button>
       </div>
     </section>
   </div>
@@ -1556,10 +1806,106 @@
     }
     getSupabase();
 
+    // Supabase Realtime Multi-Device Sync Channel
+    let realtimeChannel = null;
+
+    function initRealtimeSync() {
+      const sb = getSupabase();
+      if (!sb || !navigator.onLine || realtimeChannel) return;
+
+      try {
+        realtimeChannel = sb.channel('realtime:study_timer_sessions')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'study_timer_sessions' }, (payload) => {
+            handleRealtimeEvent(payload);
+          })
+          .subscribe((status, err) => {
+            if (status === 'SUBSCRIBED') {
+              console.log('✅ Supabase Realtime connected on table study_timer_sessions');
+            } else if (status === 'CHANNEL_ERROR') {
+              console.warn('Supabase Realtime channel error:', err);
+            }
+          });
+      } catch (e) {
+        console.warn('Failed to initialize Supabase Realtime:', e);
+      }
+    }
+
+    async function handleRealtimeEvent(payload) {
+      if (!payload) return;
+      const eventType = payload.eventType;
+
+      if (eventType === 'DELETE') {
+        const delId = (payload.old && payload.old.id) || (payload.new && payload.new.id);
+        if (!delId) return;
+
+        allSessions = allSessions.filter(s => s.id !== delId);
+        saveCachedSessions(allSessions);
+
+        try {
+          const db = await openOfflineDB();
+          if (db) {
+            const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+            const tx = db.transaction(sName, 'readwrite');
+            tx.objectStore(sName).delete(delId);
+          }
+        } catch (_) {}
+
+        // Reactive re-render without full page reload
+        renderKPIs();
+        renderComprehensiveHeatmap();
+        renderPeakTimeSlots();
+        renderWeeklyHabitMatrix();
+        renderSubjectProgressSection();
+        renderVisualCharts();
+        renderSessionsTable();
+      } else if (eventType === 'INSERT' || eventType === 'UPDATE') {
+        const record = payload.new;
+        if (!record || !isValidTimerSession(record)) return;
+
+        const idx = allSessions.findIndex(s => s.id === record.id);
+        if (idx !== -1) {
+          allSessions[idx] = { ...allSessions[idx], ...record, synced: true };
+        } else {
+          allSessions.unshift({ ...record, synced: true });
+        }
+
+        allSessions.sort((a, b) => {
+          const tA = new Date(a.end_time || a.timer_stop_date || a.start_time || a.created_at || a.session_date).getTime() || 0;
+          const tB = new Date(b.end_time || b.timer_stop_date || b.start_time || b.created_at || b.session_date).getTime() || 0;
+          return tB - tA;
+        });
+
+        saveCachedSessions(allSessions);
+
+        try {
+          const db = await openOfflineDB();
+          if (db) {
+            const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+            const tx = db.transaction(sName, 'readwrite');
+            tx.objectStore(sName).put({ ...record, synced: true });
+          }
+        } catch (_) {}
+
+        // Reactive re-render without full page reload
+        renderKPIs();
+        renderComprehensiveHeatmap();
+        renderPeakTimeSlots();
+        renderWeeklyHabitMatrix();
+        renderSubjectProgressSection();
+        renderVisualCharts();
+        renderSessionsTable();
+      }
+    }
+
     // State
     let allSessions = [];
-    let currentHeatmapWeeks = 26; // Default to 6 Months
+    let currentHeatmapWeeks = '1M'; // Default to 1 Month
+    let currentDoughnutTimeframe = 'all'; // Default to All Time
+    let currentTrendTimeframe = '14d'; // Default to 14 Days
     let currentHistoryFilter = 'ALL';
+    let currentHistoryTimeframe = 'all';
+    let currentHistoryPage = 1;
+    const HISTORY_PAGE_SIZE = 10;
     let currentSlotFilter = 'ALL';
     let currentDetailPeriod = 'today';
     let subjectChartInstance = null;
@@ -1965,6 +2311,7 @@
     async function refreshAnalyticsData() {
       if (navigator.onLine) {
         try {
+          initRealtimeSync();
           await processSyncQueue();
         } catch (e) {
           console.warn('processSyncQueue error:', e);
@@ -1978,6 +2325,7 @@
       try { renderKPIs(); } catch (e) { console.error('renderKPIs error:', e); }
       try { renderComprehensiveHeatmap(); } catch (e) { console.error('renderComprehensiveHeatmap error:', e); }
       try { renderPeakTimeSlots(); } catch (e) { console.error('renderPeakTimeSlots error:', e); }
+      try { renderWeeklyHabitMatrix(); } catch (e) { console.error('renderWeeklyHabitMatrix error:', e); }
       try { renderSubjectProgressSection(); } catch (e) { console.error('renderSubjectProgressSection error:', e); }
       try { renderVisualCharts(); } catch (e) { console.error('renderVisualCharts error:', e); }
       try { renderSessionsTable(); } catch (e) { console.error('renderSessionsTable error:', e); }
@@ -2173,11 +2521,14 @@
       if (topShareEl) topShareEl.innerText = `${topSharePct}%`;
       if (topHoursEl) topHoursEl.innerText = `${topHours}h`;
 
-      // 5. Completion Rate
-      const completionRatePct = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 100;
+      // 5. Completion Rate (Weekly Goal: 25h / 1500 mins, Mon-Sun)
+      const weekTargetMins = 25 * 60; // 1500 minutes
+      const completionRatePct = Math.round((thisWeekMins / weekTargetMins) * 100);
       const compRateEl = document.getElementById('kpiCompletionRate');
+      const compSubEl = document.getElementById('kpiCompletionRateSub');
       const compCountEl = document.getElementById('kpiCompletedSessionsCount');
       if (compRateEl) compRateEl.innerText = `${completionRatePct}%`;
+      if (compSubEl) compSubEl.innerText = `Goal: 25h/week (Current: ${thisWeekHours}h)`;
       if (compCountEl) compCountEl.innerText = completedSessions;
     }
 
@@ -2186,6 +2537,14 @@
       currentHeatmapWeeks = weeks;
       document.querySelectorAll('.timeframe-tab-btn').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
+      if (weeks === '1D') {
+        currentDetailPeriod = 'today';
+        const pBtn = document.querySelector('.period-tab-btn[onclick*="today"]');
+        if (pBtn) {
+          document.querySelectorAll('.period-tab-btn').forEach(b => b.classList.remove('active'));
+          pBtn.classList.add('active');
+        }
+      }
       renderComprehensiveHeatmap();
     }
 
@@ -2210,9 +2569,17 @@
         subjectDetailMap[ds].sessions.push(s);
       });
 
-      // Calculate weeks count dynamically (support 'ALL' timeframe)
-      let weeksCount = currentHeatmapWeeks;
-      if (weeksCount === 'ALL') {
+      // Calculate weeks count dynamically (support '1D', '1W', '1M', '3M', '1Y', 'ALL')
+      let weeksCount = 5; // Default for 1M
+      if (currentHeatmapWeeks === '1D' || currentHeatmapWeeks === '1W') {
+        weeksCount = 1;
+      } else if (currentHeatmapWeeks === '1M') {
+        weeksCount = 5;
+      } else if (currentHeatmapWeeks === '3M') {
+        weeksCount = 13;
+      } else if (currentHeatmapWeeks === '1Y') {
+        weeksCount = 52;
+      } else if (currentHeatmapWeeks === 'ALL') {
         let earliestTime = Date.now();
         allSessions.forEach(s => {
           const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
@@ -2222,9 +2589,9 @@
           }
         });
         const spanWeeks = Math.ceil((Date.now() - earliestTime) / (7 * 86400000));
-        weeksCount = Math.max(26, Math.min(104, spanWeeks + 2)); // Minimum 26 weeks, padded
+        weeksCount = Math.max(5, Math.min(104, spanWeeks + 2)); // Minimum 5 weeks, padded
       } else {
-        weeksCount = Number(weeksCount) || 26;
+        weeksCount = Number(currentHeatmapWeeks) || 5;
       }
 
       const totalDays = weeksCount * 7;
@@ -2283,10 +2650,14 @@
 
       // Build month labels row
       if (monthsRow) {
-        const colWidth = 16; // 12px width + 4px gap
-        monthsRow.innerHTML = monthCols.map(m => `
-          <span style="position: absolute; left: ${m.col * colWidth + 24}px;">${m.name}</span>
-        `).join('');
+        if (weeksCount <= 2) {
+          monthsRow.innerHTML = `<span style="position: absolute; left: 24px;">${new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>`;
+        } else {
+          const colWidth = 16; // 12px width + 4px gap
+          monthsRow.innerHTML = monthCols.map(m => `
+            <span style="position: absolute; left: ${m.col * colWidth + 24}px;">${m.name}</span>
+          `).join('');
+        }
         monthsRow.style.position = 'relative';
       }
 
@@ -2385,7 +2756,7 @@
       const pills = [];
       ['ICT', 'ET', 'SFT'].forEach(sub => {
         const m = subjMap[sub] || 0;
-        if (m > 0 || period === 'all' || period === '30d') {
+        if (m > 0) {
           const h = (m / 60).toFixed(1);
           pills.push(`<span class="subj-pill ${sub.toLowerCase()}">${sub}: ${m}m (${h}h)</span>`);
         }
@@ -2393,7 +2764,7 @@
 
       const subEl = document.getElementById('selectedDateSubjects');
       if (subEl) {
-        subEl.innerHTML = pills.length > 0 ? pills.join('') : '<span style="font-size:11px; color:#6e7681;">මෙම කාල සීමාව තුළ අධ්‍යයන සැසි සටහන් කර නොමැත</span>';
+        subEl.innerHTML = (totalMins > 0 && pills.length > 0) ? pills.join('') : '<span style="font-size:12px; color:var(--text-muted);">මෙම කාල සීමාව තුළ අධ්‍යයන සැසි සටහන් කර නොමැත (No sessions recorded for this timeframe)</span>';
       }
     }
 
@@ -2431,7 +2802,7 @@
         subjMap[subj] = (subjMap[subj] || 0) + (Number(s.duration_minutes) || 0);
       });
 
-      const tagsHtml = Object.keys(subjMap).map(subj => {
+      const tagsHtml = Object.keys(subjMap).filter(k => subjMap[k] > 0).map(subj => {
         const cls = subj.toLowerCase();
         const m = subjMap[subj];
         const h = (m / 60).toFixed(1);
@@ -2440,31 +2811,69 @@
 
       const subEl = document.getElementById('selectedDateSubjects');
       if (subEl) {
-        subEl.innerHTML = tagsHtml || '<span style="font-size:11px; color:#6e7681;">අධ්‍යයන සැසි සටහන් කර නැත</span>';
+        subEl.innerHTML = (totalMins > 0 && tagsHtml) ? tagsHtml : '<span style="font-size:12px; color:var(--text-muted);">මෙම දිනට අධ්‍යයන සැසි සටහන් කර නැත (No sessions recorded for this date)</span>';
       }
     }
 
-    // 3. Render Visual Charts (Subject Distribution & 14-Day Trend)
-    function renderVisualCharts() {
-      if (typeof Chart === 'undefined') {
-        console.warn('Chart.js is not loaded yet');
-        return;
+    // Helper: Filter sessions by timeframe (1d, 7d, 14d, 1m, 3m, 1y, all)
+    function filterSessionsByTimeframe(sessions, tf) {
+      if (!tf || tf === 'all') return sessions;
+      const now = new Date();
+      let days = 14;
+      if (tf === '1d') days = 1;
+      else if (tf === '7d') days = 7;
+      else if (tf === '14d') days = 14;
+      else if (tf === '1m') days = 30;
+      else if (tf === '3m') days = 90;
+      else if (tf === '1y') days = 365;
+
+      const cutoff = new Date(now.getTime() - days * 86400000);
+      return sessions.filter(s => {
+        const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+        if (!ds) return false;
+        const d = new Date(ds + 'T23:59:59');
+        return d >= cutoff && d <= now;
+      });
+    }
+
+    // Chart Timeframe Setters
+    function setDoughnutTimeframe(tf, btn) {
+      currentDoughnutTimeframe = tf;
+      const container = document.getElementById('doughnutFilterTabs');
+      if (container) {
+        container.querySelectorAll('.chart-tab-btn').forEach(b => b.classList.remove('active'));
       }
+      if (btn) btn.classList.add('active');
+      renderDoughnutChart();
+    }
 
+    function setTrendTimeframe(tf, btn) {
+      currentTrendTimeframe = tf;
+      const container = document.getElementById('trendFilterTabs');
+      if (container) {
+        container.querySelectorAll('.chart-tab-btn').forEach(b => b.classList.remove('active'));
+      }
+      if (btn) btn.classList.add('active');
+      renderTrendBarChart();
+    }
+
+    // 3. Render Visual Charts: Subject Distribution (Doughnut)
+    function renderDoughnutChart() {
+      if (typeof Chart === 'undefined') return;
       const doughnutEl = document.getElementById('subjectDoughnutChart');
-      const barEl = document.getElementById('dailyTrendBarChart');
-      if (!doughnutEl || !barEl) return;
+      if (!doughnutEl) return;
 
-      // Calculate Subject Totals
+      const filtered = filterSessionsByTimeframe(allSessions, currentDoughnutTimeframe);
       const subjMins = { ICT: 0, ET: 0, SFT: 0 };
-      allSessions.forEach(s => {
+      filtered.forEach(s => {
         const subj = (s.subject || 'ICT').toUpperCase();
         if (subjMins[subj] !== undefined) {
           subjMins[subj] += (Number(s.duration_minutes) || 0);
         }
       });
 
-      // Render Doughnut Chart
+      const total = subjMins.ICT + subjMins.ET + subjMins.SFT;
+
       try {
         const doughnutCtx = doughnutEl.getContext('2d');
         if (subjectChartInstance) subjectChartInstance.destroy();
@@ -2474,8 +2883,8 @@
           data: {
             labels: ['ICT', 'ET', 'SFT'],
             datasets: [{
-              data: [subjMins.ICT, subjMins.ET, subjMins.SFT],
-              backgroundColor: ['#20bf6b', '#0984e3', '#8854d0'],
+              data: total > 0 ? [subjMins.ICT, subjMins.ET, subjMins.SFT] : [1, 1, 1],
+              backgroundColor: total > 0 ? ['#20bf6b', '#0984e3', '#8854d0'] : ['#2d3748', '#2d3748', '#2d3748'],
               borderColor: '#090d14',
               borderWidth: 3,
               hoverOffset: 6
@@ -2496,8 +2905,8 @@
               tooltip: {
                 callbacks: {
                   label: function(ctx) {
+                    if (total === 0) return ' දත්ත නොමැත (No data)';
                     const val = ctx.raw || 0;
-                    const total = subjMins.ICT + subjMins.ET + subjMins.SFT;
                     const pct = total > 0 ? Math.round((val / total) * 100) : 0;
                     return ` ${ctx.label}: ${val} mins (${pct}%)`;
                   }
@@ -2510,20 +2919,41 @@
       } catch (err) {
         console.error('Error creating doughnut chart:', err);
       }
+    }
 
-      // Render 14-Day Bar Chart
-      try {
-        const barLabels = [];
-        const ictData = [];
-        const etData = [];
-        const sftData = [];
+    // 3. Render Visual Charts: Focus Trend (Bar Chart)
+    function renderTrendBarChart() {
+      if (typeof Chart === 'undefined') return;
+      const barEl = document.getElementById('dailyTrendBarChart');
+      if (!barEl) return;
 
-        for (let i = 13; i >= 0; i--) {
+      const trendTitleEl = document.getElementById('trendChartTitle');
+      if (trendTitleEl) {
+        const tfLabels = {
+          '7d': '7-Day Focus Trend',
+          '14d': '14-Day Focus Trend',
+          '1m': '1-Month Focus Trend',
+          '3m': '3-Month Focus Trend',
+          '1y': '1-Year Focus Trend',
+          'all': 'All-Time Focus Trend'
+        };
+        trendTitleEl.innerText = `ප්‍රගති ප්‍රවණතාව (${tfLabels[currentTrendTimeframe] || 'Focus Trend'})`;
+      }
+
+      const tf = currentTrendTimeframe;
+      let barLabels = [];
+      let ictData = [];
+      let etData = [];
+      let sftData = [];
+
+      if (tf === '7d' || tf === '14d' || tf === '1m') {
+        const days = tf === '7d' ? 7 : (tf === '14d' ? 14 : 30);
+        for (let i = days - 1; i >= 0; i--) {
           const d = new Date();
           d.setDate(d.getDate() - i);
           const ds = d.toISOString().split('T')[0];
           const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
-          barLabels.push(`${dayName} ${d.getDate()}`);
+          barLabels.push(days <= 14 ? `${dayName} ${d.getDate()}` : `${d.getMonth()+1}/${d.getDate()}`);
 
           let mIct = 0, mEt = 0, mSft = 0;
           allSessions.forEach(s => {
@@ -2535,12 +2965,98 @@
               else if (sub === 'SFT') mSft += mins;
             }
           });
-
           ictData.push(mIct);
           etData.push(mEt);
           sftData.push(mSft);
         }
+      } else if (tf === '3m') {
+        // 12 weeks
+        for (let w = 11; w >= 0; w--) {
+          const endD = new Date();
+          endD.setDate(endD.getDate() - w * 7);
+          const startD = new Date(endD);
+          startD.setDate(startD.getDate() - 6);
 
+          const label = `${startD.getDate()} ${startD.toLocaleDateString('en-US', { month: 'short' })}`;
+          barLabels.push(label);
+
+          let mIct = 0, mEt = 0, mSft = 0;
+          allSessions.forEach(s => {
+            const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+            if (ds) {
+              const sd = new Date(ds + 'T12:00:00');
+              if (sd >= startD && sd <= endD) {
+                const mins = Number(s.duration_minutes) || 0;
+                const sub = (s.subject || 'ICT').toUpperCase();
+                if (sub === 'ICT') mIct += mins;
+                else if (sub === 'ET') mEt += mins;
+                else if (sub === 'SFT') mSft += mins;
+              }
+            }
+          });
+          ictData.push(mIct);
+          etData.push(mEt);
+          sftData.push(mSft);
+        }
+      } else if (tf === '1y') {
+        // 12 months
+        const now = new Date();
+        for (let m = 11; m >= 0; m--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+          const y = d.getFullYear();
+          const mon = d.getMonth();
+          const label = d.toLocaleDateString('en-US', { month: 'short' });
+          barLabels.push(label);
+
+          let mIct = 0, mEt = 0, mSft = 0;
+          allSessions.forEach(s => {
+            const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+            if (ds) {
+              const sd = new Date(ds + 'T12:00:00');
+              if (sd.getFullYear() === y && sd.getMonth() === mon) {
+                const mins = Number(s.duration_minutes) || 0;
+                const sub = (s.subject || 'ICT').toUpperCase();
+                if (sub === 'ICT') mIct += mins;
+                else if (sub === 'ET') mEt += mins;
+                else if (sub === 'SFT') mSft += mins;
+              }
+            }
+          });
+          ictData.push(mIct);
+          etData.push(mEt);
+          sftData.push(mSft);
+        }
+      } else {
+        // 'all' - monthly breakdown
+        const now = new Date();
+        for (let m = 5; m >= 0; m--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+          const y = d.getFullYear();
+          const mon = d.getMonth();
+          const label = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+          barLabels.push(label);
+
+          let mIct = 0, mEt = 0, mSft = 0;
+          allSessions.forEach(s => {
+            const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+            if (ds) {
+              const sd = new Date(ds + 'T12:00:00');
+              if (sd.getFullYear() === y && sd.getMonth() === mon) {
+                const mins = Number(s.duration_minutes) || 0;
+                const sub = (s.subject || 'ICT').toUpperCase();
+                if (sub === 'ICT') mIct += mins;
+                else if (sub === 'ET') mEt += mins;
+                else if (sub === 'SFT') mSft += mins;
+              }
+            }
+          });
+          ictData.push(mIct);
+          etData.push(mEt);
+          sftData.push(mSft);
+        }
+      }
+
+      try {
         const barCtx = barEl.getContext('2d');
         if (trendChartInstance) trendChartInstance.destroy();
 
@@ -2584,6 +3100,157 @@
       } catch (err) {
         console.error('Error creating trend bar chart:', err);
       }
+    }
+
+    function renderVisualCharts() {
+      renderDoughnutChart();
+      renderTrendBarChart();
+    }
+
+    // 4. Day-of-Week & Active Times Habit Matrix
+    function renderWeeklyHabitMatrix() {
+      const tbody = document.getElementById('habitMatrixBody');
+      if (!tbody) return;
+
+      const DAYS = [
+        { key: 1, name: 'Monday', sinhala: 'සඳුදා' },
+        { key: 2, name: 'Tuesday', sinhala: 'අඟහරුවාදා' },
+        { key: 3, name: 'Wednesday', sinhala: 'බදාදා' },
+        { key: 4, name: 'Thursday', sinhala: 'බ්‍රහස්පතින්දා' },
+        { key: 5, name: 'Friday', sinhala: 'සිකුරාදා' },
+        { key: 6, name: 'Saturday', sinhala: 'සෙනසුරාදා' },
+        { key: 0, name: 'Sunday', sinhala: 'ඉරිදා' }
+      ];
+
+      const SLOTS = ['early_morning', 'morning', 'afternoon', 'evening', 'late_night'];
+
+      const matrix = {};
+      DAYS.forEach(d => {
+        matrix[d.key] = {
+          early_morning: { mins: 0, count: 0 },
+          morning: { mins: 0, count: 0 },
+          afternoon: { mins: 0, count: 0 },
+          evening: { mins: 0, count: 0 },
+          late_night: { mins: 0, count: 0 },
+          totalMins: 0,
+          totalCount: 0
+        };
+      });
+
+      const colTotals = {
+        early_morning: { mins: 0, count: 0 },
+        morning: { mins: 0, count: 0 },
+        afternoon: { mins: 0, count: 0 },
+        evening: { mins: 0, count: 0 },
+        late_night: { mins: 0, count: 0 }
+      };
+      let grandTotalMins = 0;
+      let grandTotalCount = 0;
+      let maxCellMins = 0;
+
+      allSessions.forEach(s => {
+        const mins = Number(s.duration_minutes) || 0;
+        if (mins <= 0) return;
+
+        let dObj = null;
+        if (s.start_time) dObj = new Date(s.start_time);
+        else if (s.created_at) dObj = new Date(s.created_at);
+        else if (s.session_date) dObj = new Date(s.session_date + 'T12:00:00');
+        if (!dObj || isNaN(dObj.getTime())) dObj = new Date();
+
+        const dayKey = dObj.getDay();
+        const hr = dObj.getHours();
+        let slotId = 'late_night';
+        if (hr >= 4 && hr < 8) slotId = 'early_morning';
+        else if (hr >= 8 && hr < 12) slotId = 'morning';
+        else if (hr >= 12 && hr < 17) slotId = 'afternoon';
+        else if (hr >= 17 && hr < 21) slotId = 'evening';
+
+        if (matrix[dayKey] && matrix[dayKey][slotId]) {
+          matrix[dayKey][slotId].mins += mins;
+          matrix[dayKey][slotId].count++;
+          matrix[dayKey].totalMins += mins;
+          matrix[dayKey].totalCount++;
+
+          colTotals[slotId].mins += mins;
+          colTotals[slotId].count++;
+          grandTotalMins += mins;
+          grandTotalCount++;
+
+          if (matrix[dayKey][slotId].mins > maxCellMins) {
+            maxCellMins = matrix[dayKey][slotId].mins;
+          }
+        }
+      });
+
+      const getHeatStyle = (mins) => {
+        if (mins === 0) return 'background: transparent; color: var(--text-dim);';
+        const intensity = Math.min(1, Math.max(0.15, mins / (maxCellMins || 60)));
+        const bgAlpha = (intensity * 0.45).toFixed(2);
+        return `background: rgba(108, 92, 231, ${bgAlpha}); color: #ffffff; font-weight: 700; border: 1px solid rgba(108, 92, 231, 0.4);`;
+      };
+
+      const rowsHtml = DAYS.map(d => {
+        const dayData = matrix[d.key];
+        const dayTotalHrs = (dayData.totalMins / 60).toFixed(1);
+
+        const slotTds = SLOTS.map(slotId => {
+          const st = dayData[slotId];
+          if (st.mins === 0) {
+            return `<td style="color:#484f58; text-align:center; font-size:11px;">—</td>`;
+          }
+          const hrs = st.mins >= 60 ? (st.mins / 60).toFixed(1) + 'h' : `${st.mins}m`;
+          return `
+            <td style="${getHeatStyle(st.mins)}; text-align:center;">
+              <div style="font-size:12px;">${hrs}</div>
+              <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${st.count} sess</div>
+            </td>
+          `;
+        }).join('');
+
+        return `
+          <tr>
+            <td style="font-weight:600; color:#f0f6fc; white-space:nowrap;">
+              <div>${d.name}</div>
+              <small style="font-size:10px; color:var(--text-muted);">${d.sinhala}</small>
+            </td>
+            ${slotTds}
+            <td style="text-align:center; font-weight:700; color:#55efc4; background: rgba(85, 239, 196, 0.06);">
+              <div style="font-size:12px;">${dayData.totalMins >= 60 ? dayTotalHrs + 'h' : dayData.totalMins + 'm'}</div>
+              <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${dayData.totalCount} sess</div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Summary footer row
+      const colTotalTds = SLOTS.map(slotId => {
+        const st = colTotals[slotId];
+        if (st.mins === 0) {
+          return `<td style="color:#484f58; text-align:center; font-size:11px;">—</td>`;
+        }
+        const hrs = st.mins >= 60 ? (st.mins / 60).toFixed(1) + 'h' : `${st.mins}m`;
+        return `
+          <td style="text-align:center; font-weight:700; color:#a29bfe; background:rgba(108, 92, 231, 0.1);">
+            <div style="font-size:12px;">${hrs}</div>
+            <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${st.count} sess</div>
+          </td>
+        `;
+      }).join('');
+
+      const grandTotalHrs = (grandTotalMins / 60).toFixed(1);
+      const footerRow = `
+        <tr style="border-top: 2px solid var(--border-color); background: rgba(255,255,255,0.02);">
+          <td style="font-weight:700; color:#f0f6fc;">මුළු එකතුව (Total)</td>
+          ${colTotalTds}
+          <td style="text-align:center; font-weight:800; color:#20bf6b; background: rgba(32, 191, 107, 0.12);">
+            <div style="font-size:13px;">${grandTotalMins >= 60 ? grandTotalHrs + 'h' : grandTotalMins + 'm'}</div>
+            <div style="font-size:9.5px; opacity:0.8; font-weight:normal;">${grandTotalCount} sess</div>
+          </td>
+        </tr>
+      `;
+
+      tbody.innerHTML = rowsHtml + footerRow;
     }
 
     // 4. Peak Study Time Periods Filter & Renderer (Item 2 & 3)
@@ -2837,29 +3504,87 @@
       });
     }
 
-    // 6. Render Sessions History Table
-    function setHistoryFilter(subj, btn) {
-      currentHistoryFilter = subj;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    // 6. Render Sessions History Table & Pagination
+    function getFilteredHistorySessions() {
+      const tfFiltered = filterSessionsByTimeframe(allSessions, currentHistoryTimeframe);
+      return tfFiltered.filter(s => {
+        if (currentHistoryFilter === 'ALL') return true;
+        return (s.subject || '').toUpperCase() === currentHistoryFilter;
+      });
+    }
+
+    function setHistoryTimeframe(tf, btn) {
+      currentHistoryTimeframe = tf;
+      currentHistoryPage = 1;
+      const container = document.querySelector('.history-timeframe-tabs');
+      if (container) {
+        container.querySelectorAll('.hist-time-tab-btn').forEach(b => b.classList.remove('active'));
+      }
       if (btn) btn.classList.add('active');
       renderSessionsTable();
     }
 
+    function setHistoryFilter(subj, btn) {
+      currentHistoryFilter = subj;
+      currentHistoryPage = 1;
+      const container = document.querySelector('.filter-pills-group');
+      if (container) {
+        container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      }
+      if (btn) btn.classList.add('active');
+      renderSessionsTable();
+    }
+
+    function prevHistoryPage() {
+      if (currentHistoryPage > 1) {
+        currentHistoryPage--;
+        renderSessionsTable();
+      }
+    }
+
+    function nextHistoryPage() {
+      const filtered = getFilteredHistorySessions();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / HISTORY_PAGE_SIZE));
+      if (currentHistoryPage < totalPages) {
+        currentHistoryPage++;
+        renderSessionsTable();
+      }
+    }
+
     function renderSessionsTable() {
       const tbody = document.getElementById('sessionsTableBody');
-      const filtered = allSessions.filter(s => {
-        if (currentHistoryFilter === 'ALL') return true;
-        return (s.subject || '').toUpperCase() === currentHistoryFilter;
-      });
+      if (!tbody) return;
 
-      document.getElementById('historyFilteredCount').innerText = filtered.length;
+      const filtered = getFilteredHistorySessions();
+      const countEl = document.getElementById('historyFilteredCount');
+      if (countEl) countEl.innerText = filtered.length;
+
+      const totalPages = Math.max(1, Math.ceil(filtered.length / HISTORY_PAGE_SIZE));
+      if (currentHistoryPage > totalPages) currentHistoryPage = totalPages;
+      if (currentHistoryPage < 1) currentHistoryPage = 1;
+
+      // Update pagination controls
+      const pageIndicator = document.getElementById('historyPageIndicator');
+      const btnPrev = document.getElementById('btnPagePrev');
+      const btnNext = document.getElementById('btnPageNext');
+      const paginationBar = document.getElementById('historyPaginationBar');
+
+      if (pageIndicator) pageIndicator.innerText = `Page ${currentHistoryPage} of ${totalPages}`;
+      if (btnPrev) btnPrev.disabled = (currentHistoryPage <= 1);
+      if (btnNext) btnNext.disabled = (currentHistoryPage >= totalPages);
+      if (paginationBar) {
+        paginationBar.style.display = filtered.length > 0 ? 'flex' : 'none';
+      }
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 18px;">අද දින සිට ඉදිරියට කිසිදු ටයිමර් සැසියක් සටහන් කර නොමැත. ටයිමරය ක්‍රියාත්මක කර අවසන් වූ පසු (Completed Fully Once) මෙහි ස්වයංක්‍රීයව සටහන් වේ.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 22px;">මෙම පෙරහන යටතේ කිසිදු ටයිමර් සැසියක් සටහන් කර නොමැත (No study sessions recorded for this filter).</td></tr>';
         return;
       }
 
-      tbody.innerHTML = filtered.map(s => {
+      const startIndex = (currentHistoryPage - 1) * HISTORY_PAGE_SIZE;
+      const pageSessions = filtered.slice(startIndex, startIndex + HISTORY_PAGE_SIZE);
+
+      tbody.innerHTML = pageSessions.map(s => {
         const startDate = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : '-');
         const startTime = s.timer_start_time || (s.start_time ? new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-');
         const stopDate = s.timer_stop_date || s.session_date || (s.end_time ? s.end_time.split('T')[0] : startDate);
@@ -2961,6 +3686,13 @@
 
     async function deleteSession(sessionId) {
       if (!confirm('මෙම අධ්‍යයන සැසිය ලැයිස්තුවෙන් ඉවත් කිරීමට අවශ්‍ය බව තහවුරු කරන්නද?')) return;
+
+      const pin = prompt('මෙම සැසිය ඉවත් කිරීමට ආරක්ෂක PIN අංකය ඇතුළත් කරන්න (Security PIN):');
+      if (pin !== '3408') {
+        alert('වලංගු නොවන PIN අංකයකි / Invalid PIN');
+        return;
+      }
+
       allSessions = allSessions.filter(s => s.id !== sessionId);
       saveCachedSessions(allSessions);
 
@@ -3032,10 +3764,22 @@
     }
 
     async function saveManualSession() {
+      const dur = parseInt(document.getElementById('manualDurationInput').value, 10);
+      if (isNaN(dur) || dur <= 0 || dur > 480) {
+        alert('කරුණාකර වලංගු මිනිත්තු සංඛ්‍යාවක් ලබාදෙන්න (1 - 480).');
+        return;
+      }
+
+      // Security PIN prompt for manual addition
+      const pin = prompt('කරුණාකර PIN අංකය ඇතුළත් කරන්න (Security PIN):');
+      if (pin !== '3408') {
+        alert('වලංගු නොවන PIN අංකයකි / Invalid PIN');
+        return;
+      }
+
       const subj = document.getElementById('manualSubjSelect').value;
       const unitVal = document.getElementById('manualUnitSelect').value;
       const [uNum, uName] = unitVal.split('|');
-      const dur = parseInt(document.getElementById('manualDurationInput').value, 10) || 50;
       let dateVal = document.getElementById('manualDateInput').value || new Date().toISOString().split('T')[0];
       if (dateVal < TRACKING_START_DATE) {
         dateVal = TRACKING_START_DATE;
@@ -3153,8 +3897,16 @@
     window.setTimeframeWeeks = setTimeframeWeeks;
     window.setDetailPeriod = setDetailPeriod;
     window.handleHeatCellClick = handleHeatCellClick;
+    window.setDoughnutTimeframe = setDoughnutTimeframe;
+    window.setTrendTimeframe = setTrendTimeframe;
+    window.renderDoughnutChart = renderDoughnutChart;
+    window.renderTrendBarChart = renderTrendBarChart;
+    window.renderWeeklyHabitMatrix = renderWeeklyHabitMatrix;
     window.setSlotFilter = setSlotFilter;
     window.setHistoryFilter = setHistoryFilter;
+    window.setHistoryTimeframe = setHistoryTimeframe;
+    window.prevHistoryPage = prevHistoryPage;
+    window.nextHistoryPage = nextHistoryPage;
     window.refreshAnalyticsData = refreshAnalyticsData;
     window.editSessionDuration = editSessionDuration;
     window.deleteSession = deleteSession;

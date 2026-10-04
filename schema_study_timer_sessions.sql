@@ -85,3 +85,7 @@ ON public.study_timer_sessions
 FOR DELETE 
 TO public, anon, authenticated 
 USING (true);
+
+-- Enable Supabase Realtime replication on study_timer_sessions
+ALTER PUBLICATION supabase_realtime ADD TABLE public.study_timer_sessions;
+
