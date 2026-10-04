@@ -125,6 +125,11 @@
       color: #fdcb6e;
       border-color: rgba(253, 203, 110, 0.3);
     }
+    .sync-status-badge.syncing {
+      background: rgba(108, 92, 231, 0.15);
+      color: #a29bfe;
+      border-color: rgba(108, 92, 231, 0.35);
+    }
     .btn-action-sm {
       background: var(--card-inner);
       color: var(--text-main);
@@ -1601,7 +1606,19 @@
       } catch (e) {}
     }
 
-    // Helper: IndexedDB access (dedicated study_timer_sessions store)
+    // Helper: Generate RFC4122 v4 UUID (browser native or fallback)
+    function generateUUID() {
+      if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Helper: IndexedDB access (dedicated study_timer_sessions store & outbox queue)
     function openOfflineDB() {
       return new Promise((resolve) => {
         if (!window.indexedDB) return resolve(null);
@@ -1623,6 +1640,242 @@
       });
     }
 
+    // Helper: Get count of pending tasks in outbox queue
+    async function getPendingSyncCount() {
+      try {
+        const db = await openOfflineDB();
+        if (!db || !db.objectStoreNames.contains('sync_queue')) return 0;
+        return new Promise((resolve) => {
+          const tx = db.transaction('sync_queue', 'readonly');
+          const store = tx.objectStore('sync_queue');
+          const countReq = store.count();
+          countReq.onsuccess = () => resolve(countReq.result || 0);
+          countReq.onerror = () => resolve(0);
+        });
+      } catch (_) {
+        return 0;
+      }
+    }
+
+    // Helper: Enqueue failed/offline mutation into sync_queue
+    async function enqueueSyncTask(action, table, payload) {
+      try {
+        const db = await openOfflineDB();
+        if (!db || !db.objectStoreNames.contains('sync_queue')) return false;
+        return new Promise((resolve) => {
+          const tx = db.transaction('sync_queue', 'readwrite');
+          const store = tx.objectStore('sync_queue');
+          const item = {
+            action: action, // 'INSERT', 'UPDATE', 'DELETE'
+            table: table || 'study_timer_sessions',
+            payload: payload,
+            created_at: new Date().toISOString()
+          };
+          const req = store.add(item);
+          req.onsuccess = () => {
+            updateSyncUI();
+            resolve(true);
+          };
+          req.onerror = () => resolve(false);
+        });
+      } catch (e) {
+        console.error('enqueueSyncTask error:', e);
+        return false;
+      }
+    }
+
+    // FIFO Outbox Queue Runner: Processes pending tasks sequentially
+    let isSyncingQueue = false;
+
+    async function processSyncQueue() {
+      if (isSyncingQueue || !navigator.onLine) return;
+      const sb = getSupabase();
+      if (!sb) return;
+
+      isSyncingQueue = true;
+      await updateSyncUI('syncing');
+
+      try {
+        const db = await openOfflineDB();
+        if (!db || !db.objectStoreNames.contains('sync_queue')) {
+          return;
+        }
+
+        const tasks = await new Promise((resolve) => {
+          const tx = db.transaction('sync_queue', 'readonly');
+          const store = tx.objectStore('sync_queue');
+          const req = store.getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => resolve([]);
+        });
+
+        if (!tasks || tasks.length === 0) {
+          return;
+        }
+
+        // Strictly chronological FIFO order
+        tasks.sort((a, b) => (a.queue_id || 0) - (b.queue_id || 0));
+
+        for (const task of tasks) {
+          const { queue_id, action, table, payload } = task;
+          let success = false;
+
+          try {
+            if (action === 'INSERT') {
+              const targetTable = table || 'study_timer_sessions';
+              const insertData = {
+                id: payload.id,
+                subject: payload.subject,
+                unit_number: payload.unit_number !== undefined ? Number(payload.unit_number) : 0,
+                unit_name: payload.unit_name || null,
+                timer_start_date: payload.timer_start_date,
+                timer_start_time: payload.timer_start_time || null,
+                timer_stop_date: payload.timer_stop_date || null,
+                timer_stop_time: payload.timer_stop_time || null,
+                start_time: payload.start_time || null,
+                end_time: payload.end_time || null,
+                duration_minutes: Number(payload.duration_minutes) || 50,
+                status: payload.status || 'completed',
+                session_date: payload.session_date || payload.timer_start_date || null,
+                created_at: payload.created_at || new Date().toISOString()
+              };
+
+              let { error } = await sb.from(targetTable).upsert([insertData], { onConflict: 'id' });
+              if (error) {
+                console.warn(`Supabase ${targetTable} insert error, attempting fallback:`, error);
+                const fbRes = await sb.from('study_sessions').upsert([{
+                  id: insertData.id,
+                  subject: insertData.subject,
+                  duration_minutes: insertData.duration_minutes,
+                  session_date: insertData.session_date,
+                  created_at: insertData.created_at
+                }], { onConflict: 'id' });
+
+                if (fbRes.error) {
+                  throw fbRes.error;
+                }
+              }
+
+              success = true;
+
+              // Mark corresponding local session record as synced: true in LocalStorage and IndexedDB
+              const localIdx = allSessions.findIndex(s => s.id === payload.id);
+              if (localIdx !== -1) {
+                allSessions[localIdx].synced = true;
+                saveCachedSessions(allSessions);
+              }
+              try {
+                const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+                const idbTx = db.transaction(sName, 'readwrite');
+                const idbStore = idbTx.objectStore(sName);
+                const getReq = idbStore.get(payload.id);
+                getReq.onsuccess = () => {
+                  if (getReq.result) {
+                    idbStore.put({ ...getReq.result, synced: true });
+                  }
+                };
+              } catch (_) {}
+
+            } else if (action === 'UPDATE') {
+              const targetTable = table || 'study_timer_sessions';
+              const updateData = {
+                duration_minutes: Number(payload.duration_minutes) || 50
+              };
+              if (payload.unit_number !== undefined) updateData.unit_number = Number(payload.unit_number);
+              if (payload.unit_name !== undefined) updateData.unit_name = payload.unit_name;
+              if (payload.status !== undefined) updateData.status = payload.status;
+
+              let { error } = await sb.from(targetTable).update(updateData).eq('id', payload.id);
+              if (error) {
+                console.warn(`Supabase ${targetTable} update error, attempting fallback:`, error);
+                const fbRes = await sb.from('study_sessions').update({ duration_minutes: updateData.duration_minutes }).eq('id', payload.id);
+                if (fbRes.error) {
+                  throw fbRes.error;
+                }
+              }
+
+              success = true;
+
+              const localIdx = allSessions.findIndex(s => s.id === payload.id);
+              if (localIdx !== -1) {
+                allSessions[localIdx].synced = true;
+                saveCachedSessions(allSessions);
+              }
+              try {
+                const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+                const idbTx = db.transaction(sName, 'readwrite');
+                const idbStore = idbTx.objectStore(sName);
+                const getReq = idbStore.get(payload.id);
+                getReq.onsuccess = () => {
+                  if (getReq.result) {
+                    idbStore.put({ ...getReq.result, synced: true });
+                  }
+                };
+              } catch (_) {}
+
+            } else if (action === 'DELETE') {
+              const targetTable = table || 'study_timer_sessions';
+              let { error } = await sb.from(targetTable).delete().eq('id', payload.id);
+              if (error) {
+                console.warn(`Supabase ${targetTable} delete error, attempting fallback:`, error);
+                const fbRes = await sb.from('study_sessions').delete().eq('id', payload.id);
+                if (fbRes.error) {
+                  throw fbRes.error;
+                }
+              }
+              success = true;
+            }
+
+            if (success) {
+              await new Promise((resolve) => {
+                const delTx = db.transaction('sync_queue', 'readwrite');
+                const delStore = delTx.objectStore('sync_queue');
+                const delReq = delStore.delete(queue_id);
+                delReq.onsuccess = () => resolve();
+                delReq.onerror = () => resolve();
+              });
+            }
+          } catch (taskErr) {
+            console.error(`Sync queue halted on task #${queue_id} (${action}):`, taskErr);
+            // On network/request failure: stops queue processing immediately to maintain strict chronological FIFO order without data corruption
+            break;
+          }
+        }
+      } catch (err) {
+        console.error('processSyncQueue execution error:', err);
+      } finally {
+        isSyncingQueue = false;
+        await updateSyncUI();
+      }
+    }
+
+    // Update UI badge for Sync state
+    async function updateSyncUI(overrideState) {
+      const badge = document.getElementById('analyticsSyncBadge');
+      if (!badge) return;
+
+      if (overrideState === 'syncing' || isSyncingQueue) {
+        badge.className = 'sync-status-badge syncing';
+        badge.innerHTML = '<span>🔄</span> <span>Syncing...</span>';
+        return;
+      }
+
+      if (!navigator.onLine) {
+        badge.className = 'sync-status-badge offline';
+        badge.innerHTML = '<span>🟡</span> <span>Offline / Pending Sync</span>';
+        return;
+      }
+
+      const pending = await getPendingSyncCount();
+      if (pending > 0) {
+        badge.className = 'sync-status-badge offline';
+        badge.innerHTML = '<span>🟡</span> <span>Offline / Pending Sync</span>';
+      } else {
+        badge.className = 'sync-status-badge';
+        badge.innerHTML = '<span>🟢</span> <span>Online Synced</span>';
+      }
+    }
+
     // Load Sessions strictly from timer records (LocalStorage + IndexedDB + Supabase)
     async function loadAllSessions() {
       let sessions = getCachedSessions().filter(isValidTimerSession);
@@ -1642,7 +1895,12 @@
               sessions.forEach(s => map.set(s.id, s));
               idbList.forEach(s => {
                 if (isValidTimerSession(s)) {
-                  map.set(s.id, s);
+                  const prev = map.get(s.id);
+                  if (!prev || (prev.synced && !s.synced)) {
+                    map.set(s.id, s);
+                  } else {
+                    map.set(s.id, { ...s, ...prev });
+                  }
                 } else {
                   try { store.delete(s.id); } catch (_) {}
                 }
@@ -1658,7 +1916,6 @@
       // If online and Supabase is reachable, try fetching remote study_timer_sessions
       const sb = getSupabase();
       if (navigator.onLine && sb) {
-        let remoteSuccess = false;
         try {
           let queryRes = await sb
             .from('study_timer_sessions')
@@ -1680,17 +1937,16 @@
             sessions.forEach(s => map.set(s.id, s));
             queryRes.data.forEach(s => {
               if (isValidTimerSession(s)) {
-                map.set(s.id, { ...s, synced: true });
+                const local = map.get(s.id);
+                // Retain local changes if pending sync
+                if (!local || local.synced !== false) {
+                  map.set(s.id, { ...s, synced: true });
+                }
               }
             });
             sessions = Array.from(map.values());
-            remoteSuccess = true;
           }
         } catch (_) {}
-
-        updateSyncUI(remoteSuccess);
-      } else {
-        updateSyncUI(false);
       }
 
       // Sort by stop/start time descending
@@ -1705,20 +1961,15 @@
       return allSessions;
     }
 
-    function updateSyncUI(isOnline) {
-      const badge = document.getElementById('analyticsSyncBadge');
-      if (!badge) return;
-      if (isOnline && navigator.onLine) {
-        badge.className = 'sync-status-badge';
-        badge.innerHTML = '<span>🟢</span> <span>Online Synced</span>';
-      } else {
-        badge.className = 'sync-status-badge offline';
-        badge.innerHTML = '<span>🟡</span> <span>Offline Mode</span>';
-      }
-    }
-
     // Refresh entire analytics view
     async function refreshAnalyticsData() {
+      if (navigator.onLine) {
+        try {
+          await processSyncQueue();
+        } catch (e) {
+          console.warn('processSyncQueue error:', e);
+        }
+      }
       try {
         await loadAllSessions();
       } catch (e) {
@@ -1730,6 +1981,7 @@
       try { renderSubjectProgressSection(); } catch (e) { console.error('renderSubjectProgressSection error:', e); }
       try { renderVisualCharts(); } catch (e) { console.error('renderVisualCharts error:', e); }
       try { renderSessionsTable(); } catch (e) { console.error('renderSessionsTable error:', e); }
+      try { await updateSyncUI(); } catch (e) {}
     }
 
     // 1. Render Top Executive KPIs (Both Rows: 10 Metric Cards)
@@ -2648,7 +2900,7 @@
       }).join('');
     }
 
-    function editSessionDuration(sessionId) {
+    async function editSessionDuration(sessionId) {
       const sess = allSessions.find(s => s.id === sessionId);
       if (!sess) return;
       const current = sess.duration_minutes || 50;
@@ -2660,30 +2912,51 @@
         return;
       }
       sess.duration_minutes = num;
+      sess.synced = false;
       saveCachedSessions(allSessions);
 
-      // Update in IndexedDB
+      // Mutate local IndexedDB immediately
       try {
-        openOfflineDB().then(db => {
-          if (db) {
-            const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
-            const tx = db.transaction(storeName, 'readwrite');
-            tx.objectStore(storeName).put(sess);
-          }
-        }).catch(() => {});
+        const db = await openOfflineDB();
+        if (db) {
+          const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+          const tx = db.transaction(storeName, 'readwrite');
+          tx.objectStore(storeName).put(sess);
+        }
       } catch (_) {}
 
-      // Update in Supabase
+      const payload = {
+        id: sessionId,
+        duration_minutes: num
+      };
+
       const sb = getSupabase();
       if (navigator.onLine && sb) {
-        sb.from('study_timer_sessions').update({ duration_minutes: num }).eq('id', sessionId).then(({ error }) => {
+        try {
+          let { error } = await sb.from('study_timer_sessions').update({ duration_minutes: num }).eq('id', sessionId);
           if (error) {
-            sb.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId).catch(() => {});
+            const fbRes = await sb.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId);
+            if (fbRes.error) throw fbRes.error;
           }
-        }).catch(() => {});
+          sess.synced = true;
+          saveCachedSessions(allSessions);
+          try {
+            const db = await openOfflineDB();
+            if (db) {
+              const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+              const tx = db.transaction(storeName, 'readwrite');
+              tx.objectStore(storeName).put(sess);
+            }
+          } catch (_) {}
+        } catch (err) {
+          console.warn('Direct update failed, enqueuing to sync_queue:', err);
+          await enqueueSyncTask('UPDATE', 'study_timer_sessions', payload);
+        }
+      } else {
+        await enqueueSyncTask('UPDATE', 'study_timer_sessions', payload);
       }
 
-      refreshAnalyticsData();
+      await refreshAnalyticsData();
     }
 
     async function deleteSession(sessionId) {
@@ -2700,16 +2973,24 @@
         }
       } catch (e) {}
 
+      const payload = { id: sessionId };
       const sb = getSupabase();
       if (navigator.onLine && sb) {
-        sb.from('study_timer_sessions').delete().eq('id', sessionId).then(({ error }) => {
+        try {
+          let { error } = await sb.from('study_timer_sessions').delete().eq('id', sessionId);
           if (error) {
-            sb.from('study_sessions').delete().eq('id', sessionId).catch(() => {});
+            const fbRes = await sb.from('study_sessions').delete().eq('id', sessionId);
+            if (fbRes.error) throw fbRes.error;
           }
-        }).catch(() => {});
+        } catch (err) {
+          console.warn('Direct delete failed, enqueuing to sync_queue:', err);
+          await enqueueSyncTask('DELETE', 'study_timer_sessions', payload);
+        }
+      } else {
+        await enqueueSyncTask('DELETE', 'study_timer_sessions', payload);
       }
 
-      refreshAnalyticsData();
+      await refreshAnalyticsData();
     }
 
     // 6. Manual Session Entry Modal
@@ -2767,8 +3048,10 @@
       const stopDateVal = stopDateTime.toISOString().split('T')[0];
       const stopTimeVal = stopDateTime.toTimeString().split(' ')[0].substring(0, 5);
 
+      const sessionId = generateUUID();
+
       const newSess = {
-        id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now(),
+        id: sessionId,
         subject: subj,
         unit_number: Number(uNum) || 0,
         unit_name: uName || 'සාමාන්‍ය පුනරීක්ෂණ',
@@ -2779,12 +3062,13 @@
         start_time: startDateTime.toISOString(),
         end_time: stopDateTime.toISOString(),
         duration_minutes: dur,
+        status: 'completed',
         session_date: dateVal,
         created_at: new Date().toISOString(),
-        status: 'completed',
         synced: false
       };
 
+      // Always save locally first to LocalStorage and IndexedDB
       allSessions.unshift(newSess);
       saveCachedSessions(allSessions);
 
@@ -2795,45 +3079,62 @@
           const tx = db.transaction(storeName, 'readwrite');
           tx.objectStore(storeName).put(newSess);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Local IDB put error:', e);
+      }
+
+      const payload = {
+        id: newSess.id,
+        subject: newSess.subject,
+        unit_number: newSess.unit_number,
+        unit_name: newSess.unit_name,
+        timer_start_date: newSess.timer_start_date,
+        timer_start_time: newSess.timer_start_time,
+        timer_stop_date: newSess.timer_stop_date,
+        timer_stop_time: newSess.timer_stop_time,
+        start_time: newSess.start_time,
+        end_time: newSess.end_time,
+        duration_minutes: newSess.duration_minutes,
+        status: newSess.status,
+        session_date: newSess.session_date,
+        created_at: newSess.created_at
+      };
 
       const sb = getSupabase();
       if (navigator.onLine && sb) {
-        sb.from('study_timer_sessions').insert([{
-          id: newSess.id,
-          subject: newSess.subject,
-          unit_number: newSess.unit_number,
-          unit_name: newSess.unit_name,
-          timer_start_date: newSess.timer_start_date,
-          timer_start_time: newSess.timer_start_time,
-          timer_stop_date: newSess.timer_stop_date,
-          timer_stop_time: newSess.timer_stop_time,
-          duration_minutes: newSess.duration_minutes,
-          status: newSess.status,
-          created_at: newSess.created_at
-        }]).then(({ error }) => {
-          if (!error) {
-            newSess.synced = true;
-            saveCachedSessions(allSessions);
-          } else {
-            sb.from('study_sessions').insert([{
-              id: newSess.id,
-              subject: newSess.subject,
-              duration_minutes: newSess.duration_minutes,
-              session_date: newSess.session_date,
-              created_at: newSess.created_at
-            }]).then(({ err2 }) => {
-              if (!err2) {
-                newSess.synced = true;
-                saveCachedSessions(allSessions);
-              }
-            }).catch(() => {});
+        try {
+          let { error } = await sb.from('study_timer_sessions').insert([payload]);
+          if (error) {
+            console.warn('Direct insert to study_timer_sessions error, attempting fallback:', error);
+            const fbRes = await sb.from('study_sessions').insert([{
+              id: payload.id,
+              subject: payload.subject,
+              duration_minutes: payload.duration_minutes,
+              session_date: payload.session_date,
+              created_at: payload.created_at
+            }]);
+            if (fbRes.error) throw fbRes.error;
           }
-        }).catch(() => {});
+          newSess.synced = true;
+          saveCachedSessions(allSessions);
+          try {
+            const db = await openOfflineDB();
+            if (db) {
+              const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+              const tx = db.transaction(storeName, 'readwrite');
+              tx.objectStore(storeName).put(newSess);
+            }
+          } catch (_) {}
+        } catch (err) {
+          console.warn('Supabase direct insert failed, enqueuing for sync:', err);
+          await enqueueSyncTask('INSERT', 'study_timer_sessions', payload);
+        }
+      } else {
+        await enqueueSyncTask('INSERT', 'study_timer_sessions', payload);
       }
 
       closeManualSessionModalDirect();
-      refreshAnalyticsData();
+      await refreshAnalyticsData();
     }
 
     function escapeHtml(str) {
@@ -2857,16 +3158,26 @@
     window.refreshAnalyticsData = refreshAnalyticsData;
     window.editSessionDuration = editSessionDuration;
     window.deleteSession = deleteSession;
+    window.enqueueSyncTask = enqueueSyncTask;
+    window.processSyncQueue = processSyncQueue;
+    window.updateSyncUI = updateSyncUI;
 
     // Storage and online listeners
     window.addEventListener('storage', (e) => {
-      if (e.key === 'al_study_sessions_cache') {
+      if (e.key === 'al_study_sessions_cache' || e.key === TIMER_STORAGE_KEY) {
         refreshAnalyticsData();
       }
     });
 
-    window.addEventListener('online', () => updateSyncUI(true));
-    window.addEventListener('offline', () => updateSyncUI(false));
+    window.addEventListener('online', async () => {
+      await updateSyncUI('syncing');
+      await processSyncQueue();
+      await refreshAnalyticsData();
+    });
+
+    window.addEventListener('offline', () => {
+      updateSyncUI();
+    });
 
     // Robust initialization on page load
     if (document.readyState === 'loading') {
