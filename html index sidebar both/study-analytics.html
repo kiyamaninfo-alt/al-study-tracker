@@ -2088,31 +2088,24 @@
 
       clearTimeout(liveTimerHeartbeatTimer);
 
-      if (data.state === 'STOP' || data.state === 'FINISH') {
+      if (data.state === 'STOP' || data.state === 'FINISH' || data.status === 'completed') {
         banner.style.display = 'none';
         return;
       }
 
-      if (data.state === 'START' || data.state === 'TICK' || data.state === 'PAUSE') {
-        let startFormatted = '';
-        if (data.startTime) {
-          try {
-            const d = new Date(data.startTime);
-            startFormatted = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-          } catch (_) {
-            startFormatted = String(data.startTime).substring(11, 16);
-          }
-        } else {
-          const now = new Date();
-          startFormatted = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        }
+      const isPaused = (data.state === 'PAUSE' || data.status === 'paused');
+      const isInProgress = (data.state === 'START' || data.state === 'TICK' || data.status === 'in_progress');
 
-        const stateIcon = data.state === 'PAUSE' ? '⏸️ (Paused)' : '🔴';
+      if (isPaused || isInProgress) {
         const subj = data.subject || 'ICT';
-        const unit = data.unit || 'සාමාන්‍ය පුනරීක්ෂණ';
+        const unit = data.unit || data.unit_name || 'සාමාන්‍ය පුනරීක්ෂණ';
 
         if (bannerText) {
-          bannerText.innerHTML = `${stateIcon} සක්‍රීය අධ්‍යයන සැසියක් ක්‍රියාත්මක වෙමින් පවතී — <strong>${subj}</strong> | ${unit} (Started at ${startFormatted})`;
+          if (isPaused) {
+            bannerText.innerHTML = `⏸️ අධ්‍යයන සැසිය තාවකාලිකව නවතා ඇත (Paused) — <strong>${escapeHtml(subj)}</strong> | ${escapeHtml(unit)}`;
+          } else {
+            bannerText.innerHTML = `🔴 සක්‍රීය අධ්‍යයන සැසියක් ක්‍රියාත්මක වෙමින් පවතී — <strong>${escapeHtml(subj)}</strong> | ${escapeHtml(unit)}`;
+          }
         }
         banner.style.display = 'flex';
 
@@ -2126,9 +2119,11 @@
     async function handleRealtimeDatabaseChange(payload) {
       if (!payload) return;
       const eventType = payload.eventType;
+      const banner = document.getElementById('activeTimerLiveBanner');
 
       if (eventType === 'DELETE') {
         const delId = (payload.old && payload.old.id) || (payload.new && payload.new.id);
+        if (banner) banner.style.display = 'none';
         if (!delId) return;
 
         allSessions = allSessions.filter(s => s.id !== delId);
@@ -2153,7 +2148,44 @@
         renderSessionsTable();
       } else if (eventType === 'INSERT' || eventType === 'UPDATE') {
         const record = payload.new;
-        if (!record || !isValidTimerSession(record)) return;
+        if (!record || !record.id) return;
+
+        // Live banner state handling based on database row status
+        if (record.status === 'in_progress') {
+          handleLiveTimerBroadcast({
+            state: 'START',
+            status: 'in_progress',
+            subject: record.subject,
+            unit: record.unit_name || (record.unit_number ? `Unit ${record.unit_number}` : 'සාමාන්‍ය පුනරීක්ෂණ')
+          });
+        } else if (record.status === 'paused') {
+          handleLiveTimerBroadcast({
+            state: 'PAUSE',
+            status: 'paused',
+            subject: record.subject,
+            unit: record.unit_name || (record.unit_number ? `Unit ${record.unit_number}` : 'සාමාන්‍ය පුනරීක්ෂණ')
+          });
+        } else if (record.status === 'completed') {
+          if (banner) banner.style.display = 'none';
+        }
+
+        // Only completed records qualify for study analytics calculations
+        if (!isValidTimerSession(record)) {
+          // If this session previously existed in allSessions (e.g. state changed), purge it
+          const prevIdx = allSessions.findIndex(s => s.id === record.id);
+          if (prevIdx !== -1) {
+            allSessions.splice(prevIdx, 1);
+            saveCachedSessions(allSessions);
+            renderKPIs();
+            renderComprehensiveHeatmap();
+            renderPeakTimeSlots();
+            renderWeeklyHabitMatrix();
+            renderSubjectProgressSection();
+            renderVisualCharts();
+            renderSessionsTable();
+          }
+          return;
+        }
 
         const idx = allSessions.findIndex(s => s.id === record.id);
         if (idx !== -1) {
@@ -2499,26 +2531,99 @@
       }
     }
 
-    // Helper: Enqueue failed/offline mutation into sync_queue
-    async function enqueueSyncTask(action, table, payload) {
+    // Helper: Enqueue failed/offline mutation into sync_queue with task coalescing
+    async function enqueueSyncTask(action, table, payload, targetId) {
+      const sessId = targetId || (payload && payload.id);
       try {
         const db = await openOfflineDB();
         if (!db || !db.objectStoreNames.contains('sync_queue')) return false;
         return new Promise((resolve) => {
           const tx = db.transaction('sync_queue', 'readwrite');
           const store = tx.objectStore('sync_queue');
-          const item = {
-            action: action, // 'INSERT', 'UPDATE', 'DELETE'
-            table: table || 'study_timer_sessions',
-            payload: payload,
-            created_at: new Date().toISOString()
+          const getAllReq = store.getAll();
+
+          getAllReq.onsuccess = () => {
+            const items = getAllReq.result || [];
+            const targetTable = table || 'study_timer_sessions';
+
+            if (action === 'UPDATE') {
+              const pendingInsert = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'INSERT');
+              if (pendingInsert) {
+                pendingInsert.payload = { ...pendingInsert.payload, ...payload };
+                pendingInsert.data = pendingInsert.payload;
+                store.put(pendingInsert);
+                updateSyncUI();
+                return resolve(true);
+              }
+
+              const pendingUpdate = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'UPDATE');
+              if (pendingUpdate) {
+                pendingUpdate.payload = { ...pendingUpdate.payload, ...payload };
+                pendingUpdate.data = pendingUpdate.payload;
+                store.put(pendingUpdate);
+                updateSyncUI();
+                return resolve(true);
+              }
+
+              const newTask = {
+                action: 'UPDATE',
+                table: targetTable,
+                id: sessId,
+                payload: payload,
+                data: payload,
+                created_at: new Date().toISOString()
+              };
+              store.add(newTask);
+              updateSyncUI();
+              return resolve(true);
+
+            } else if (action === 'DELETE') {
+              const pendingInsert = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'INSERT');
+              items.filter(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)))
+                   .forEach(t => store.delete(t.queue_id));
+
+              if (pendingInsert) {
+                updateSyncUI();
+                return resolve(true);
+              }
+
+              const delTask = {
+                action: 'DELETE',
+                table: targetTable,
+                id: sessId,
+                payload: { id: sessId },
+                data: { id: sessId },
+                created_at: new Date().toISOString()
+              };
+              store.add(delTask);
+              updateSyncUI();
+              return resolve(true);
+
+            } else {
+              const existingInsert = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'INSERT');
+              if (existingInsert) {
+                existingInsert.payload = { ...existingInsert.payload, ...payload };
+                existingInsert.data = existingInsert.payload;
+                store.put(existingInsert);
+                updateSyncUI();
+                return resolve(true);
+              }
+
+              const item = {
+                action: 'INSERT',
+                table: targetTable,
+                id: sessId,
+                payload: payload,
+                data: payload,
+                created_at: new Date().toISOString()
+              };
+              store.add(item);
+              updateSyncUI();
+              return resolve(true);
+            }
           };
-          const req = store.add(item);
-          req.onsuccess = () => {
-            updateSyncUI();
-            resolve(true);
-          };
-          req.onerror = () => resolve(false);
+
+          getAllReq.onerror = () => resolve(false);
         });
       } catch (e) {
         console.error('enqueueSyncTask error:', e);
@@ -2559,14 +2664,15 @@
         tasks.sort((a, b) => (a.queue_id || 0) - (b.queue_id || 0));
 
         for (const task of tasks) {
-          const { queue_id, action, table, payload } = task;
+          const { queue_id, action, table, payload, id } = task;
+          const targetId = id || (payload && payload.id);
           let success = false;
 
           try {
             if (action === 'INSERT') {
               const targetTable = table || 'study_timer_sessions';
               const insertData = {
-                id: payload.id,
+                id: targetId,
                 subject: payload.subject,
                 unit_number: payload.unit_number !== undefined ? Number(payload.unit_number) : 0,
                 unit_name: payload.unit_name || null,
@@ -2576,6 +2682,7 @@
                 timer_stop_time: payload.timer_stop_time || null,
                 start_time: payload.start_time || null,
                 end_time: payload.end_time || null,
+                duration_seconds: payload.duration_seconds !== undefined ? Number(payload.duration_seconds) : (Number(payload.duration_minutes || 0) * 60),
                 duration_minutes: Number(payload.duration_minutes) || 50,
                 status: payload.status || 'completed',
                 session_date: payload.session_date || payload.timer_start_date || null,
@@ -2601,7 +2708,7 @@
               success = true;
 
               // Mark corresponding local session record as synced: true in LocalStorage and IndexedDB
-              const localIdx = allSessions.findIndex(s => s.id === payload.id);
+              const localIdx = allSessions.findIndex(s => s.id === targetId);
               if (localIdx !== -1) {
                 allSessions[localIdx].synced = true;
                 saveCachedSessions(allSessions);
@@ -2610,7 +2717,7 @@
                 const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
                 const idbTx = db.transaction(sName, 'readwrite');
                 const idbStore = idbTx.objectStore(sName);
-                const getReq = idbStore.get(payload.id);
+                const getReq = idbStore.get(targetId);
                 getReq.onsuccess = () => {
                   if (getReq.result) {
                     idbStore.put({ ...getReq.result, synced: true });
@@ -2620,17 +2727,20 @@
 
             } else if (action === 'UPDATE') {
               const targetTable = table || 'study_timer_sessions';
-              const updateData = {
-                duration_minutes: Number(payload.duration_minutes) || 50
-              };
+              const updateData = {};
+              if (payload.duration_seconds !== undefined) updateData.duration_seconds = Number(payload.duration_seconds);
+              if (payload.duration_minutes !== undefined) updateData.duration_minutes = Number(payload.duration_minutes);
               if (payload.unit_number !== undefined) updateData.unit_number = Number(payload.unit_number);
               if (payload.unit_name !== undefined) updateData.unit_name = payload.unit_name;
               if (payload.status !== undefined) updateData.status = payload.status;
+              if (payload.timer_stop_date !== undefined) updateData.timer_stop_date = payload.timer_stop_date;
+              if (payload.timer_stop_time !== undefined) updateData.timer_stop_time = payload.timer_stop_time;
+              if (payload.end_time !== undefined) updateData.end_time = payload.end_time;
 
-              let { error } = await sb.from(targetTable).update(updateData).eq('id', payload.id);
+              let { error } = await sb.from(targetTable).update(updateData).eq('id', targetId);
               if (error) {
                 console.warn(`Supabase ${targetTable} update error, attempting fallback:`, error);
-                const fbRes = await sb.from('study_sessions').update({ duration_minutes: updateData.duration_minutes }).eq('id', payload.id);
+                const fbRes = await sb.from('study_sessions').update({ duration_minutes: updateData.duration_minutes || 50 }).eq('id', targetId);
                 if (fbRes.error) {
                   throw fbRes.error;
                 }
@@ -2638,7 +2748,7 @@
 
               success = true;
 
-              const localIdx = allSessions.findIndex(s => s.id === payload.id);
+              const localIdx = allSessions.findIndex(s => s.id === targetId);
               if (localIdx !== -1) {
                 allSessions[localIdx].synced = true;
                 saveCachedSessions(allSessions);
@@ -2647,7 +2757,7 @@
                 const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
                 const idbTx = db.transaction(sName, 'readwrite');
                 const idbStore = idbTx.objectStore(sName);
-                const getReq = idbStore.get(payload.id);
+                const getReq = idbStore.get(targetId);
                 getReq.onsuccess = () => {
                   if (getReq.result) {
                     idbStore.put({ ...getReq.result, synced: true });
@@ -2657,10 +2767,10 @@
 
             } else if (action === 'DELETE') {
               const targetTable = table || 'study_timer_sessions';
-              let { error } = await sb.from(targetTable).delete().eq('id', payload.id);
+              let { error } = await sb.from(targetTable).delete().eq('id', targetId);
               if (error) {
                 console.warn(`Supabase ${targetTable} delete error, attempting fallback:`, error);
-                const fbRes = await sb.from('study_sessions').delete().eq('id', payload.id);
+                const fbRes = await sb.from('study_sessions').delete().eq('id', targetId);
                 if (fbRes.error) {
                   throw fbRes.error;
                 }

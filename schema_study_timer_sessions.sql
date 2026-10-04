@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS public.study_timer_sessions (
     timer_stop_time TIME,
     start_time TIMESTAMPTZ,
     end_time TIMESTAMPTZ,
+    duration_seconds INTEGER DEFAULT 0,
     duration_minutes INTEGER NOT NULL DEFAULT 50,
     status TEXT DEFAULT 'completed',
     session_date DATE,
@@ -41,6 +42,9 @@ BEGIN
     END IF;
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='study_timer_sessions' AND column_name='unit_name') THEN
         ALTER TABLE public.study_timer_sessions ADD COLUMN unit_name TEXT;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='study_timer_sessions' AND column_name='duration_seconds') THEN
+        ALTER TABLE public.study_timer_sessions ADD COLUMN duration_seconds INTEGER DEFAULT 0;
     END IF;
 END $$;
 
