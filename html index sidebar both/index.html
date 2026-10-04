@@ -1214,10 +1214,207 @@
         gap: 16px;
         align-items: stretch;
       }
+      .focus-dual-panel > * {
+        min-width: 0;
+        max-width: 100%;
+      }
       @media (max-width: 860px) {
         .focus-dual-panel {
           grid-template-columns: 1fr;
           gap: 14px;
+        }
+      }
+      @media (max-width: 600px) {
+        .focus-timer-card {
+          padding: 13px 12px;
+          border-radius: 14px;
+          margin-bottom: 12px;
+        }
+        .focus-dual-panel {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .focus-panel-heatmap {
+          padding: 10px 10px;
+        }
+      }
+      @media (max-width: 480px) {
+        .focus-timer-card {
+          padding: 11px 9px;
+          border-radius: 12px;
+          margin-bottom: 10px;
+          border-left-width: 4px;
+        }
+        .focus-timer-header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+          margin-bottom: 10px;
+        }
+        .focus-header-title-wrap {
+          gap: 8px;
+        }
+        .focus-header-icon {
+          font-size: 19px;
+        }
+        .focus-card-title {
+          font-size: 13.5px;
+        }
+        .focus-card-subtitle {
+          font-size: 9.5px;
+        }
+        .focus-header-actions {
+          width: 100%;
+          justify-content: space-between;
+          gap: 6px;
+        }
+        .btn-focus-sound {
+          padding: 3.5px 8px;
+          font-size: 9.5px;
+        }
+        .focus-wake-indicator {
+          padding: 3.5px 7px;
+          font-size: 9px;
+        }
+        .btn-focus-quick-settings {
+          padding: 3px 7px;
+          font-size: 11px;
+        }
+        .focus-target-bar {
+          padding: 6px 8px;
+          gap: 6px;
+          margin-bottom: 8px;
+        }
+        .focus-target-label {
+          font-size: 10px;
+        }
+        .focus-subj-pill {
+          padding: 1.5px 5px;
+          font-size: 9px;
+        }
+        .focus-unit-name {
+          font-size: 10.5px;
+        }
+        .btn-focus-change-target {
+          padding: 3px 6px;
+          font-size: 9.5px;
+        }
+        .focus-countdown-container {
+          padding: 2px 0 6px;
+        }
+        .focus-countdown-ring-wrap {
+          width: 132px;
+          height: 132px;
+        }
+        .focus-digital-time {
+          font-size: 28px;
+        }
+        .focus-status-badge {
+          font-size: 8px;
+          padding: 2px 6px;
+          margin-top: 4px;
+        }
+        .focus-controls-row {
+          width: 100%;
+          max-width: 290px;
+          gap: 6px;
+          margin-top: 8px;
+        }
+        .btn-focus-action {
+          flex: 1;
+          min-height: 38px;
+          padding: 7px 10px;
+          font-size: 11px;
+          border-radius: 8px;
+        }
+        .focus-panel-heatmap {
+          padding: 8px 8px;
+          border-radius: 10px;
+        }
+        .focus-heatmap-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
+          margin-bottom: 6px;
+        }
+        .focus-heatmap-title {
+          font-size: 10.5px;
+        }
+        .focus-metrics-badges {
+          width: 100%;
+          justify-content: space-between;
+          gap: 4px;
+        }
+        .focus-metric-pill {
+          font-size: 9px;
+          padding: 2px 6px;
+          border-radius: 8px;
+        }
+        .heatmap-scroll-wrapper {
+          width: 100%;
+          max-width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          padding-bottom: 4px;
+        }
+        .heatmap-footer-legend {
+          font-size: 8.5px;
+          margin-top: 4px;
+        }
+        .focus-target-modal-window {
+          width: 95% !important;
+          max-width: 95% !important;
+          max-height: 88vh !important;
+          border-radius: 14px;
+        }
+        .focus-target-modal-body {
+          padding: 11px 9px;
+        }
+        .focus-modal-step-title {
+          font-size: 12px;
+        }
+        .focus-modal-step-sub {
+          font-size: 10px;
+          margin-bottom: 8px;
+        }
+        .focus-subj-card {
+          padding: 8px 10px;
+          gap: 8px;
+          border-radius: 10px;
+        }
+        .focus-subj-card-icon {
+          width: 32px;
+          height: 32px;
+          font-size: 18px;
+          border-radius: 8px;
+        }
+        .focus-subj-card-code {
+          font-size: 12px;
+        }
+        .focus-subj-card-name {
+          font-size: 9.5px;
+        }
+        .focus-subj-card-badge {
+          font-size: 9.5px;
+          padding: 3px 6px;
+        }
+        .focus-modal-units-list {
+          max-height: 48vh;
+        }
+        .focus-unit-item-btn {
+          padding: 6px 8px;
+          gap: 7px;
+          border-radius: 8px;
+        }
+        .unit-num-badge {
+          font-size: 9px;
+          padding: 2px 5px;
+        }
+        .unit-name-text {
+          font-size: 10px;
+        }
+        .unit-start-arrow {
+          font-size: 9.5px;
         }
       }
 
@@ -1226,6 +1423,9 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
       }
 
       /* Active Target Bar */
@@ -1280,6 +1480,8 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        min-width: 0;
+        flex: 1;
       }
       .btn-focus-change-target {
         background: #ffffff;
@@ -1427,6 +1629,9 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       .focus-heatmap-header {
         display: flex;
@@ -1465,8 +1670,12 @@
         color: #6c5ce7;
       }
       .heatmap-scroll-wrapper {
+        width: 100%;
+        max-width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         padding-bottom: 3px;
+        box-sizing: border-box;
       }
       .heatmap-container {
         display: inline-grid;
@@ -1474,6 +1683,7 @@
         grid-auto-flow: column;
         gap: 3px;
         padding: 3px 0;
+        min-width: max-content;
       }
       .h-cell {
         width: 11px;
@@ -1677,96 +1887,154 @@
       .focus-unit-general-btn:hover {
         background: rgba(140, 122, 230, 0.12);
       }
+      .focus-session-item {
+        background: #fdfdfd;
+        border: 1px solid #f1f2f6;
+        color: #2d3436;
+        transition: background 0.15s ease;
+      }
 
-      /* Dark mode overrides for focus timer */
+      /* Dark mode overrides for focus timer & priorities */
       body.dark-mode .priority-card,
       body.dark-mode .focus-timer-card {
-        background: #1e272e;
-        border-color: #2f3542;
+        background: #090d14 !important;
+        border-color: #1e2530 !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
       }
       body.dark-mode .priority-item {
-        background: #2f3640;
-        border-color: #353b48;
+        background: #0e131d !important;
+        border-color: #1e2530 !important;
       }
       body.dark-mode .prio-line-1 {
-        color: #f5f6fa;
+        color: #f0f6fc !important;
       }
       body.dark-mode .prio-line-2 {
-        color: #dcdde1;
+        color: #8b949e !important;
       }
       body.dark-mode .prio-line-2 strong {
-        color: #74b9ff;
+        color: #58a6ff !important;
       }
       body.dark-mode .focus-panel-heatmap {
-        background: #232d36;
-        border-color: #2f3542;
+        background: #05080d !important;
+        border-color: #1a212b !important;
       }
       body.dark-mode .focus-target-bar {
-        background: rgba(140, 122, 230, 0.12);
-        border-color: rgba(140, 122, 230, 0.25);
+        background: rgba(140, 122, 230, 0.08) !important;
+        border-color: rgba(140, 122, 230, 0.22) !important;
       }
       body.dark-mode .focus-unit-name {
-        color: #f5f6fa;
+        color: #f0f6fc !important;
       }
       body.dark-mode .btn-focus-change-target {
-        background: #2f3640;
-        color: #a29bfe;
-        border-color: #485460;
+        background: #0e131d !important;
+        color: #a29bfe !important;
+        border-color: #212936 !important;
+      }
+      body.dark-mode .btn-focus-change-target:hover {
+        background: #1a2230 !important;
+        color: #ffffff !important;
       }
       body.dark-mode .btn-focus-sound,
       body.dark-mode .btn-focus-reset,
       body.dark-mode .btn-focus-quick-settings {
-        background: #2f3640;
-        color: #f5f6fa;
-        border-color: #353b48;
+        background: #0e131d !important;
+        color: #f0f6fc !important;
+        border-color: #212936 !important;
+      }
+      body.dark-mode .btn-focus-sound:hover,
+      body.dark-mode .btn-focus-reset:hover,
+      body.dark-mode .btn-focus-quick-settings:hover {
+        background: #1a2230 !important;
       }
       body.dark-mode .focus-ring-track {
-        stroke: #2f3640;
+        stroke: #161d28 !important;
       }
       body.dark-mode .focus-digital-time {
-        color: #f5f6fa;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .focus-status-badge {
+        background: #0e131d !important;
+        color: #8b949e !important;
+      }
+      body.dark-mode .focus-status-badge.running {
+        background: rgba(108, 92, 231, 0.22) !important;
+        color: #a29bfe !important;
+      }
+      body.dark-mode .focus-status-badge.paused {
+        background: rgba(253, 203, 110, 0.2) !important;
+        color: #fdcb6e !important;
       }
       body.dark-mode .focus-metric-pill {
-        background: #2f3640;
-        border-color: #353b48;
-        color: #f5f6fa;
+        background: #0e131d !important;
+        border-color: #1e2530 !important;
+        color: #f0f6fc !important;
       }
       body.dark-mode .h-cell.level-0 {
-        background: #2f3640;
+        background: #121822 !important;
       }
       body.dark-mode .h-cell.level-1 {
-        background: #4b6584;
+        background: #1d2a3a !important;
       }
       body.dark-mode .focus-target-modal-window {
-        background: #1e272e;
+        background: #090d14 !important;
+        border: 1px solid #1e2530 !important;
       }
       body.dark-mode .focus-modal-step-title {
-        color: #f5f6fa;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .focus-modal-step-sub {
+        color: #8b949e !important;
       }
       body.dark-mode .focus-subj-card {
-        background: #232d36;
-        border-color: #353b48;
+        background: #0e131d !important;
+        border-color: #1e2530 !important;
+      }
+      body.dark-mode .focus-subj-card:hover {
+        background: #161e2b !important;
       }
       body.dark-mode .focus-subj-card-code {
-        color: #f5f6fa;
+        color: #f0f6fc !important;
       }
       body.dark-mode .focus-subj-card-name {
-        color: #dcdde1;
+        color: #8b949e !important;
+      }
+      body.dark-mode .focus-subj-card-badge {
+        background: rgba(140, 122, 230, 0.18) !important;
+        color: #a29bfe !important;
+      }
+      body.dark-mode .focus-modal-unit-nav {
+        border-bottom-color: #1e2530 !important;
+      }
+      body.dark-mode .focus-modal-active-subj-pill {
+        background: #161d28 !important;
+        color: #f0f6fc !important;
       }
       body.dark-mode .focus-unit-item-btn {
-        background: #232d36;
-        border-color: #353b48;
+        background: #0e131d !important;
+        border-color: #1e2530 !important;
+      }
+      body.dark-mode .focus-unit-item-btn:hover {
+        background: #161e2b !important;
+        border-color: #6c5ce7 !important;
       }
       body.dark-mode .unit-num-badge {
-        background: #2f3640;
-        color: #f5f6fa;
+        background: #18202d !important;
+        color: #f0f6fc !important;
       }
       body.dark-mode .unit-name-text {
-        color: #f5f6fa;
+        color: #f0f6fc !important;
       }
       body.dark-mode .focus-unit-general-btn {
-        background: rgba(140, 122, 230, 0.12);
-        border-color: #8c7ae6;
+        background: rgba(140, 122, 230, 0.1) !important;
+        border-color: #8c7ae6 !important;
+      }
+      body.dark-mode .focus-session-item {
+        background: #0e131d !important;
+        border-color: #1e2530 !important;
+        color: #f0f6fc !important;
+      }
+      body.dark-mode .focus-session-item .sess-date-text {
+        color: #f0f6fc !important;
       }
       #radarList::-webkit-scrollbar,
       #ebbinghausList::-webkit-scrollbar,
@@ -2473,16 +2741,17 @@
          ========================================================= */
       html.dark-mode body,
       body.dark-mode {
-        --primary-light: #1e2430;
-        --card-bg: #161b22;
+        --primary-light: #121822;
+        --card-bg: #090d14;
         --text-dark: #f0f6fc;
-        background: linear-gradient(135deg, #0d1117 0%, #161b22 100%) !important;
+        background: linear-gradient(135deg, #030508 0%, #080c12 50%, #0a0e16 100%) !important;
         color: #f0f6fc !important;
       }
       body.dark-mode .header-card,
       body.dark-mode .time-card,
       body.dark-mode .streak-card,
       body.dark-mode .timer-card,
+      body.dark-mode .focus-timer-card,
       body.dark-mode .badge-showcase,
       body.dark-mode .ring-card,
       body.dark-mode .action-bar-card,
@@ -2494,10 +2763,10 @@
       body.dark-mode .ebbinghaus-card,
       body.dark-mode .velocity-card,
       body.dark-mode .modal-window {
-        background: #161b22 !important;
+        background: #090d14 !important;
         color: #f0f6fc !important;
-        border: 1px solid #30363d !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #1e2530 !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
       }
       body.dark-mode .quote-box,
       body.dark-mode .time-lbl,
@@ -2519,33 +2788,33 @@
         color: #f0f6fc !important;
       }
       body.dark-mode .chart-tab-bar {
-        background: #0d1117 !important;
-        border: 1px solid #30363d !important;
+        background: #05080d !important;
+        border: 1px solid #1e2530 !important;
       }
       body.dark-mode .chart-tab-btn {
         color: #8b949e !important;
       }
       body.dark-mode .chart-tab-btn.active {
-        background: #30363d !important;
+        background: #1e2530 !important;
         color: #58a6ff !important;
       }
       body.dark-mode .ranking-tab-group {
-        background: #0d1117 !important;
-        border: 1px solid #30363d !important;
+        background: #05080d !important;
+        border: 1px solid #1e2530 !important;
       }
       body.dark-mode .ranking-tab-btn {
         color: #8b949e !important;
       }
       body.dark-mode .ranking-tab-btn.active {
-        background: #30363d !important;
+        background: #1e2530 !important;
         color: #58a6ff !important;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
       }
       body.dark-mode .priority-card {
-        background: #161b22 !important;
-        border-color: #30363d !important;
+        background: #090d14 !important;
+        border-color: #1e2530 !important;
         border-left-color: #8c7ae6 !important;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
       }
       body.dark-mode .priority-title {
         color: #f0f6fc !important;
@@ -2558,8 +2827,8 @@
         color: #a29bfe !important;
       }
       body.dark-mode .priority-item {
-        background: #0d1117 !important;
-        border-color: #30363d !important;
+        background: #0e131d !important;
+        border-color: #1e2530 !important;
       }
       body.dark-mode .prio-msg {
         color: #c9d1d9 !important;
@@ -7091,11 +7360,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const unitHtml = sess.unit_name ? `<div style="font-size: 10px; color: #636e72; margin-top: 1px; max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(sess.unit_name)}</div>` : '';
 
           return `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fdfdfd; border: 1px solid #f1f2f6; border-radius: 8px; font-size: 11.5px;">
+            <div class="focus-session-item" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 8px; font-size: 11.5px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 10px; ${subjClass}">${escapeHtml(sess.subject || 'ICT')}</span>
                 <div>
-                  <div style="font-weight: 600; color: #2d3436;">${escapeHtml(dateTxt)} <span style="font-size: 10px; color: #7f8fa6;">${escapeHtml(timeTxt)}</span></div>
+                  <div class="sess-date-text" style="font-weight: 600;">${escapeHtml(dateTxt)} <span style="font-size: 10px; color: #7f8fa6;">${escapeHtml(timeTxt)}</span></div>
                   ${unitHtml}
                   <div style="font-size: 10.5px; color: #6c5ce7; font-weight: 700;">${sess.duration_minutes || 50} mins</div>
                 </div>
