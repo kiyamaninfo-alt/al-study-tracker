@@ -44,7 +44,11 @@ function githubApiRequest(method, endpoint, token, data) {
           if (res.statusCode >= 200 && res.statusCode < 300) {
             resolve(parsed);
           } else {
-            reject(new Error(parsed.message || `HTTP ${res.statusCode}`));
+            const errDetails = Array.isArray(parsed.errors)
+              ? parsed.errors.map(e => e.message || JSON.stringify(e)).join('; ')
+              : '';
+            const fullMsg = [parsed.message, errDetails].filter(Boolean).join(': ');
+            reject(new Error(fullMsg || `HTTP ${res.statusCode}`));
           }
         } catch (e) {
           resolve({});
