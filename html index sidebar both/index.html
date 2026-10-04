@@ -7012,16 +7012,23 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       async function saveStartedStudySession() {
         const sessionId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now();
         currentActiveSessionId = sessionId;
-        sessionStartTime = new Date().toISOString();
+        const startNow = new Date();
+        sessionStartTime = startNow.toISOString();
+        const startDStr = startNow.toISOString().split('T')[0];
+        const startTStr = startNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
         const newSession = {
           id: sessionId,
           subject: activeFocusSubject,
           unit_number: activeFocusUnit ? activeFocusUnit.unitNumber : 0,
           unit_name: activeFocusUnit ? (activeFocusUnit.unitName || `Unit ${activeFocusUnit.unitNumber}`) : 'සාමාන්‍ය පුනරීක්ෂණ',
+          timer_start_date: startDStr,
+          timer_start_time: startTStr,
+          timer_stop_date: null,
+          timer_stop_time: null,
           start_time: sessionStartTime,
           duration_minutes: focusDurationMins,
-          session_date: new Date().toISOString().split('T')[0],
+          session_date: startDStr,
           created_at: sessionStartTime,
           status: 'active',
           synced: false
@@ -7041,17 +7048,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         try {
           const db = await openOfflineDB();
           if (db) {
-            const tx = db.transaction('study_sessions', 'readwrite');
-            tx.objectStore('study_sessions').put(newSession);
+            const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+            const tx = db.transaction(storeName, 'readwrite');
+            tx.objectStore(storeName).put(newSession);
           }
         } catch (e) {}
 
-        // 3. Update UI stats (streak & today's mins) immediately
+        // 3. Update UI stats immediately
         renderStudyHeatmap();
         renderRecentSessionsInSettings();
-
-        // 4. Save to Supabase (or queue for offline sync if offline)
-        await uploadOrQueueSession(newSession);
       }
 
       function updateActiveTargetUI() {
@@ -7184,6 +7189,22 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       function resetFocusTimer() {
         clearInterval(focusTimerInterval);
         isFocusRunning = false;
+
+        // If a session was active but interrupted/reset before completing, remove it (only completed fully once!)
+        if (currentActiveSessionId) {
+          const sessions = getLocalStoredSessions().filter(s => s.id !== currentActiveSessionId);
+          saveLocalStoredSessions(sessions);
+          try {
+            openOfflineDB().then(db => {
+              if (db) {
+                const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+                const tx = db.transaction(storeName, 'readwrite');
+                tx.objectStore(storeName).delete(currentActiveSessionId);
+              }
+            }).catch(() => {});
+          } catch (_) {}
+        }
+
         sessionStartTime = null;
         currentActiveSessionId = null;
 
@@ -7240,20 +7261,30 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           focusModal(popup);
         }
 
-        // Mark active session as completed
+        // Mark active session as fully completed once
+        const stopNow = new Date();
+        const stopDStr = stopNow.toISOString().split('T')[0];
+        const stopTStr = stopNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
         if (currentActiveSessionId) {
           const sessions = getLocalStoredSessions();
           const sess = sessions.find(s => s.id === currentActiveSessionId);
           if (sess) {
             sess.status = 'completed';
+            sess.timer_stop_date = stopDStr;
+            sess.timer_stop_time = stopTStr;
+            sess.end_time = stopNow.toISOString();
+            sess.duration_minutes = durationLogged;
             saveLocalStoredSessions(sessions);
             try {
               const db = await openOfflineDB();
               if (db) {
-                const tx = db.transaction('study_sessions', 'readwrite');
-                tx.objectStore('study_sessions').put(sess);
+                const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+                const tx = db.transaction(storeName, 'readwrite');
+                tx.objectStore(storeName).put(sess);
               }
             } catch (e) {}
+            await uploadOrQueueSession(sess);
           }
         } else {
           await logCompletedStudySession(durationLogged);
@@ -7273,7 +7304,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // STUDY SESSION LOGGING & OFFLINE-FIRST INDEXEDDB QUEUE
       // =========================================================================
       const IDB_NAME = 'al_study_tracker_offline_db';
-      const IDB_VERSION = 1;
+      const IDB_VERSION = 2;
 
       function openOfflineDB() {
         return new Promise((resolve, reject) => {
@@ -7284,6 +7315,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const req = indexedDB.open(IDB_NAME, IDB_VERSION);
           req.onupgradeneeded = (e) => {
             const db = e.target.result;
+            if (!db.objectStoreNames.contains('study_timer_sessions')) {
+              db.createObjectStore('study_timer_sessions', { keyPath: 'id' });
+            }
             if (!db.objectStoreNames.contains('study_sessions')) {
               db.createObjectStore('study_sessions', { keyPath: 'id' });
             }
@@ -7298,14 +7332,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       function getLocalStoredSessions() {
         try {
-          const raw = localStorage.getItem('al_study_sessions_cache');
+          const raw = localStorage.getItem('al_study_timer_sessions') || localStorage.getItem('al_study_sessions_cache');
           if (raw) {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) {
               return parsed.filter(s => {
                 if (!s || !s.id) return false;
                 if (typeof s.id === 'string' && (s.id.startsWith('up_') || s.id.startsWith('fp_') || s.id.startsWith('sr_'))) return false;
-                const dStr = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+                const dStr = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
                 return dStr && dStr >= '2026-10-04';
               });
             }
@@ -7316,20 +7350,33 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       function saveLocalStoredSessions(sessions) {
         try {
+          localStorage.setItem('al_study_timer_sessions', JSON.stringify(sessions));
           localStorage.setItem('al_study_sessions_cache', JSON.stringify(sessions));
         } catch (e) {}
       }
 
       async function logCompletedStudySession(durationMins) {
+        const stopNow = new Date();
+        const stopDStr = stopNow.toISOString().split('T')[0];
+        const stopTStr = stopNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const startNow = new Date(Date.now() - durationMins * 60000);
+        const startDStr = startNow.toISOString().split('T')[0];
+        const startTStr = startNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
         const newSession = {
           id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now(),
           subject: activeFocusSubject,
           unit_number: activeFocusUnit ? activeFocusUnit.unitNumber : null,
           unit_name: activeFocusUnit ? (activeFocusUnit.unitName || `Unit ${activeFocusUnit.unitNumber}`) : 'සාමාන්‍ය පුනරීක්ෂණ',
-          start_time: sessionStartTime || new Date(Date.now() - durationMins * 60000).toISOString(),
+          timer_start_date: startDStr,
+          timer_start_time: startTStr,
+          timer_stop_date: stopDStr,
+          timer_stop_time: stopTStr,
+          start_time: startNow.toISOString(),
+          end_time: stopNow.toISOString(),
           duration_minutes: Number(durationMins) || 50,
-          session_date: new Date().toISOString().split('T')[0],
-          created_at: new Date().toISOString(),
+          session_date: stopDStr,
+          created_at: stopNow.toISOString(),
           status: 'completed',
           synced: false
         };
@@ -7344,8 +7391,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         try {
           const db = await openOfflineDB();
           if (db) {
-            const tx = db.transaction('study_sessions', 'readwrite');
-            tx.objectStore('study_sessions').put(newSession);
+            const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+            const tx = db.transaction(storeName, 'readwrite');
+            tx.objectStore(storeName).put(newSession);
           }
         } catch (e) {}
 
@@ -7361,14 +7409,21 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const payload = {
           id: sessionItem.id,
           subject: sessionItem.subject,
+          unit_number: sessionItem.unit_number || null,
+          unit_name: sessionItem.unit_name || null,
+          timer_start_date: sessionItem.timer_start_date || sessionItem.session_date,
+          timer_start_time: sessionItem.timer_start_time || '00:00:00',
+          timer_stop_date: sessionItem.timer_stop_date || sessionItem.session_date,
+          timer_stop_time: sessionItem.timer_stop_time || '00:00:00',
           duration_minutes: sessionItem.duration_minutes,
-          session_date: sessionItem.session_date,
+          status: sessionItem.status || 'completed',
           created_at: sessionItem.created_at
         };
 
         if (navigator.onLine && supabase && typeof supabase.from === 'function') {
           try {
-            const { error } = await supabase.from('study_sessions').insert([payload]);
+            // First attempt to insert into dedicated study_timer_sessions
+            const { error } = await supabase.from('study_timer_sessions').insert([payload]);
             if (!error) {
               sessionItem.synced = true;
               const all = getLocalStoredSessions();
@@ -7379,6 +7434,27 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               }
               updateSyncBadgeUI(true, 0);
               return;
+            } else {
+              // Fallback to legacy study_sessions table
+              const legacyPayload = {
+                id: sessionItem.id,
+                subject: sessionItem.subject,
+                duration_minutes: sessionItem.duration_minutes,
+                session_date: sessionItem.session_date,
+                created_at: sessionItem.created_at
+              };
+              const { error: err2 } = await supabase.from('study_sessions').insert([legacyPayload]);
+              if (!err2) {
+                sessionItem.synced = true;
+                const all = getLocalStoredSessions();
+                const idx = all.findIndex(s => s.id === sessionItem.id);
+                if (idx !== -1) {
+                  all[idx].synced = true;
+                  saveLocalStoredSessions(all);
+                }
+                updateSyncBadgeUI(true, 0);
+                return;
+              }
             }
           } catch (netErr) {
             console.warn('Supabase session insert notice (queued for offline sync):', netErr);
@@ -7391,13 +7467,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (db) {
             const tx = db.transaction('sync_queue', 'readwrite');
             tx.objectStore('sync_queue').add({
-              table: 'study_sessions',
+              table: 'study_timer_sessions',
               data: payload,
               created_at: new Date().toISOString()
             });
+            updateSyncBadgeUI(false, 1);
           }
         } catch (e) {}
-        updateSyncBadgeUI(false, 1);
       }
 
       async function processOfflineSyncQueue() {

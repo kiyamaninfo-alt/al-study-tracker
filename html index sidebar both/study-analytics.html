@@ -1409,17 +1409,18 @@
         <table class="sessions-table">
           <thead>
             <tr>
-              <th>දිනය සහ වේලාව</th>
-              <th>විෂය</th>
-              <th>පාඩම / ඒකකය (Full Lesson)</th>
+              <th>ටයිමර ආරම්භය (Timer Start)</th>
+              <th>ටයිමර අවසානය (Timer Stop)</th>
+              <th>විෂය (Subject)</th>
+              <th>පාඩම / ඒකකය (Unit)</th>
               <th>කාලය (Mins)</th>
-              <th>තත්ත්වය</th>
+              <th>තත්ත්වය (Status)</th>
               <th>ක්‍රියා</th>
             </tr>
           </thead>
           <tbody id="sessionsTableBody">
             <tr>
-              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 18px;">දත්ත ලබාගනිමින්...</td>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 18px;">දත්ත ලබාගනිමින්...</td>
             </tr>
           </tbody>
         </table>
@@ -1449,13 +1450,19 @@
             <!-- Populated via JS -->
           </select>
         </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label class="form-label">ආරම්භක දිනය (Start Date) *</label>
+            <input type="date" id="manualDateInput" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ආරම්භක වේලාව (Start Time) *</label>
+            <input type="time" id="manualStartTimeInput" class="form-control" value="09:00">
+          </div>
+        </div>
         <div class="form-group">
           <label class="form-label">අධ්‍යයන කාලය (මිනිත්තු / Minutes) *</label>
           <input type="number" id="manualDurationInput" class="form-control" value="50" min="5" max="360">
-        </div>
-        <div class="form-group">
-          <label class="form-label">දිනය (Session Date) *</label>
-          <input type="date" id="manualDateInput" class="form-control">
         </div>
         <button type="button" onclick="saveManualSession()" style="width:100%; padding:10px; background:linear-gradient(135deg,#6c5ce7,#8c7ae6); color:white; font-weight:700; border:none; border-radius:9px; cursor:pointer; font-family:inherit; margin-top:6px;">
           ✅ සුරකින්න (Save Session)
@@ -1553,13 +1560,35 @@
     let subjectChartInstance = null;
     let trendChartInstance = null;
 
-    // Helper: Local Storage access
+    // Study Timer Start Benchmark (Tracking strictly begins from today: 2026-10-04)
+    const TRACKING_START_DATE = '2026-10-04';
+    const TIMER_STORAGE_KEY = 'al_study_timer_sessions';
+
+    function isValidTimerSession(s) {
+      if (!s || !s.id) return false;
+      // Absolutely exclude any old synthesized paper attempts from other tables
+      if (typeof s.id === 'string' && (s.id.startsWith('up_') || s.id.startsWith('fp_') || s.id.startsWith('sr_'))) {
+        return false;
+      }
+      // Calculate only completed fully once (must not be an interrupted/active draft)
+      if (s.status && s.status !== 'completed') {
+        return false;
+      }
+      // Only include sessions starting from tracking benchmark (today onwards)
+      const dStr = s.timer_start_date || s.timer_stop_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+      if (!dStr || dStr < TRACKING_START_DATE) {
+        return false;
+      }
+      return true;
+    }
+
+    // Helper: Local Storage access for study timer sessions
     function getCachedSessions() {
       try {
-        const raw = localStorage.getItem('al_study_sessions_cache');
+        const raw = localStorage.getItem(TIMER_STORAGE_KEY) || localStorage.getItem('al_study_sessions_cache');
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) return parsed;
+          if (Array.isArray(parsed)) return parsed.filter(isValidTimerSession);
         }
       } catch (e) {}
       return [];
@@ -1567,17 +1596,21 @@
 
     function saveCachedSessions(sessions) {
       try {
+        localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(sessions));
         localStorage.setItem('al_study_sessions_cache', JSON.stringify(sessions));
       } catch (e) {}
     }
 
-    // Helper: IndexedDB access
+    // Helper: IndexedDB access (dedicated study_timer_sessions store)
     function openOfflineDB() {
       return new Promise((resolve) => {
         if (!window.indexedDB) return resolve(null);
-        const req = indexedDB.open('al_study_tracker_offline_db', 1);
+        const req = indexedDB.open('al_study_tracker_offline_db', 2);
         req.onupgradeneeded = (e) => {
           const db = e.target.result;
+          if (!db.objectStoreNames.contains('study_timer_sessions')) {
+            db.createObjectStore('study_timer_sessions', { keyPath: 'id' });
+          }
           if (!db.objectStoreNames.contains('study_sessions')) {
             db.createObjectStore('study_sessions', { keyPath: 'id' });
           }
@@ -1590,33 +1623,17 @@
       });
     }
 
-    // Study Tracker Start Benchmark (Tracking starts strictly from today: 2026-10-04)
-    const TRACKING_START_DATE = '2026-10-04';
-
-    function isValidStudySession(s) {
-      if (!s || !s.id) return false;
-      // Exclude previous synthesized paper attempt IDs
-      if (typeof s.id === 'string' && (s.id.startsWith('up_') || s.id.startsWith('fp_') || s.id.startsWith('sr_'))) {
-        return false;
-      }
-      // Only include sessions starting from tracking benchmark (today onwards)
-      const dStr = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
-      if (!dStr || dStr < TRACKING_START_DATE) {
-        return false;
-      }
-      return true;
-    }
-
-    // Load Sessions from LocalStorage + IndexedDB + Supabase (from today onwards only)
+    // Load Sessions strictly from timer records (LocalStorage + IndexedDB + Supabase)
     async function loadAllSessions() {
-      let sessions = getCachedSessions().filter(isValidStudySession);
+      let sessions = getCachedSessions().filter(isValidTimerSession);
 
-      // Read from IndexedDB to supplement & purge previous sessions
+      // Read from IndexedDB store study_timer_sessions
       try {
         const db = await openOfflineDB();
         if (db) {
-          const tx = db.transaction('study_sessions', 'readwrite');
-          const store = tx.objectStore('study_sessions');
+          const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+          const tx = db.transaction(storeName, 'readwrite');
+          const store = tx.objectStore(storeName);
           const req = store.getAll();
           await new Promise((resolve) => {
             req.onsuccess = () => {
@@ -1624,7 +1641,7 @@
               const map = new Map();
               sessions.forEach(s => map.set(s.id, s));
               idbList.forEach(s => {
-                if (isValidStudySession(s)) {
+                if (isValidTimerSession(s)) {
                   map.set(s.id, s);
                 } else {
                   try { store.delete(s.id); } catch (_) {}
@@ -1638,22 +1655,31 @@
         }
       } catch (e) {}
 
-      // If online and Supabase is reachable, try fetching remote study_sessions starting from today
+      // If online and Supabase is reachable, try fetching remote study_timer_sessions
       const sb = getSupabase();
       if (navigator.onLine && sb) {
         let remoteSuccess = false;
         try {
-          const { data, error } = await sb
-            .from('study_sessions')
+          let queryRes = await sb
+            .from('study_timer_sessions')
             .select('*')
-            .gte('session_date', TRACKING_START_DATE)
+            .gte('timer_start_date', TRACKING_START_DATE)
             .order('created_at', { ascending: false });
 
-          if (!error && Array.isArray(data)) {
+          if (queryRes.error) {
+            // Fallback to study_sessions table if study_timer_sessions is not yet created in Supabase
+            queryRes = await sb
+              .from('study_sessions')
+              .select('*')
+              .gte('session_date', TRACKING_START_DATE)
+              .order('created_at', { ascending: false });
+          }
+
+          if (!queryRes.error && Array.isArray(queryRes.data)) {
             const map = new Map();
             sessions.forEach(s => map.set(s.id, s));
-            data.forEach(s => {
-              if (isValidStudySession(s)) {
+            queryRes.data.forEach(s => {
+              if (isValidTimerSession(s)) {
                 map.set(s.id, { ...s, synced: true });
               }
             });
@@ -1667,10 +1693,10 @@
         updateSyncUI(false);
       }
 
-      // Sort by start_time / date descending
+      // Sort by stop/start time descending
       sessions.sort((a, b) => {
-        const tA = new Date(a.start_time || a.created_at || a.session_date).getTime() || 0;
-        const tB = new Date(b.start_time || b.created_at || b.session_date).getTime() || 0;
+        const tA = new Date(a.end_time || a.timer_stop_date || a.start_time || a.created_at || a.session_date).getTime() || 0;
+        const tB = new Date(b.end_time || b.timer_stop_date || b.start_time || b.created_at || b.session_date).getTime() || 0;
         return tB - tA;
       });
 
@@ -2577,13 +2603,15 @@
       document.getElementById('historyFilteredCount').innerText = filtered.length;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 18px;">අද දින සිට ඉදිරියට කිසිදු අධ්‍යයන සැසියක් සටහන් කර නොමැත. ටයිමරය හෝ "Add Session" භාවිතා කර පාඩම් කිරීම ආරම්භ කරන්න.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 18px;">අද දින සිට ඉදිරියට කිසිදු ටයිමර් සැසියක් සටහන් කර නොමැත. ටයිමරය ක්‍රියාත්මක කර අවසන් වූ පසු (Completed Fully Once) මෙහි ස්වයංක්‍රීයව සටහන් වේ.</td></tr>';
         return;
       }
 
       tbody.innerHTML = filtered.map(s => {
-        const dateTxt = s.session_date || (s.start_time ? s.start_time.split('T')[0] : '-');
-        const timeTxt = s.start_time ? new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const startDate = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : '-');
+        const startTime = s.timer_start_time || (s.start_time ? new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-');
+        const stopDate = s.timer_stop_date || s.session_date || (s.end_time ? s.end_time.split('T')[0] : startDate);
+        const stopTime = s.timer_stop_time || (s.end_time ? new Date(s.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-');
         const subj = (s.subject || 'ICT').toUpperCase();
         const pillCls = subj.toLowerCase();
         const unitName = s.unit_name || (s.unit_number ? `Unit ${s.unit_number}` : 'සාමාන්‍ය පුනරීක්ෂණ');
@@ -2593,15 +2621,22 @@
         return `
           <tr>
             <td>
-              <div style="font-weight: 600;">${dateTxt}</div>
-              <div style="font-size: 10px; color: var(--text-dim);">${timeTxt}</div>
+              <div style="font-weight: 600; color: #f0f6fc;">📅 ${startDate}</div>
+              <div style="font-size: 11px; color: #a29bfe; font-family: monospace;">⏱️ ${startTime}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: #f0f6fc;">📅 ${stopDate}</div>
+              <div style="font-size: 11px; color: #55efc4; font-family: monospace;">🏁 ${stopTime}</div>
             </td>
             <td><span class="subj-pill ${pillCls}">${subj}</span></td>
-            <td style="max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(unitName)}">
+            <td style="max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(unitName)}">
               ${escapeHtml(unitName)}
             </td>
-            <td><strong style="color:#6c5ce7; font-size:12px;">${mins} min</strong></td>
-            <td>${syncBadge}</td>
+            <td><strong style="color:#6c5ce7; font-size:13px;">${mins} min</strong></td>
+            <td>
+              <div style="font-size: 11px; color: #20bf6b; font-weight: 600;">✅ Fully Completed</div>
+              ${syncBadge}
+            </td>
             <td>
               <div style="display: flex; gap: 5px;">
                 <button type="button" class="btn-table-action" onclick="editSessionDuration('${s.id}')" title="කාලය වෙනස් කරන්න">✏️ Edit</button>
@@ -2627,10 +2662,25 @@
       sess.duration_minutes = num;
       saveCachedSessions(allSessions);
 
+      // Update in IndexedDB
+      try {
+        openOfflineDB().then(db => {
+          if (db) {
+            const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+            const tx = db.transaction(storeName, 'readwrite');
+            tx.objectStore(storeName).put(sess);
+          }
+        }).catch(() => {});
+      } catch (_) {}
+
       // Update in Supabase
       const sb = getSupabase();
       if (navigator.onLine && sb) {
-        sb.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId).catch(() => {});
+        sb.from('study_timer_sessions').update({ duration_minutes: num }).eq('id', sessionId).then(({ error }) => {
+          if (error) {
+            sb.from('study_sessions').update({ duration_minutes: num }).eq('id', sessionId).catch(() => {});
+          }
+        }).catch(() => {});
       }
 
       refreshAnalyticsData();
@@ -2644,14 +2694,19 @@
       try {
         const db = await openOfflineDB();
         if (db) {
-          const tx = db.transaction('study_sessions', 'readwrite');
-          tx.objectStore('study_sessions').delete(sessionId);
+          const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+          const tx = db.transaction(storeName, 'readwrite');
+          tx.objectStore(storeName).delete(sessionId);
         }
       } catch (e) {}
 
       const sb = getSupabase();
       if (navigator.onLine && sb) {
-        sb.from('study_sessions').delete().eq('id', sessionId).catch(() => {});
+        sb.from('study_timer_sessions').delete().eq('id', sessionId).then(({ error }) => {
+          if (error) {
+            sb.from('study_sessions').delete().eq('id', sessionId).catch(() => {});
+          }
+        }).catch(() => {});
       }
 
       refreshAnalyticsData();
@@ -2661,10 +2716,15 @@
     function openManualSessionModal() {
       const modal = document.getElementById('manualSessionModal');
       const dateInput = document.getElementById('manualDateInput');
+      const timeInput = document.getElementById('manualStartTimeInput');
       const todayStr = new Date().toISOString().split('T')[0];
+      const nowTimeStr = new Date().toTimeString().split(' ')[0].substring(0, 5);
       if (dateInput) {
         dateInput.value = todayStr;
         dateInput.min = TRACKING_START_DATE;
+      }
+      if (timeInput) {
+        timeInput.value = nowTimeStr;
       }
       populateManualUnits();
       if (modal) modal.style.display = 'flex';
@@ -2699,16 +2759,29 @@
       if (dateVal < TRACKING_START_DATE) {
         dateVal = TRACKING_START_DATE;
       }
+      const timeVal = (document.getElementById('manualStartTimeInput') && document.getElementById('manualStartTimeInput').value) || '09:00';
+      
+      // Calculate stop time & date
+      const startDateTime = new Date(`${dateVal}T${timeVal}:00`);
+      const stopDateTime = new Date(startDateTime.getTime() + dur * 60000);
+      const stopDateVal = stopDateTime.toISOString().split('T')[0];
+      const stopTimeVal = stopDateTime.toTimeString().split(' ')[0].substring(0, 5);
 
       const newSess = {
         id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now(),
         subject: subj,
         unit_number: Number(uNum) || 0,
         unit_name: uName || 'සාමාන්‍ය පුනරීක්ෂණ',
-        start_time: `${dateVal}T10:00:00.000Z`,
+        timer_start_date: dateVal,
+        timer_start_time: timeVal + ':00',
+        timer_stop_date: stopDateVal,
+        timer_stop_time: stopTimeVal + ':00',
+        start_time: startDateTime.toISOString(),
+        end_time: stopDateTime.toISOString(),
         duration_minutes: dur,
         session_date: dateVal,
         created_at: new Date().toISOString(),
+        status: 'completed',
         synced: false
       };
 
@@ -2718,22 +2791,44 @@
       try {
         const db = await openOfflineDB();
         if (db) {
-          const tx = db.transaction('study_sessions', 'readwrite');
-          tx.objectStore('study_sessions').put(newSess);
+          const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+          const tx = db.transaction(storeName, 'readwrite');
+          tx.objectStore(storeName).put(newSess);
         }
       } catch (e) {}
 
       const sb = getSupabase();
       if (navigator.onLine && sb) {
-        sb.from('study_sessions').insert([{
+        sb.from('study_timer_sessions').insert([{
           id: newSess.id,
           subject: newSess.subject,
+          unit_number: newSess.unit_number,
+          unit_name: newSess.unit_name,
+          timer_start_date: newSess.timer_start_date,
+          timer_start_time: newSess.timer_start_time,
+          timer_stop_date: newSess.timer_stop_date,
+          timer_stop_time: newSess.timer_stop_time,
           duration_minutes: newSess.duration_minutes,
-          session_date: newSess.session_date,
+          status: newSess.status,
           created_at: newSess.created_at
         }]).then(({ error }) => {
-          if (!error) newSess.synced = true;
-          saveCachedSessions(allSessions);
+          if (!error) {
+            newSess.synced = true;
+            saveCachedSessions(allSessions);
+          } else {
+            sb.from('study_sessions').insert([{
+              id: newSess.id,
+              subject: newSess.subject,
+              duration_minutes: newSess.duration_minutes,
+              session_date: newSess.session_date,
+              created_at: newSess.created_at
+            }]).then(({ err2 }) => {
+              if (!err2) {
+                newSess.synced = true;
+                saveCachedSessions(allSessions);
+              }
+            }).catch(() => {});
+          }
         }).catch(() => {});
       }
 
