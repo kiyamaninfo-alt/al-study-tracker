@@ -7301,7 +7301,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           const raw = localStorage.getItem('al_study_sessions_cache');
           if (raw) {
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) return parsed;
+            if (Array.isArray(parsed)) {
+              return parsed.filter(s => {
+                if (!s || !s.id) return false;
+                if (typeof s.id === 'string' && (s.id.startsWith('up_') || s.id.startsWith('fp_') || s.id.startsWith('sr_'))) return false;
+                const dStr = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+                return dStr && dStr >= '2026-10-04';
+              });
+            }
           }
         } catch (e) {}
         return [];
