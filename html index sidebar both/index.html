@@ -1215,6 +1215,44 @@
         background: #00b894;
         box-shadow: 0 0 6px rgba(0, 184, 148, 0.8);
       }
+      .sync-status-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 12px;
+        background: rgba(32, 191, 107, 0.12);
+        color: #20bf6b;
+        border: 1px solid rgba(32, 191, 107, 0.25);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+      }
+      .sync-status-badge.offline {
+        background: rgba(253, 203, 110, 0.15);
+        color: #d63031;
+        border-color: rgba(253, 203, 110, 0.4);
+      }
+      .sync-status-badge.syncing {
+        background: rgba(108, 92, 231, 0.15);
+        color: #6c5ce7;
+        border-color: rgba(108, 92, 231, 0.35);
+      }
+      body.dark-mode .sync-status-badge {
+        background: rgba(32, 191, 107, 0.18);
+        color: #2ed573;
+        border-color: rgba(32, 191, 107, 0.35);
+      }
+      body.dark-mode .sync-status-badge.offline {
+        background: rgba(253, 203, 110, 0.2);
+        color: #f39c12;
+        border-color: rgba(253, 203, 110, 0.4);
+      }
+      body.dark-mode .sync-status-badge.syncing {
+        background: rgba(108, 92, 231, 0.25);
+        color: #a29bfe;
+        border-color: rgba(108, 92, 231, 0.4);
+      }
       .btn-focus-quick-settings {
         background: #f5f3ff;
         color: #6c5ce7;
@@ -4967,7 +5005,7 @@
             <span class="wake-dot"></span>
             <span id="focusWakeLabel">Awake</span>
           </div>
-          <div class="focus-sync-indicator" id="focusHeaderSyncBadge" style="font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px; background: #e8f8f5; color: #1abc9c; display: flex; align-items: center; gap: 4px;">🟢 Online Synced</div>
+          <div class="sync-status-badge" id="focusHeaderSyncBadge"><span>🟢</span> <span>Online Synced</span></div>
           <button type="button" class="btn-focus-quick-settings" onclick="openTimerSettingsModal()" title="Timer සැකසුම් විවෘත කරන්න">⚙️</button>
         </div>
       </div>
@@ -6579,7 +6617,7 @@
                 <label style="font-size: 11.5px; font-weight: 700; margin: 0;" class="settings-title-label">
                   📋 Last 5 Recorded Focus Sessions:
                 </label>
-                <span id="syncStatusBadge" style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #e8f8f5; color: #1abc9c;">🟢 Online Sync Active</span>
+                <span class="sync-status-badge" id="syncStatusBadge"><span>🟢</span> <span>Online Synced</span></span>
               </div>
               <div id="recentSessionsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto;">
                 <div style="text-align: center; color: #a4b0be; font-size: 11px; padding: 16px;">සැසි පූරණය වෙමින් පවතී... ⏳</div>
@@ -6912,12 +6950,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // INTERACTIVE FOCUS TARGET POPUP (SUBJECT -> UNIT -> COUNTDOWN SEQUENCE)
       // =========================================================================
       function openStudyAnalyticsPage() {
-        // Use clean URL 'study-analytics' (Cloudflare & production serve this directly with 200 OK without 307 redirect)
-        // Fall back to .html only if viewing from local file:// protocol
-        const targetUrl = (window.location.protocol === 'file:') ? 'study-analytics.html' : 'study-analytics';
+        const targetUrl = (window.location.protocol === 'file:') ? './study-analytics.html' : './study-analytics';
         try {
-          const w = window.open(targetUrl, '_blank');
-          if (!w || w.closed || typeof w.closed === 'undefined') {
+          const w = window.open(targetUrl, 'study_analytics_window');
+          if (w) {
+            try { w.focus(); } catch (_) {}
+          } else {
             window.location.href = targetUrl;
           }
         } catch (e) {
@@ -7105,7 +7143,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   tx.objectStore(sName).put({ ...startPayload, synced: true });
                 }
               } catch (_) {}
-              updateSyncBadgeUI(true, 0);
+              await updateSyncUI();
               return;
             } else {
               // Try fallback to legacy study_sessions
@@ -7125,7 +7163,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   all[idx].synced = true;
                   saveLocalStoredSessions(all);
                 }
-                updateSyncBadgeUI(true, 0);
+                await updateSyncUI();
                 return;
               }
             }
@@ -7136,6 +7174,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // Queue to sync_queue with task coalescing
         await enqueueSyncTask('INSERT', 'study_timer_sessions', startPayload, sessionId);
+        await updateSyncUI();
       }
 
       function updateActiveTargetUI() {
@@ -7326,16 +7365,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           } catch (_) {}
 
           if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-            supabase.from('study_timer_sessions').update(resumePayload).eq('id', currentActiveSessionId).then(({ error }) => {
+            try {
+              let { error } = await supabase.from('study_timer_sessions').update(resumePayload).eq('id', currentActiveSessionId);
               if (error) {
-                enqueueSyncTask('UPDATE', 'study_timer_sessions', resumePayload, currentActiveSessionId);
+                await enqueueSyncTask('UPDATE', 'study_timer_sessions', resumePayload, currentActiveSessionId);
               }
-            }).catch(() => {
-              enqueueSyncTask('UPDATE', 'study_timer_sessions', resumePayload, currentActiveSessionId);
-            });
+            } catch (_) {
+              await enqueueSyncTask('UPDATE', 'study_timer_sessions', resumePayload, currentActiveSessionId);
+            }
           } else {
             await enqueueSyncTask('UPDATE', 'study_timer_sessions', resumePayload, currentActiveSessionId);
           }
+          await updateSyncUI();
         }
 
         broadcastLiveTimerState('START');
@@ -7418,16 +7459,22 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           } catch (_) {}
 
           if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-            supabase.from('study_timer_sessions').update(pausePayload).eq('id', currentActiveSessionId).then(({ error }) => {
+            try {
+              let { error } = await supabase.from('study_timer_sessions').update(pausePayload).eq('id', currentActiveSessionId);
               if (error) {
-                enqueueSyncTask('UPDATE', 'study_timer_sessions', pausePayload, currentActiveSessionId);
+                const fbRes = await supabase.from('study_sessions').update({ duration_minutes: pausePayload.duration_minutes }).eq('id', currentActiveSessionId);
+                if (fbRes.error) {
+                  await enqueueSyncTask('UPDATE', 'study_timer_sessions', pausePayload, currentActiveSessionId);
+                }
               }
-            }).catch(() => {
-              enqueueSyncTask('UPDATE', 'study_timer_sessions', pausePayload, currentActiveSessionId);
-            });
+            } catch (netErr) {
+              await enqueueSyncTask('UPDATE', 'study_timer_sessions', pausePayload, currentActiveSessionId);
+            }
           } else {
             await enqueueSyncTask('UPDATE', 'study_timer_sessions', pausePayload, currentActiveSessionId);
           }
+
+          await updateSyncUI();
         }
 
         broadcastLiveTimerState('PAUSE');
@@ -7437,6 +7484,89 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         if (!currentActiveSessionId && !sessionStartTime && !isFocusRunning && activeElapsedSeconds === 0) return;
         clearInterval(focusTimerInterval);
         await onFocusSessionCompleted(true);
+      }
+
+      async function finalizeOrDiscardSession(sessionId, activeSecs) {
+        if (!sessionId) return;
+        const todayYYYYMMDD = getLocalDateString();
+        const nowHHMMSS = getLocalTimeString();
+        const nowIso = new Date().toISOString();
+
+        if (activeSecs < 240) {
+          // If activeElapsedSeconds < 240 (Under 4 Minutes):
+          // Completely delete this session record from LocalStorage and IndexedDB.
+          const sessions = getLocalStoredSessions().filter(s => s.id !== sessionId);
+          saveLocalStoredSessions(sessions);
+
+          try {
+            const db = await openOfflineDB();
+            if (db) {
+              const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+              const tx = db.transaction(sName, 'readwrite');
+              tx.objectStore(sName).delete(sessionId);
+            }
+          } catch (_) {}
+
+          if (navigator.onLine && supabase && typeof supabase.from === 'function') {
+            try {
+              let { error } = await supabase.from('study_timer_sessions').delete().eq('id', sessionId);
+              if (error) {
+                await supabase.from('study_sessions').delete().eq('id', sessionId);
+              }
+            } catch (_) {
+              await enqueueSyncTask('DELETE', 'study_timer_sessions', { id: sessionId }, sessionId);
+            }
+          } else {
+            await enqueueSyncTask('DELETE', 'study_timer_sessions', { id: sessionId }, sessionId);
+          }
+        } else {
+          // If activeElapsedSeconds >= 240 (4 Minutes or more):
+          // Finalize payload
+          const finishPayload = {
+            status: 'completed',
+            duration_seconds: activeSecs,
+            duration_minutes: Math.round(activeSecs / 60),
+            timer_stop_date: todayYYYYMMDD,
+            timer_stop_time: nowHHMMSS,
+            end_time: nowIso
+          };
+
+          const sessions = getLocalStoredSessions();
+          const target = sessions.find(s => s.id === sessionId);
+          if (target) {
+            Object.assign(target, finishPayload);
+            saveLocalStoredSessions(sessions);
+          }
+
+          try {
+            const db = await openOfflineDB();
+            if (db) {
+              const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+              const tx = db.transaction(sName, 'readwrite');
+              const gReq = tx.objectStore(sName).get(sessionId);
+              gReq.onsuccess = () => {
+                if (gReq.result) {
+                  tx.objectStore(sName).put({ ...gReq.result, ...finishPayload });
+                }
+              };
+            }
+          } catch (_) {}
+
+          if (navigator.onLine && supabase && typeof supabase.from === 'function') {
+            try {
+              let { error } = await supabase.from('study_timer_sessions').update(finishPayload).eq('id', sessionId);
+              if (error) {
+                await supabase.from('study_sessions').update({ duration_minutes: finishPayload.duration_minutes }).eq('id', sessionId);
+              }
+            } catch (_) {
+              await enqueueSyncTask('UPDATE', 'study_timer_sessions', finishPayload, sessionId);
+            }
+          } else {
+            await enqueueSyncTask('UPDATE', 'study_timer_sessions', finishPayload, sessionId);
+          }
+        }
+
+        await updateSyncUI();
       }
 
       async function resetFocusTimer() {
@@ -7468,69 +7598,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         focusRemainingSeconds = focusTotalSeconds;
         updateFocusDisplay();
 
-        // Event 5: RESET
+        // Event 4: RESET
         if (finalSessionId) {
-          if (finalActiveSeconds < 240) {
-            // Rule: Under 4 Minutes -> completely delete record
-            const sessions = getLocalStoredSessions().filter(s => s.id !== finalSessionId);
-            saveLocalStoredSessions(sessions);
-            try {
-              const db = await openOfflineDB();
-              if (db) {
-                const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
-                const tx = db.transaction(sName, 'readwrite');
-                tx.objectStore(sName).delete(finalSessionId);
-              }
-            } catch (_) {}
-
-            if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-              supabase.from('study_timer_sessions').delete().eq('id', finalSessionId).catch(() => {
-                enqueueSyncTask('DELETE', 'study_timer_sessions', { id: finalSessionId }, finalSessionId);
-              });
-            } else {
-              await enqueueSyncTask('DELETE', 'study_timer_sessions', { id: finalSessionId }, finalSessionId);
-            }
-          } else {
-            // Rule: 4 Minutes or more -> finalize as completed with last known duration
-            const todayYYYYMMDD = getLocalDateString();
-            const nowHHMMSS = getLocalTimeString();
-            const finishPayload = {
-              status: 'completed',
-              duration_seconds: finalActiveSeconds,
-              duration_minutes: Math.round(finalActiveSeconds / 60),
-              timer_stop_date: todayYYYYMMDD,
-              timer_stop_time: nowHHMMSS,
-              end_time: new Date().toISOString()
-            };
-
-            const sessions = getLocalStoredSessions();
-            const target = sessions.find(s => s.id === finalSessionId);
-            if (target) {
-              Object.assign(target, finishPayload);
-              saveLocalStoredSessions(sessions);
-            }
-            try {
-              const db = await openOfflineDB();
-              if (db) {
-                const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
-                const tx = db.transaction(sName, 'readwrite');
-                const gReq = tx.objectStore(sName).get(finalSessionId);
-                gReq.onsuccess = () => {
-                  if (gReq.result) {
-                    tx.objectStore(sName).put({ ...gReq.result, ...finishPayload });
-                  }
-                };
-              }
-            } catch (_) {}
-
-            if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-              supabase.from('study_timer_sessions').update(finishPayload).eq('id', finalSessionId).catch(() => {
-                enqueueSyncTask('UPDATE', 'study_timer_sessions', finishPayload, finalSessionId);
-              });
-            } else {
-              await enqueueSyncTask('UPDATE', 'study_timer_sessions', finishPayload, finalSessionId);
-            }
-          }
+          await finalizeOrDiscardSession(finalSessionId, finalActiveSeconds);
         }
 
         broadcastLiveTimerState('STOP');
@@ -7564,85 +7634,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         updateFocusDisplay();
 
         // Event 4: Timer FINISH / MANUAL STOP
+        if (finalSessionId) {
+          await finalizeOrDiscardSession(finalSessionId, finalActiveSeconds);
+        }
+
         if (finalActiveSeconds < 240) {
-          // Rule: Under 4 Minutes (< 240 seconds) -> Completely delete session record
-          if (finalSessionId) {
-            const sessions = getLocalStoredSessions().filter(s => s.id !== finalSessionId);
-            saveLocalStoredSessions(sessions);
-            try {
-              const db = await openOfflineDB();
-              if (db) {
-                const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
-                const tx = db.transaction(sName, 'readwrite');
-                tx.objectStore(sName).delete(finalSessionId);
-              }
-            } catch (_) {}
-
-            if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-              supabase.from('study_timer_sessions').delete().eq('id', finalSessionId).then(({ error }) => {
-                if (error) {
-                  enqueueSyncTask('DELETE', 'study_timer_sessions', { id: finalSessionId }, finalSessionId);
-                }
-              }).catch(() => {
-                enqueueSyncTask('DELETE', 'study_timer_sessions', { id: finalSessionId }, finalSessionId);
-              });
-            } else {
-              await enqueueSyncTask('DELETE', 'study_timer_sessions', { id: finalSessionId }, finalSessionId);
-            }
-          }
-
           broadcastLiveTimerState('STOP');
           showHtmlAlert('අධ්‍යයන සැසිය මිනිත්තු 4කට අඩු බැවින් වාර්තා නොකෙරිණි (Session under 4 mins discarded)', false);
-
         } else {
-          // Rule: 4 Minutes or more (>= 240 seconds) -> Finalize as completed
-          const todayYYYYMMDD = getLocalDateString();
-          const nowHHMMSS = getLocalTimeString();
-          const finishPayload = {
-            status: 'completed',
-            duration_seconds: finalActiveSeconds,
-            duration_minutes: Math.round(finalActiveSeconds / 60),
-            timer_stop_date: todayYYYYMMDD,
-            timer_stop_time: nowHHMMSS,
-            end_time: new Date().toISOString()
-          };
-
-          if (finalSessionId) {
-            const sessions = getLocalStoredSessions();
-            const target = sessions.find(s => s.id === finalSessionId);
-            if (target) {
-              Object.assign(target, finishPayload);
-              saveLocalStoredSessions(sessions);
-            }
-            try {
-              const db = await openOfflineDB();
-              if (db) {
-                const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
-                const tx = db.transaction(sName, 'readwrite');
-                const gReq = tx.objectStore(sName).get(finalSessionId);
-                gReq.onsuccess = () => {
-                  if (gReq.result) {
-                    tx.objectStore(sName).put({ ...gReq.result, ...finishPayload });
-                  }
-                };
-              }
-            } catch (_) {}
-
-            if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-              supabase.from('study_timer_sessions').update(finishPayload).eq('id', finalSessionId).then(({ error }) => {
-                if (error) {
-                  enqueueSyncTask('UPDATE', 'study_timer_sessions', finishPayload, finalSessionId);
-                }
-              }).catch(() => {
-                enqueueSyncTask('UPDATE', 'study_timer_sessions', finishPayload, finalSessionId);
-              });
-            } else {
-              await enqueueSyncTask('UPDATE', 'study_timer_sessions', finishPayload, finalSessionId);
-            }
-          }
-
           broadcastLiveTimerState('FINISH');
-
           playSoftCompletionChime();
           try {
             confetti({
@@ -7834,8 +7834,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   pendingInsert.payload = { ...pendingInsert.payload, ...payload };
                   pendingInsert.data = pendingInsert.payload;
                   store.put(pendingInsert);
-                  updateSyncBadgeUI(navigator.onLine, 1);
-                  return resolve(true);
+                  return;
                 }
 
                 const pendingUpdate = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'UPDATE');
@@ -7843,8 +7842,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   pendingUpdate.payload = { ...pendingUpdate.payload, ...payload };
                   pendingUpdate.data = pendingUpdate.payload;
                   store.put(pendingUpdate);
-                  updateSyncBadgeUI(navigator.onLine, 1);
-                  return resolve(true);
+                  return;
                 }
 
                 const newTask = {
@@ -7856,8 +7854,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   created_at: new Date().toISOString()
                 };
                 store.add(newTask);
-                updateSyncBadgeUI(navigator.onLine, 1);
-                return resolve(true);
+                return;
 
               } else if (action === 'DELETE') {
                 const pendingInsert = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'INSERT');
@@ -7865,8 +7862,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                      .forEach(t => store.delete(t.queue_id));
 
                 if (pendingInsert) {
-                  updateSyncBadgeUI(navigator.onLine, 0);
-                  return resolve(true);
+                  return;
                 }
 
                 const delTask = {
@@ -7878,8 +7874,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   created_at: new Date().toISOString()
                 };
                 store.add(delTask);
-                updateSyncBadgeUI(navigator.onLine, 1);
-                return resolve(true);
+                return;
 
               } else {
                 const existingInsert = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'INSERT');
@@ -7887,8 +7882,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   existingInsert.payload = { ...existingInsert.payload, ...payload };
                   existingInsert.data = existingInsert.payload;
                   store.put(existingInsert);
-                  updateSyncBadgeUI(navigator.onLine, 1);
-                  return resolve(true);
+                  return;
                 }
 
                 const item = {
@@ -7900,11 +7894,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   created_at: new Date().toISOString()
                 };
                 store.add(item);
-                updateSyncBadgeUI(navigator.onLine, 1);
-                return resolve(true);
+                return;
               }
             };
 
+            tx.oncomplete = () => {
+              updateSyncUI();
+              resolve(true);
+            };
+            tx.onerror = () => resolve(false);
             getAllReq.onerror = () => resolve(false);
           });
         } catch (e) {
@@ -7952,7 +7950,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   tx.objectStore(sName).put({ ...sessionItem, synced: true });
                 }
               } catch (_) {}
-              updateSyncBadgeUI(true, 0);
+              await updateSyncUI();
               return;
             } else {
               // Fallback to legacy study_sessions table
@@ -7980,7 +7978,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                     tx.objectStore(sName).put({ ...sessionItem, synced: true });
                   }
                 } catch (_) {}
-                updateSyncBadgeUI(true, 0);
+                await updateSyncUI();
                 return;
               }
             }
@@ -7991,20 +7989,79 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // Add to offline sync queue in IndexedDB
         await enqueueSyncTask('INSERT', 'study_timer_sessions', payload, sessionItem.id);
+        await updateSyncUI();
       }
 
+      let isSyncingQueue = false;
       let isProcessingSyncQueue = false;
 
+      async function getPendingSyncCount() {
+        try {
+          const db = await openOfflineDB();
+          if (!db || !db.objectStoreNames.contains('sync_queue')) return 0;
+          return new Promise((resolve) => {
+            const tx = db.transaction('sync_queue', 'readonly');
+            const store = tx.objectStore('sync_queue');
+            const req = store.count();
+            req.onsuccess = () => resolve(req.result || 0);
+            req.onerror = () => resolve(0);
+          });
+        } catch (_) {
+          return 0;
+        }
+      }
+
+      async function updateSyncUI() {
+        const badge1 = document.getElementById('syncStatusBadge');
+        const badge2 = document.getElementById('focusHeaderSyncBadge');
+        if (!badge1 && !badge2) return;
+
+        const pendingCount = await getPendingSyncCount();
+
+        let baseClass = 'sync-status-badge';
+        let innerHtml = '<span>🟢</span> <span>Online Synced</span>';
+
+        if (!navigator.onLine) {
+          baseClass = 'sync-status-badge offline';
+          innerHtml = '<span>🟡</span> <span>Offline' + (pendingCount > 0 ? ` (${pendingCount} pending)` : '') + '</span>';
+        } else if (isSyncingQueue || isProcessingSyncQueue) {
+          baseClass = 'sync-status-badge syncing';
+          innerHtml = '<span>🔄</span> <span>Syncing...</span>';
+        } else if (pendingCount > 0) {
+          baseClass = 'sync-status-badge syncing';
+          innerHtml = `<span>🔄</span> <span>Syncing (${pendingCount} pending)...</span>`;
+          processOfflineSyncQueue(); // auto-drain immediately
+        } else {
+          baseClass = 'sync-status-badge';
+          innerHtml = '<span>🟢</span> <span>Online Synced</span>';
+        }
+
+        const badges = [badge1, badge2];
+        for (const b of badges) {
+          if (b) {
+            b.className = (b.id === 'focusHeaderSyncBadge' ? 'focus-sync-indicator ' : '') + baseClass;
+            b.innerHTML = innerHtml;
+            b.style.background = '';
+            b.style.color = '';
+            b.style.borderColor = '';
+          }
+        }
+      }
+      window.updateSyncUI = updateSyncUI;
+      window.updateSyncBadgeUI = updateSyncUI;
+
       async function processOfflineSyncQueue() {
-        if (isProcessingSyncQueue || !navigator.onLine || !supabase || typeof supabase.from !== 'function') return;
+        if (isSyncingQueue || isProcessingSyncQueue || !navigator.onLine || !supabase || typeof supabase.from !== 'function') return;
+        isSyncingQueue = true;
         isProcessingSyncQueue = true;
-        updateSyncBadgeUI(true, 0, 'syncing');
+        await updateSyncUI();
 
         try {
           const db = await openOfflineDB();
           if (!db || !db.objectStoreNames.contains('sync_queue')) {
+            isSyncingQueue = false;
             isProcessingSyncQueue = false;
-            updateSyncBadgeUI(true, 0);
+            await updateSyncUI();
             return;
           }
 
@@ -8017,8 +8074,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           });
 
           if (!tasks || tasks.length === 0) {
+            isSyncingQueue = false;
             isProcessingSyncQueue = false;
-            updateSyncBadgeUI(true, 0);
+            await updateSyncUI();
             return;
           }
 
@@ -8128,6 +8186,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   delReq.onsuccess = () => res();
                   delReq.onerror = () => res();
                 });
+                await updateSyncUI();
               }
             } catch (err) {
               console.error(`Offline sync queue stopped at task #${queue_id}:`, err);
@@ -8137,70 +8196,13 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         } catch (e) {
           console.error('processOfflineSyncQueue error:', e);
         } finally {
+          isSyncingQueue = false;
           isProcessingSyncQueue = false;
-          updateSyncBadgeUI(navigator.onLine, 0);
+          await updateSyncUI();
         }
       }
-
-      async function updateSyncBadgeUI(isOnline, pendingCount = 0, state = '') {
-        const badge1 = document.getElementById('syncStatusBadge');
-        const badge2 = document.getElementById('focusHeaderSyncBadge');
-
-        let text = '';
-        let bg = '';
-        let color = '';
-        let border = '';
-
-        if (state === 'syncing' || isProcessingSyncQueue) {
-          text = '🔄 Syncing...';
-          bg = 'rgba(9, 132, 227, 0.15)';
-          color = '#0984e3';
-          border = 'rgba(9, 132, 227, 0.3)';
-        } else if (!isOnline || !navigator.onLine) {
-          text = `🟡 Offline (${pendingCount || 1} Pending)`;
-          bg = '#ffeaa7';
-          color = '#d63031';
-          border = 'rgba(214, 48, 49, 0.3)';
-        } else {
-          // Check pending count from sync_queue
-          let pending = pendingCount;
-          try {
-            const db = await openOfflineDB();
-            if (db && db.objectStoreNames.contains('sync_queue')) {
-              pending = await new Promise((res) => {
-                const tx = db.transaction('sync_queue', 'readonly');
-                const req = tx.objectStore('sync_queue').count();
-                req.onsuccess = () => res(req.result || 0);
-                req.onerror = () => res(0);
-              });
-            }
-          } catch (_) {}
-
-          if (pending > 0) {
-            text = `🟡 Offline (${pending} Pending)`;
-            bg = '#ffeaa7';
-            color = '#d63031';
-            border = 'rgba(214, 48, 49, 0.3)';
-          } else {
-            text = '🟢 Online Synced';
-            bg = '#e8f8f5';
-            color = '#1abc9c';
-            border = 'rgba(26, 188, 156, 0.3)';
-          }
-        }
-
-        if (badge1) {
-          badge1.innerText = text;
-          badge1.style.background = bg;
-          badge1.style.color = color;
-        }
-        if (badge2) {
-          badge2.innerText = text;
-          badge2.style.background = bg;
-          badge2.style.color = color;
-          badge2.style.borderColor = border;
-        }
-      }
+      window.processSyncQueue = processOfflineSyncQueue;
+      window.processOfflineSyncQueue = processOfflineSyncQueue;
 
       // Supabase Real-time Multi-Device Sync Channel
       function initRealtimeDatabaseSync() {
@@ -8276,15 +8278,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
           renderStudyHeatmap();
           renderRecentSessionsInSettings();
+          await updateSyncUI();
         }
       }
 
       window.addEventListener('online', () => {
-        updateSyncBadgeUI(true, 0);
+        updateSyncUI();
         processOfflineSyncQueue();
       });
       window.addEventListener('offline', () => {
-        updateSyncBadgeUI(false, 0);
+        updateSyncUI();
       });
 
       // =========================================================================
@@ -8480,6 +8483,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             if (error) {
               await supabase.from('study_sessions').update({ duration_minutes: newMins }).eq('id', sessionId);
             }
+            await updateSyncUI();
           } catch (_) {
             await enqueueSyncTask('UPDATE', 'study_timer_sessions', { id: sessionId, duration_minutes: newMins });
           }
@@ -8514,6 +8518,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             if (error) {
               await supabase.from('study_sessions').delete().eq('id', sessionId);
             }
+            await updateSyncUI();
           } catch (_) {
             await enqueueSyncTask('DELETE', 'study_timer_sessions', { id: sessionId });
           }
@@ -8528,7 +8533,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         updateActiveTargetUI();
         updateFocusDisplay();
         renderStudyHeatmap();
-        updateSyncBadgeUI(navigator.onLine, 0);
+        updateSyncUI();
 
         initLiveTimerStream();
         initRealtimeDatabaseSync();
@@ -8536,9 +8541,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // Cross-tab sync listener (e.g. if sessions added/edited in study-analytics.html)
         window.addEventListener('storage', (e) => {
-          if (e.key === 'al_study_sessions_cache' || e.key === 'al_study_timer_sessions') {
+          if (e.key === 'al_study_sessions_cache' || e.key === 'al_study_timer_sessions' || e.key === 'al_sync_queue') {
             renderStudyHeatmap();
             renderRecentSessionsInSettings();
+            updateSyncUI();
           }
         });
 

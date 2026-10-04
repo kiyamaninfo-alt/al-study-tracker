@@ -1287,7 +1287,7 @@
     <!-- Top Navigation & Header -->
     <header class="analytics-header-card">
       <div class="header-left">
-        <a href="./" class="btn-back-home" title="ආපසු Dashboard වෙත යන්න">
+        <a href="./" class="btn-back-home" onclick="handleBackToDashboard(event)" title="ආපසු Dashboard වෙත යන්න">
           <span>←</span> <span>Dashboard</span>
         </a>
         <div class="header-titles">
@@ -2215,7 +2215,19 @@
         renderVisualCharts();
         renderSessionsTable();
       }
+      try { await updateSyncUI(); } catch (_) {}
     }
+
+    function handleBackToDashboard(e) {
+      if (e) e.preventDefault();
+      if (window.opener && !window.opener.closed) {
+        try { window.opener.focus(); } catch (_) {}
+        window.close();
+      } else {
+        window.location.href = './';
+      }
+    }
+    window.handleBackToDashboard = handleBackToDashboard;
 
     // Completely eliminate native browser alert and prompt popups
     window.alert = function(msg) { console.warn('Native alert blocked:', msg); };
@@ -2552,8 +2564,7 @@
                 pendingInsert.payload = { ...pendingInsert.payload, ...payload };
                 pendingInsert.data = pendingInsert.payload;
                 store.put(pendingInsert);
-                updateSyncUI();
-                return resolve(true);
+                return;
               }
 
               const pendingUpdate = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'UPDATE');
@@ -2561,8 +2572,7 @@
                 pendingUpdate.payload = { ...pendingUpdate.payload, ...payload };
                 pendingUpdate.data = pendingUpdate.payload;
                 store.put(pendingUpdate);
-                updateSyncUI();
-                return resolve(true);
+                return;
               }
 
               const newTask = {
@@ -2574,8 +2584,7 @@
                 created_at: new Date().toISOString()
               };
               store.add(newTask);
-              updateSyncUI();
-              return resolve(true);
+              return;
 
             } else if (action === 'DELETE') {
               const pendingInsert = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'INSERT');
@@ -2583,8 +2592,7 @@
                    .forEach(t => store.delete(t.queue_id));
 
               if (pendingInsert) {
-                updateSyncUI();
-                return resolve(true);
+                return;
               }
 
               const delTask = {
@@ -2596,8 +2604,7 @@
                 created_at: new Date().toISOString()
               };
               store.add(delTask);
-              updateSyncUI();
-              return resolve(true);
+              return;
 
             } else {
               const existingInsert = items.find(t => t.table === targetTable && (t.id === sessId || (t.payload && t.payload.id === sessId)) && t.action === 'INSERT');
@@ -2605,8 +2612,7 @@
                 existingInsert.payload = { ...existingInsert.payload, ...payload };
                 existingInsert.data = existingInsert.payload;
                 store.put(existingInsert);
-                updateSyncUI();
-                return resolve(true);
+                return;
               }
 
               const item = {
@@ -2618,11 +2624,15 @@
                 created_at: new Date().toISOString()
               };
               store.add(item);
-              updateSyncUI();
-              return resolve(true);
+              return;
             }
           };
 
+          tx.oncomplete = () => {
+            updateSyncUI();
+            resolve(true);
+          };
+          tx.onerror = () => resolve(false);
           getAllReq.onerror = () => resolve(false);
         });
       } catch (e) {
@@ -2786,6 +2796,7 @@
                 delReq.onsuccess = () => resolve();
                 delReq.onerror = () => resolve();
               });
+              await updateSyncUI();
             }
           } catch (taskErr) {
             console.error(`Sync queue halted on task #${queue_id} (${action}):`, taskErr);
@@ -2806,22 +2817,18 @@
       const badge = document.getElementById('analyticsSyncBadge');
       if (!badge) return;
 
-      if (overrideState === 'syncing' || isSyncingQueue) {
-        badge.className = 'sync-status-badge syncing';
-        badge.innerHTML = '<span>🔄</span> <span>Syncing...</span>';
-        return;
-      }
+      const pendingCount = await getPendingSyncCount();
 
       if (!navigator.onLine) {
         badge.className = 'sync-status-badge offline';
-        badge.innerHTML = '<span>🟡</span> <span>Offline / Pending Sync</span>';
-        return;
-      }
-
-      const pending = await getPendingSyncCount();
-      if (pending > 0) {
-        badge.className = 'sync-status-badge offline';
-        badge.innerHTML = '<span>🟡</span> <span>Offline / Pending Sync</span>';
+        badge.innerHTML = '<span>🟡</span> <span>Offline' + (pendingCount > 0 ? ` (${pendingCount} pending)` : '') + '</span>';
+      } else if (overrideState === 'syncing' || isSyncingQueue) {
+        badge.className = 'sync-status-badge syncing';
+        badge.innerHTML = '<span>🔄</span> <span>Syncing...</span>';
+      } else if (pendingCount > 0) {
+        badge.className = 'sync-status-badge syncing';
+        badge.innerHTML = `<span>🔄</span> <span>Syncing (${pendingCount} pending)...</span>`;
+        processSyncQueue(); // auto-drain immediately
       } else {
         badge.className = 'sync-status-badge';
         badge.innerHTML = '<span>🟢</span> <span>Online Synced</span>';
@@ -4700,8 +4707,9 @@
 
     // Storage and online listeners
     window.addEventListener('storage', (e) => {
-      if (e.key === 'al_study_sessions_cache' || e.key === TIMER_STORAGE_KEY) {
+      if (e.key === 'al_study_sessions_cache' || e.key === TIMER_STORAGE_KEY || e.key === 'al_sync_queue') {
         refreshAnalyticsData();
+        updateSyncUI();
       }
     });
 
