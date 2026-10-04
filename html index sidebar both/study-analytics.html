@@ -190,6 +190,11 @@
     .kpi-card.today::before { background: #00cec9; }
     .kpi-card.avg::before { background: #a29bfe; }
     .kpi-card.count::before { background: #55efc4; }
+    .kpi-card.peak-slot::before { background: #fdcb6e; }
+    .kpi-card.week-time::before { background: #20bf6b; }
+    .kpi-card.active-days::before { background: #00cec9; }
+    .kpi-card.top-subj::before { background: #e056fd; }
+    .kpi-card.completion-rate::before { background: #ff7675; }
 
     .kpi-top {
       display: flex;
@@ -501,6 +506,315 @@
       color: var(--text-muted);
     }
 
+    /* Subject-wise Progress Section Styles (Item 1) */
+    .subj-balance-wrapper {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .subj-balance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .subj-balance-legend {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .legend-dot-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-main);
+    }
+    .legend-dot-item .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .legend-dot-item .dot.ict { background: #20bf6b; }
+    .legend-dot-item .dot.et { background: #0984e3; }
+    .legend-dot-item .dot.sft { background: #8854d0; }
+    .subj-multi-track {
+      display: flex;
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #161d28;
+      margin-top: 10px;
+    }
+    .subj-multi-segment {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+    .subj-multi-segment.ict { background: linear-gradient(90deg, #20bf6b, #00cec9); }
+    .subj-multi-segment.et { background: linear-gradient(90deg, #0984e3, #6c5ce7); }
+    .subj-multi-segment.sft { background: linear-gradient(90deg, #8854d0, #e056fd); }
+
+    .subject-detailed-progress-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 900px) {
+      .subject-detailed-progress-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .subject-prog-card {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px;
+      position: relative;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .subject-prog-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+    .subject-prog-card.ict-theme { border-top: 3px solid #20bf6b; }
+    .subject-prog-card.et-theme { border-top: 3px solid #0984e3; }
+    .subject-prog-card.sft-theme { border-top: 3px solid #8854d0; }
+
+    .subj-prog-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .subj-prog-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .subj-prog-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      width: fit-content;
+    }
+    .subj-prog-badge.ict { background: rgba(32, 191, 107, 0.18); color: #20bf6b; }
+    .subj-prog-badge.et { background: rgba(9, 132, 227, 0.18); color: #0984e3; }
+    .subj-prog-badge.sft { background: rgba(136, 84, 208, 0.18); color: #a29bfe; }
+    .subj-prog-name {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .subj-prog-pct {
+      font-size: 20px;
+      font-weight: 800;
+      font-family: 'Poppins', monospace, sans-serif;
+    }
+    .subj-prog-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+    }
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .stat-lbl {
+      font-size: 9.5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .stat-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: 'Poppins', monospace, sans-serif;
+    }
+    .subj-wide-bar-track {
+      background: #161d28;
+      height: 9px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .subj-wide-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.5s ease;
+    }
+    .subj-wide-bar-fill.ict { background: linear-gradient(90deg, #20bf6b, #00cec9); }
+    .subj-wide-bar-fill.et { background: linear-gradient(90deg, #0984e3, #6c5ce7); }
+    .subj-wide-bar-fill.sft { background: linear-gradient(90deg, #8854d0, #e056fd); }
+    .subj-prog-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+    .subj-badge-status {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(32, 191, 107, 0.15);
+      color: #20bf6b;
+    }
+
+    /* Peak Study Time Periods Breakdown Section Styles (Item 2) */
+    .slot-filter-tabs {
+      display: flex;
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .slot-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .slot-tab-btn.active {
+      background: #1e2530;
+      color: #fdcb6e;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .slot-highlight-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, rgba(253, 203, 110, 0.1), rgba(108, 92, 231, 0.12));
+      border: 1px solid rgba(253, 203, 110, 0.25);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+    .slot-hl-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .slot-hl-content {
+      min-width: 0;
+    }
+    .slot-hl-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #f1f2f6;
+      line-height: 1.3;
+    }
+    .slot-hl-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .time-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .slot-card {
+      background: var(--card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 14px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .slot-card.is-peak {
+      border-color: rgba(253, 203, 110, 0.55);
+      box-shadow: 0 0 14px rgba(253, 203, 110, 0.12);
+      background: linear-gradient(135deg, rgba(253, 203, 110, 0.05), var(--card-inner));
+    }
+    .slot-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    .slot-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .slot-icon {
+      font-size: 18px;
+    }
+    .slot-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .slot-range {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 1px;
+    }
+    .slot-badge-peak {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #fdcb6e;
+      color: #2d3436;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .slot-metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin: 8px 0 6px;
+    }
+    .slot-hours {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      font-family: 'Poppins', monospace, sans-serif;
+    }
+    .slot-sessions {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+    .slot-pct-txt {
+      font-size: 12px;
+      font-weight: 800;
+      font-family: 'Poppins', monospace, sans-serif;
+    }
+    .slot-bar-track {
+      background: #161d28;
+      height: 7px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .slot-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
     /* Sessions History Table */
     .history-filter-bar {
       display: flex;
@@ -720,6 +1034,54 @@
       </div>
     </section>
 
+    <!-- 2nd Row: Executive Study Intelligence KPIs (Screenshot1 Row 2 - Item 3) -->
+    <section class="kpi-grid" style="margin-bottom: 20px;">
+      <div class="kpi-card peak-slot">
+        <div class="kpi-top">
+          <span class="kpi-title">Peak Study Time</span>
+          <span class="kpi-icon">⏰</span>
+        </div>
+        <div class="kpi-val"><span id="kpiPeakTimeSlot">--</span></div>
+        <div class="kpi-sub">Slot Share: <strong id="kpiPeakTimeShare" style="color:#fdcb6e;">0%</strong> of focus</div>
+      </div>
+
+      <div class="kpi-card week-time">
+        <div class="kpi-top">
+          <span class="kpi-title">This Week's Focus</span>
+          <span class="kpi-icon">🗓️</span>
+        </div>
+        <div class="kpi-val"><span id="kpiThisWeekHours">0.0</span> <small style="font-size:13px; font-weight:600;">Hrs</small></div>
+        <div class="kpi-sub">Target: <strong id="kpiThisWeekTargetPct" style="color:#20bf6b;">0% (Goal: 20h)</strong></div>
+      </div>
+
+      <div class="kpi-card active-days">
+        <div class="kpi-top">
+          <span class="kpi-title">Active Study Days</span>
+          <span class="kpi-icon">📅</span>
+        </div>
+        <div class="kpi-val"><span id="kpiActiveDaysMonth">0</span> <small style="font-size:13px; font-weight:600;">Days</small></div>
+        <div class="kpi-sub">This Month: <strong id="kpiMonthlyConsistency" style="color:#00cec9;">0% Active</strong></div>
+      </div>
+
+      <div class="kpi-card top-subj">
+        <div class="kpi-top">
+          <span class="kpi-title">Top Focus Subject</span>
+          <span class="kpi-icon">🏆</span>
+        </div>
+        <div class="kpi-val"><span id="kpiTopSubject">--</span></div>
+        <div class="kpi-sub">Share: <strong id="kpiTopSubjectShare" style="color:#e056fd;">0%</strong> (<span id="kpiTopSubjectHours">0.0h</span>)</div>
+      </div>
+
+      <div class="kpi-card completion-rate">
+        <div class="kpi-top">
+          <span class="kpi-title">Completion Rate</span>
+          <span class="kpi-icon">🎯</span>
+        </div>
+        <div class="kpi-val"><span id="kpiCompletionRate">100%</span></div>
+        <div class="kpi-sub">Completed: <strong id="kpiCompletedSessionsCount" style="color:#55efc4;">0</strong> Sessions</div>
+      </div>
+    </section>
+
     <!-- Comprehensive GitHub-Style Consistency Heatmap -->
     <section class="section-card">
       <div class="section-header">
@@ -789,6 +1151,38 @@
       </div>
     </section>
 
+    <!-- Peak Study Time Periods Breakdown Card with Subject Tabs (Item 2) -->
+    <section class="section-card" id="sectionPeakTimeSlots">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">🕒</span>
+          <span>වැඩිපුරම පාඩම් කළ කාල පරාසයන් (Peak Study Time Periods Analysis)</span>
+        </div>
+        <div class="slot-filter-tabs">
+          <button type="button" class="slot-tab-btn active" onclick="setSlotFilter('ALL', this)">🌐 All Subjects</button>
+          <button type="button" class="slot-tab-btn" onclick="setSlotFilter('ICT', this)">💻 ICT</button>
+          <button type="button" class="slot-tab-btn" onclick="setSlotFilter('ET', this)">⚙️ ET</button>
+          <button type="button" class="slot-tab-btn" onclick="setSlotFilter('SFT', this)">🔬 SFT</button>
+        </div>
+      </div>
+
+      <!-- Executive Highlight Banner -->
+      <div class="slot-highlight-banner" id="slotHighlightBanner">
+        <div class="slot-hl-icon">🏆</div>
+        <div class="slot-hl-content">
+          <div class="slot-hl-title" id="slotHighlightTitle">Peak Focus Window: Evening (17:00 – 21:00)</div>
+          <div class="slot-hl-desc" id="slotHighlightDesc">
+            ඔබ වැඩිපුරම අවධානයෙන් පාඩම් කර ඇත්තේ සන්ධ්‍යා කාලයේදීය (45% of total focus).
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 Standard Time Slots Grid -->
+      <div class="time-slots-grid" id="timeSlotsGrid">
+        <!-- Rendered dynamically via renderPeakTimeSlots() based on active tab -->
+      </div>
+    </section>
+
     <!-- Visual Charts: Subject Breakdown & 14-Day Trend -->
     <section class="charts-grid">
       <!-- Subject Focus Distribution (Doughnut Chart) -->
@@ -816,50 +1210,131 @@
       </div>
     </section>
 
-    <!-- Subject 3-Card Summary Deep-Dive -->
-    <section class="subj-cards-grid">
-      <!-- ICT Card -->
-      <div class="subj-card">
-        <div class="subj-card-head">
-          <span class="subj-pill ict">💻 ICT</span>
-          <span class="subj-total-mins" id="subjIctMins" style="color: #20bf6b;">0m</span>
+    <!-- Subject-wise Progress & Target Tracking Section (Item 1) -->
+    <section class="section-card" id="sectionSubjectProgress">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">🎯</span>
+          <span>විෂය අනුව අධ්‍යයන ප්‍රගතිය (Subject-wise Study Progress &amp; Goal Distribution)</span>
         </div>
-        <div class="subj-progress-track">
-          <div class="subj-progress-fill ict" id="subjIctBar" style="width: 0%;"></div>
-        </div>
-        <div class="subj-card-meta">
-          <span>Sessions: <strong id="subjIctCount" style="color:#f0f6fc;">0</strong></span>
-          <span>Share: <strong id="subjIctShare" style="color:#20bf6b;">0%</strong></span>
+        <div class="header-extra-info">
+          <span class="meta-tag" style="font-size: 11.5px; color: var(--text-muted);">සම්පූර්ණ කාලය: <strong id="progTotalStudyTime" style="color:#f0f6fc;">0.0 Hrs</strong></span>
         </div>
       </div>
 
-      <!-- ET Card -->
-      <div class="subj-card">
-        <div class="subj-card-head">
-          <span class="subj-pill et">⚙️ ET</span>
-          <span class="subj-total-mins" id="subjEtMins" style="color: #0984e3;">0m</span>
+      <!-- Combined Balance Distribution Bar -->
+      <div class="subj-balance-wrapper">
+        <div class="subj-balance-header">
+          <span>විෂය තුල්‍යතා අනුපාතය (Overall Subject Study Balance):</span>
+          <div class="subj-balance-legend">
+            <span class="legend-dot-item"><span class="dot ict"></span> ICT <strong id="legendIctPct">0%</strong></span>
+            <span class="legend-dot-item"><span class="dot et"></span> ET <strong id="legendEtPct">0%</strong></span>
+            <span class="legend-dot-item"><span class="dot sft"></span> SFT <strong id="legendSftPct">0%</strong></span>
+          </div>
         </div>
-        <div class="subj-progress-track">
-          <div class="subj-progress-fill et" id="subjEtBar" style="width: 0%;"></div>
-        </div>
-        <div class="subj-card-meta">
-          <span>Sessions: <strong id="subjEtCount" style="color:#f0f6fc;">0</strong></span>
-          <span>Share: <strong id="subjEtShare" style="color:#0984e3;">0%</strong></span>
+        <div class="subj-multi-track">
+          <div class="subj-multi-segment ict" id="multiBarIct" style="width: 33.3%;"></div>
+          <div class="subj-multi-segment et" id="multiBarEt" style="width: 33.3%;"></div>
+          <div class="subj-multi-segment sft" id="multiBarSft" style="width: 33.4%;"></div>
         </div>
       </div>
 
-      <!-- SFT Card -->
-      <div class="subj-card">
-        <div class="subj-card-head">
-          <span class="subj-pill sft">🔬 SFT</span>
-          <span class="subj-total-mins" id="subjSftMins" style="color: #8854d0;">0m</span>
+      <!-- Subject-wise Detailed Progress Cards Grid -->
+      <div class="subject-detailed-progress-grid">
+        <!-- ICT Progress Card -->
+        <div class="subject-prog-card ict-theme">
+          <div class="subj-prog-top">
+            <div class="subj-prog-title-group">
+              <span class="subj-prog-badge ict">💻 ICT</span>
+              <div class="subj-prog-name">තොරතුරු හා සන්නිවේදන තාක්ෂණය</div>
+            </div>
+            <div class="subj-prog-pct" id="progIctPctBadge" style="color: #20bf6b;">0%</div>
+          </div>
+          <div class="subj-prog-stats-row">
+            <div class="stat-col">
+              <span class="stat-lbl">කාලය:</span>
+              <strong class="stat-val" id="progIctHours">0.0 Hrs</strong>
+            </div>
+            <div class="stat-col">
+              <span class="stat-lbl">සැසි:</span>
+              <strong class="stat-val" id="progIctSessions">0</strong>
+            </div>
+            <div class="stat-col">
+              <span class="stat-lbl">ආවරණය:</span>
+              <strong class="stat-val" id="progIctUnits">0 / 13 Units</strong>
+            </div>
+          </div>
+          <div class="subj-wide-bar-track">
+            <div class="subj-wide-bar-fill ict" id="progIctWideBar" style="width: 0%;"></div>
+          </div>
+          <div class="subj-prog-bottom">
+            <span>ඉලක්ක ප්‍රගතිය: <strong id="progIctTargetSub" style="color:#20bf6b;">0% of 25h Goal</strong></span>
+            <span class="subj-badge-status" id="progIctStatusBadge">Active</span>
+          </div>
         </div>
-        <div class="subj-progress-track">
-          <div class="subj-progress-fill sft" id="subjSftBar" style="width: 0%;"></div>
+
+        <!-- ET Progress Card -->
+        <div class="subject-prog-card et-theme">
+          <div class="subj-prog-top">
+            <div class="subj-prog-title-group">
+              <span class="subj-prog-badge et">⚙️ ET</span>
+              <div class="subj-prog-name">ඉංජිනේරු තාක්ෂණවේදය</div>
+            </div>
+            <div class="subj-prog-pct" id="progEtPctBadge" style="color: #0984e3;">0%</div>
+          </div>
+          <div class="subj-prog-stats-row">
+            <div class="stat-col">
+              <span class="stat-lbl">කාලය:</span>
+              <strong class="stat-val" id="progEtHours">0.0 Hrs</strong>
+            </div>
+            <div class="stat-col">
+              <span class="stat-lbl">සැසි:</span>
+              <strong class="stat-val" id="progEtSessions">0</strong>
+            </div>
+            <div class="stat-col">
+              <span class="stat-lbl">ආවරණය:</span>
+              <strong class="stat-val" id="progEtUnits">0 / 14 Units</strong>
+            </div>
+          </div>
+          <div class="subj-wide-bar-track">
+            <div class="subj-wide-bar-fill et" id="progEtWideBar" style="width: 0%;"></div>
+          </div>
+          <div class="subj-prog-bottom">
+            <span>ඉලක්ක ප්‍රගතිය: <strong id="progEtTargetSub" style="color:#0984e3;">0% of 25h Goal</strong></span>
+            <span class="subj-badge-status" id="progEtStatusBadge">Active</span>
+          </div>
         </div>
-        <div class="subj-card-meta">
-          <span>Sessions: <strong id="subjSftCount" style="color:#f0f6fc;">0</strong></span>
-          <span>Share: <strong id="subjSftShare" style="color:#8854d0;">0%</strong></span>
+
+        <!-- SFT Progress Card -->
+        <div class="subject-prog-card sft-theme">
+          <div class="subj-prog-top">
+            <div class="subj-prog-title-group">
+              <span class="subj-prog-badge sft">🔬 SFT</span>
+              <div class="subj-prog-name">තාක්ෂණවේදය සඳහා විද්‍යාව</div>
+            </div>
+            <div class="subj-prog-pct" id="progSftPctBadge" style="color: #8854d0;">0%</div>
+          </div>
+          <div class="subj-prog-stats-row">
+            <div class="stat-col">
+              <span class="stat-lbl">කාලය:</span>
+              <strong class="stat-val" id="progSftHours">0.0 Hrs</strong>
+            </div>
+            <div class="stat-col">
+              <span class="stat-lbl">සැසි:</span>
+              <strong class="stat-val" id="progSftSessions">0</strong>
+            </div>
+            <div class="stat-col">
+              <span class="stat-lbl">ආවරණය:</span>
+              <strong class="stat-val" id="progSftUnits">0 / 23 Units</strong>
+            </div>
+          </div>
+          <div class="subj-wide-bar-track">
+            <div class="subj-wide-bar-fill sft" id="progSftWideBar" style="width: 0%;"></div>
+          </div>
+          <div class="subj-prog-bottom">
+            <span>ඉලක්ක ප්‍රගතිය: <strong id="progSftTargetSub" style="color:#8854d0;">0% of 25h Goal</strong></span>
+            <span class="subj-badge-status" id="progSftStatusBadge">Active</span>
+          </div>
         </div>
       </div>
     </section>
@@ -1021,6 +1496,7 @@
     let allSessions = [];
     let currentHeatmapWeeks = 26; // Default to 6 Months
     let currentHistoryFilter = 'ALL';
+    let currentSlotFilter = 'ALL';
     let subjectChartInstance = null;
     let trendChartInstance = null;
 
@@ -1137,27 +1613,78 @@
       await loadAllSessions();
       renderKPIs();
       renderComprehensiveHeatmap();
+      renderPeakTimeSlots();
+      renderSubjectProgressSection();
       renderVisualCharts();
-      renderSubjectCards();
       renderSessionsTable();
     }
 
-    // 1. Render Top Executive KPIs
+    // 1. Render Top Executive KPIs (Both Rows: 10 Metric Cards)
     function renderKPIs() {
       const todayStr = new Date().toISOString().split('T')[0];
       const dateMinsMap = {};
       let totalMins = 0;
       let totalSessions = allSessions.length;
+      let completedSessions = 0;
+
+      // Slot durations for Peak Time Slot KPI
+      const slotMins = {
+        'Early Morning': 0,
+        'Morning': 0,
+        'Afternoon': 0,
+        'Evening': 0,
+        'Late Night': 0
+      };
+
+      const subjMins = { ICT: 0, ET: 0, SFT: 0 };
+      const thisMonthActiveDates = new Set();
+      const now = new Date();
+      const curYear = now.getFullYear();
+      const curMonth = now.getMonth();
+
+      // Monday of current calendar week
+      const dayOfWeek = (now.getDay() + 6) % 7; // Mon=0, Sun=6
+      const mondayDate = new Date(now);
+      mondayDate.setDate(now.getDate() - dayOfWeek);
+      mondayDate.setHours(0, 0, 0, 0);
+
+      let thisWeekMins = 0;
 
       allSessions.forEach(s => {
         const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
         const mins = Number(s.duration_minutes) || 0;
         if (ds) {
           dateMinsMap[ds] = (dateMinsMap[ds] || 0) + mins;
+          const sDate = new Date(ds + 'T12:00:00');
+          if (sDate.getFullYear() === curYear && sDate.getMonth() === curMonth) {
+            thisMonthActiveDates.add(ds);
+          }
+          if (sDate >= mondayDate) {
+            thisWeekMins += mins;
+          }
         }
         totalMins += mins;
+
+        if (s.status === 'completed' || s.status === undefined) {
+          completedSessions++;
+        }
+
+        const sub = (s.subject || 'ICT').toUpperCase();
+        if (subjMins[sub] !== undefined) {
+          subjMins[sub] += mins;
+        }
+
+        // Slot analysis
+        const dObj = new Date(s.start_time || s.created_at || (ds ? ds + 'T12:00:00' : Date.now()));
+        const hr = dObj.getHours();
+        if (hr >= 4 && hr < 8) slotMins['Early Morning'] += mins;
+        else if (hr >= 8 && hr < 12) slotMins['Morning'] += mins;
+        else if (hr >= 12 && hr < 17) slotMins['Afternoon'] += mins;
+        else if (hr >= 17 && hr < 21) slotMins['Evening'] += mins;
+        else slotMins['Late Night'] += mins;
       });
 
+      // --- ROW 1 ---
       // Today's focus
       const todayMins = dateMinsMap[todayStr] || 0;
       document.getElementById('kpiTodayMins').innerText = todayMins;
@@ -1222,6 +1749,71 @@
       document.getElementById('kpiTotalSessions').innerText = totalSessions;
       const avgSess = totalSessions > 0 ? Math.round(totalMins / totalSessions) : 0;
       document.getElementById('kpiAvgSessionMins').innerText = avgSess;
+
+      // --- ROW 2 (Item 3) ---
+      // 1. Peak Study Time
+      let peakSlotName = 'Evening (5-9 PM)';
+      let peakSlotMins = 0;
+      const slotLabels = {
+        'Early Morning': 'Early (4-8 AM)',
+        'Morning': 'Morning (8-12 PM)',
+        'Afternoon': 'Afternoon (12-5 PM)',
+        'Evening': 'Evening (5-9 PM)',
+        'Late Night': 'Night (9-4 AM)'
+      };
+      for (const [sName, sM] of Object.entries(slotMins)) {
+        if (sM > peakSlotMins) {
+          peakSlotMins = sM;
+          peakSlotName = slotLabels[sName] || sName;
+        }
+      }
+      const peakSharePct = totalMins > 0 ? Math.round((peakSlotMins / totalMins) * 100) : 0;
+      const peakSlotEl = document.getElementById('kpiPeakTimeSlot');
+      const peakShareEl = document.getElementById('kpiPeakTimeShare');
+      if (peakSlotEl) peakSlotEl.innerText = totalMins > 0 ? peakSlotName : 'None Yet';
+      if (peakShareEl) peakShareEl.innerText = `${peakSharePct}%`;
+
+      // 2. This Week's Focus (Mon-Sun)
+      const thisWeekHours = (thisWeekMins / 60).toFixed(1);
+      const weekTargetPct = Math.min(100, Math.round((thisWeekHours / 20) * 100));
+      const weekHoursEl = document.getElementById('kpiThisWeekHours');
+      const weekTargetEl = document.getElementById('kpiThisWeekTargetPct');
+      if (weekHoursEl) weekHoursEl.innerText = thisWeekHours;
+      if (weekTargetEl) weekTargetEl.innerText = `${weekTargetPct}% (Goal: 20h)`;
+
+      // 3. Active Study Days (This Month)
+      const daysElapsedInMonth = now.getDate();
+      const activeDaysCount = thisMonthActiveDates.size;
+      const consistencyPct = Math.round((activeDaysCount / Math.max(1, daysElapsedInMonth)) * 100);
+      const activeDaysEl = document.getElementById('kpiActiveDaysMonth');
+      const consistencyEl = document.getElementById('kpiMonthlyConsistency');
+      if (activeDaysEl) activeDaysEl.innerText = activeDaysCount;
+      if (consistencyEl) consistencyEl.innerText = `${consistencyPct}% Active`;
+
+      // 4. Top Focus Subject
+      let topSubj = 'ICT';
+      let topMins = 0;
+      for (const [sub, m] of Object.entries(subjMins)) {
+        if (m > topMins) {
+          topMins = m;
+          topSubj = sub;
+        }
+      }
+      const topSharePct = totalMins > 0 ? Math.round((topMins / totalMins) * 100) : 0;
+      const topHours = (topMins / 60).toFixed(1);
+      const topSubjEl = document.getElementById('kpiTopSubject');
+      const topShareEl = document.getElementById('kpiTopSubjectShare');
+      const topHoursEl = document.getElementById('kpiTopSubjectHours');
+      if (topSubjEl) topSubjEl.innerText = totalMins > 0 ? topSubj : 'None';
+      if (topShareEl) topShareEl.innerText = `${topSharePct}%`;
+      if (topHoursEl) topHoursEl.innerText = `${topHours}h`;
+
+      // 5. Completion Rate
+      const completionRatePct = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 100;
+      const compRateEl = document.getElementById('kpiCompletionRate');
+      const compCountEl = document.getElementById('kpiCompletedSessionsCount');
+      if (compRateEl) compRateEl.innerText = `${completionRatePct}%`;
+      if (compCountEl) compCountEl.innerText = completedSessions;
     }
 
     // 2. Render Comprehensive Heatmap
@@ -1479,14 +2071,172 @@
       });
     }
 
-    // 4. Render Subject Summary Cards
-    function renderSubjectCards() {
-      const stats = {
-        ICT: { mins: 0, count: 0 },
-        ET: { mins: 0, count: 0 },
-        SFT: { mins: 0, count: 0 }
+    // 4. Peak Study Time Periods Filter & Renderer (Item 2)
+    function setSlotFilter(subj, btn) {
+      currentSlotFilter = subj;
+      document.querySelectorAll('.slot-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderPeakTimeSlots();
+    }
+
+    function renderPeakTimeSlots() {
+      const SLOTS_CONFIG = [
+        {
+          id: 'early_morning',
+          name: 'Early Morning',
+          range: '04:00 – 08:00',
+          sinhala: 'අලුයම / පෙරවරු',
+          icon: '🌅',
+          color: '#ff9f43'
+        },
+        {
+          id: 'morning',
+          name: 'Morning',
+          range: '08:00 – 12:00',
+          sinhala: 'උදය වරුව',
+          icon: '☀️',
+          color: '#fdcb6e'
+        },
+        {
+          id: 'afternoon',
+          name: 'Afternoon',
+          range: '12:00 – 17:00',
+          sinhala: 'දවල් / පස්වරුව',
+          icon: '🌤️',
+          color: '#00cec9'
+        },
+        {
+          id: 'evening',
+          name: 'Evening',
+          range: '17:00 – 21:00',
+          sinhala: 'සන්ධ්‍යා කාලය',
+          icon: '🌆',
+          color: '#6c5ce7'
+        },
+        {
+          id: 'late_night',
+          name: 'Late Night',
+          range: '21:00 – 04:00',
+          sinhala: 'රාත්‍රී / මැදියම',
+          icon: '🌙',
+          color: '#8854d0'
+        }
+      ];
+
+      const filteredSessions = allSessions.filter(s => {
+        if (currentSlotFilter === 'ALL') return true;
+        return (s.subject || '').toUpperCase() === currentSlotFilter;
+      });
+
+      let totalFilteredMins = 0;
+      const slotStats = {
+        early_morning: { mins: 0, count: 0 },
+        morning: { mins: 0, count: 0 },
+        afternoon: { mins: 0, count: 0 },
+        evening: { mins: 0, count: 0 },
+        late_night: { mins: 0, count: 0 }
       };
-      let grandTotal = 0;
+
+      filteredSessions.forEach(s => {
+        const mins = Number(s.duration_minutes) || 0;
+        totalFilteredMins += mins;
+
+        let dObj = null;
+        if (s.start_time) dObj = new Date(s.start_time);
+        else if (s.created_at) dObj = new Date(s.created_at);
+        else if (s.session_date) dObj = new Date(s.session_date + 'T12:00:00');
+        if (!dObj || isNaN(dObj.getTime())) dObj = new Date();
+
+        const hr = dObj.getHours();
+        let slotId = 'late_night';
+        if (hr >= 4 && hr < 8) slotId = 'early_morning';
+        else if (hr >= 8 && hr < 12) slotId = 'morning';
+        else if (hr >= 12 && hr < 17) slotId = 'afternoon';
+        else if (hr >= 17 && hr < 21) slotId = 'evening';
+
+        slotStats[slotId].mins += mins;
+        slotStats[slotId].count++;
+      });
+
+      // Find peak slot
+      let peakSlotId = 'evening';
+      let peakSlotMins = -1;
+      SLOTS_CONFIG.forEach(cfg => {
+        if (slotStats[cfg.id].mins > peakSlotMins) {
+          peakSlotMins = slotStats[cfg.id].mins;
+          peakSlotId = cfg.id;
+        }
+      });
+      const peakCfg = SLOTS_CONFIG.find(c => c.id === peakSlotId) || SLOTS_CONFIG[3];
+      const peakHours = (slotStats[peakSlotId].mins / 60).toFixed(1);
+      const peakPct = totalFilteredMins > 0 ? Math.round((slotStats[peakSlotId].mins / totalFilteredMins) * 100) : 0;
+
+      // Update Highlight Banner
+      const highlightTitle = document.getElementById('slotHighlightTitle');
+      const highlightDesc = document.getElementById('slotHighlightDesc');
+      const filterLabel = currentSlotFilter === 'ALL' ? 'සියලු විෂයන් සඳහා' : `${currentSlotFilter} විෂය සඳහා`;
+
+      if (totalFilteredMins > 0) {
+        if (highlightTitle) {
+          highlightTitle.innerText = `Peak Focus Window (${currentSlotFilter}): ${peakCfg.name} (${peakCfg.range})`;
+        }
+        if (highlightDesc) {
+          highlightDesc.innerText = `ඔබ ${filterLabel} වැඩිපුරම අවධානයෙන් පාඩම් කර ඇත්තේ ${peakCfg.sinhala} කාලයේදීය — සම්පූර්ණ කාලයෙන් ${peakPct}% (${peakHours} පැය, සැසි ${slotStats[peakSlotId].count}).`;
+        }
+      } else {
+        if (highlightTitle) {
+          highlightTitle.innerText = `No Focus Data Yet (${currentSlotFilter})`;
+        }
+        if (highlightDesc) {
+          highlightDesc.innerText = `${filterLabel} තවමත් අධ්‍යයන සැසි සටහන් කර නොමැත. ටයිමරය හෝ Manual Entry භාවිතා කර පාඩම් කිරීම ආරම්භ කරන්න.`;
+        }
+      }
+
+      // Render 5 Slot Cards
+      const gridEl = document.getElementById('timeSlotsGrid');
+      if (gridEl) {
+        gridEl.innerHTML = SLOTS_CONFIG.map(cfg => {
+          const st = slotStats[cfg.id];
+          const isPeak = (totalFilteredMins > 0 && cfg.id === peakSlotId);
+          const hrs = (st.mins / 60).toFixed(1);
+          const pct = totalFilteredMins > 0 ? Math.round((st.mins / totalFilteredMins) * 100) : 0;
+
+          return `
+            <div class="slot-card ${isPeak ? 'is-peak' : ''}">
+              <div class="slot-card-top">
+                <div class="slot-name-wrap">
+                  <span class="slot-icon">${cfg.icon}</span>
+                  <div>
+                    <div class="slot-name">${cfg.name} <span style="font-size:10px; color:var(--text-dim); font-weight:normal;">(${cfg.sinhala})</span></div>
+                    <div class="slot-range">${cfg.range}</div>
+                  </div>
+                </div>
+                ${isPeak ? '<span class="slot-badge-peak">★ PEAK</span>' : ''}
+              </div>
+              <div class="slot-metric-row">
+                <div>
+                  <span class="slot-hours">${hrs} <small style="font-size:11px; font-weight:600;">Hrs</small></span>
+                  <div class="slot-sessions">${st.count} ${st.count === 1 ? 'Session' : 'Sessions'}</div>
+                </div>
+                <div class="slot-pct-txt" style="color: ${cfg.color};">${pct}%</div>
+              </div>
+              <div class="slot-bar-track">
+                <div class="slot-bar-fill" style="width: ${pct}%; background: ${cfg.color};"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // 5. Subject-wise Progress & Target Tracking (Item 1)
+    function renderSubjectProgressSection() {
+      const stats = {
+        ICT: { mins: 0, count: 0, units: new Set(), totalLessons: 13, name: 'තොරතුරු හා සන්නිවේදන තාක්ෂණය' },
+        ET: { mins: 0, count: 0, units: new Set(), totalLessons: 14, name: 'ඉංජිනේරු තාක්ෂණවේදය' },
+        SFT: { mins: 0, count: 0, units: new Set(), totalLessons: 23, name: 'තාක්ෂණවේදය සඳහා විද්‍යාව' }
+      };
+      let grandTotalMins = 0;
 
       allSessions.forEach(s => {
         const sub = (s.subject || 'ICT').toUpperCase();
@@ -1494,23 +2244,84 @@
         if (stats[sub]) {
           stats[sub].mins += mins;
           stats[sub].count++;
-          grandTotal += mins;
+          grandTotalMins += mins;
+          if (s.unit_number && Number(s.unit_number) > 0) {
+            stats[sub].units.add(Number(s.unit_number));
+          }
         }
       });
 
-      ['ICT', 'ET', 'SFT'].forEach(sub => {
-        const sData = stats[sub];
-        const share = grandTotal > 0 ? Math.round((sData.mins / grandTotal) * 100) : 0;
-        const low = sub.toLowerCase();
+      const grandTotalHours = (grandTotalMins / 60).toFixed(1);
+      const totalStudyTimeEl = document.getElementById('progTotalStudyTime');
+      if (totalStudyTimeEl) totalStudyTimeEl.innerText = `${grandTotalHours} Hrs`;
 
-        document.getElementById(`subj${sub}Mins`).innerText = `${sData.mins}m`;
-        document.getElementById(`subj${sub}Count`).innerText = sData.count;
-        document.getElementById(`subj${sub}Share`).innerText = `${share}%`;
-        document.getElementById(`subj${sub}Bar`).style.width = `${share}%`;
+      // Multi-segment balance bar
+      const ictShare = grandTotalMins > 0 ? Math.round((stats.ICT.mins / grandTotalMins) * 100) : 33;
+      const etShare = grandTotalMins > 0 ? Math.round((stats.ET.mins / grandTotalMins) * 100) : 33;
+      const sftShare = grandTotalMins > 0 ? Math.max(0, 100 - ictShare - etShare) : 34;
+
+      const legIct = document.getElementById('legendIctPct');
+      const legEt = document.getElementById('legendEtPct');
+      const legSft = document.getElementById('legendSftPct');
+      if (legIct) legIct.innerText = `${ictShare}%`;
+      if (legEt) legEt.innerText = `${etShare}%`;
+      if (legSft) legSft.innerText = `${sftShare}%`;
+
+      const barIct = document.getElementById('multiBarIct');
+      const barEt = document.getElementById('multiBarEt');
+      const barSft = document.getElementById('multiBarSft');
+      if (barIct) barIct.style.width = `${ictShare}%`;
+      if (barEt) barEt.style.width = `${etShare}%`;
+      if (barSft) barSft.style.width = `${sftShare}%`;
+
+      // Render cards for ICT, ET, SFT
+      const GOAL_HOURS = 25; // 25h goal benchmark per subject
+
+      ['ICT', 'ET', 'SFT'].forEach(sub => {
+        const d = stats[sub];
+        const hrs = (d.mins / 60).toFixed(1);
+        const share = grandTotalMins > 0 ? Math.round((d.mins / grandTotalMins) * 100) : 0;
+        const goalPct = Math.min(100, Math.round((Number(hrs) / GOAL_HOURS) * 100));
+
+        const prefix = sub === 'ICT' ? 'Ict' : sub === 'ET' ? 'Et' : 'Sft';
+        const pctBadge = document.getElementById(`prog${prefix}PctBadge`);
+        const hoursEl = document.getElementById(`prog${prefix}Hours`);
+        const sessEl = document.getElementById(`prog${prefix}Sessions`);
+        const unitsEl = document.getElementById(`prog${prefix}Units`);
+        const wideBarEl = document.getElementById(`prog${prefix}WideBar`);
+        const targetSubEl = document.getElementById(`prog${prefix}TargetSub`);
+        const statusBadgeEl = document.getElementById(`prog${prefix}StatusBadge`);
+
+        if (pctBadge) pctBadge.innerText = `${share}%`;
+        if (hoursEl) hoursEl.innerText = `${hrs} Hrs`;
+        if (sessEl) sessEl.innerText = d.count;
+        if (unitsEl) unitsEl.innerText = `${d.units.size} / ${d.totalLessons} Units`;
+        if (wideBarEl) wideBarEl.style.width = `${goalPct}%`;
+        if (targetSubEl) targetSubEl.innerText = `${goalPct}% of ${GOAL_HOURS}h Goal`;
+
+        if (statusBadgeEl) {
+          if (goalPct >= 100) {
+            statusBadgeEl.innerText = 'Goal Reached 🏆';
+            statusBadgeEl.style.background = 'rgba(32, 191, 107, 0.2)';
+            statusBadgeEl.style.color = '#20bf6b';
+          } else if (goalPct >= 50) {
+            statusBadgeEl.innerText = 'Strong Pace 🚀';
+            statusBadgeEl.style.background = 'rgba(9, 132, 227, 0.2)';
+            statusBadgeEl.style.color = '#0984e3';
+          } else if (d.mins > 0) {
+            statusBadgeEl.innerText = 'In Progress ⏳';
+            statusBadgeEl.style.background = 'rgba(253, 203, 110, 0.2)';
+            statusBadgeEl.style.color = '#fdcb6e';
+          } else {
+            statusBadgeEl.innerText = 'Not Started';
+            statusBadgeEl.style.background = 'rgba(255, 255, 255, 0.08)';
+            statusBadgeEl.style.color = '#8b949e';
+          }
+        }
       });
     }
 
-    // 5. Render Sessions History Table
+    // 6. Render Sessions History Table
     function setHistoryFilter(subj, btn) {
       currentHistoryFilter = subj;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
