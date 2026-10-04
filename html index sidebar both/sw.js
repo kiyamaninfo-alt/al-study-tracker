@@ -1,8 +1,9 @@
-const CACHE_NAME = 'al-study-tracker-v3';
+const CACHE_NAME = 'al-study-tracker-v5';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './sidebar.html',
+  './study-analytics.html',
   './wosandi/index.html',
   './wosandi/app.js',
   './wosandi/dataService.js',
