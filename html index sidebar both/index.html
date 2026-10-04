@@ -4967,6 +4967,7 @@
             <span class="wake-dot"></span>
             <span id="focusWakeLabel">Awake</span>
           </div>
+          <div class="focus-sync-indicator" id="focusHeaderSyncBadge" style="font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px; background: #e8f8f5; color: #1abc9c; display: flex; align-items: center; gap: 4px;">🟢 Online Synced</div>
           <button type="button" class="btn-focus-quick-settings" onclick="openTimerSettingsModal()" title="Timer සැකසුම් විවෘත කරන්න">⚙️</button>
         </div>
       </div>
@@ -5002,13 +5003,16 @@
               </div>
             </div>
 
-            <!-- Controls: Start / Pause / Reset -->
+            <!-- Controls: Start / Pause / Finish Early / Reset -->
             <div class="focus-controls-row">
               <button type="button" class="btn-focus-action btn-focus-start" id="btnFocusStart" onclick="handleStartFocusClick()">
                 <span class="btn-icon">▶</span> <span id="btnFocusStartText">Start Focus</span>
               </button>
               <button type="button" class="btn-focus-action btn-focus-pause" id="btnFocusPause" onclick="pauseFocusTimer()" style="display: none;">
                 <span class="btn-icon">⏸</span> Pause
+              </button>
+              <button type="button" class="btn-focus-action btn-focus-finish" id="btnFocusFinishEarly" onclick="stopEarlyFocusTimer()" style="display: none; background: #00b894; color: white;">
+                <span class="btn-icon">🏁</span> Finish Early
               </button>
               <button type="button" class="btn-focus-action btn-focus-reset" id="btnFocusReset" onclick="resetFocusTimer()">
                 <span class="btn-icon">🔄</span> Reset
@@ -6709,8 +6713,23 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       let focusTimerInterval = null;
       let isFocusRunning = false;
       let sessionStartTime = null;
+      let actualElapsedSeconds = 0;
+      let liveTimerStreamChannel = null;
+      let localTimerBroadcast = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('live_timer_stream') : null;
+      let realtimeTrackerChannel = null;
       let focusAutoStartAfterSelect = true;
       const originalDocTitle = document.title;
+
+      function getLocalDateString(d = new Date()) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function getLocalTimeString(d = new Date()) {
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+      }
 
       // Screen Wake Lock API
       let focusWakeLock = null;
@@ -7014,8 +7033,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         currentActiveSessionId = sessionId;
         const startNow = new Date();
         sessionStartTime = startNow.toISOString();
-        const startDStr = startNow.toISOString().split('T')[0];
-        const startTStr = startNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        actualElapsedSeconds = 0;
+        const startDStr = getLocalDateString(startNow);
+        const startTStr = getLocalTimeString(startNow);
 
         const newSession = {
           id: sessionId,
@@ -7134,31 +7154,97 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
       }
 
-      // Timer Actions: Start / Pause / Reset
+      // =========================================================================
+      // REAL-TIME TIMER STREAM BROADCASTING (CROSS-TAB & MULTI-DEVICE)
+      // =========================================================================
+      function broadcastLiveTimerState(state) {
+        const payload = {
+          state: state, // 'START', 'TICK', 'PAUSE', 'STOP', 'FINISH'
+          subject: activeFocusSubject || 'ICT',
+          unit: (activeFocusUnit && activeFocusUnit.unitName) ? activeFocusUnit.unitName : 'සාමාන්‍ය පුනරීක්ෂණ',
+          startTime: sessionStartTime,
+          elapsedSeconds: actualElapsedSeconds,
+          timestamp: Date.now()
+        };
+
+        // 1. Multi-device broadcast via Supabase Realtime channel
+        if (liveTimerStreamChannel && navigator.onLine) {
+          try {
+            liveTimerStreamChannel.send({
+              type: 'broadcast',
+              event: 'timer_state',
+              payload: payload
+            }).catch(() => {});
+          } catch (_) {}
+        }
+
+        // 2. Multi-tab instant local broadcast via native BroadcastChannel
+        if (localTimerBroadcast) {
+          try {
+            localTimerBroadcast.postMessage(payload);
+          } catch (_) {}
+        }
+
+        // 3. LocalStorage persistence for cross-tab storage event listeners
+        try {
+          if (state === 'STOP' || state === 'FINISH') {
+            localStorage.removeItem('al_live_timer_state');
+          } else {
+            localStorage.setItem('al_live_timer_state', JSON.stringify(payload));
+          }
+        } catch (_) {}
+      }
+
+      function initLiveTimerStream() {
+        if (supabase && !liveTimerStreamChannel && navigator.onLine) {
+          try {
+            liveTimerStreamChannel = supabase.channel('live_timer_stream', {
+              config: { broadcast: { ack: false } }
+            });
+            liveTimerStreamChannel.subscribe();
+          } catch (e) {
+            console.warn('Failed to subscribe live_timer_stream in index.html:', e);
+          }
+        }
+      }
+
+      // Timer Actions: Start / Pause / Stop Early / Reset
       async function startFocusTimerEngine() {
         if (isFocusRunning) return;
         isFocusRunning = true;
         if (!sessionStartTime) {
           sessionStartTime = new Date().toISOString();
+          actualElapsedSeconds = 0;
         }
 
         const startBtn = document.getElementById('btnFocusStart');
         const pauseBtn = document.getElementById('btnFocusPause');
+        const finishEarlyBtn = document.getElementById('btnFocusFinishEarly');
         if (startBtn) startBtn.style.display = 'none';
         if (pauseBtn) pauseBtn.style.display = 'inline-flex';
+        if (finishEarlyBtn) finishEarlyBtn.style.display = 'inline-flex';
 
         await requestWakeLock();
         startAmbientNoise();
         updateFocusDisplay();
 
+        broadcastLiveTimerState('START');
+
         clearInterval(focusTimerInterval);
         focusTimerInterval = setInterval(() => {
+          actualElapsedSeconds++;
+
+          // Broadcast TICK heartbeat every 3 seconds for live analytics banner
+          if (actualElapsedSeconds % 3 === 0) {
+            broadcastLiveTimerState('TICK');
+          }
+
           if (focusRemainingSeconds > 0) {
             focusRemainingSeconds--;
             updateFocusDisplay();
           } else {
             clearInterval(focusTimerInterval);
-            onFocusSessionCompleted();
+            onFocusSessionCompleted(false);
           }
         }, 1000);
       }
@@ -7175,22 +7261,35 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const startBtn = document.getElementById('btnFocusStart');
         const startText = document.getElementById('btnFocusStartText');
         const pauseBtn = document.getElementById('btnFocusPause');
+        const finishEarlyBtn = document.getElementById('btnFocusFinishEarly');
         if (startBtn) {
           startBtn.style.display = 'inline-flex';
           if (startText) startText.innerText = 'Resume';
         }
         if (pauseBtn) pauseBtn.style.display = 'none';
+        if (finishEarlyBtn) finishEarlyBtn.style.display = 'inline-flex';
 
         stopAmbientNoise();
         releaseWakeLock();
         updateFocusDisplay();
+        broadcastLiveTimerState('PAUSE');
+      }
+
+      async function stopEarlyFocusTimer() {
+        if (!sessionStartTime && !isFocusRunning && actualElapsedSeconds === 0) return;
+        if (actualElapsedSeconds < 5) {
+          resetFocusTimer();
+          return;
+        }
+        clearInterval(focusTimerInterval);
+        await onFocusSessionCompleted(true);
       }
 
       function resetFocusTimer() {
         clearInterval(focusTimerInterval);
         isFocusRunning = false;
 
-        // If a session was active but interrupted/reset before completing, remove it (only completed fully once!)
+        // If a session was active but interrupted/reset before completing, remove it
         if (currentActiveSessionId) {
           const sessions = getLocalStoredSessions().filter(s => s.id !== currentActiveSessionId);
           saveLocalStoredSessions(sessions);
@@ -7207,37 +7306,46 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         sessionStartTime = null;
         currentActiveSessionId = null;
+        actualElapsedSeconds = 0;
 
         const startBtn = document.getElementById('btnFocusStart');
         const startText = document.getElementById('btnFocusStartText');
         const pauseBtn = document.getElementById('btnFocusPause');
+        const finishEarlyBtn = document.getElementById('btnFocusFinishEarly');
         if (startBtn) {
           startBtn.style.display = 'inline-flex';
           if (startText) startText.innerText = 'Start Focus';
         }
         if (pauseBtn) pauseBtn.style.display = 'none';
+        if (finishEarlyBtn) finishEarlyBtn.style.display = 'none';
 
         stopAmbientNoise();
         releaseWakeLock();
         focusTotalSeconds = focusDurationMins * 60;
         focusRemainingSeconds = focusTotalSeconds;
         updateFocusDisplay();
+        broadcastLiveTimerState('STOP');
       }
 
       // Session Completion Handler
-      async function onFocusSessionCompleted() {
+      async function onFocusSessionCompleted(isEarly = false) {
         isFocusRunning = false;
+        clearInterval(focusTimerInterval);
         stopAmbientNoise();
         releaseWakeLock();
 
         const startBtn = document.getElementById('btnFocusStart');
         const startText = document.getElementById('btnFocusStartText');
         const pauseBtn = document.getElementById('btnFocusPause');
+        const finishEarlyBtn = document.getElementById('btnFocusFinishEarly');
         if (startBtn) {
           startBtn.style.display = 'inline-flex';
           if (startText) startText.innerText = 'Start Focus';
         }
         if (pauseBtn) pauseBtn.style.display = 'none';
+        if (finishEarlyBtn) finishEarlyBtn.style.display = 'none';
+
+        broadcastLiveTimerState('FINISH');
 
         playSoftCompletionChime();
         try {
@@ -7249,7 +7357,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           });
         } catch (e) {}
 
-        const durationLogged = focusDurationMins;
+        // Net elapsed tracking: convert actualElapsedSeconds to whole minutes (minimum 1 minute logged)
+        const durationLogged = Math.max(1, Math.round(actualElapsedSeconds / 60));
         focusTotalSeconds = focusDurationMins * 60;
         focusRemainingSeconds = focusTotalSeconds;
         updateFocusDisplay();
@@ -7263,8 +7372,8 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         // Mark active session as fully completed once
         const stopNow = new Date();
-        const stopDStr = stopNow.toISOString().split('T')[0];
-        const stopTStr = stopNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const stopDStr = getLocalDateString(stopNow);
+        const stopTStr = getLocalTimeString(stopNow);
 
         if (currentActiveSessionId) {
           const sessions = getLocalStoredSessions();
@@ -7292,13 +7401,18 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         currentActiveSessionId = null;
         sessionStartTime = null;
+        actualElapsedSeconds = 0;
         renderStudyHeatmap();
+        renderRecentSessionsInSettings();
       }
 
       function stopAlarmAndClosePopup() {
         const popup = document.getElementById('timerAlarmPopup');
         if (popup) popup.style.display = 'none';
       }
+
+      // Expose to window for inline onclick attributes
+      window.stopEarlyFocusTimer = stopEarlyFocusTimer;
 
       // =========================================================================
       // STUDY SESSION LOGGING & OFFLINE-FIRST INDEXEDDB QUEUE
@@ -7340,7 +7454,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 if (!s || !s.id) return false;
                 if (typeof s.id === 'string' && (s.id.startsWith('up_') || s.id.startsWith('fp_') || s.id.startsWith('sr_'))) return false;
                 const dStr = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
-                return dStr && dStr >= '2026-10-04';
+                return !!dStr;
               });
             }
           }
@@ -7357,11 +7471,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
       async function logCompletedStudySession(durationMins) {
         const stopNow = new Date();
-        const stopDStr = stopNow.toISOString().split('T')[0];
-        const stopTStr = stopNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const startNow = new Date(Date.now() - durationMins * 60000);
-        const startDStr = startNow.toISOString().split('T')[0];
-        const startTStr = startNow.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const stopDStr = getLocalDateString(stopNow);
+        const stopTStr = getLocalTimeString(stopNow);
+        const startNow = sessionStartTime ? new Date(sessionStartTime) : new Date(stopNow.getTime() - durationMins * 60000);
+        const startDStr = getLocalDateString(startNow);
+        const startTStr = getLocalTimeString(startNow);
 
         const newSession = {
           id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'sess_' + Date.now(),
@@ -7405,6 +7519,33 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         await uploadOrQueueSession(newSession);
       }
 
+      async function enqueueSyncTask(action, table, payload) {
+        try {
+          const db = await openOfflineDB();
+          if (!db || !db.objectStoreNames.contains('sync_queue')) return false;
+          return new Promise((resolve) => {
+            const tx = db.transaction('sync_queue', 'readwrite');
+            const store = tx.objectStore('sync_queue');
+            const item = {
+              action: action, // 'INSERT', 'UPDATE', 'DELETE'
+              table: table || 'study_timer_sessions',
+              payload: payload,
+              data: payload,
+              created_at: new Date().toISOString()
+            };
+            const req = store.add(item);
+            req.onsuccess = () => {
+              updateSyncBadgeUI(navigator.onLine, 1);
+              resolve(true);
+            };
+            req.onerror = () => resolve(false);
+          });
+        } catch (e) {
+          console.error('enqueueSyncTask error:', e);
+          return false;
+        }
+      }
+
       async function uploadOrQueueSession(sessionItem) {
         const payload = {
           id: sessionItem.id,
@@ -7415,7 +7556,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           timer_start_time: sessionItem.timer_start_time || '00:00:00',
           timer_stop_date: sessionItem.timer_stop_date || sessionItem.session_date,
           timer_stop_time: sessionItem.timer_stop_time || '00:00:00',
+          start_time: sessionItem.start_time || null,
+          end_time: sessionItem.end_time || null,
           duration_minutes: sessionItem.duration_minutes,
+          session_date: sessionItem.session_date || sessionItem.timer_start_date,
           status: sessionItem.status || 'completed',
           created_at: sessionItem.created_at
         };
@@ -7432,6 +7576,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 all[idx].synced = true;
                 saveLocalStoredSessions(all);
               }
+              try {
+                const db = await openOfflineDB();
+                if (db) {
+                  const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+                  const tx = db.transaction(sName, 'readwrite');
+                  tx.objectStore(sName).put({ ...sessionItem, synced: true });
+                }
+              } catch (_) {}
               updateSyncBadgeUI(true, 0);
               return;
             } else {
@@ -7452,6 +7604,14 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                   all[idx].synced = true;
                   saveLocalStoredSessions(all);
                 }
+                try {
+                  const db = await openOfflineDB();
+                  if (db) {
+                    const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+                    const tx = db.transaction(sName, 'readwrite');
+                    tx.objectStore(sName).put({ ...sessionItem, synced: true });
+                  }
+                } catch (_) {}
                 updateSyncBadgeUI(true, 0);
                 return;
               }
@@ -7461,60 +7621,272 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
         }
 
-        // Add to offline sync queue
-        try {
-          const db = await openOfflineDB();
-          if (db) {
-            const tx = db.transaction('sync_queue', 'readwrite');
-            tx.objectStore('sync_queue').add({
-              table: 'study_timer_sessions',
-              data: payload,
-              created_at: new Date().toISOString()
-            });
-            updateSyncBadgeUI(false, 1);
-          }
-        } catch (e) {}
+        // Add to offline sync queue in IndexedDB
+        await enqueueSyncTask('INSERT', 'study_timer_sessions', payload);
       }
+
+      let isProcessingSyncQueue = false;
 
       async function processOfflineSyncQueue() {
-        if (!navigator.onLine || !supabase || typeof supabase.from !== 'function') return;
+        if (isProcessingSyncQueue || !navigator.onLine || !supabase || typeof supabase.from !== 'function') return;
+        isProcessingSyncQueue = true;
+        updateSyncBadgeUI(true, 0, 'syncing');
+
         try {
           const db = await openOfflineDB();
-          if (!db) return;
-          const tx = db.transaction('sync_queue', 'readwrite');
-          const store = tx.objectStore('sync_queue');
-          const getAllReq = store.getAll();
-          getAllReq.onsuccess = async () => {
-            const items = getAllReq.result || [];
-            if (items.length === 0) {
-              updateSyncBadgeUI(true, 0);
-              return;
-            }
-            for (const item of items) {
-              try {
-                const { error } = await supabase.from(item.table).insert([item.data]);
-                if (!error) {
-                  const delTx = db.transaction('sync_queue', 'readwrite');
-                  delTx.objectStore('sync_queue').delete(item.queue_id);
-                }
-              } catch (_) {}
-            }
+          if (!db || !db.objectStoreNames.contains('sync_queue')) {
+            isProcessingSyncQueue = false;
             updateSyncBadgeUI(true, 0);
-          };
-        } catch (e) {}
+            return;
+          }
+
+          const tasks = await new Promise((resolve) => {
+            const tx = db.transaction('sync_queue', 'readonly');
+            const store = tx.objectStore('sync_queue');
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => resolve([]);
+          });
+
+          if (!tasks || tasks.length === 0) {
+            isProcessingSyncQueue = false;
+            updateSyncBadgeUI(true, 0);
+            return;
+          }
+
+          // Strictly chronological FIFO order
+          tasks.sort((a, b) => (a.queue_id || 0) - (b.queue_id || 0));
+
+          for (const task of tasks) {
+            const { queue_id, action = 'INSERT', table = 'study_timer_sessions' } = task;
+            const payload = task.payload || task.data;
+            if (!payload) continue;
+
+            let success = false;
+            try {
+              if (action === 'INSERT') {
+                const insertData = {
+                  id: payload.id,
+                  subject: payload.subject,
+                  unit_number: payload.unit_number !== undefined ? Number(payload.unit_number) : 0,
+                  unit_name: payload.unit_name || null,
+                  timer_start_date: payload.timer_start_date || payload.session_date,
+                  timer_start_time: payload.timer_start_time || '00:00:00',
+                  timer_stop_date: payload.timer_stop_date || payload.session_date,
+                  timer_stop_time: payload.timer_stop_time || '00:00:00',
+                  start_time: payload.start_time || null,
+                  end_time: payload.end_time || null,
+                  duration_minutes: Number(payload.duration_minutes) || 50,
+                  status: payload.status || 'completed',
+                  session_date: payload.session_date || payload.timer_start_date || null,
+                  created_at: payload.created_at || new Date().toISOString()
+                };
+
+                let { error } = await supabase.from(table).upsert([insertData], { onConflict: 'id' });
+                if (error) {
+                  const fbRes = await supabase.from('study_sessions').upsert([{
+                    id: insertData.id,
+                    subject: insertData.subject,
+                    duration_minutes: insertData.duration_minutes,
+                    session_date: insertData.session_date,
+                    created_at: insertData.created_at
+                  }], { onConflict: 'id' });
+                  if (fbRes.error) throw fbRes.error;
+                }
+
+                success = true;
+
+                // Mark local session as synced
+                const all = getLocalStoredSessions();
+                const lIdx = all.findIndex(s => s.id === payload.id);
+                if (lIdx !== -1) {
+                  all[lIdx].synced = true;
+                  saveLocalStoredSessions(all);
+                }
+                try {
+                  const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+                  const idbTx = db.transaction(sName, 'readwrite');
+                  const sStore = idbTx.objectStore(sName);
+                  const gReq = sStore.get(payload.id);
+                  gReq.onsuccess = () => {
+                    if (gReq.result) {
+                      sStore.put({ ...gReq.result, synced: true });
+                    }
+                  };
+                } catch (_) {}
+
+              } else if (action === 'UPDATE') {
+                const updateData = { duration_minutes: Number(payload.duration_minutes) || 50 };
+                let { error } = await supabase.from(table).update(updateData).eq('id', payload.id);
+                if (error) {
+                  const fbRes = await supabase.from('study_sessions').update(updateData).eq('id', payload.id);
+                  if (fbRes.error) throw fbRes.error;
+                }
+                success = true;
+              } else if (action === 'DELETE') {
+                let { error } = await supabase.from(table).delete().eq('id', payload.id);
+                if (error) {
+                  const fbRes = await supabase.from('study_sessions').delete().eq('id', payload.id);
+                  if (fbRes.error) throw fbRes.error;
+                }
+                success = true;
+              }
+
+              if (success) {
+                await new Promise((res) => {
+                  const delTx = db.transaction('sync_queue', 'readwrite');
+                  const delReq = delTx.objectStore('sync_queue').delete(queue_id);
+                  delReq.onsuccess = () => res();
+                  delReq.onerror = () => res();
+                });
+              }
+            } catch (err) {
+              console.error(`Offline sync queue stopped at task #${queue_id}:`, err);
+              break; // Stop FIFO loop on network/request failure to preserve strict chronological order
+            }
+          }
+        } catch (e) {
+          console.error('processOfflineSyncQueue error:', e);
+        } finally {
+          isProcessingSyncQueue = false;
+          updateSyncBadgeUI(navigator.onLine, 0);
+        }
       }
 
-      function updateSyncBadgeUI(isOnline, pendingCount) {
-        const badge = document.getElementById('syncStatusBadge');
-        if (!badge) return;
-        if (!isOnline || !navigator.onLine) {
-          badge.style.background = '#ffeaa7';
-          badge.style.color = '#d63031';
-          badge.innerText = `🟡 Offline (${pendingCount || 1} Pending)`;
+      async function updateSyncBadgeUI(isOnline, pendingCount = 0, state = '') {
+        const badge1 = document.getElementById('syncStatusBadge');
+        const badge2 = document.getElementById('focusHeaderSyncBadge');
+
+        let text = '';
+        let bg = '';
+        let color = '';
+        let border = '';
+
+        if (state === 'syncing' || isProcessingSyncQueue) {
+          text = '🔄 Syncing...';
+          bg = 'rgba(9, 132, 227, 0.15)';
+          color = '#0984e3';
+          border = 'rgba(9, 132, 227, 0.3)';
+        } else if (!isOnline || !navigator.onLine) {
+          text = `🟡 Offline (${pendingCount || 1} Pending)`;
+          bg = '#ffeaa7';
+          color = '#d63031';
+          border = 'rgba(214, 48, 49, 0.3)';
         } else {
-          badge.style.background = '#e8f8f5';
-          badge.style.color = '#1abc9c';
-          badge.innerText = '🟢 Online Sync Active';
+          // Check pending count from sync_queue
+          let pending = pendingCount;
+          try {
+            const db = await openOfflineDB();
+            if (db && db.objectStoreNames.contains('sync_queue')) {
+              pending = await new Promise((res) => {
+                const tx = db.transaction('sync_queue', 'readonly');
+                const req = tx.objectStore('sync_queue').count();
+                req.onsuccess = () => res(req.result || 0);
+                req.onerror = () => res(0);
+              });
+            }
+          } catch (_) {}
+
+          if (pending > 0) {
+            text = `🟡 Offline (${pending} Pending)`;
+            bg = '#ffeaa7';
+            color = '#d63031';
+            border = 'rgba(214, 48, 49, 0.3)';
+          } else {
+            text = '🟢 Online Synced';
+            bg = '#e8f8f5';
+            color = '#1abc9c';
+            border = 'rgba(26, 188, 156, 0.3)';
+          }
+        }
+
+        if (badge1) {
+          badge1.innerText = text;
+          badge1.style.background = bg;
+          badge1.style.color = color;
+        }
+        if (badge2) {
+          badge2.innerText = text;
+          badge2.style.background = bg;
+          badge2.style.color = color;
+          badge2.style.borderColor = border;
+        }
+      }
+
+      // Supabase Real-time Multi-Device Sync Channel
+      function initRealtimeDatabaseSync() {
+        if (!supabase || !navigator.onLine || realtimeTrackerChannel) return;
+        try {
+          realtimeTrackerChannel = supabase.channel('realtime_study_tracker')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'study_timer_sessions' }, (payload) => {
+              handleRealtimeDatabaseChange(payload);
+            })
+            .subscribe((status, err) => {
+              if (status === 'SUBSCRIBED') {
+                console.log('✅ Supabase Realtime connected in index.html (realtime_study_tracker)');
+              } else if (status === 'CHANNEL_ERROR') {
+                console.warn('Realtime channel error in index.html:', err);
+              }
+            });
+        } catch (e) {
+          console.warn('Failed to initialize Realtime listener in index.html:', e);
+        }
+      }
+
+      async function handleRealtimeDatabaseChange(payload) {
+        if (!payload) return;
+        const eventType = payload.eventType;
+
+        if (eventType === 'DELETE') {
+          const delId = (payload.old && payload.old.id) || (payload.new && payload.new.id);
+          if (!delId) return;
+
+          let sessions = getLocalStoredSessions().filter(s => s.id !== delId);
+          saveLocalStoredSessions(sessions);
+
+          try {
+            const db = await openOfflineDB();
+            if (db) {
+              const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+              const tx = db.transaction(sName, 'readwrite');
+              tx.objectStore(sName).delete(delId);
+            }
+          } catch (_) {}
+
+          renderStudyHeatmap();
+          renderRecentSessionsInSettings();
+        } else if (eventType === 'INSERT' || eventType === 'UPDATE') {
+          const record = payload.new;
+          if (!record || !record.id) return;
+          if (typeof record.id === 'string' && (record.id.startsWith('up_') || record.id.startsWith('fp_') || record.id.startsWith('sr_'))) return;
+
+          let sessions = getLocalStoredSessions();
+          const idx = sessions.findIndex(s => s.id === record.id);
+          if (idx !== -1) {
+            sessions[idx] = { ...sessions[idx], ...record, synced: true };
+          } else {
+            sessions.unshift({ ...record, synced: true });
+          }
+
+          sessions.sort((a, b) => {
+            const tA = new Date(a.end_time || a.timer_stop_date || a.start_time || a.created_at || a.session_date).getTime() || 0;
+            const tB = new Date(b.end_time || b.timer_stop_date || b.start_time || b.created_at || b.session_date).getTime() || 0;
+            return tB - tA;
+          });
+
+          saveLocalStoredSessions(sessions);
+
+          try {
+            const db = await openOfflineDB();
+            if (db) {
+              const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+              const tx = db.transaction(sName, 'readwrite');
+              tx.objectStore(sName).put({ ...record, synced: true });
+            }
+          } catch (_) {}
+
+          renderStudyHeatmap();
+          renderRecentSessionsInSettings();
         }
       }
 
@@ -7684,7 +8056,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         listEl.innerHTML = html;
       }
 
-      function editSessionDurationPrompt(sessionId) {
+      async function editSessionDurationPrompt(sessionId) {
         const sessions = getLocalStoredSessions();
         const target = sessions.find(s => s.id === sessionId);
         if (!target) return;
@@ -7698,28 +8070,66 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         }
         target.duration_minutes = newMins;
         saveLocalStoredSessions(sessions);
+
+        try {
+          const db = await openOfflineDB();
+          if (db) {
+            const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+            const tx = db.transaction(sName, 'readwrite');
+            tx.objectStore(sName).put(target);
+          }
+        } catch (_) {}
+
         renderRecentSessionsInSettings();
         renderStudyHeatmap();
         showHtmlAlert(`සැසියේ කාලය මිනිත්තු ${newMins}ක් ලෙස යාවත්කාලීන කරන ලදී! ✅`, false);
 
-        // Async update to Supabase if supported
+        // Async update or enqueue to outbox queue
         if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-          supabase.from('study_sessions').update({ duration_minutes: newMins }).eq('id', sessionId).catch(() => {});
+          try {
+            let { error } = await supabase.from('study_timer_sessions').update({ duration_minutes: newMins }).eq('id', sessionId);
+            if (error) {
+              await supabase.from('study_sessions').update({ duration_minutes: newMins }).eq('id', sessionId);
+            }
+          } catch (_) {
+            await enqueueSyncTask('UPDATE', 'study_timer_sessions', { id: sessionId, duration_minutes: newMins });
+          }
+        } else {
+          await enqueueSyncTask('UPDATE', 'study_timer_sessions', { id: sessionId, duration_minutes: newMins });
         }
       }
 
-      function deleteSessionPrompt(sessionId) {
+      async function deleteSessionPrompt(sessionId) {
         if (!confirm('මෙම Focus Session වාර්තාව ඉවත් කිරීමට තහවුරු කරන්නද?')) return;
         let sessions = getLocalStoredSessions();
         sessions = sessions.filter(s => s.id !== sessionId);
         saveLocalStoredSessions(sessions);
+
+        try {
+          const db = await openOfflineDB();
+          if (db) {
+            const sName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+            const tx = db.transaction(sName, 'readwrite');
+            tx.objectStore(sName).delete(sessionId);
+          }
+        } catch (_) {}
+
         renderRecentSessionsInSettings();
         renderStudyHeatmap();
         showHtmlAlert('Focus Session වාර්තාව සාර්ථකව ඉවත් කරන ලදී. 🗑️', false);
 
-        // Async delete from Supabase if supported
+        // Async delete or enqueue to outbox queue
         if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-          supabase.from('study_sessions').delete().eq('id', sessionId).catch(() => {});
+          try {
+            let { error } = await supabase.from('study_timer_sessions').delete().eq('id', sessionId);
+            if (error) {
+              await supabase.from('study_sessions').delete().eq('id', sessionId);
+            }
+          } catch (_) {
+            await enqueueSyncTask('DELETE', 'study_timer_sessions', { id: sessionId });
+          }
+        } else {
+          await enqueueSyncTask('DELETE', 'study_timer_sessions', { id: sessionId });
         }
       }
 
@@ -7729,43 +8139,58 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         updateActiveTargetUI();
         updateFocusDisplay();
         renderStudyHeatmap();
+        updateSyncBadgeUI(navigator.onLine, 0);
+
+        initLiveTimerStream();
+        initRealtimeDatabaseSync();
+        processOfflineSyncQueue();
 
         // Cross-tab sync listener (e.g. if sessions added/edited in study-analytics.html)
         window.addEventListener('storage', (e) => {
-          if (e.key === 'al_study_sessions_cache') {
+          if (e.key === 'al_study_sessions_cache' || e.key === 'al_study_timer_sessions') {
             renderStudyHeatmap();
+            renderRecentSessionsInSettings();
           }
         });
 
         // Remote Supabase sync to keep local cache and streak current
         if (navigator.onLine && supabase && typeof supabase.from === 'function') {
-          supabase.from('study_sessions').select('*').order('created_at', { ascending: false }).limit(200)
-            .then(({ data, error }) => {
-              if (!error && Array.isArray(data) && data.length > 0) {
+          (async () => {
+            try {
+              let res = await supabase.from('study_timer_sessions').select('*').order('created_at', { ascending: false }).limit(200);
+              if (res.error) {
+                res = await supabase.from('study_sessions').select('*').order('created_at', { ascending: false }).limit(200);
+              }
+              if (!res.error && Array.isArray(res.data) && res.data.length > 0) {
                 const local = getLocalStoredSessions();
                 const map = new Map();
                 local.forEach(s => map.set(s.id, s));
-                data.forEach(r => {
+                res.data.forEach(r => {
                   if (!map.has(r.id)) {
                     map.set(r.id, {
                       id: r.id,
                       subject: r.subject || 'ICT',
                       duration_minutes: Number(r.duration_minutes) || 50,
-                      session_date: r.session_date || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+                      session_date: r.session_date || r.timer_start_date || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
                       created_at: r.created_at || new Date().toISOString(),
-                      unit_number: null,
-                      unit_name: 'Study Session',
-                      status: 'completed',
+                      unit_number: r.unit_number || null,
+                      unit_name: r.unit_name || 'Study Session',
+                      status: r.status || 'completed',
                       synced: true
                     });
                   }
                 });
-                const merged = Array.from(map.values()).sort((a, b) => new Date(b.created_at || b.session_date) - new Date(a.created_at || a.session_date));
+                const merged = Array.from(map.values()).sort((a, b) => {
+                  const tA = new Date(a.end_time || a.timer_stop_date || a.start_time || a.created_at || a.session_date).getTime() || 0;
+                  const tB = new Date(b.end_time || b.timer_stop_date || b.start_time || b.created_at || b.session_date).getTime() || 0;
+                  return tB - tA;
+                });
                 saveLocalStoredSessions(merged);
                 renderStudyHeatmap();
+                renderRecentSessionsInSettings();
               }
-            })
-            .catch(() => {});
+            } catch (_) {}
+          })();
         }
 
         if ('serviceWorker' in navigator) {
