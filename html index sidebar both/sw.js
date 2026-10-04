@@ -1,9 +1,8 @@
-const CACHE_NAME = 'al-study-tracker-v5';
+const CACHE_NAME = 'al-study-tracker-v6';
 const PRECACHE_ASSETS = [
   './',
-  './index.html',
+  './study-analytics',
   './sidebar.html',
-  './study-analytics.html',
   './wosandi/index.html',
   './wosandi/app.js',
   './wosandi/dataService.js',
@@ -16,10 +15,15 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn('Pre-cache error (some assets cached):', err);
-      });
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const asset of PRECACHE_ASSETS) {
+        try {
+          const res = await fetch(asset, { redirect: 'follow' });
+          if (res && (res.status === 200 || res.type === 'opaque')) {
+            await cache.put(asset, res);
+          }
+        } catch (_) {}
+      }
     }).then(() => self.skipWaiting())
   );
 });
@@ -46,6 +50,32 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (url.hostname.includes('supabase.co')) return;
 
+  // For top-level document navigations, use Network-First strategy directly
+  // This allows Cloudflare clean-URL redirects (307 .html -> clean URL) to be resolved natively by the browser
+  // without triggering Chromium's ERR_FAILED redirect error.
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(req, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const urlStr = req.url.toLowerCase();
+        if (urlStr.includes('study-analytics')) {
+          return (await cache.match('./study-analytics')) || (await cache.match('./study-analytics.html'));
+        }
+        return (await cache.match('./')) || (await cache.match('./index.html'));
+      })
+    );
+    return;
+  }
+
+  // Cache-First for static assets
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       const fetchPromise = fetch(req).then((networkResponse) => {
@@ -57,7 +87,6 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // Network failed; return cached response if present
         return cachedResponse;
       });
 

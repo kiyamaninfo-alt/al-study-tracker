@@ -6891,13 +6891,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
       // INTERACTIVE FOCUS TARGET POPUP (SUBJECT -> UNIT -> COUNTDOWN SEQUENCE)
       // =========================================================================
       function openStudyAnalyticsPage() {
+        // Use clean URL 'study-analytics' (Cloudflare & production serve this directly with 200 OK without 307 redirect)
+        // Fall back to .html only if viewing from local file:// protocol
+        const targetUrl = (window.location.protocol === 'file:') ? 'study-analytics.html' : 'study-analytics';
         try {
-          const w = window.open('study-analytics.html', '_blank');
+          const w = window.open(targetUrl, '_blank');
           if (!w || w.closed || typeof w.closed === 'undefined') {
-            window.location.href = 'study-analytics.html';
+            window.location.href = targetUrl;
           }
         } catch (e) {
-          window.location.href = 'study-analytics.html';
+          window.location.href = targetUrl;
         }
       }
 

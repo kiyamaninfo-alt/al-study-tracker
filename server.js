@@ -28,6 +28,9 @@ const server = http.createServer((req, res) => {
   if (safePath === '/' || safePath === '\\') safePath = '/index.html';
 
   let filePath = path.join(PUBLIC_DIR, safePath);
+  if (!path.extname(filePath) && !fs.existsSync(filePath) && fs.existsSync(filePath + '.html')) {
+    filePath = filePath + '.html';
+  }
 
   fs.stat(filePath, (err, stats) => {
     if (err) {
