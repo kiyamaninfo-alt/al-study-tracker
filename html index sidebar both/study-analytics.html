@@ -965,7 +965,7 @@
     <!-- Top Navigation & Header -->
     <header class="analytics-header-card">
       <div class="header-left">
-        <a href="index.html" class="btn-back-home" title="ආපසු Dashboard වෙත යන්න">
+        <a href="./" class="btn-back-home" title="ආපසු Dashboard වෙත යන්න">
           <span>←</span> <span>Dashboard</span>
         </a>
         <div class="header-titles">
@@ -1564,22 +1564,109 @@
 
       // If online and Supabase is reachable, try fetching remote
       if (navigator.onLine && supabase) {
+        let remoteSuccess = false;
         try {
           const { data, error } = await supabase.from('study_sessions').select('*').order('created_at', { ascending: false });
-          if (!error && Array.isArray(data)) {
+          if (!error && Array.isArray(data) && data.length > 0) {
             const map = new Map();
             sessions.forEach(s => map.set(s.id, s));
             data.forEach(s => {
               map.set(s.id, { ...s, synced: true });
             });
             sessions = Array.from(map.values());
-            updateSyncUI(true);
-          } else {
-            updateSyncUI(false);
+            remoteSuccess = true;
           }
-        } catch (_) {
-          updateSyncUI(false);
-        }
+        } catch (_) {}
+
+        // Seamlessly supplement from actual user study activities in Supabase (unit_papers, full_papers, spaced_repetition_log)
+        try {
+          const [upRes, fpRes, srRes] = await Promise.allSettled([
+            supabase.from('unit_papers').select('*').order('logged_at', { ascending: false }).limit(200),
+            supabase.from('full_papers').select('*').order('logged_at', { ascending: false }).limit(100),
+            supabase.from('spaced_repetition_log').select('*').order('completed_at', { ascending: false }).limit(100)
+          ]);
+
+          const map = new Map();
+          sessions.forEach(s => map.set(s.id, s));
+
+          if (upRes.status === 'fulfilled' && Array.isArray(upRes.value.data) && upRes.value.data.length > 0) {
+            remoteSuccess = true;
+            upRes.value.data.forEach(r => {
+              const sid = 'up_' + r.id;
+              if (!map.has(sid)) {
+                const ts = r.logged_at || r.updated_at || new Date().toISOString();
+                const dStr = ts.split('T')[0];
+                map.set(sid, {
+                  id: sid,
+                  subject: (r.subject || 'ICT').toUpperCase(),
+                  unit_number: r.sub_lesson_code ? parseInt(r.sub_lesson_code.split('.')[0], 10) : 0,
+                  unit_name: r.sub_lesson_code ? `Unit ${r.sub_lesson_code} Paper #${r.paper_no || 1}` : 'Unit Paper Attempt',
+                  start_time: ts,
+                  duration_minutes: 50,
+                  session_date: dStr,
+                  created_at: ts,
+                  synced: true
+                });
+              }
+            });
+          }
+
+          if (fpRes.status === 'fulfilled' && Array.isArray(fpRes.value.data) && fpRes.value.data.length > 0) {
+            remoteSuccess = true;
+            fpRes.value.data.forEach(r => {
+              if (r.time_taken === 'APP_CONFIG_PRINTED_PAPERS') return;
+              const sid = 'fp_' + r.id;
+              if (!map.has(sid)) {
+                const ts = r.exam_date ? `${r.exam_date}T10:00:00.000Z` : (r.logged_at || new Date().toISOString());
+                const dStr = ts.split('T')[0];
+                let mins = 120;
+                if (r.time_taken && r.time_taken.includes('min')) {
+                  const mMatch = r.time_taken.match(/(\d+)\s*min/);
+                  const hMatch = r.time_taken.match(/(\d+)\s*H/);
+                  mins = (hMatch ? parseInt(hMatch[1], 10) * 60 : 0) + (mMatch ? parseInt(mMatch[1], 10) : 0);
+                  if (mins <= 0) mins = 120;
+                }
+                map.set(sid, {
+                  id: sid,
+                  subject: (r.subject || 'ICT').toUpperCase(),
+                  unit_number: 0,
+                  unit_name: `Full Paper (${r.marks ? r.marks + '%' : 'Exam'})`,
+                  start_time: ts,
+                  duration_minutes: mins,
+                  session_date: dStr,
+                  created_at: ts,
+                  synced: true
+                });
+              }
+            });
+          }
+
+          if (srRes.status === 'fulfilled' && Array.isArray(srRes.value.data) && srRes.value.data.length > 0) {
+            remoteSuccess = true;
+            srRes.value.data.forEach(r => {
+              const sid = 'sr_' + r.id;
+              if (!map.has(sid)) {
+                const ts = r.completed_at || new Date().toISOString();
+                const dStr = ts.split('T')[0];
+                map.set(sid, {
+                  id: sid,
+                  subject: (r.subject || 'ICT').toUpperCase(),
+                  unit_number: r.sub_lesson_code ? parseInt(r.sub_lesson_code.split('.')[0], 10) : 0,
+                  unit_name: `Spaced Repetition: Unit ${r.sub_lesson_code || ''} (Stage ${r.day_stage || 1})`,
+                  start_time: ts,
+                  duration_minutes: 25,
+                  session_date: dStr,
+                  created_at: ts,
+                  synced: true
+                });
+              }
+            });
+          }
+
+          sessions = Array.from(map.values());
+        } catch (_) {}
+
+        updateSyncUI(remoteSuccess);
       } else {
         updateSyncUI(false);
       }
