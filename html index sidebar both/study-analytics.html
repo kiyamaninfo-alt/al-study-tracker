@@ -363,6 +363,41 @@
       gap: 3px;
     }
 
+    /* Interactive Period Tabs (Item 6) */
+    .day-period-tabs-bar {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      background: var(--card-inner);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      width: fit-content;
+    }
+    .period-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .period-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .period-tab-btn.active {
+      background: #1e2530;
+      color: #00cec9;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    }
+
     /* Interactive Day Detail Card */
     .day-detail-banner {
       background: var(--card-inner);
@@ -1093,6 +1128,7 @@
           <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks(16, this)">16 Weeks</button>
           <button type="button" class="timeframe-tab-btn active" onclick="setTimeframeWeeks(26, this)">6 Months</button>
           <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks(52, this)">1 Year</button>
+          <button type="button" class="timeframe-tab-btn" onclick="setTimeframeWeeks('ALL', this)">🌐 All Time</button>
         </div>
       </div>
 
@@ -1135,13 +1171,22 @@
         </div>
       </div>
 
-      <!-- Interactive Clicked Day Details Card -->
+      <!-- Interactive Period Filter Tabs for Activity Detail (Item 6) -->
+      <div class="day-period-tabs-bar">
+        <button type="button" class="period-tab-btn active" onclick="setDetailPeriod('today', this)">📌 අද දින (Today)</button>
+        <button type="button" class="period-tab-btn" onclick="setDetailPeriod('7d', this)">🗓️ දින 7 (7 Days)</button>
+        <button type="button" class="period-tab-btn" onclick="setDetailPeriod('30d', this)">📅 දින 30 (30 Days)</button>
+        <button type="button" class="period-tab-btn" onclick="setDetailPeriod('1y', this)">📆 වසර 1 (1 Year)</button>
+        <button type="button" class="period-tab-btn" onclick="setDetailPeriod('all', this)">🌐 All Time</button>
+      </div>
+
+      <!-- Interactive Activity Summary Detail Banner -->
       <div class="day-detail-banner" id="dayDetailBanner">
         <div class="day-detail-left">
-          <span style="font-size: 18px;">📌</span>
+          <span style="font-size: 20px;" id="detailPeriodIcon">📌</span>
           <div>
             <div class="day-detail-date" id="selectedDateTxt">අද දින තොරතුරු (Today)</div>
-            <div style="font-size: 10px; color: var(--text-dim);" id="selectedDateSessionsCount">0 Sessions</div>
+            <div style="font-size: 10.5px; color: var(--text-dim);" id="selectedDateSessionsCount">0 Sessions Logged</div>
           </div>
           <div class="day-detail-mins" id="selectedDateMins">0 Mins Focused</div>
         </div>
@@ -1170,9 +1215,9 @@
       <div class="slot-highlight-banner" id="slotHighlightBanner">
         <div class="slot-hl-icon">🏆</div>
         <div class="slot-hl-content">
-          <div class="slot-hl-title" id="slotHighlightTitle">Peak Focus Window: Evening (17:00 – 21:00)</div>
+          <div class="slot-hl-title" id="slotHighlightTitle">Peak Focus Window: විශ්ලේෂණය කරමින් පවතී...</div>
           <div class="slot-hl-desc" id="slotHighlightDesc">
-            ඔබ වැඩිපුරම අවධානයෙන් පාඩම් කර ඇත්තේ සන්ධ්‍යා කාලයේදීය (45% of total focus).
+            අධ්‍යයන කාල පරාසයන් ගණනය කරමින් පවතී...
           </div>
         </div>
       </div>
@@ -1480,23 +1525,29 @@
       ]
     };
 
-    // Supabase Client
+    // Supabase Client Helper
     const SUPABASE_URL = 'https://pxxihlzlewrsgpdrbamn.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_Zw47klE5Wyuz5E7c8uwnWQ_S-HdZVM8';
     let supabase = null;
-    try {
-      if (window.supabase && typeof window.supabase.createClient === 'function') {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
-        });
+
+    function getSupabase() {
+      if (!supabase && window.supabase && typeof window.supabase.createClient === 'function') {
+        try {
+          supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+          });
+        } catch (e) {}
       }
-    } catch (e) {}
+      return supabase;
+    }
+    getSupabase();
 
     // State
     let allSessions = [];
     let currentHeatmapWeeks = 26; // Default to 6 Months
     let currentHistoryFilter = 'ALL';
     let currentSlotFilter = 'ALL';
+    let currentDetailPeriod = 'today';
     let subjectChartInstance = null;
     let trendChartInstance = null;
 
@@ -1563,10 +1614,11 @@
       } catch (e) {}
 
       // If online and Supabase is reachable, try fetching remote
-      if (navigator.onLine && supabase) {
+      const sb = getSupabase();
+      if (navigator.onLine && sb) {
         let remoteSuccess = false;
         try {
-          const { data, error } = await supabase.from('study_sessions').select('*').order('created_at', { ascending: false });
+          const { data, error } = await sb.from('study_sessions').select('*').order('created_at', { ascending: false });
           if (!error && Array.isArray(data) && data.length > 0) {
             const map = new Map();
             sessions.forEach(s => map.set(s.id, s));
@@ -1581,9 +1633,9 @@
         // Seamlessly supplement from actual user study activities in Supabase (unit_papers, full_papers, spaced_repetition_log)
         try {
           const [upRes, fpRes, srRes] = await Promise.allSettled([
-            supabase.from('unit_papers').select('*').order('logged_at', { ascending: false }).limit(200),
-            supabase.from('full_papers').select('*').order('logged_at', { ascending: false }).limit(100),
-            supabase.from('spaced_repetition_log').select('*').order('completed_at', { ascending: false }).limit(100)
+            sb.from('unit_papers').select('*').order('logged_at', { ascending: false }).limit(200),
+            sb.from('full_papers').select('*').order('logged_at', { ascending: false }).limit(100),
+            sb.from('spaced_repetition_log').select('*').order('completed_at', { ascending: false }).limit(100)
           ]);
 
           const map = new Map();
@@ -1697,13 +1749,17 @@
 
     // Refresh entire analytics view
     async function refreshAnalyticsData() {
-      await loadAllSessions();
-      renderKPIs();
-      renderComprehensiveHeatmap();
-      renderPeakTimeSlots();
-      renderSubjectProgressSection();
-      renderVisualCharts();
-      renderSessionsTable();
+      try {
+        await loadAllSessions();
+      } catch (e) {
+        console.warn('loadAllSessions error:', e);
+      }
+      try { renderKPIs(); } catch (e) { console.error('renderKPIs error:', e); }
+      try { renderComprehensiveHeatmap(); } catch (e) { console.error('renderComprehensiveHeatmap error:', e); }
+      try { renderPeakTimeSlots(); } catch (e) { console.error('renderPeakTimeSlots error:', e); }
+      try { renderSubjectProgressSection(); } catch (e) { console.error('renderSubjectProgressSection error:', e); }
+      try { renderVisualCharts(); } catch (e) { console.error('renderVisualCharts error:', e); }
+      try { renderSessionsTable(); } catch (e) { console.error('renderSessionsTable error:', e); }
     }
 
     // 1. Render Top Executive KPIs (Both Rows: 10 Metric Cards)
@@ -1903,7 +1959,7 @@
       if (compCountEl) compCountEl.innerText = completedSessions;
     }
 
-    // 2. Render Comprehensive Heatmap
+    // 2. Render Comprehensive Heatmap & Activity Details
     function setTimeframeWeeks(weeks, btn) {
       currentHeatmapWeeks = weeks;
       document.querySelectorAll('.timeframe-tab-btn').forEach(b => b.classList.remove('active'));
@@ -1932,7 +1988,24 @@
         subjectDetailMap[ds].sessions.push(s);
       });
 
-      const totalDays = currentHeatmapWeeks * 7;
+      // Calculate weeks count dynamically (support 'ALL' timeframe)
+      let weeksCount = currentHeatmapWeeks;
+      if (weeksCount === 'ALL') {
+        let earliestTime = Date.now();
+        allSessions.forEach(s => {
+          const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+          if (ds) {
+            const t = new Date(ds).getTime();
+            if (!isNaN(t) && t < earliestTime) earliestTime = t;
+          }
+        });
+        const spanWeeks = Math.ceil((Date.now() - earliestTime) / (7 * 86400000));
+        weeksCount = Math.max(26, Math.min(104, spanWeeks + 2)); // Minimum 26 weeks, padded
+      } else {
+        weeksCount = Number(weeksCount) || 26;
+      }
+
+      const totalDays = weeksCount * 7;
       const endDate = new Date();
       // Advance to current Saturday
       const dayOfWeek = endDate.getDay(); // 0 is Sunday
@@ -1942,14 +2015,13 @@
 
       const cells = [];
       let activeDaysCount = 0;
-      let monthLabelsHtml = '';
       let lastMonth = -1;
 
       // Month labels distribution
       const monthCols = [];
-      for (let w = 0; w < currentHeatmapWeeks; w++) {
+      for (let w = 0; w < weeksCount; w++) {
         const d = new Date(alignedEnd);
-        d.setDate(d.getDate() - (currentHeatmapWeeks - 1 - w) * 7);
+        d.setDate(d.getDate() - (weeksCount - 1 - w) * 7);
         const m = d.getMonth();
         if (m !== lastMonth) {
           const mNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -1975,9 +2047,8 @@
         else if (mins > 25) level = 2;
         else if (mins > 0) level = 1;
 
-        const isToday = (ds === todayStr);
         cells.push(`
-          <span class="heat-cell level-${level} ${isToday ? 'selected' : ''}"
+          <span class="heat-cell level-${level}"
                 data-date="${ds}"
                 data-mins="${mins}"
                 onclick="handleHeatCellClick('${ds}')"
@@ -1989,21 +2060,123 @@
       grid.innerHTML = cells.join('');
 
       // Build month labels row
-      const colWidth = 16; // 12px width + 4px gap
-      monthsRow.innerHTML = monthCols.map(m => `
-        <span style="position: absolute; left: ${m.col * colWidth + 24}px;">${m.name}</span>
-      `).join('');
-      monthsRow.style.position = 'relative';
+      if (monthsRow) {
+        const colWidth = 16; // 12px width + 4px gap
+        monthsRow.innerHTML = monthCols.map(m => `
+          <span style="position: absolute; left: ${m.col * colWidth + 24}px;">${m.name}</span>
+        `).join('');
+        monthsRow.style.position = 'relative';
+      }
 
       // Update legend counts
-      document.getElementById('legendActiveDays').innerText = activeDaysCount;
-      document.getElementById('legendTotalDays').innerText = totalDays;
+      const legAct = document.getElementById('legendActiveDays');
+      if (legAct) legAct.innerText = activeDaysCount;
+      const legTot = document.getElementById('legendTotalDays');
+      if (legTot) legTot.innerText = totalDays;
 
-      // Select today by default in the detail banner
-      handleHeatCellClick(todayStr);
+      // Update detail banner based on active period tab
+      renderDetailPeriodData(currentDetailPeriod);
+    }
+
+    // Detail Period Tabs Handler (Item 6: Today, 7D, 30D, 1Y, All Time)
+    function setDetailPeriod(period, btn) {
+      currentDetailPeriod = period;
+      document.querySelectorAll('.period-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      // Deselect heat cells when choosing period aggregations
+      document.querySelectorAll('.heat-cell').forEach(c => c.classList.remove('selected'));
+      renderDetailPeriodData(period);
+    }
+
+    function renderDetailPeriodData(period) {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      let filtered = [];
+      let title = '';
+      let icon = '📌';
+
+      if (period === 'today') {
+        filtered = allSessions.filter(s => (s.session_date === todayStr || (s.start_time && s.start_time.startsWith(todayStr))));
+        title = `අද දින තොරතුරු (Today — ${todayStr})`;
+        icon = '📌';
+        // Select today cell on the heatmap if present
+        const todayCell = document.querySelector(`.heat-cell[data-date="${todayStr}"]`);
+        if (todayCell) todayCell.classList.add('selected');
+      } else if (period === '7d') {
+        const cutoff = new Date(now.getTime() - 7 * 86400000);
+        filtered = allSessions.filter(s => {
+          const d = new Date(s.session_date || s.start_time || s.created_at);
+          return d >= cutoff && d <= now;
+        });
+        title = 'පසුගිය දින 7 තොරතුරු (Last 7 Days)';
+        icon = '🗓️';
+      } else if (period === '30d') {
+        const cutoff = new Date(now.getTime() - 30 * 86400000);
+        filtered = allSessions.filter(s => {
+          const d = new Date(s.session_date || s.start_time || s.created_at);
+          return d >= cutoff && d <= now;
+        });
+        title = 'පසුගිය දින 30 තොරතුරු (Last 30 Days)';
+        icon = '📅';
+      } else if (period === '1y') {
+        const cutoff = new Date(now.getTime() - 365 * 86400000);
+        filtered = allSessions.filter(s => {
+          const d = new Date(s.session_date || s.start_time || s.created_at);
+          return d >= cutoff && d <= now;
+        });
+        title = 'පසුගිය වසර 1 තොරතුරු (Last 1 Year)';
+        icon = '📆';
+      } else {
+        filtered = allSessions;
+        title = 'සමස්ත කාලසීමාවේ තොරතුරු (All Time Summary)';
+        icon = '🌐';
+      }
+
+      const totalMins = filtered.reduce((acc, s) => acc + (Number(s.duration_minutes) || 0), 0);
+      const hours = (totalMins / 60).toFixed(1);
+      const sessCount = filtered.length;
+
+      const iconEl = document.getElementById('detailPeriodIcon');
+      if (iconEl) iconEl.innerText = icon;
+
+      const dateTxtEl = document.getElementById('selectedDateTxt');
+      if (dateTxtEl) dateTxtEl.innerText = title;
+
+      const sessCountEl = document.getElementById('selectedDateSessionsCount');
+      if (sessCountEl) sessCountEl.innerText = `${sessCount} ${sessCount === 1 ? 'Session' : 'Sessions'} Logged`;
+
+      const minsEl = document.getElementById('selectedDateMins');
+      if (minsEl) {
+        minsEl.innerText = totalMins >= 60 ? `${totalMins} Mins (${hours}h)` : `${totalMins} Mins Focused`;
+      }
+
+      const subjMap = { ICT: 0, ET: 0, SFT: 0 };
+      filtered.forEach(s => {
+        const sub = (s.subject || 'ICT').toUpperCase();
+        if (subjMap[sub] !== undefined) {
+          subjMap[sub] += (Number(s.duration_minutes) || 0);
+        } else {
+          subjMap[sub] = (subjMap[sub] || 0) + (Number(s.duration_minutes) || 0);
+        }
+      });
+
+      const pills = [];
+      ['ICT', 'ET', 'SFT'].forEach(sub => {
+        const m = subjMap[sub] || 0;
+        if (m > 0 || period === 'all' || period === '30d') {
+          const h = (m / 60).toFixed(1);
+          pills.push(`<span class="subj-pill ${sub.toLowerCase()}">${sub}: ${m}m (${h}h)</span>`);
+        }
+      });
+
+      const subEl = document.getElementById('selectedDateSubjects');
+      if (subEl) {
+        subEl.innerHTML = pills.length > 0 ? pills.join('') : '<span style="font-size:11px; color:#6e7681;">මෙම කාල සීමාව තුළ අධ්‍යයන සැසි සටහන් කර නොමැත</span>';
+      }
     }
 
     function handleHeatCellClick(dateStr) {
+      document.querySelectorAll('.period-tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.heat-cell').forEach(c => c.classList.remove('selected'));
       const activeCell = document.querySelector(`.heat-cell[data-date="${dateStr}"]`);
       if (activeCell) activeCell.classList.add('selected');
@@ -2014,27 +2187,52 @@
 
       const dateSessions = allSessions.filter(s => (s.session_date === dateStr || (s.start_time && s.start_time.startsWith(dateStr))));
       const totalMins = dateSessions.reduce((acc, s) => acc + (Number(s.duration_minutes) || 0), 0);
+      const hours = (totalMins / 60).toFixed(1);
 
-      document.getElementById('selectedDateTxt').innerText = `${dateStr} (${formatted})`;
-      document.getElementById('selectedDateSessionsCount').innerText = `${dateSessions.length} Sessions Logged`;
-      document.getElementById('selectedDateMins').innerText = `${totalMins} Mins Focused`;
+      const iconEl = document.getElementById('detailPeriodIcon');
+      if (iconEl) iconEl.innerText = '📍';
+
+      const dateTxtEl = document.getElementById('selectedDateTxt');
+      if (dateTxtEl) dateTxtEl.innerText = `${dateStr} (${formatted})`;
+
+      const sessCountEl = document.getElementById('selectedDateSessionsCount');
+      if (sessCountEl) sessCountEl.innerText = `${dateSessions.length} ${dateSessions.length === 1 ? 'Session' : 'Sessions'} Logged`;
+
+      const minsEl = document.getElementById('selectedDateMins');
+      if (minsEl) {
+        minsEl.innerText = totalMins >= 60 ? `${totalMins} Mins (${hours}h)` : `${totalMins} Mins Focused`;
+      }
 
       const subjMap = {};
       dateSessions.forEach(s => {
-        const subj = s.subject || 'ICT';
+        const subj = (s.subject || 'ICT').toUpperCase();
         subjMap[subj] = (subjMap[subj] || 0) + (Number(s.duration_minutes) || 0);
       });
 
       const tagsHtml = Object.keys(subjMap).map(subj => {
         const cls = subj.toLowerCase();
-        return `<span class="subj-pill ${cls}">${subj}: ${subjMap[subj]}m</span>`;
+        const m = subjMap[subj];
+        const h = (m / 60).toFixed(1);
+        return `<span class="subj-pill ${cls}">${subj}: ${m}m (${h}h)</span>`;
       }).join('');
 
-      document.getElementById('selectedDateSubjects').innerHTML = tagsHtml || '<span style="font-size:11px; color:#6e7681;">අධ්‍යයන සැසි සටහන් කර නැත</span>';
+      const subEl = document.getElementById('selectedDateSubjects');
+      if (subEl) {
+        subEl.innerHTML = tagsHtml || '<span style="font-size:11px; color:#6e7681;">අධ්‍යයන සැසි සටහන් කර නැත</span>';
+      }
     }
 
     // 3. Render Visual Charts (Subject Distribution & 14-Day Trend)
     function renderVisualCharts() {
+      if (typeof Chart === 'undefined') {
+        console.warn('Chart.js is not loaded yet');
+        return;
+      }
+
+      const doughnutEl = document.getElementById('subjectDoughnutChart');
+      const barEl = document.getElementById('dailyTrendBarChart');
+      if (!doughnutEl || !barEl) return;
+
       // Calculate Subject Totals
       const subjMins = { ICT: 0, ET: 0, SFT: 0 };
       allSessions.forEach(s => {
@@ -2045,120 +2243,128 @@
       });
 
       // Render Doughnut Chart
-      const doughnutCtx = document.getElementById('subjectDoughnutChart').getContext('2d');
-      if (subjectChartInstance) subjectChartInstance.destroy();
+      try {
+        const doughnutCtx = doughnutEl.getContext('2d');
+        if (subjectChartInstance) subjectChartInstance.destroy();
 
-      subjectChartInstance = new Chart(doughnutCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['ICT', 'ET', 'SFT'],
-          datasets: [{
-            data: [subjMins.ICT, subjMins.ET, subjMins.SFT],
-            backgroundColor: ['#20bf6b', '#0984e3', '#8854d0'],
-            borderColor: '#090d14',
-            borderWidth: 3,
-            hoverOffset: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#f0f6fc',
-                font: { family: 'Poppins', size: 11, weight: '700' },
-                padding: 14
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(ctx) {
-                  const val = ctx.raw || 0;
-                  const total = subjMins.ICT + subjMins.ET + subjMins.SFT;
-                  const pct = total > 0 ? Math.round((val / total) * 100) : 0;
-                  return ` ${ctx.label}: ${val} mins (${pct}%)`;
+        subjectChartInstance = new Chart(doughnutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['ICT', 'ET', 'SFT'],
+            datasets: [{
+              data: [subjMins.ICT, subjMins.ET, subjMins.SFT],
+              backgroundColor: ['#20bf6b', '#0984e3', '#8854d0'],
+              borderColor: '#090d14',
+              borderWidth: 3,
+              hoverOffset: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#f0f6fc',
+                  font: { family: 'Poppins', size: 11, weight: '700' },
+                  padding: 14
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(ctx) {
+                    const val = ctx.raw || 0;
+                    const total = subjMins.ICT + subjMins.ET + subjMins.SFT;
+                    const pct = total > 0 ? Math.round((val / total) * 100) : 0;
+                    return ` ${ctx.label}: ${val} mins (${pct}%)`;
+                  }
                 }
               }
-            }
-          },
-          cutout: '68%'
-        }
-      });
-
-      // Render 14-Day Bar Chart
-      const barLabels = [];
-      const ictData = [];
-      const etData = [];
-      const sftData = [];
-
-      for (let i = 13; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const ds = d.toISOString().split('T')[0];
-        const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
-        barLabels.push(`${dayName} ${d.getDate()}`);
-
-        let mIct = 0, mEt = 0, mSft = 0;
-        allSessions.forEach(s => {
-          if (s.session_date === ds || (s.start_time && s.start_time.startsWith(ds))) {
-            const mins = Number(s.duration_minutes) || 0;
-            const sub = (s.subject || 'ICT').toUpperCase();
-            if (sub === 'ICT') mIct += mins;
-            else if (sub === 'ET') mEt += mins;
-            else if (sub === 'SFT') mSft += mins;
+            },
+            cutout: '68%'
           }
         });
-
-        ictData.push(mIct);
-        etData.push(mEt);
-        sftData.push(mSft);
+      } catch (err) {
+        console.error('Error creating doughnut chart:', err);
       }
 
-      const barCtx = document.getElementById('dailyTrendBarChart').getContext('2d');
-      if (trendChartInstance) trendChartInstance.destroy();
+      // Render 14-Day Bar Chart
+      try {
+        const barLabels = [];
+        const ictData = [];
+        const etData = [];
+        const sftData = [];
 
-      trendChartInstance = new Chart(barCtx, {
-        type: 'bar',
-        data: {
-          labels: barLabels,
-          datasets: [
-            { label: 'ICT', data: ictData, backgroundColor: '#20bf6b', borderRadius: 4, stack: 'combined' },
-            { label: 'ET', data: etData, backgroundColor: '#0984e3', borderRadius: 4, stack: 'combined' },
-            { label: 'SFT', data: sftData, backgroundColor: '#8854d0', borderRadius: 4, stack: 'combined' }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#f0f6fc',
-                font: { family: 'Poppins', size: 10, weight: '700' },
-                boxWidth: 12
+        for (let i = 13; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const ds = d.toISOString().split('T')[0];
+          const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+          barLabels.push(`${dayName} ${d.getDate()}`);
+
+          let mIct = 0, mEt = 0, mSft = 0;
+          allSessions.forEach(s => {
+            if (s.session_date === ds || (s.start_time && s.start_time.startsWith(ds))) {
+              const mins = Number(s.duration_minutes) || 0;
+              const sub = (s.subject || 'ICT').toUpperCase();
+              if (sub === 'ICT') mIct += mins;
+              else if (sub === 'ET') mEt += mins;
+              else if (sub === 'SFT') mSft += mins;
+            }
+          });
+
+          ictData.push(mIct);
+          etData.push(mEt);
+          sftData.push(mSft);
+        }
+
+        const barCtx = barEl.getContext('2d');
+        if (trendChartInstance) trendChartInstance.destroy();
+
+        trendChartInstance = new Chart(barCtx, {
+          type: 'bar',
+          data: {
+            labels: barLabels,
+            datasets: [
+              { label: 'ICT', data: ictData, backgroundColor: '#20bf6b', borderRadius: 4, stack: 'combined' },
+              { label: 'ET', data: etData, backgroundColor: '#0984e3', borderRadius: 4, stack: 'combined' },
+              { label: 'SFT', data: sftData, backgroundColor: '#8854d0', borderRadius: 4, stack: 'combined' }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#f0f6fc',
+                  font: { family: 'Poppins', size: 10, weight: '700' },
+                  boxWidth: 12
+                }
+              }
+            },
+            scales: {
+              x: {
+                stacked: true,
+                grid: { display: false },
+                ticks: { color: '#8b949e', font: { size: 9.5 } }
+              },
+              y: {
+                stacked: true,
+                grid: { color: '#161d28' },
+                ticks: { color: '#8b949e', font: { size: 9.5 } }
               }
             }
-          },
-          scales: {
-            x: {
-              stacked: true,
-              grid: { display: false },
-              ticks: { color: '#8b949e', font: { size: 9.5 } }
-            },
-            y: {
-              stacked: true,
-              grid: { color: '#161d28' },
-              ticks: { color: '#8b949e', font: { size: 9.5 } }
-            }
           }
-        }
-      });
+        });
+      } catch (err) {
+        console.error('Error creating trend bar chart:', err);
+      }
     }
 
-    // 4. Peak Study Time Periods Filter & Renderer (Item 2)
+    // 4. Peak Study Time Periods Filter & Renderer (Item 2 & 3)
     function setSlotFilter(subj, btn) {
       currentSlotFilter = subj;
       document.querySelectorAll('.slot-tab-btn').forEach(b => b.classList.remove('active'));
@@ -2245,25 +2451,26 @@
         slotStats[slotId].count++;
       });
 
-      // Find peak slot
-      let peakSlotId = 'evening';
-      let peakSlotMins = -1;
+      // Find real peak slot (only if has minutes > 0)
+      let peakSlotId = null;
+      let peakSlotMins = 0;
       SLOTS_CONFIG.forEach(cfg => {
         if (slotStats[cfg.id].mins > peakSlotMins) {
           peakSlotMins = slotStats[cfg.id].mins;
           peakSlotId = cfg.id;
         }
       });
-      const peakCfg = SLOTS_CONFIG.find(c => c.id === peakSlotId) || SLOTS_CONFIG[3];
-      const peakHours = (slotStats[peakSlotId].mins / 60).toFixed(1);
-      const peakPct = totalFilteredMins > 0 ? Math.round((slotStats[peakSlotId].mins / totalFilteredMins) * 100) : 0;
 
       // Update Highlight Banner
       const highlightTitle = document.getElementById('slotHighlightTitle');
       const highlightDesc = document.getElementById('slotHighlightDesc');
       const filterLabel = currentSlotFilter === 'ALL' ? 'සියලු විෂයන් සඳහා' : `${currentSlotFilter} විෂය සඳහා`;
 
-      if (totalFilteredMins > 0) {
+      if (totalFilteredMins > 0 && peakSlotId) {
+        const peakCfg = SLOTS_CONFIG.find(c => c.id === peakSlotId) || SLOTS_CONFIG[0];
+        const peakHours = (slotStats[peakSlotId].mins / 60).toFixed(1);
+        const peakPct = Math.round((slotStats[peakSlotId].mins / totalFilteredMins) * 100);
+
         if (highlightTitle) {
           highlightTitle.innerText = `Peak Focus Window (${currentSlotFilter}): ${peakCfg.name} (${peakCfg.range})`;
         }
@@ -2272,7 +2479,7 @@
         }
       } else {
         if (highlightTitle) {
-          highlightTitle.innerText = `No Focus Data Yet (${currentSlotFilter})`;
+          highlightTitle.innerText = `තවමත් දත්ත නොමැත (${currentSlotFilter})`;
         }
         if (highlightDesc) {
           highlightDesc.innerText = `${filterLabel} තවමත් අධ්‍යයන සැසි සටහන් කර නොමැත. ටයිමරය හෝ Manual Entry භාවිතා කර පාඩම් කිරීම ආරම්භ කරන්න.`;
