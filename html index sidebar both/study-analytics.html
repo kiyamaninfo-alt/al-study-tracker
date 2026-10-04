@@ -647,13 +647,16 @@
     /* Charts Grid */
     .charts-grid {
       display: grid;
-      grid-template-columns: 1fr 1.3fr;
+      grid-template-columns: 1fr 1fr;
       gap: 14px;
       margin-bottom: 16px;
+      min-height: 380px;
+      align-items: stretch;
     }
-    @media (max-width: 860px) {
+    @media (max-width: 900px) {
       .charts-grid {
         grid-template-columns: 1fr;
+        width: 100%;
       }
     }
     .chart-box {
@@ -681,8 +684,8 @@
     }
     .chart-canvas-wrap {
       position: relative;
-      flex: 1;
-      min-height: 220px;
+      width: 100%;
+      height: 280px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1164,6 +1167,12 @@
       max-width: 440px;
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
       overflow: hidden;
+    }
+    #manualSessionModal .modal-box {
+      width: min(94vw, 440px);
+      max-height: 90vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .modal-box-head {
       padding: 12px 16px;
@@ -1791,7 +1800,7 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="form-group">
             <label class="form-label">ආරම්භක දිනය (Start Date) *</label>
-            <input type="date" id="manualDateInput" class="form-control">
+            <input type="date" id="manualDateInput" class="form-control" max="2026-10-04">
           </div>
           <div class="form-group">
             <label class="form-label">ආරම්භක වේලාව (Start Time) *</label>
@@ -2061,6 +2070,20 @@
       SFT: new Set()
     };
 
+    // Helpers: Local Date and Time Extractors
+    function getLocalDateString(d = new Date()) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function getLocalTimeString(d = new Date()) {
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+
     // Helper: Session Timestamp Extractor
     function getSessionTimestamp(s) {
       if (!s) return 0;
@@ -2072,7 +2095,10 @@
       const timeStr = s.timer_start_time || '00:00:00';
       if (dateStr) {
         const fullTimeStr = timeStr.length === 5 ? timeStr + ':00' : timeStr;
-        const t = new Date(`${dateStr}T${fullTimeStr}`).getTime();
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const [hr, min, sec] = fullTimeStr.split(':').map(Number);
+        const localD = new Date(y, (m || 1) - 1, d || 1, hr || 0, min || 0, sec || 0);
+        const t = localD.getTime();
         if (!isNaN(t) && t > 0) return t;
       }
       if (s.created_at) {
@@ -2256,9 +2282,9 @@
       if (s.status && s.status !== 'completed') {
         return false;
       }
-      // Only include sessions starting from tracking benchmark (today onwards)
+      // Exclude sessions with missing dates
       const dStr = s.timer_start_date || s.timer_stop_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
-      if (!dStr || dStr < TRACKING_START_DATE) {
+      if (!dStr) {
         return false;
       }
       return true;
@@ -2597,7 +2623,6 @@
           let queryRes = await sb
             .from('study_timer_sessions')
             .select('*')
-            .gte('timer_start_date', TRACKING_START_DATE)
             .order('created_at', { ascending: false });
 
           if (queryRes.error) {
@@ -2605,7 +2630,6 @@
             queryRes = await sb
               .from('study_sessions')
               .select('*')
-              .gte('session_date', TRACKING_START_DATE)
               .order('created_at', { ascending: false });
           }
 
@@ -2800,12 +2824,15 @@
       // --- ROW 1 ---
       // Today's focus
       const todayMins = dateMinsMap[todayStr] || 0;
-      document.getElementById('kpiTodayMins').innerText = todayMins;
+      const todayEl = document.getElementById('kpiTodayMins');
+      if (todayEl) todayEl.innerText = todayMins;
 
       // Total Hours & Minutes
       const totalHours = (totalMins / 60).toFixed(1);
-      document.getElementById('kpiTotalHours').innerText = totalHours;
-      document.getElementById('kpiTotalMinutes').innerText = totalMins;
+      const totalHoursEl = document.getElementById('kpiTotalHours');
+      if (totalHoursEl) totalHoursEl.innerText = totalHours;
+      const totalMinutesEl = document.getElementById('kpiTotalMinutes');
+      if (totalMinutesEl) totalMinutesEl.innerText = totalMins;
 
       // Current Streak Calculation
       let streak = 0;
@@ -2814,7 +2841,7 @@
         checkDate.setDate(checkDate.getDate() - 1);
       }
       while (true) {
-        const ds = checkDate.toISOString().split('T')[0];
+        const ds = getLocalDateString(checkDate);
         if (dateMinsMap[ds] && dateMinsMap[ds] > 0) {
           streak++;
           checkDate.setDate(checkDate.getDate() - 1);
@@ -2822,7 +2849,8 @@
           break;
         }
       }
-      document.getElementById('kpiCurrentStreak').innerText = streak;
+      const curStreakEl = document.getElementById('kpiCurrentStreak');
+      if (curStreakEl) curStreakEl.innerText = streak;
 
       // Best Streak Calculation
       const sortedDates = Object.keys(dateMinsMap).filter(d => dateMinsMap[d] > 0).sort();
@@ -2844,24 +2872,29 @@
         if (curCount > bestStreak) bestStreak = curCount;
         lastD = dObj;
       });
-      document.getElementById('kpiBestStreak').innerText = Math.max(streak, bestStreak);
+      const bestStreakEl = document.getElementById('kpiBestStreak');
+      if (bestStreakEl) bestStreakEl.innerText = Math.max(streak, bestStreak);
 
       // Last 7 Days Total & Daily Average
       let weekMins = 0;
       for (let i = 0; i < 7; i++) {
         const d = new Date();
         d.setDate(d.getDate() - i);
-        const ds = d.toISOString().split('T')[0];
+        const ds = getLocalDateString(d);
         weekMins += (dateMinsMap[ds] || 0);
       }
       const weeklyAvg = Math.round(weekMins / 7);
-      document.getElementById('kpiWeeklyAvg').innerText = weeklyAvg;
-      document.getElementById('kpiThisWeekTotal').innerText = weekMins;
+      const weeklyAvgEl = document.getElementById('kpiWeeklyAvg');
+      if (weeklyAvgEl) weeklyAvgEl.innerText = weeklyAvg;
+      const thisWeekTotalEl = document.getElementById('kpiThisWeekTotal');
+      if (thisWeekTotalEl) thisWeekTotalEl.innerText = weekMins;
 
       // Total Sessions & Average
-      document.getElementById('kpiTotalSessions').innerText = totalSessions;
+      const totalSessEl = document.getElementById('kpiTotalSessions');
+      if (totalSessEl) totalSessEl.innerText = totalSessions;
       const avgSess = totalSessions > 0 ? Math.round(totalMins / totalSessions) : 0;
-      document.getElementById('kpiAvgSessionMins').innerText = avgSess;
+      const avgSessEl = document.getElementById('kpiAvgSessionMins');
+      if (avgSessEl) avgSessEl.innerText = avgSess;
 
       // --- ROW 2 (Item 3) ---
       // 1. Peak Study Time
@@ -2944,6 +2977,10 @@
       const grid = document.getElementById('fullHeatmapGrid');
       const monthsRow = document.getElementById('heatmapMonthsRow');
       if (!grid) return;
+
+      // Thoroughly clear grid and month labels before re-rendering
+      grid.innerHTML = '';
+      if (monthsRow) monthsRow.innerHTML = '';
 
       const dateMap = {};
       const subjectDetailMap = {};
@@ -3073,44 +3110,32 @@
 
     function renderDetailPeriodData(period) {
       const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
+      const todayStr = getLocalDateString(now);
       let filtered = [];
       let title = '';
       let icon = '📌';
 
       if (period === 'today') {
-        filtered = allSessions.filter(s => (s.session_date === todayStr || (s.start_time && s.start_time.startsWith(todayStr))));
+        filtered = filterSessionsByTimeframe(allSessions, 'today');
         title = `අද දින තොරතුරු (Today — ${todayStr})`;
         icon = '📌';
         // Select today cell on the heatmap if present
         const todayCell = document.querySelector(`.heat-cell[data-date="${todayStr}"]`);
         if (todayCell) todayCell.classList.add('selected');
       } else if (period === '7d') {
-        const cutoff = new Date(now.getTime() - 7 * 86400000);
-        filtered = allSessions.filter(s => {
-          const d = new Date(s.session_date || s.start_time || s.created_at);
-          return d >= cutoff && d <= now;
-        });
+        filtered = filterSessionsByTimeframe(allSessions, '7d');
         title = 'පසුගිය දින 7 තොරතුරු (Last 7 Days)';
         icon = '🗓️';
       } else if (period === '30d') {
-        const cutoff = new Date(now.getTime() - 30 * 86400000);
-        filtered = allSessions.filter(s => {
-          const d = new Date(s.session_date || s.start_time || s.created_at);
-          return d >= cutoff && d <= now;
-        });
+        filtered = filterSessionsByTimeframe(allSessions, '30d');
         title = 'පසුගිය දින 30 තොරතුරු (Last 30 Days)';
         icon = '📅';
       } else if (period === '1y') {
-        const cutoff = new Date(now.getTime() - 365 * 86400000);
-        filtered = allSessions.filter(s => {
-          const d = new Date(s.session_date || s.start_time || s.created_at);
-          return d >= cutoff && d <= now;
-        });
+        filtered = filterSessionsByTimeframe(allSessions, '1y');
         title = 'පසුගිය වසර 1 තොරතුරු (Last 1 Year)';
         icon = '📆';
       } else {
-        filtered = allSessions;
+        filtered = filterSessionsByTimeframe(allSessions, 'all');
         title = 'සමස්ත කාලසීමාවේ තොරතුරු (All Time Summary)';
         icon = '🌐';
       }
@@ -3205,27 +3230,45 @@
       }
     }
 
-    // Helper: Filter sessions by timeframe (1d, 7d, 14d, 1m, 3m, 1y, all)
+    // Helper: Unified Filter sessions by timeframe (1d/today, 7d, 14d, 1m/30d, 3m/90d, 1y/365d, all)
     function filterSessionsByTimeframe(sessions, tf) {
-      if (!tf || tf === 'all') return [...sessions];
+      if (!Array.isArray(sessions)) return [];
       const now = new Date();
-      let ms = 14 * 86400000;
-      if (tf === '1d') {
-        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-        return sessions.filter(s => getSessionTimestamp(s) >= startOfToday);
-      } else if (tf === '7d') {
-        ms = 7 * 86400000;
-      } else if (tf === '14d') {
-        ms = 14 * 86400000;
-      } else if (tf === '1m') {
-        ms = 30 * 86400000;
-      } else if (tf === '3m') {
-        ms = 90 * 86400000;
-      } else if (tf === '1y') {
-        ms = 365 * 86400000;
+      const todayStr = getLocalDateString(now);
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const endOfToday = startOfToday + 86400000 - 1;
+
+      let filtered = [];
+      const mode = (tf || 'all').toLowerCase();
+
+      if (mode === 'all') {
+        filtered = [...sessions];
+      } else if (mode === '1d' || mode === 'today') {
+        filtered = sessions.filter(s => {
+          const d = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+          if (d === todayStr) return true;
+          const ts = getSessionTimestamp(s);
+          return ts >= startOfToday && ts <= endOfToday;
+        });
+      } else {
+        let dayCount = 7;
+        if (mode === '7d') dayCount = 7;
+        else if (mode === '14d') dayCount = 14;
+        else if (mode === '1m' || mode === '30d') dayCount = 30;
+        else if (mode === '3m' || mode === '90d') dayCount = 90;
+        else if (mode === '1y' || mode === '365d') dayCount = 365;
+
+        // Inclusive calendar day boundary: (dayCount - 1) days ago from local midnight
+        const cutoffMidnight = startOfToday - (dayCount - 1) * 86400000;
+        filtered = sessions.filter(s => {
+          const ts = getSessionTimestamp(s);
+          return ts >= cutoffMidnight && ts <= endOfToday;
+        });
       }
-      const cutoffTime = now.getTime() - ms;
-      return sessions.filter(s => getSessionTimestamp(s) >= cutoffTime);
+
+      // Enforce strict descending sorting (newest session first) across all returned subsets
+      filtered.sort((a, b) => getSessionTimestamp(b) - getSessionTimestamp(a));
+      return filtered;
     }
 
     // Chart Timeframe Setters
@@ -3346,18 +3389,21 @@
       let etData = [];
       let sftData = [];
 
+      const filteredSessions = filterSessionsByTimeframe(allSessions, tf);
+
       if (tf === '7d' || tf === '14d' || tf === '1m') {
         const days = tf === '7d' ? 7 : (tf === '14d' ? 14 : 30);
         for (let i = days - 1; i >= 0; i--) {
           const d = new Date();
           d.setDate(d.getDate() - i);
-          const ds = d.toISOString().split('T')[0];
+          const ds = getLocalDateString(d);
           const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
           barLabels.push(days <= 14 ? `${dayName} ${d.getDate()}` : `${d.getMonth()+1}/${d.getDate()}`);
 
           let mIct = 0, mEt = 0, mSft = 0;
-          allSessions.forEach(s => {
-            if (s.session_date === ds || (s.start_time && s.start_time.startsWith(ds))) {
+          filteredSessions.forEach(s => {
+            const sDate = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+            if (sDate === ds) {
               const mins = Number(s.duration_minutes) || 0;
               const sub = (s.subject || 'ICT').toUpperCase();
               if (sub === 'ICT') mIct += mins;
@@ -3381,8 +3427,8 @@
           barLabels.push(label);
 
           let mIct = 0, mEt = 0, mSft = 0;
-          allSessions.forEach(s => {
-            const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+          filteredSessions.forEach(s => {
+            const ds = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
             if (ds) {
               const sd = new Date(ds + 'T12:00:00');
               if (sd >= startD && sd <= endD) {
@@ -3409,8 +3455,8 @@
           barLabels.push(label);
 
           let mIct = 0, mEt = 0, mSft = 0;
-          allSessions.forEach(s => {
-            const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+          filteredSessions.forEach(s => {
+            const ds = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
             if (ds) {
               const sd = new Date(ds + 'T12:00:00');
               if (sd.getFullYear() === y && sd.getMonth() === mon) {
@@ -3437,8 +3483,8 @@
           barLabels.push(label);
 
           let mIct = 0, mEt = 0, mSft = 0;
-          allSessions.forEach(s => {
-            const ds = s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
+          filteredSessions.forEach(s => {
+            const ds = s.timer_start_date || s.session_date || (s.start_time ? s.start_time.split('T')[0] : null);
             if (ds) {
               const sd = new Date(ds + 'T12:00:00');
               if (sd.getFullYear() === y && sd.getMonth() === mon) {
@@ -3506,6 +3552,20 @@
       renderDoughnutChart();
       renderTrendBarChart();
     }
+
+    // Debounced window resize handler triggering chart.resize()
+    let chartResizeDebounce = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(chartResizeDebounce);
+      chartResizeDebounce = setTimeout(() => {
+        if (subjectChartInstance && typeof subjectChartInstance.resize === 'function') {
+          subjectChartInstance.resize();
+        }
+        if (trendChartInstance && typeof trendChartInstance.resize === 'function') {
+          trendChartInstance.resize();
+        }
+      }, 150);
+    });
 
     // 4. 24 × 7 Day-of-Week & Active Times Habit Matrix
     function showHabitCellDetail(dayName, daySinhala, startHour, endHour, mins, count, cellEl) {
@@ -4058,11 +4118,15 @@
       const modal = document.getElementById('manualSessionModal');
       const dateInput = document.getElementById('manualDateInput');
       const timeInput = document.getElementById('manualStartTimeInput');
-      const todayStr = new Date().toISOString().split('T')[0];
-      const nowTimeStr = new Date().toTimeString().split(' ')[0].substring(0, 5);
+      const modalErr = document.getElementById('manualModalErrorMsg');
+      if (modalErr) modalErr.style.display = 'none';
+
+      const todayStr = getLocalDateString();
+      const nowTimeStr = getLocalTimeString();
       if (dateInput) {
         dateInput.value = todayStr;
-        dateInput.min = TRACKING_START_DATE;
+        dateInput.max = todayStr;
+        dateInput.removeAttribute('min');
       }
       if (timeInput) {
         timeInput.value = nowTimeStr;
@@ -4101,6 +4165,17 @@
         }
         return;
       }
+
+      const todayLocal = getLocalDateString();
+      const dateInput = document.getElementById('manualDateInput');
+      let dateVal = (dateInput && dateInput.value) || todayLocal;
+      if (dateVal > todayLocal) {
+        if (modalErr) {
+          modalErr.textContent = 'අනාගත දිනයන් සඳහා අධ්‍යයන සැසි එක් කළ නොහැක (Future dates are not allowed).';
+          modalErr.style.display = 'block';
+        }
+        return;
+      }
       if (modalErr) modalErr.style.display = 'none';
 
       // Security PIN verification modal
@@ -4110,17 +4185,17 @@
       const subj = document.getElementById('manualSubjSelect').value;
       const unitVal = document.getElementById('manualUnitSelect').value;
       const [uNum, uName] = unitVal.split('|');
-      let dateVal = document.getElementById('manualDateInput').value || new Date().toISOString().split('T')[0];
-      if (dateVal < TRACKING_START_DATE) {
-        dateVal = TRACKING_START_DATE;
-      }
-      const timeVal = (document.getElementById('manualStartTimeInput') && document.getElementById('manualStartTimeInput').value) || '09:00';
+      const rawTimeVal = (document.getElementById('manualStartTimeInput') && document.getElementById('manualStartTimeInput').value) || '09:00';
+      const timeVal = rawTimeVal.length === 5 ? rawTimeVal : rawTimeVal.substring(0, 5);
       
-      // Calculate stop time & date
-      const startDateTime = new Date(`${dateVal}T${timeVal}:00`);
+      // Calculate stop time & date based strictly on user input start date & time + duration_minutes
+      const [sYear, sMonth, sDay] = dateVal.split('-').map(Number);
+      const [sHour, sMin] = timeVal.split(':').map(Number);
+      const startDateTime = new Date(sYear, sMonth - 1, sDay, sHour, sMin, 0);
       const stopDateTime = new Date(startDateTime.getTime() + dur * 60000);
-      const stopDateVal = stopDateTime.toISOString().split('T')[0];
-      const stopTimeVal = stopDateTime.toTimeString().split(' ')[0].substring(0, 5);
+      const stopDateVal = getLocalDateString(stopDateTime);
+      const stopTimeVal = `${String(stopDateTime.getHours()).padStart(2, '0')}:${String(stopDateTime.getMinutes()).padStart(2, '0')}:${String(stopDateTime.getSeconds()).padStart(2, '0')}`;
+      const startTimeVal = `${timeVal}:00`;
 
       const sessionId = generateUUID();
 
@@ -4130,20 +4205,21 @@
         unit_number: Number(uNum) || 0,
         unit_name: uName || 'සාමාන්‍ය පුනරීක්ෂණ',
         timer_start_date: dateVal,
-        timer_start_time: timeVal + ':00',
+        timer_start_time: startTimeVal,
         timer_stop_date: stopDateVal,
-        timer_stop_time: stopTimeVal + ':00',
+        timer_stop_time: stopTimeVal,
+        session_date: dateVal,
         start_time: startDateTime.toISOString(),
         end_time: stopDateTime.toISOString(),
         duration_minutes: dur,
         status: 'completed',
-        session_date: dateVal,
         created_at: new Date().toISOString(),
         synced: false
       };
 
       // Always save locally first to LocalStorage and IndexedDB
       allSessions.unshift(newSess);
+      allSessions.sort((a, b) => getSessionTimestamp(b) - getSessionTimestamp(a));
       saveCachedSessions(allSessions);
 
       try {
@@ -4166,11 +4242,11 @@
         timer_start_time: newSess.timer_start_time,
         timer_stop_date: newSess.timer_stop_date,
         timer_stop_time: newSess.timer_stop_time,
+        session_date: newSess.session_date,
         start_time: newSess.start_time,
         end_time: newSess.end_time,
         duration_minutes: newSess.duration_minutes,
         status: newSess.status,
-        session_date: newSess.session_date,
         created_at: newSess.created_at
       };
 
@@ -4278,6 +4354,100 @@
       }
     });
 
+    // 7. Mock Data Generation Utility for Instant Testing
+    window.__generateMockTestSessions = async function(count = 35) {
+      const subjects = ['ICT', 'ET', 'SFT'];
+      const pastDaysOffsets = [0, 1, 3, 6, 12, 25, 60, 120];
+      const durations = [25, 30, 45, 50, 60, 75, 90, 120];
+      const startTimes = ['06:30', '08:45', '10:15', '13:30', '15:45', '18:15', '20:30', '22:00'];
+
+      const newMocks = [];
+      const now = new Date();
+
+      for (let i = 0; i < count; i++) {
+        const subj = subjects[i % subjects.length];
+        const units = CANONICAL_UNITS[subj] || [];
+        const unitObj = units.length > 0 ? units[i % units.length] : { unit_number: 1, unit_name: 'සාමාන්‍ය පුනරීක්ෂණ' };
+        
+        // Distribute across today, yesterday, 3d, 6d, 12d, 25d, 60d, 120d ago
+        const daysAgo = pastDaysOffsets[i % pastDaysOffsets.length];
+        const targetD = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysAgo);
+        const dateStr = getLocalDateString(targetD);
+
+        const timeStr = startTimes[i % startTimes.length];
+        const dur = durations[i % durations.length];
+
+        const [hr, min] = timeStr.split(':').map(Number);
+        const startDateTime = new Date(targetD.getFullYear(), targetD.getMonth(), targetD.getDate(), hr, min, 0);
+        const stopDateTime = new Date(startDateTime.getTime() + dur * 60000);
+        const stopDateStr = getLocalDateString(stopDateTime);
+        const stopTimeStr = `${String(stopDateTime.getHours()).padStart(2, '0')}:${String(stopDateTime.getMinutes()).padStart(2, '0')}:${String(stopDateTime.getSeconds()).padStart(2, '0')}`;
+
+        const mockSess = {
+          id: 'mock_' + generateUUID(),
+          subject: subj,
+          unit_number: unitObj.unit_number,
+          unit_name: unitObj.unit_name,
+          timer_start_date: dateStr,
+          timer_start_time: timeStr + ':00',
+          timer_stop_date: stopDateStr,
+          timer_stop_time: stopTimeStr,
+          session_date: dateStr,
+          start_time: startDateTime.toISOString(),
+          end_time: stopDateTime.toISOString(),
+          duration_minutes: dur,
+          status: 'completed',
+          created_at: startDateTime.toISOString(),
+          synced: true
+        };
+        newMocks.push(mockSess);
+      }
+
+      // Merge into allSessions without duplicating
+      const map = new Map();
+      allSessions.forEach(s => map.set(s.id, s));
+      newMocks.forEach(m => map.set(m.id, m));
+      allSessions = Array.from(map.values());
+      allSessions.sort((a, b) => getSessionTimestamp(b) - getSessionTimestamp(a));
+
+      // Save to cache
+      saveCachedSessions(allSessions);
+
+      // Save to IndexedDB
+      try {
+        const db = await openOfflineDB();
+        if (db) {
+          const storeName = db.objectStoreNames.contains('study_timer_sessions') ? 'study_timer_sessions' : 'study_sessions';
+          const tx = db.transaction(storeName, 'readwrite');
+          newMocks.forEach(m => tx.objectStore(storeName).put(m));
+        }
+      } catch (e) {
+        console.warn('Local IDB put mock sessions error:', e);
+      }
+
+      // Re-render UI components reactively
+      renderKPIs();
+      renderComprehensiveHeatmap();
+      renderPeakTimeSlots();
+      renderWeeklyHabitMatrix();
+      renderSubjectProgressSection();
+      renderVisualCharts();
+      renderSessionsTable();
+
+      console.log(`[MockGenerator] Successfully generated ${newMocks.length} mock sessions across ICT, ET, SFT!`);
+      return newMocks;
+    };
+
+    function initDateConstraints() {
+      const dateInput = document.getElementById('manualDateInput');
+      if (dateInput) {
+        const todayStr = getLocalDateString();
+        dateInput.value = todayStr;
+        dateInput.max = todayStr;
+        dateInput.removeAttribute('min');
+      }
+    }
+
     // Storage and online listeners
     window.addEventListener('storage', (e) => {
       if (e.key === 'al_study_sessions_cache' || e.key === TIMER_STORAGE_KEY) {
@@ -4298,9 +4468,11 @@
     // Robust initialization on page load
     if (document.readyState === 'loading') {
       window.addEventListener('DOMContentLoaded', () => {
+        initDateConstraints();
         refreshAnalyticsData();
       });
     } else {
+      initDateConstraints();
       refreshAnalyticsData();
     }
   </script>
