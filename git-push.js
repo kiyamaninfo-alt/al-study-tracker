@@ -86,11 +86,49 @@ async function run() {
         execSync('git fetch origin', { stdio: 'pipe' });
       } catch (_) {}
       console.log(`Successfully pushed to origin/${branch}!`);
+
+      if (branch !== 'main') {
+        console.log(`Creating PR from "${branch}" into "main" and merging...`);
+        let pr;
+        try {
+          pr = await githubApiRequest('POST', '/repos/kiyamaninfo-alt/al-study-tracker/pulls', token, {
+            title: msg,
+            head: branch,
+            base: 'main',
+            body: `Automated sync from ${branch}.`
+          });
+        } catch (prErr) {
+          if (prErr.message && prErr.message.includes('A pull request already exists')) {
+            const openPrs = await githubApiRequest('GET', `/repos/kiyamaninfo-alt/al-study-tracker/pulls?head=kiyamaninfo-alt:${branch}&state=open`, token);
+            if (Array.isArray(openPrs) && openPrs.length > 0) {
+              pr = openPrs[0];
+            }
+          } else if (prErr.message && prErr.message.includes('No commits between')) {
+            console.log('No new commits between branch and main. Main is already up to date.');
+          } else {
+            throw prErr;
+          }
+        }
+
+        if (pr && pr.number) {
+          console.log(`Pull Request #${pr.number} created/found. Merging into main...`);
+          await githubApiRequest('PUT', `/repos/kiyamaninfo-alt/al-study-tracker/pulls/${pr.number}/merge`, token, {
+            commit_title: `${msg} (#${pr.number})`,
+            merge_method: 'merge'
+          });
+          console.log(`Pull Request #${pr.number} merged into main!`);
+          try {
+            execSync('git fetch origin', { stdio: 'pipe' });
+            execSync('git branch -f main origin/main', { stdio: 'pipe' });
+            console.log('Local main branch fast-forwarded to origin/main.');
+          } catch (_) {}
+        }
+      }
     } catch (pushErr) {
       const errStr = pushErr.stderr ? pushErr.stderr.toString() : pushErr.message || '';
       if (branch === 'main' && (errStr.includes('GH013') || errStr.includes('pull request') || errStr.includes('rule violations'))) {
         console.log('Main branch protection active (PR required). Creating sync branch & auto-merging PR...');
-        const syncBranch = 'phase-6';
+        const syncBranch = `phase-sync-${Date.now()}`;
         execSync(`git push ${remoteUrl} main:${syncBranch} --force`, { stdio: 'pipe' });
         
         const pr = await githubApiRequest('POST', '/repos/kiyamaninfo-alt/al-study-tracker/pulls', token, {
