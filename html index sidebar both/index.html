@@ -2484,10 +2484,13 @@
       .ebbinghaus-tag {
         font-size: 9px;
         font-weight: 700;
-        padding: 3px 8px;
+        padding: 2px 7px;
         border-radius: 12px;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
         white-space: nowrap;
+        max-width: 100%;
+        flex-shrink: 0;
         transition: all 0.15s ease;
       }
       .ebbinghaus-tag.ebb-stage-1 {
@@ -2534,6 +2537,117 @@
       }
       #ebbinghausList::-webkit-scrollbar-thumb:hover {
         background: #8c7ae6;
+      }
+
+      /* Ebbinghaus Spaced Repetition Responsive & Non-overflow Table Rules */
+      .ebbinghaus-card .ranking-table-responsive {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+      }
+      #dataCardFullscreenModal.modal-ebbinghaus-view .ranking-table-responsive {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+      }
+      .ebbinghaus-card .ranking-table,
+      #dataCardFullscreenModal.modal-ebbinghaus-view .ranking-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        table-layout: auto;
+        white-space: normal !important;
+      }
+      .ebbinghaus-card .ranking-table th,
+      .ebbinghaus-card .ranking-table td,
+      #dataCardFullscreenModal.modal-ebbinghaus-view .ranking-table th,
+      #dataCardFullscreenModal.modal-ebbinghaus-view .ranking-table td {
+        box-sizing: border-box;
+      }
+      .ebbinghaus-card .ranking-table th.col-sub-name,
+      .ebbinghaus-card .ranking-table td.col-sub-name,
+      #dataCardFullscreenModal.modal-ebbinghaus-view .ranking-table th.col-sub-name,
+      #dataCardFullscreenModal.modal-ebbinghaus-view .ranking-table td.col-sub-name {
+        min-width: 0 !important;
+        max-width: none !important;
+        width: auto !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+      }
+      .col-ebb-details {
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        min-width: 0 !important;
+      }
+      .ebb-row-title {
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.35;
+        margin-bottom: 3px;
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+      .ebb-row-title .sub-unit-link {
+        color: inherit;
+        text-decoration: none;
+        display: inline;
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+      .ebb-row-title .sub-unit-link:hover {
+        color: #6c5ce7;
+        text-decoration: underline;
+      }
+      body.dark-mode .ebb-row-title .sub-unit-link,
+      :root.dark-mode .ebb-row-title .sub-unit-link {
+        color: #f0f6fc;
+      }
+      body.dark-mode .ebb-row-title .sub-unit-link:hover,
+      :root.dark-mode .ebb-row-title .sub-unit-link:hover {
+        color: #a29bfe;
+      }
+      .ebb-row-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px 6px;
+        font-size: 9.5px;
+        line-height: 1.3;
+        white-space: normal;
+      }
+      .ebb-days-info {
+        color: #636e72;
+        font-size: 9px;
+        font-weight: 500;
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+      body.dark-mode .ebb-days-info,
+      :root.dark-mode .ebb-days-info {
+        color: #8b949e;
+      }
+      .ebb-reset-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 11px;
+        padding: 1px 4px;
+        color: #a4b0be;
+        transition: color 0.2s;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+      }
+      .ebb-reset-btn:hover {
+        color: #e74c3c !important;
       }
 
       /* Modals */
@@ -2677,6 +2791,38 @@
         .state-badge.clickable-badge {
           padding: 4px 7px;
           font-size: 9px;
+        }
+        .ebbinghaus-card .ranking-table,
+        #dataCardFullscreenModal.modal-ebbinghaus-view .ranking-table {
+          font-size: 10px;
+        }
+        .ebb-row-title {
+          font-size: 10px;
+        }
+        .ebb-days-info {
+          font-size: 8.5px;
+        }
+        .ebbinghaus-tag {
+          font-size: 8.5px;
+          padding: 1.5px 5px;
+        }
+        .ebbinghaus-card .col-rank,
+        #dataCardFullscreenModal.modal-ebbinghaus-view .col-rank {
+          width: 32px !important;
+          min-width: 32px !important;
+          padding: 4px 2px !important;
+        }
+        .ebbinghaus-card .col-subj,
+        #dataCardFullscreenModal.modal-ebbinghaus-view .col-subj {
+          width: 44px !important;
+          min-width: 44px !important;
+          padding: 4px 2px !important;
+        }
+        .ebbinghaus-card .col-sub-no,
+        #dataCardFullscreenModal.modal-ebbinghaus-view .col-sub-no {
+          width: 46px !important;
+          min-width: 46px !important;
+          padding: 4px 2px !important;
         }
       }
 
@@ -5319,13 +5465,12 @@
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
               <th class="col-sub-no">Sub Unit</th>
-              <th class="col-sub-name">Sub Unit Name</th>
-              <th class="col-metric-wide">Stage &amp; Days</th>
+              <th class="col-sub-name col-ebb-details">Lesson &amp; Spaced Repetition</th>
             </tr>
           </thead>
           <tbody id="ebbinghausList">
             <tr>
-              <td colspan="7" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත පූරණය වෙමින් පවතී... ⏳</td>
+              <td colspan="6" style="text-align: center; color: #a4b0be; padding: 14px;">දත්ත පූරණය වෙමින් පවතී... ⏳</td>
             </tr>
           </tbody>
         </table>
@@ -8851,6 +8996,19 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           return Math.max(0, Math.floor((refMidnight.getTime() - targetMidnight.getTime()) / (1000 * 60 * 60 * 24)));
         }
 
+        function toCalendarMidnight(targetDateInput) {
+          if (!targetDateInput) return null;
+          let targetDate;
+          if (typeof targetDateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(targetDateInput.trim())) {
+            const parts = targetDateInput.trim().split('-').map(Number);
+            targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+          } else {
+            targetDate = new Date(targetDateInput);
+          }
+          if (isNaN(targetDate.getTime())) return null;
+          return new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+        }
+
         const tpMap = {};
         (trackerProgressList || []).forEach(tp => {
           if (tp && tp.syllabus_id) tpMap[tp.syllabus_id] = tp;
@@ -8887,6 +9045,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             activeElapsed = parseInt(p.hw_days, 10) || 0;
           }
 
+          let hwDoneDate = toCalendarMidnight(p.hw_done_at);
+          if (!hwDoneDate) {
+            hwDoneDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - activeElapsed);
+          }
+
           const key = (item.subject || '').toUpperCase().trim() + '||' + (item.sub_lesson_code || '').trim();
           const entries = srLogMap[key] || [];
 
@@ -8894,6 +9057,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           let targetStage = 1;
           let isHidden = false;
           let displayDays = activeElapsed;
+          let dueSince = new Date(hwDoneDate.getTime());
 
           if (entries.length === 0) {
             // No repetition completed yet: initial review Stage 1 (Day 1) in Cycle 1
@@ -8901,6 +9065,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             targetStage = 1;
             displayDays = activeElapsed;
             isHidden = false;
+            dueSince = new Date(hwDoneDate.getTime());
           } else {
             // Sort history chronologically
             entries.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -8908,9 +9073,11 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
             const lastCycle = parseInt(lastEntry.cycle, 10) || 1;
             const lastStage = parseInt(lastEntry.stage, 10) || 1;
             const diffDays = getPureCalendarDayDiff(lastEntry.date, today);
+            const lastCompMidnight = toCalendarMidnight(lastEntry.date) || today;
 
             if (lastStage === 45) {
               // Day 45 Completion: 30-day cooldown period
+              dueSince = new Date(lastCompMidnight.getFullYear(), lastCompMidnight.getMonth(), lastCompMidnight.getDate() + 30);
               if (diffDays < 30) {
                 isHidden = true; // In 30-day cooldown
               } else {
@@ -8930,6 +9097,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               const currIdx = STAGE_SEQUENCE.indexOf(lastStage);
               targetStage = (currIdx >= 0 && currIdx < STAGE_SEQUENCE.length - 1) ? STAGE_SEQUENCE[currIdx + 1] : 45;
               const requiredInterval = STAGE_INTERVALS[lastStage] || 3;
+              dueSince = new Date(lastCompMidnight.getFullYear(), lastCompMidnight.getMonth(), lastCompMidnight.getDate() + requiredInterval);
               if (diffDays < requiredInterval) {
                 isHidden = true;
               } else {
@@ -8951,11 +9119,17 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               unitNumber: (item.unit_number !== undefined && item.unit_number !== null) ? item.unit_number : '',
               unitName: item.unit_name || '',
               days: displayDays,
-              stageTag: `දින ${displayDays}යි — ${meta.tag}`,
+              daysSinceTaught: activeElapsed,
+              displayDays: displayDays,
+              stageLabel: meta.tag,
+              stageTag: `පාඩම උගන්නලා දින ${activeElapsed} • දැනට දින ${displayDays} • ${meta.tag}`,
               badgeColor: meta.color,
               sortRank: meta.sortRank,
               stageBucket: meta.bucket,
-              cycle: currentCycle
+              cycle: currentCycle,
+              dueSince: dueSince,
+              hwDoneDate: hwDoneDate,
+              isHidden: false
             });
           }
         });
@@ -8974,8 +9148,15 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         const ebbCycleData = {};
         for (let c = 1; c <= maxCycle; c++) {
           const items = ebbByCycle[c] || [];
-          // Sorting: Always sort active items descending by elapsed days (Highest to Lowest)
-          items.sort((a, b) => b.days - a.days);
+          // Sorting: First come, first shown (ascending by dueSince, tie-breaker: earlier hw_done_at first)
+          items.sort((a, b) => {
+            const aDue = a.dueSince ? a.dueSince.getTime() : 0;
+            const bDue = b.dueSince ? b.dueSince.getTime() : 0;
+            if (aDue !== bDue) return aDue - bDue;
+            const aHw = a.hwDoneDate ? a.hwDoneDate.getTime() : 0;
+            const bHw = b.hwDoneDate ? b.hwDoneDate.getTime() : 0;
+            return aHw - bHw;
+          });
           ebbCycleData[c] = items;
         }
 
@@ -9867,7 +10048,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           if (btn) btn.style.opacity = (s === currentEbbFilter) ? '1' : '0.55';
         });
 
-        const items = ebbCycleData[currentEbbCycle] || [];
+        const items = (ebbCycleData[currentEbbCycle] || []).filter(function(it) {
+          return it && !it.isHidden;
+        });
         const filtered = currentEbbFilter === 0 ? items : items.filter(function(it) {
           return it.stageBucket === currentEbbFilter;
         });
@@ -9900,6 +10083,9 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
             }
             const stageClass = `ebb-stage-${item.stageBucket || 1}`;
+            const daysTaught = (item.daysSinceTaught !== undefined && item.daysSinceTaught !== null) ? item.daysSinceTaught : item.days;
+            const daysDisplay = (item.displayDays !== undefined && item.displayDays !== null) ? item.displayDays : item.days;
+            const stageLabel = item.stageLabel || (item.stageTag && item.stageTag.includes('•') ? item.stageTag.split('•').pop().trim() : (STAGE_META && STAGE_META[item.stageBucket] ? STAGE_META[item.stageBucket].tag : `දිනය ${item.stageBucket || 1}`));
 
             return `
               <tr id="ebbItem_${idx}" data-syllabus-id="${item.syllabusId || ''}" data-code="${escapeHtml(item.code || '')}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}">
@@ -9911,15 +10097,16 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <td class="col-unit-no"><span class="chip-badge chip-unit-no">${escapeHtml(unitNo)}</span></td>
                 <td class="col-unit-name"><span class="unit-name-txt" title="${escapeHtml(unitName)}">${escapeHtml(unitName)}</span></td>
                 <td class="col-sub-no"><span class="chip-badge chip-code" style="color: #8c7ae6;">${escapeHtml(subUnitNo)}</span></td>
-                <td class="col-sub-name">
-                  <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link unit-name-txt" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
-                </td>
-                <td class="col-metric-wide">
-                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
-                    <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}" style="white-space: nowrap;">
-                      ${item.stageTag}
+                <td class="col-sub-name col-ebb-details">
+                  <div class="ebb-row-title">
+                    <a href="javascript:void(0)" onclick="openDrilldownModal('${subj}', '${escapeHtml(subUnitNo)}')" class="sub-unit-link" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                  </div>
+                  <div class="ebb-row-meta">
+                    <span class="ebb-days-info">පාඩම උගන්නලා දින ${daysTaught} • දැනට දින ${daysDisplay}</span>
+                    <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}">
+                      ${escapeHtml(stageLabel)}
                     </span>
-                    <button type="button" onclick="event.stopPropagation(); promptResetRepetition('${subj}', '${escapeHtml(subUnitNo)}', '${item.syllabusId || ''}', '${encodeURIComponent(cleanTitle)}')" title="Repetition Reset කරන්න (Cycle 1 Day 1)" style="background: none; border: none; cursor: pointer; font-size: 11px; padding: 1px 4px; color: #a4b0be; transition: color 0.2s;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#a4b0be'">🔄</button>
+                    <button type="button" onclick="event.stopPropagation(); promptResetRepetition('${subj}', '${escapeHtml(subUnitNo)}', '${item.syllabusId || ''}', '${encodeURIComponent(cleanTitle)}')" title="Repetition Reset කරන්න (Cycle 1 Day 1)" class="ebb-reset-btn">🔄</button>
                   </div>
                 </td>
               </tr>
@@ -9928,12 +10115,12 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         } else {
           if (items.length === 0) {
             if (currentEbbCycle === 1) {
-              ebbList.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #27ae60; text-align: center; padding: 14px; font-weight: 600;">නියමයි! Cycle 1 හි නැවත මතක් කළ යුතු පාඩම් කිසිවක් නැත 🌟 (සියලු පාඩම් නියමිත කාල සීමාවලට අනුව රඳවා ඇත)</td></tr>';
+              ebbList.innerHTML = '<tr><td colspan="6" style="font-size: 11px; color: #27ae60; text-align: center; padding: 14px; font-weight: 600;">නියමයි! Cycle 1 හි නැවත මතක් කළ යුතු පාඩම් කිසිවක් නැත 🌟 (සියලු පාඩම් නියමිත කාල සීමාවලට අනුව රඳවා ඇත)</td></tr>';
             } else {
-              ebbList.innerHTML = `<tr><td colspan="7" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 14px;">Cycle ${currentEbbCycle} සඳහා තවම පාඩම් සුදුසුකම් ලබා නැත.<br><span style="font-size:9.5px; color:#a4b0be;">(පෙර Cycle හි දිනය 45+ අවසන් කර දින 30ක Cooldown කාලය සම්පූර්ණ වූ පසු පාඩම් මෙහි ස්වයංක්‍රීයව දිස්වනු ඇත) ⏳</span></td></tr>`;
+              ebbList.innerHTML = `<tr><td colspan="6" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 14px;">Cycle ${currentEbbCycle} සඳහා තවම පාඩම් සුදුසුකම් ලබා නැත.<br><span style="font-size:9.5px; color:#a4b0be;">(පෙර Cycle හි දිනය 45+ අවසන් කර දින 30ක Cooldown කාලය සම්පූර්ණ වූ පසු පාඩම් මෙහි ස්වයංක්‍රීයව දිස්වනු ඇත) ⏳</span></td></tr>`;
             }
           } else {
-            ebbList.innerHTML = `<tr><td colspan="7" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 12px;">තෝරාගත් දිනය (${currentEbbFilter === 45 ? '45+' : currentEbbFilter}) සඳහා Cycle ${currentEbbCycle} හි පාඩම් නොමැත.</td></tr>`;
+            ebbList.innerHTML = `<tr><td colspan="6" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 12px;">තෝරාගත් දිනය (${currentEbbFilter === 45 ? '45+' : currentEbbFilter}) සඳහා Cycle ${currentEbbCycle} හි පාඩම් නොමැත.</td></tr>`;
           }
         }
 
@@ -12460,6 +12647,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
 
         if (!modal || !titleEl || !theadEl || !tbodyEl) return;
 
+        modal.classList.remove('modal-ebbinghaus-view');
         extraEl.style.display = 'none';
         extraEl.innerHTML = '';
 
@@ -12582,6 +12770,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           }
 
         } else if (cardType === 'ebbinghaus') {
+          modal.classList.add('modal-ebbinghaus-view');
           titleEl.innerHTML = '🧠 හර්මන් එබින්ගවුස්ගේ "අමතකවීමේ වක්‍රය" — Spaced Repetition Cycles';
           badgeEl.innerText = `Cycle ${currentEbbCycle}`;
           badgeEl.style.background = 'rgba(140, 122, 230, 0.35)';
@@ -12596,8 +12785,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               <th class="col-unit-no">Unit No</th>
               <th class="col-unit-name">Unit Name</th>
               <th class="col-sub-no">Sub Unit</th>
-              <th class="col-sub-name">Sub Unit Name</th>
-              <th class="col-metric-wide">Stage &amp; Days</th>
+              <th class="col-sub-name col-ebb-details">Lesson &amp; Spaced Repetition</th>
             </tr>
           `;
 
@@ -12974,7 +13162,7 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
         `;
         extraEl.innerHTML = tabsHtml + filtersHtml;
 
-        const items = ebbCycleData[currentEbbCycle] || [];
+        const items = (ebbCycleData[currentEbbCycle] || []).filter(it => it && !it.isHidden);
         const filtered = currentEbbFilter === 0 ? items : items.filter(it => it.stageBucket === currentEbbFilter);
         // Requirement 1: Full scroll support without 10-item cap
         const displayItems = filtered;
@@ -12995,6 +13183,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
               cleanTitle = cleanTitle.substring(item.code.length).trim().replace(/^[-:–.]\s*/, '');
             }
             const stageClass = `ebb-stage-${item.stageBucket || 1}`;
+            const daysTaught = (item.daysSinceTaught !== undefined && item.daysSinceTaught !== null) ? item.daysSinceTaught : item.days;
+            const daysDisplay = (item.displayDays !== undefined && item.displayDays !== null) ? item.displayDays : item.days;
+            const stageLabel = item.stageLabel || (item.stageTag && item.stageTag.includes('•') ? item.stageTag.split('•').pop().trim() : (STAGE_META && STAGE_META[item.stageBucket] ? STAGE_META[item.stageBucket].tag : `දිනය ${item.stageBucket || 1}`));
+
             return `
               <tr id="ebbModalItem_${idx}" data-syllabus-id="${item.syllabusId || ''}" data-code="${escapeHtml(item.code || '')}" data-subject="${subj}" data-sublesson="${encodeURIComponent(item.subLesson || cleanTitle)}" data-stage="${item.stageBucket}" data-cycle="${currentEbbCycle}">
                 <td class="col-rank">
@@ -13005,22 +13197,23 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
                 <td class="col-unit-no"><span class="chip-unit-no">${escapeHtml(unitNo)}</span></td>
                 <td class="col-unit-name" title="${escapeHtml(unitName)}"><span class="unit-name-txt">${escapeHtml(unitName)}</span></td>
                 <td class="col-sub-no"><span class="chip-code" style="color: #8c7ae6;">${escapeHtml(subUnitNo)}</span></td>
-                <td class="col-sub-name" title="${escapeHtml(cleanTitle)}">
-                  <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
-                </td>
-                <td class="col-metric-wide">
-                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
-                    <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}" style="white-space: nowrap;">
-                      ${item.stageTag}
+                <td class="col-sub-name col-ebb-details" title="${escapeHtml(cleanTitle)}">
+                  <div class="ebb-row-title">
+                    <a href="javascript:void(0)" class="sub-unit-link" onclick="event.stopPropagation(); closeDataCardFullscreen(); openDrilldownModal('${subj}', '${subUnitNo}')" title="Drilldown විවෘත කරන්න">${escapeHtml(cleanTitle)}</a>
+                  </div>
+                  <div class="ebb-row-meta">
+                    <span class="ebb-days-info">පාඩම උගන්නලා දින ${daysTaught} • දැනට දින ${daysDisplay}</span>
+                    <span class="ebbinghaus-tag ${stageClass}" data-stage="${item.stageBucket || 1}">
+                      ${escapeHtml(stageLabel)}
                     </span>
-                    <button type="button" onclick="event.stopPropagation(); promptResetRepetition('${subj}', '${escapeHtml(subUnitNo)}', '${item.syllabusId || ''}', '${encodeURIComponent(cleanTitle)}')" title="Repetition Reset කරන්න (Cycle 1 Day 1)" style="background: none; border: none; cursor: pointer; font-size: 11px; padding: 1px 4px; color: #a4b0be; transition: color 0.2s;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#a4b0be'">🔄</button>
+                    <button type="button" onclick="event.stopPropagation(); promptResetRepetition('${subj}', '${escapeHtml(subUnitNo)}', '${item.syllabusId || ''}', '${encodeURIComponent(cleanTitle)}')" title="Repetition Reset කරන්න (Cycle 1 Day 1)" class="ebb-reset-btn">🔄</button>
                   </div>
                 </td>
               </tr>
             `;
           }).join('');
         } else {
-          tbodyEl.innerHTML = '<tr><td colspan="7" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 14px;">තෝරාගත් දිනය සඳහා පාඩම් නොමැත.</td></tr>';
+          tbodyEl.innerHTML = '<tr><td colspan="6" style="font-size: 11px; color: #7f8fa6; text-align: center; padding: 14px;">තෝරාගත් දිනය සඳහා පාඩම් නොමැත.</td></tr>';
         }
       }
 
@@ -13060,7 +13253,10 @@ var supabase = (window.supabase && typeof window.supabase.createClient === 'func
           return;
         }
         const modal = document.getElementById('dataCardFullscreenModal');
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+          modal.style.display = 'none';
+          modal.classList.remove('modal-ebbinghaus-view');
+        }
         currentFsCardType = null;
         if (!document.querySelector('.chart-card.fullscreen-chart-mode')) {
           document.body.style.overflow = '';
